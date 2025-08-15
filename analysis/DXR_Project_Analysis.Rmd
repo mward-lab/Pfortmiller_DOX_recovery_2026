@@ -10,6 +10,8 @@ output:
     toc_float: true
     theme: journal
     highlight: textmate
+editor_options: 
+  chunk_output_type: inline
 ---
 
 editor_options: 
@@ -801,6 +803,8 @@ dim(x)
 #remove my replicate individual at this time
 x_norep <- x[,1:36]
 
+Metadata <- read.csv("data/new/Metadata.csv")
+
 #modify my metadata to match
 Metadata_2 <- Metadata[1:36,]
 rownames(Metadata_2) <- Metadata_2$Sample_bam
@@ -1482,182 +1486,182 @@ ggplot2::autoplot(prcomp_res_1_cpm,
 ```
 
 ##RUVs with k = 2
-```{r RUVs k2, fig.height=6, fig.width=8}
-#Apply RUVs function from RUVSeq
-#"k" will be iteratively adjusted over time depending on your PCA.
-set2 <- RUVSeq::RUVs(x = counts, k =2, scIdx = scIdx, isLog = FALSE)
-
-#get the ruv weights to put into the linear model. n weights = k.
-#k=2
-RUV_df2 <- set2$W %>% as.data.frame()
-RUV_df2$Names <- rownames(RUV_df2)
-
-#Check that the names match
-#k=2
-RUV_df_rm2 <- RUV_df2[RUV_df2$Names %in% annot$Final_sample_name, ] 
-RUV_2 <-  RUV_df_rm2$W_2
-
-#PCA checks
-#k=2
-prcomp_res_2 <- prcomp(t(set2$normalizedCounts), scale. = FALSE, center = TRUE)
-annot_prcomp_res_2 <- prcomp_res_2$x %>% cbind(., annot)
-
-##PC1/2
-ggplot2::autoplot(prcomp_res_2, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=1,
-                  y=2)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=2 NormCounts")
-
-###PC2/3
-ggplot2::autoplot(prcomp_res_2, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=2, 
-                  y=3)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=2 NormCounts")
-
-#now convert this to log2cpm using the normalized counts from set2
-
-RUV_df_rm2_cpm <- cpm(set2$normalizedCounts, log = TRUE)
-
-prcomp_res_2_cpm <- prcomp(t(RUV_df_rm2_cpm), scale. = FALSE, center = TRUE)
-annot_prcomp_res_2_cpm <- prcomp_res_2_cpm$x %>% cbind(., annot)
-
-ggplot2::autoplot(prcomp_res_2_cpm, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=1, 
-                  y=2)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=2 log2cpm")
-
-###PC2/3
-ggplot2::autoplot(prcomp_res_2_cpm, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=2, 
-                  y=3)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=2 log2cpm")
+```{r RUVs k2, fig.height=6, fig.width=8, include = FALSE}
+# #Apply RUVs function from RUVSeq
+# #"k" will be iteratively adjusted over time depending on your PCA.
+# set2 <- RUVSeq::RUVs(x = counts, k =2, scIdx = scIdx, isLog = FALSE)
+# 
+# #get the ruv weights to put into the linear model. n weights = k.
+# #k=2
+# RUV_df2 <- set2$W %>% as.data.frame()
+# RUV_df2$Names <- rownames(RUV_df2)
+# 
+# #Check that the names match
+# #k=2
+# RUV_df_rm2 <- RUV_df2[RUV_df2$Names %in% annot$Final_sample_name, ] 
+# RUV_2 <-  RUV_df_rm2$W_2
+# 
+# #PCA checks
+# #k=2
+# prcomp_res_2 <- prcomp(t(set2$normalizedCounts), scale. = FALSE, center = TRUE)
+# annot_prcomp_res_2 <- prcomp_res_2$x %>% cbind(., annot)
+# 
+# ##PC1/2
+# ggplot2::autoplot(prcomp_res_2, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=1,
+#                   y=2)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=2 NormCounts")
+# 
+# ###PC2/3
+# ggplot2::autoplot(prcomp_res_2, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=2, 
+#                   y=3)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=2 NormCounts")
+# 
+# #now convert this to log2cpm using the normalized counts from set2
+# 
+# RUV_df_rm2_cpm <- cpm(set2$normalizedCounts, log = TRUE)
+# 
+# prcomp_res_2_cpm <- prcomp(t(RUV_df_rm2_cpm), scale. = FALSE, center = TRUE)
+# annot_prcomp_res_2_cpm <- prcomp_res_2_cpm$x %>% cbind(., annot)
+# 
+# ggplot2::autoplot(prcomp_res_2_cpm, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=1, 
+#                   y=2)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=2 log2cpm")
+# 
+# ###PC2/3
+# ggplot2::autoplot(prcomp_res_2_cpm, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=2, 
+#                   y=3)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=2 log2cpm")
 
 ```
 
 #RUVs with k = 3
-```{r RUVs k3, fig.height=6, fig.width=8}
+```{r RUVs k3, fig.height=6, fig.width=8, include=FALSE}
 
-#Apply RUVs function from RUVSeq
-#"k" will be iteratively adjusted over time depending on your PCA.
-set3 <- RUVSeq::RUVs(x = counts, k =3, scIdx = scIdx, isLog = FALSE)
-
-#get the ruv weights to put into the linear model. n weights = k.
-#k=3
-RUV_df3 <- set3$W %>% as.data.frame()
-RUV_df3$Names <- rownames(RUV_df3)
-
-#Check that the names match
-#k=3
-RUV_df_rm3 <- RUV_df3[RUV_df3$Names %in% annot$Final_sample_name, ] 
-RUV_3 <-  RUV_df_rm3$W_3
-
-#PCA checks
-#k=3
-prcomp_res_3 <- prcomp(t(set3$normalizedCounts), scale. = FALSE, center = TRUE)
-annot_prcomp_res_3 <- prcomp_res_3$x %>% cbind(., annot)
-
-###PC1/2
-ggplot2::autoplot(prcomp_res_3, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=1, 
-                  y=2)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=3 NormCounts")
-
-###PC2/3
-ggplot2::autoplot(prcomp_res_3, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=2, 
-                  y=3)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=3 NormCounts")
-
-#now convert this to log2cpm using the normalized counts from set3
-
-RUV_df_rm3_cpm <- cpm(set3$normalizedCounts, log = TRUE)
-
-prcomp_res_3_cpm <- prcomp(t(RUV_df_rm3_cpm), scale. = FALSE, center = TRUE)
-annot_prcomp_res_3_cpm <- prcomp_res_3_cpm$x %>% cbind(., annot)
-
-##PC1/2
-ggplot2::autoplot(prcomp_res_3_cpm, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=1, 
-                  y=2)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=3 log2cpm")
-
-###PC2/3
-ggplot2::autoplot(prcomp_res_3_cpm, 
-                  data = annot, 
-                  colour = "Condition", 
-                  shape = "Time", 
-                  size =4, 
-                  x=2, 
-                  y=3)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
-                           vjust = -0.5, 
-                           max.overlaps = 30)+
-  ggtitle("RUVs Correction k=3 log2cpm")
+# #Apply RUVs function from RUVSeq
+# #"k" will be iteratively adjusted over time depending on your PCA.
+# set3 <- RUVSeq::RUVs(x = counts, k =3, scIdx = scIdx, isLog = FALSE)
+# 
+# #get the ruv weights to put into the linear model. n weights = k.
+# #k=3
+# RUV_df3 <- set3$W %>% as.data.frame()
+# RUV_df3$Names <- rownames(RUV_df3)
+# 
+# #Check that the names match
+# #k=3
+# RUV_df_rm3 <- RUV_df3[RUV_df3$Names %in% annot$Final_sample_name, ] 
+# RUV_3 <-  RUV_df_rm3$W_3
+# 
+# #PCA checks
+# #k=3
+# prcomp_res_3 <- prcomp(t(set3$normalizedCounts), scale. = FALSE, center = TRUE)
+# annot_prcomp_res_3 <- prcomp_res_3$x %>% cbind(., annot)
+# 
+# ###PC1/2
+# ggplot2::autoplot(prcomp_res_3, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=1, 
+#                   y=2)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=3 NormCounts")
+# 
+# ###PC2/3
+# ggplot2::autoplot(prcomp_res_3, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=2, 
+#                   y=3)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=3 NormCounts")
+# 
+# #now convert this to log2cpm using the normalized counts from set3
+# 
+# RUV_df_rm3_cpm <- cpm(set3$normalizedCounts, log = TRUE)
+# 
+# prcomp_res_3_cpm <- prcomp(t(RUV_df_rm3_cpm), scale. = FALSE, center = TRUE)
+# annot_prcomp_res_3_cpm <- prcomp_res_3_cpm$x %>% cbind(., annot)
+# 
+# ##PC1/2
+# ggplot2::autoplot(prcomp_res_3_cpm, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=1, 
+#                   y=2)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=3 log2cpm")
+# 
+# ###PC2/3
+# ggplot2::autoplot(prcomp_res_3_cpm, 
+#                   data = annot, 
+#                   colour = "Condition", 
+#                   shape = "Time", 
+#                   size =4, 
+#                   x=2, 
+#                   y=3)+
+#   theme_bw()+
+#   scale_color_manual(values=cond_col)+
+#   ggrepel::geom_text_repel(label= ind_num, 
+#                            vjust = -0.5, 
+#                            max.overlaps = 30)+
+#   ggtitle("RUVs Correction k=3 log2cpm")
 
 ```
 
@@ -1785,21 +1789,21 @@ ggplot2::autoplot(prcomp_res_3_cpm,
 #check to make sure that the column names are correct
 dim(RUV_filt_counts)
 dim(set1$normalizedCounts)
-dim(set2$normalizedCounts)
-dim(set3$normalizedCounts)
+# dim(set2$normalizedCounts)
+# dim(set3$normalizedCounts)
 
 #take the normalized counts from k=1 and put together a dataframe with the correct columns
 normcounts_k0 <- RUV_filt_counts
 normcounts_k1 <- set1$normalizedCounts %>% as.data.frame()
-#do the same with k=2 and k=3
-normcounts_k2 <- set2$normalizedCounts %>% as.data.frame()
-normcounts_k3 <- set3$normalizedCounts %>% as.data.frame()
+# #do the same with k=2 and k=3
+# normcounts_k2 <- set2$normalizedCounts %>% as.data.frame()
+# normcounts_k3 <- set3$normalizedCounts %>% as.data.frame()
 
 #do the same with the log2cpm conversion
 cpm_k0 <- cpm(normcounts_k0, log = TRUE) %>% as.data.frame()
 cpm_k1 <- cpm(set1$normalizedCounts, log = TRUE) %>% as.data.frame()
-cpm_k2 <- cpm(set2$normalizedCounts, log = TRUE) %>% as.data.frame()
-cpm_k3 <- cpm(set3$normalizedCounts, log = TRUE) %>% as.data.frame()
+# cpm_k2 <- cpm(set2$normalizedCounts, log = TRUE) %>% as.data.frame()
+# cpm_k3 <- cpm(set3$normalizedCounts, log = TRUE) %>% as.data.frame()
 
 #compute the correlation matrices for RUVs 1-3 with normalized counts
 #k=0
@@ -1813,17 +1817,17 @@ cor_matrix_spmn_k1 <- cor(normcounts_k1,
                            use = "everything",
                            method = "spearman")
 
-#k=2
-cor_matrix_spmn_k2 <- cor(normcounts_k2,
-                          y = NULL,
-                          use = "everything",
-                          method = "spearman")
-
-#k=3
-cor_matrix_spmn_k3 <- cor(normcounts_k3,
-                          y = NULL,
-                          use = "everything",
-                          method = "spearman")
+# #k=2
+# cor_matrix_spmn_k2 <- cor(normcounts_k2,
+#                           y = NULL,
+#                           use = "everything",
+#                           method = "spearman")
+# 
+# #k=3
+# cor_matrix_spmn_k3 <- cor(normcounts_k3,
+#                           y = NULL,
+#                           use = "everything",
+#                           method = "spearman")
 
 #Do the same with the log2cpm converted versions
 #k=0
@@ -1838,17 +1842,18 @@ cor_matrix_spmn_k1_cpm <- cor(cpm_k1,
                            use = "everything",
                            method = "spearman")
 
-#k=2
-cor_matrix_spmn_k2_cpm <- cor(cpm_k2,
-                          y = NULL,
-                          use = "everything",
-                          method = "spearman")
 
-#k=3
-cor_matrix_spmn_k3_cpm <- cor(cpm_k3,
-                          y = NULL,
-                          use = "everything",
-                          method = "spearman")
+# #k=2
+# cor_matrix_spmn_k2_cpm <- cor(cpm_k2,
+#                           y = NULL,
+#                           use = "everything",
+#                           method = "spearman")
+# 
+# #k=3
+# cor_matrix_spmn_k3_cpm <- cor(cpm_k3,
+#                           y = NULL,
+#                           use = "everything",
+#                           method = "spearman")
 
 #extract metadata columns
 Individual <- as.character(Metadata$Ind)
@@ -1923,33 +1928,33 @@ heatmap_spmn_k1 <- Heatmap(cor_matrix_spmn_k1,
 # Draw the heatmap k=1
 draw(heatmap_spmn_k1)
 
-####Spearman Heatmap k=2####
-heatmap_spmn_k2 <- Heatmap(cor_matrix_spmn_k2,
-                           name = "Spearman",
-                           top_annotation = top_annotation,
-                           show_row_names = TRUE,
-                           show_column_names = TRUE,
-                           cluster_rows = TRUE,
-                           cluster_columns = TRUE,
-                           border = TRUE, 
-                           column_title = "Normalized Counts k=2")
-
-# Draw the heatmap k=2
-draw(heatmap_spmn_k2)
-
-####Spearman Heatmap k=3####
-heatmap_spmn_k3 <- Heatmap(cor_matrix_spmn_k3,
-                           name = "Spearman",
-                           top_annotation = top_annotation,
-                           show_row_names = TRUE,
-                           show_column_names = TRUE,
-                           cluster_rows = TRUE,
-                           cluster_columns = TRUE,
-                           border = TRUE, 
-                           column_title = "Normalized Counts k=3")
-
-# Draw the heatmap k=3
-draw(heatmap_spmn_k3)
+# ####Spearman Heatmap k=2####
+# heatmap_spmn_k2 <- Heatmap(cor_matrix_spmn_k2,
+#                            name = "Spearman",
+#                            top_annotation = top_annotation,
+#                            show_row_names = TRUE,
+#                            show_column_names = TRUE,
+#                            cluster_rows = TRUE,
+#                            cluster_columns = TRUE,
+#                            border = TRUE, 
+#                            column_title = "Normalized Counts k=2")
+# 
+# # Draw the heatmap k=2
+# draw(heatmap_spmn_k2)
+# 
+# ####Spearman Heatmap k=3####
+# heatmap_spmn_k3 <- Heatmap(cor_matrix_spmn_k3,
+#                            name = "Spearman",
+#                            top_annotation = top_annotation,
+#                            show_row_names = TRUE,
+#                            show_column_names = TRUE,
+#                            cluster_rows = TRUE,
+#                            cluster_columns = TRUE,
+#                            border = TRUE, 
+#                            column_title = "Normalized Counts k=3")
+# 
+# # Draw the heatmap k=3
+# draw(heatmap_spmn_k3)
 
 
 ####Spearman Heatmap k=0 log2cpm####
@@ -1980,34 +1985,108 @@ heatmap_spmn_k1_cpm <- Heatmap(cor_matrix_spmn_k1_cpm,
 # Draw the heatmap k=1 log2cpm
 draw(heatmap_spmn_k1_cpm)
 
-####Spearman Heatmap k=2 log2cpm####
-heatmap_spmn_k2_cpm <- Heatmap(cor_matrix_spmn_k2_cpm,
-                           name = "Spearman",
-                           top_annotation = top_annotation,
-                           show_row_names = TRUE,
-                           show_column_names = TRUE,
-                           cluster_rows = TRUE,
-                           cluster_columns = TRUE,
-                           border = TRUE, 
-                           column_title = "log2cpm of Normalized Counts k=2")
+# ####Spearman Heatmap k=2 log2cpm####
+# heatmap_spmn_k2_cpm <- Heatmap(cor_matrix_spmn_k2_cpm,
+#                            name = "Spearman",
+#                            top_annotation = top_annotation,
+#                            show_row_names = TRUE,
+#                            show_column_names = TRUE,
+#                            cluster_rows = TRUE,
+#                            cluster_columns = TRUE,
+#                            border = TRUE, 
+#                            column_title = "log2cpm of Normalized Counts k=2")
+# 
+# # Draw the heatmap k=2 log2cpm
+# draw(heatmap_spmn_k2_cpm)
+# 
+# ####Spearman Heatmap k=3 log2cpm####
+# heatmap_spmn_k3_cpm <- Heatmap(cor_matrix_spmn_k3_cpm,
+#                            name = "Spearman",
+#                            top_annotation = top_annotation,
+#                            show_row_names = TRUE,
+#                            show_column_names = TRUE,
+#                            cluster_rows = TRUE,
+#                            cluster_columns = TRUE,
+#                            border = TRUE, 
+#                            column_title = "log2cpm of Normalized Counts k=3")
+# 
+# # Draw the heatmap k=3 log2cpm
+# draw(heatmap_spmn_k3_cpm)
 
-# Draw the heatmap k=2 log2cpm
-draw(heatmap_spmn_k2_cpm)
+#now that I know I'll be using the k=1 RUVs Spearman cor, find the median for all comparisons and also do a sign test to see significance
+# Remove diagonal (self-correlations) and get lower triangle only
+spearman_vals <- cor_matrix_spmn_k1_cpm[lower.tri(cor_matrix_spmn_k1_cpm, diag = FALSE)]
 
-####Spearman Heatmap k=3 log2cpm####
-heatmap_spmn_k3_cpm <- Heatmap(cor_matrix_spmn_k3_cpm,
-                           name = "Spearman",
-                           top_annotation = top_annotation,
-                           show_row_names = TRUE,
-                           show_column_names = TRUE,
-                           cluster_rows = TRUE,
-                           cluster_columns = TRUE,
-                           border = TRUE, 
-                           column_title = "log2cpm of Normalized Counts k=3")
+# Median of Spearman correlation coefficients
+median_spearman <- median(spearman_vals, na.rm = TRUE)
 
-# Draw the heatmap k=3 log2cpm
-draw(heatmap_spmn_k3_cpm)
+# Sign test: number of positive vs negative correlations
+# H0: median = 0, HA: median > 0 (one-sided test)
 
+# Count number of positive and negative values
+n_pos <- sum(spearman_vals > 0, na.rm = TRUE)
+n_neg <- sum(spearman_vals < 0, na.rm = TRUE)
+n_total <- n_pos + n_neg
+
+# Perform a binomial test (sign test)
+sign_test <- binom.test(x = n_pos, n = n_total, p = 0.5, alternative = "greater")
+
+# Output results
+cat("Median Spearman correlation:", median_spearman, "\n")
+cat("Sign test p-value (greater than 0):", sign_test$p.value, "\n")
+
+#Median Spearman correlation: 0.9547968 
+#Sign test p-value (greater than 0): 6.503898e-260 
+
+#now I want to test correlations by timepoint with DOX vs DMSO
+#list your timepoints
+cor_time_sp <- c("24T", "24R", "144R")
+
+for (tp in cor_time_sp) {
+  
+  # Match DOX and DMSO samples at this timepoint
+  dox_samples <- grep(paste0("^DOX_", tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
+  dmso_samples <- grep(paste0("^DMSO_", tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
+  
+  # Extract Spearman correlations between DOX and DMSO at this timepoint
+  cor_vals <- as.vector(cor_matrix_spmn_k1_cpm[dox_samples, dmso_samples])
+  
+  # Calculate median
+  median_cor <- median(cor_vals, na.rm = TRUE)
+  
+  # Sign test (are most correlations > 0?)
+  n_pos <- sum(cor_vals > 0, na.rm = TRUE)
+  n_neg <- sum(cor_vals < 0, na.rm = TRUE)
+  n_total <- n_pos + n_neg
+  
+  # Perform binomial test if valid
+  if (n_total > 0) {
+    sign_test <- binom.test(x = n_pos, n = n_total, p = 0.5, alternative = "greater")
+    p_val <- sign_test$p.value
+  } else {
+    p_val <- NA
+  }
+  
+  # Output
+  cat("====", tp, "====\n")
+  cat("Median Spearman correlation (DOX vs DMSO):", round(median_cor, 4), "\n")
+  cat("Sign test p-value:", p_val, "\n\n")
+}
+
+# output
+# ==== 24T ====
+# Median Spearman correlation (DOX vs DMSO): 0.8899 
+# Sign test p-value: 1.776357e-15 
+# 
+# ==== 24R ====
+# Median Spearman correlation (DOX vs DMSO): 0.9347 
+# Sign test p-value: 1.776357e-15 
+# 
+# ==== 144R ====
+# Median Spearman correlation (DOX vs DMSO): 0.9767 
+# Sign test p-value: 1.776357e-15 
+
+#this means that my DOX and DMSO are highly similar and significant according to P values
 
 ```
 #Perform Differential Expression Analysis with k = 1 RUVs Correction
@@ -2503,15 +2582,18 @@ for (gene in top5_D144R_geneslist_1) {
 #find the top 10 DEGs for the entire dataset with my combined toptables
 #Combine the toptables I have from pairwise analysis into a single dataframe
 d24_toptable_dxr_RUV <- Toptable_RUV_24T %>% 
-  rownames_to_column(var = "Entrez_ID") %>% 
+  dplyr::select(-("X")) %>% 
+  # rownames_to_column(var = "Entrez_ID") %>% 
   mutate(Time = "24")
 
 d24r_toptable_dxr_RUV <- Toptable_RUV_24R %>% 
-  rownames_to_column(var = "Entrez_ID") %>% 
+  dplyr::select(-("X")) %>% 
+  # rownames_to_column(var = "Entrez_ID") %>% 
   mutate(Time = "24R")
 
 d144r_toptable_dxr_RUV <- Toptable_RUV_144R %>% 
-  rownames_to_column(var = "Entrez_ID") %>% 
+  dplyr::select(-("X")) %>% 
+  # rownames_to_column(var = "Entrez_ID") %>% 
   mutate(Time = "144R")
 
 combined_toptables_dxr_RUV <- bind_rows(
@@ -2555,13 +2637,13 @@ length(D144R_DEGs_1)
 
 #plot those full gene sets in logFC
 D24T_DEGs_1 <- DOX_24T$Entrez_ID[DOX_24T$adj.P.Val < 0.05]
-length(D24T_DEGs)
+length(D24T_DEGs_1)
 
 D24R_DEGs_1 <- DOX_24R$Entrez_ID[DOX_24R$adj.P.Val < 0.05]
-length(D24R_DEGs)
+length(D24R_DEGs_1)
 
 D144R_DEGs_1 <- DOX_144R$Entrez_ID[DOX_144R$adj.P.Val < 0.05]
-length(D144R_DEGs)
+length(D144R_DEGs_1)
 #now that I have the full list of genes, I want to plot the logFC across conditions
 
 
@@ -2655,8 +2737,16 @@ filt_toptable_dxr_144r_RUV
 #format my data so that I have a matrix of my logFC values and genes
 
 logFC_wide_RUV <- combined_toptables_dxr_RUV %>%
-  select(Entrez_ID, Time, logFC) %>%
+  mutate(absFC = abs(logFC)) %>% 
+  dplyr::select(Entrez_ID, Time, logFC) %>%
   pivot_wider(names_from = Time, values_from = logFC) %>%
+  drop_na() %>% 
+  column_to_rownames("Entrez_ID")
+
+logFCabs_wide_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  dplyr::select(Entrez_ID, Time, absFC) %>% 
+  pivot_wider(names_from = Time, values_from = absFC) %>% 
   drop_na() %>% 
   column_to_rownames("Entrez_ID")
 
@@ -2665,8 +2755,15 @@ logFC_wide_RUV <- combined_toptables_dxr_RUV %>%
 #convert to matrix + remove gene column
 logFC_matrix_RUV <- as.matrix(logFC_wide_RUV)
 
+logFCabs_matrix_RUV <- as.matrix(logFCabs_wide_RUV)
+
 # Compute Spearman correlation between columns (timepoints)
 logFC_cor_RUV <- cor(logFC_matrix_RUV, 
+                     y = NULL,
+                     use = "everything",
+                     method = "spearman")
+
+logFCabs_cor_RUV <- cor(logFCabs_matrix_RUV, 
                      y = NULL,
                      use = "everything",
                      method = "spearman")
@@ -2689,7 +2786,8 @@ top_annotation_RUV_time <- HeatmapAnnotation(
   annotation_name_side = "left"
 )
 
-# Draw heatmap
+
+# Draw heatmap logFC
 Heatmap(logFC_cor_RUV,
         name = "Spearman",
         col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
@@ -2702,6 +2800,20 @@ Heatmap(logFC_cor_RUV,
         },
         column_title = "Spearman Correlation of logFC")
 
+#draw heatmap abs logFC
+Heatmap(logFCabs_cor_RUV,
+        name = "Spearman",
+        col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")),
+        top_annotation = top_annotation_RUV_time,
+        cluster_rows = FALSE,
+        cluster_columns = FALSE,
+        cell_fun = function(j, i, x, y, width, height, fill) {
+          grid.text(sprintf("%.2f", logFC_cor_RUV[i, j]), x, y, 
+                    gp = gpar(fontsize = 10))
+        },
+        column_title = "Spearman Correlation of |logFC|")
+
+
 ####Spearman Heatmap####
 heatmap_spearman_RUV_time <- Heatmap(logFC_cor_RUV,
                            name = "Spearman",
@@ -2712,9 +2824,71 @@ heatmap_spearman_RUV_time <- Heatmap(logFC_cor_RUV,
                            cluster_columns = FALSE,
                            border = TRUE)
 
+heatmap_spearman_RUV_time_abs <- Heatmap(logFCabs_cor_RUV,
+                           name = "Spearman",
+                           top_annotation = top_annotation_RUV_time,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = FALSE,
+                           border = TRUE)
+
+
 # Draw the heatmap
 draw(heatmap_spearman_RUV_time)
+draw(heatmap_spearman_RUV_time_abs)
 
+
+```
+
+#Scatterplot Spearman Cor Heatmap
+```{r logFC scatterplot}
+
+# Define the timepoints from your data
+timepoints <- c("24T", "24R", "144R")
+
+# Make all pairwise combinations
+pairs_df <- t(combn(timepoints, 2)) %>%
+  as.data.frame(stringsAsFactors = FALSE) %>%
+  setNames(c("time_x", "time_y"))
+
+
+# Function to prepare scatter data for each pair
+prepare_pair_data <- function(time_x, time_y, df) {
+  rho <- cor(df[[time_x]], df[[time_y]], method = "spearman")
+  df %>%
+    mutate(
+      x_val = .data[[time_x]],
+      y_val = .data[[time_y]],
+      comparison = paste0(time_x, " vs ", time_y),
+      rho_label = paste0("rho = ", round(rho, 2))
+    )
+}
+
+# Build combined plotting dataset
+scatter_df <- map2_df(pairs_df$time_x, pairs_df$time_y,
+                      ~prepare_pair_data(.x, .y, logFC_wide_RUV))
+
+# Plot
+ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black") +
+  facet_wrap(~comparison, scales = "free") +
+  geom_text(
+    data = scatter_df %>% distinct(comparison, rho_label),
+    aes(x = -Inf, y = Inf, label = rho_label),
+    inherit.aes = FALSE,
+    hjust = -0.1, vjust = 1.5,
+    size = 4
+  ) +
+  scale_color_manual(values = c("#238B45", "#74C476", "#C7E9C0")) +
+  labs(
+    x = "log2FC (Timepoint X)",
+    y = "log2FC (Timepoint Y)",
+    title = "Pairwise Scatterplots of log2FC with Spearman Correlation"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
 
 ```
 
@@ -5926,6 +6100,133 @@ Heatmap(logFC_mat_p53_RUV,
 
 ```
 
+Now, I want to convert the above heatmap to only have genes DE at 144R
+#p53 HM DE 144R
+```{r p53 target genes logFC heatmap 144R, fig.height=10, fig.width=6}
+
+# Load DEG files
+load_deg <- function(path) read.csv(path)
+
+DOX_24T_R <- load_deg("data/new/DEGs/Toptable_RUV_24T_final.csv")
+DOX_24R_R <- load_deg("data/new/DEGs/Toptable_RUV_24R_final.csv")
+DOX_144R_R <- load_deg("data/new/DEGs/Toptable_RUV_144R_final.csv")
+
+
+#P53 target Entrez_ID
+entrez_ids_p53 <- c(1026,50484,4193,9766,9518,7832,1643,1647,1263,57103,51065,8795,51499,64393,581,
+                5228,5429,8493,55959,7508,64782,282991,355,53836,4814,10769,9050,27244,9540,94241,
+                26154,57763,900,26999,55332,26263,23479,23612,29950,9618,10346,8824,134147,55294,
+                22824,4254,6560,467,27113,60492,8444,60401,1969,220965,2232,3976,55191,84284,93129,
+                5564,7803,83667,7779,132671,7039,51768,137695,93134,7633,10973,340485,307,27350,
+                23245,3732,29965,1363,1435,196513,8507,8061,2517,51278,53354,54858,23228,5366,5912,
+                6236,51222,26152,59,1907,50650,91012,780,9249,11072,144455,64787,116151,27165,2876,
+                57822,55733,57722,121457,375449,85377,4851,5875,127544,29901,84958,8797,8793,441631,
+                220001,54541,5889,5054,25816,25987,5111,98,317,598,604,10904,1294,80315,53944,
+                1606,2770,3628,3675,3985,4035,4163,84552,29085,55367,5371,5791,54884,5980,8794,
+                1462,50808,220,583,694,1056,9076,10978,54677,1612,55040,114907,2274,127707,4000,
+                8079,4646,4747,27445,5143,80055,79156,5360,5364,23654,5565,5613,5625,10076,56963,
+                6004,390,255488,6326,6330,23513,7869,283130,204962,83959,6548,6774,9263,10228,
+                22954,10475,85363,494514,10142,79714,1006,8446,9648,79828,5507,55240,63874,25841,
+                9289,84883,154810,51321,421,8553,655,119032,84280,10950,824,839,57828,857,8812,
+                8837,94027,113189,22837,132864,10898,3300,81704,1847,1849,1947,9538,24139,5168,
+                147965,115548,9873,23768,2632,2817,3280,3265,23308,3490,51477,182,3856,8844,144811,
+                9404,4043,9848,2872,23041,740,343263,4638,26509,4792,22861,57523,55214,80025,164091,
+                57060,64065,51090,5453,8496,333926,55671,5900,55544,23179,8601,389,6223,55800,6385,
+                4088,6643,122809,257397,285343,7011,54790,374618,55362,51754,7157,9537,22906,7205,
+                80705,219699,55245,83719,7748,25946,118738)
+
+# saveRDS(entrez_ids_p53, "data/new/RUV/p53_targetgenes_entrezid.RDS")
+
+# Function to extract relevant data
+extract_data_p53_RUV <- function(df, name) {
+  df %>%
+    filter(Entrez_ID %in% entrez_ids_p53) %>%
+    mutate(Gene = mapIds(org.Hs.eg.db, 
+                         as.character(Entrez_ID),
+                         column = "SYMBOL", 
+                         keytype = "ENTREZID", 
+                         multiVals = "first"),
+           Condition = name,
+           Signif = ifelse(adj.P.Val < 0.05, "*", ""))
+}
+
+
+# Collect all data
+# DEG list
+deg_list_RUV <- list("DOX_24T" = DOX_24T_R, 
+                 "DOX_24R" = DOX_24R_R, 
+                 "DOX_144R" = DOX_144R_R
+)
+
+# Combine all DEGs and annotate
+all_data_p53_RUV <- bind_rows(mapply(extract_data_p53_RUV, deg_list_RUV, names(deg_list_RUV), SIMPLIFY = FALSE)) 
+
+#make a list of these genes for later analysis
+# saveRDS(all_data_p53_RUV, "data/new/RUV/p53_targetgenes_RUV.RDS")
+
+# p53_genes <- all_data_p53_RUV %>% 
+#   dplyr::select("SYMBOL", "Entrez_ID")
+
+# saveRDS(p53_genes, "data/new/RUV/p53_genes_symbolentrez.RDS")
+
+#now make a filtering step to only include DEGs at 144R
+sig_genes_144R <- all_data_p53_RUV %>% 
+  dplyr::filter(Condition == "DOX_144R", adj.P.Val < 0.05) %>% 
+  pull(Gene) %>% 
+  unique()
+
+filt_p53_data_144R <- all_data_p53_RUV %>% 
+  dplyr::filter(Gene %in% sig_genes_144R) %>% 
+  dplyr::select(-("X"))
+
+# Create matrices
+logFC_mat53_RUV <- acast(filt_p53_data_144R, Gene ~ Condition, value.var = "logFC")
+signif_mat53_RUV <- acast(filt_p53_data_144R, Gene ~ Condition, value.var = "Signif")
+
+# Desired column order
+desired_order <- c("DOX_24T",
+                   "DOX_24R",
+                   "DOX_144R")
+
+logFC_mat_p53_RUV <- logFC_mat53_RUV[, desired_order]
+signif_mat_p53_RUV <- signif_mat53_RUV[, desired_order]
+
+# Column annotation
+meta_p53_RUV <- str_split_fixed(colnames(logFC_mat_p53_RUV), "_", 3)
+meta_p53_RUV <- str_split_fixed(colnames(logFC_mat_p53_RUV), "_", 2)
+col_annot_p53_RUV <- HeatmapAnnotation(
+  Drug = meta_p53_RUV[, 1],
+  Time = meta_p53_RUV[, 2],
+  col = list(
+    Drug = c("DOX" = "#499FBD"),
+    Time = c("24T" = "#238B45", 
+             "24R" = "#74C476", 
+             "144R" = "#C7E9C0")
+  ),
+  annotation_height = unit(c(1, 1, 1), "cm")
+)
+
+# Draw heatmap
+Heatmap(logFC_mat_p53_RUV,
+        name = "logFC",
+        top_annotation = col_annot,
+        cluster_columns = FALSE,
+        cluster_rows = TRUE,
+        show_row_names = TRUE,
+        show_column_names = FALSE,
+        layer_fun = function(j, i, x, y, width, height, fill) {
+          grid.text(signif_mat_p53_RUV[cbind(i, j)], x, y, gp = gpar(fontsize = 9))
+        },
+        column_title = "P53 Target Genes Expression\nDOX Recovery (RUVs Corrected)",
+        column_title_gp = gpar(fontsize = 14, fontface = "bold")
+)
+
+
+
+
+```
+
+
 ##p53 logFC boxplots
 ```{r logFC Boxplots p53 RUVs}
 
@@ -6065,272 +6366,22 @@ ggplot(filtered_toptables_RUV_p53, aes(x = Timepoint, y = abs_logFC, fill = Time
     axis.text.x = element_text(size = 8, color = "black", angle = 0)
   )
 ```
-###logFC boxplots with all timepoint comparisons wilcoxon
-```{r logFC p53 boxplots all comparisons, fig.height = 10, fig.width = 8}
-# #try this where each of my timepoints are compared like the wilcoxon test - plot all of these and see which are significant
-# 
-# Comparisons <- tribble(
-#   ~group1, ~group2,
-#   "24T",   "24R",
-#   "24T",   "144R",
-#   "24R",   "144R"
-# )
-# 
-# # Expand your filtered_toptables_RUV_p53 to include comparisons
-# filtered_toptables_RUV_p53_comp <- filtered_toptables_RUV_p53 %>%
-#   # Create a cross join with the comparisons
-#   crossing(Comparisons) %>%
-#   # Keep only the rows where the gene's timepoint matches one of the groups in the comparison
-#   filter(Timepoint %in% c(group1, group2)) %>%
-#   mutate(
-#     Conditions = factor(paste(group1, "vs", group2),
-#                         levels = c("24T vs 24R", "24T vs 144R", "24R vs 144R"))
-#   )
-# 
-# 
-# # filtered_toptables_RUV_p53_comp <- filtered_toptables_RUV_p53_comp %>%
-# #   mutate(
-# #     Drug = factor(Drug, levels = c("DOX")),
-# #     Timepoint_raw = Timepoint,  #save unmod version(24T, 24R, 144R)
-# #     Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"), 
-# #                        labels = c("24T", "24R", "144R")),
-# #     Conditions = factor(paste(group1, "vs", group2),
-# #                         levels = c("24T vs 24R", "24T vs 144R", "24R vs 144R"))
-# #   )
-# 
-# wilcox_results_p53 <- filtered_toptables_RUV_p53_comp %>%
-#   wilcox_test(abs_logFC ~ Timepoint) %>%
-#   adjust_pvalue(method = "bonferroni") %>%
-#   mutate(significance = ifelse(p < 0.05, "*", "")) %>% 
-#   mutate(Comparisons = paste(group1, "vs", group2, sep = " "))
-# 
-# #make a little thing of your timepoint comparisons
-# pairs_p53 <- wilcox_results_p53 %>% 
-#   dplyr::select(group1, group2) %>% 
-#   distinct()
-# 
-# max_per_timepoint_p53 <- filtered_toptables_RUV_p53_comp %>% 
-#   group_by(Timepoint) %>% 
-#   summarise(max_logFC = max(abs_logFC, na.rm = TRUE), .groups = "drop")
-#   
-# #Join max values for group1
-# star_positions_p53 <- pairs_p53 %>%
-#   left_join(max_per_timepoint_p53, by = c("group1" = "Timepoint"))
-# names(star_positions_p53)[names(star_positions_p53) == "max_logFC"] <- "max1"
-# 
-# #Join max values for group2, with suffixes to avoid name conflict
-# star_positions_p53 <- star_positions_p53 %>%
-#   left_join(max_per_timepoint_p53, by = c("group2" = "Timepoint"), suffix = c(".group1", ".group2"))
-# names(star_positions_p53)[names(star_positions_p53) == "max_logFC"] <- "max2"
-# 
-# star_positions_p53 <- star_positions_p53 %>% 
-#   mutate(y_pos = pmax(max1, max2, na.rm = TRUE) + 0.2)
-# 
-# #now star positions has the same group1 and group2 as wilcoxon
-# 
-# wilcox_results_plot_p53 <- wilcox_results_p53 %>%
-#   left_join(star_positions_p53, by = c("group1", "group2")) %>%
-#   mutate(x_position = 1.5)  
-# 
-# wilcox_results_plot_p53 <- wilcox_results_plot_p53 %>% 
-#   mutate(group1 = gsub("Timepoint: ", "", group1),
-#          group2 = gsub("Timepoint: ", "", group2))
-# 
-# wilcox_results_plot_p53 <- wilcox_results_plot_p53 %>%
-#   mutate(
-#     group1_raw = str_remove(group1, "^Timepoint: "),
-#     group2_raw = str_remove(group2, "^Timepoint: ")
-#   )
-# 
-# wilcox_results_plot_p53 <- wilcox_results_plot_p53 %>%
-#   mutate(x_position = case_when(
-#     group1 == "24T" & group2 == "24R" ~ 1.5,
-#     group1 == "24T" & group2 == "144R" ~ 2,
-#     group1 == "24R" & group2 == "144R" ~ 2.5
-#   ))
-# 
-# ####logFC####
-# ggplot(filtered_toptables_RUV_p53_comp, aes(x = Timepoint, y = logFC, fill = Timepoint)) +
-#   geom_boxplot() +
-#   scale_fill_manual(values = c(
-#     "24T" = "#238B45",
-#     "24R" = "#74C476",
-#     "144R" = "#C7E9C0")) +  
-#   facet_wrap(~Conditions) +  
-#   geom_text(
-#     data = wilcox_results_plot_p53, 
-#     aes(x = x_position, y = y_pos, label = significance), 
-#     size = 6, fontface = "bold", color = "black", inherit.aes = FALSE
-#   ) +
-#   theme_bw() +
-#   xlab("") +
-#   ylab("Log Fold Change") +  
-#   ggtitle("Log Fold Change for p53 Target Genes") +
-#   theme(
-#     plot.title = element_text(size = rel(1.5), hjust = 0.5),
-#     axis.title = element_text(size = 15, color = "black"),
-#     axis.line = element_line(linewidth = 1.5),
-#     strip.background = element_rect(fill = "gray"),  
-#     strip.text = element_text(size = 12, color = "black", face = "bold"),  
-#     axis.text.x = element_text(size = 8, color = "black", angle = 0)
-#   )
-# 
-# ####abs logFC####
-# ggplot(filtered_toptables_RUV_p53_comp, aes(x = Conditions, y = abs_logFC, fill = Timepoint)) +
-#   geom_boxplot() +
-#   scale_fill_manual(values = c(
-#     "24T" = "#238B45",
-#     "24R" = "#74C476",
-#     "144R" = "#C7E9C0")) +  
-#   facet_grid(~Conditions) +  
-#   geom_text(
-#     data = wilcox_results_plot_p53, 
-#     aes(x = x_position, y = y_pos, label = significance), 
-#     size = 6, fontface = "bold", color = "black", inherit.aes = FALSE
-#   ) +
-#   theme_bw() +
-#   xlab("") +
-#   ylab("|Log Fold Change|") +  
-#   ggtitle("|Log Fold Change| for p53 Target Genes") +
-#   theme(
-#     plot.title = element_text(size = rel(1.5), hjust = 0.5),
-#     axis.title = element_text(size = 15, color = "black"),
-#     axis.line = element_line(linewidth = 1.5),
-#     strip.background = element_rect(fill = "gray"),  
-#     strip.text = element_text(size = 12, color = "black", face = "bold"),  
-#     axis.text.x = element_text(size = 8, color = "black", angle = 0)
-#   )
-```
-```{r test (come back to me later), include = FALSE}
-# Comparisons <- tribble(
-#   ~group1, ~group2,
-#   "24T",   "24R",
-#   "24T",   "144R",
-#   "24R",   "144R"
-# )
-# 
-# wilcox_results_p53 <- filtered_toptables_RUV_p53_comp %>%
-#   wilcox_test(abs_logFC ~ Timepoint) %>%
-#   adjust_pvalue(method = "bonferroni") %>%
-#   mutate(significance = ifelse(p < 0.05, "*", "")) %>%
-#   mutate(Comparisons = paste(group1, "vs", group2, sep = " "))
-# 
-# #make a little thing of your timepoint comparisons
-# pairs_p53 <- wilcox_results_p53 %>% 
-#   dplyr::select(group1, group2) %>% 
-#   distinct()
-# 
-# max_per_timepoint_p53 <- filtered_toptables_RUV_p53_comp %>% 
-#   group_by(Timepoint) %>% 
-#   summarise(max_logFC = max(abs_logFC, na.rm = TRUE), .groups = "drop")
-#   
-# #Join max values for group1
-# star_positions_p53 <- pairs_p53 %>%
-#   left_join(max_per_timepoint_p53, by = c("group1" = "Timepoint"))
-# names(star_positions_p53)[names(star_positions_p53) == "max_logFC"] <- "max1"
-# 
-# #Join max values for group2, with suffixes to avoid name conflict
-# star_positions_p53 <- star_positions_p53 %>%
-#   left_join(max_per_timepoint_p53, by = c("group2" = "Timepoint"), suffix = c(".group1", ".group2"))
-# names(star_positions_p53)[names(star_positions_p53) == "max_logFC"] <- "max2"
-# 
-# star_positions_p53 <- star_positions_p53 %>% 
-#   mutate(y_pos = pmax(max1, max2, na.rm = TRUE) + 0.2)
-# 
-# #now star positions has the same group1 and group2 as wilcoxon
-# 
-# wilcox_results_plot_p53 <- wilcox_results_p53 %>%
-#   left_join(star_positions_p53, by = c("group1", "group2")) %>%
-#   mutate(x_position = 1.5)  
-# 
-# wilcox_results_plot_p53 <- wilcox_results_plot_p53 %>%
-#   mutate(x_position = case_when(
-#     group1 == "24T" & group2 == "24R" ~ 1.5,
-#     group1 == "24T" & group2 == "144R" ~ 2,
-#     group1 == "24R" & group2 == "144R" ~ 2.5
-#   ))
-# 
-# # wilcox_results_plot_p53 <- wilcox_results_plot_p53 %>% 
-# #   mutate(Comparisons = factor(paste(group1, "vs", group2),
-# #                          levels = c("24T vs 24R", 
-# #                                     "24T vs 144R", 
-# #                                     "24R vs 144R"))
-# #   )
-# 
-# wilcox_results_plot_p53 <- wilcox_results_plot_p53 %>%
-#   mutate(
-#     # create ordered pairs so the smaller/lower factor is always first
-#     group_ordered = map2_chr(group1, group2, ~ paste(sort(c(.x, .y)), collapse = " vs ")),
-#     Comparisons = factor(group_ordered, levels = c("24T vs 24R", "24T vs 144R", "24R vs 144R"))
-#   )
-# 
-# # LogFC plot
-# ggplot(filtered_toptables_RUV_p53_comp, aes(x = Timepoint, y = logFC, fill = Timepoint)) +
-#   geom_boxplot() +
-#   scale_fill_manual(values = c(
-#     "24T" = "#238B45",
-#     "24R" = "#74C476",
-#     "144R" = "#C7E9C0")) +  
-#   facet_wrap(~Conditions) +  
-#   geom_text(
-#     data = wilcox_results_plot_p53, 
-#     aes(x = x_position, y = y_pos, label = p.adj.signif),
-#     size = 6, fontface = "bold", color = "black", inherit.aes = FALSE
-#   ) +
-#   theme_bw() +
-#   xlab("") +
-#   ylab("Log Fold Change") +  
-#   ggtitle("Log Fold Change for p53 Target Genes") +
-#   theme(
-#     plot.title = element_text(size = rel(1.5), hjust = 0.5),
-#     axis.title = element_text(size = 15, color = "black"),
-#     axis.line = element_line(linewidth = 1.5),
-#     strip.background = element_rect(fill = "gray"),  
-#     strip.text = element_text(size = 12, color = "black", face = "bold"),  
-#     axis.text.x = element_text(size = 8, color = "black")
-#   )
-# 
-# # Absolute logFC plot
-# ggplot(filtered_toptables_RUV_p53_comp, aes(x = Timepoint, y = abs_logFC, fill = Timepoint)) +
-#   geom_boxplot() +
-#   scale_fill_manual(values = c(
-#     "24T" = "#238B45",
-#     "24R" = "#74C476",
-#     "144R" = "#C7E9C0")) +  
-#   facet_wrap(~Conditions) +  
-#   geom_text(
-#     data = wilcox_results_plot_p53, 
-#     aes(x = x_position, y = y_pos, label = significance),
-#     size = 6, fontface = "bold", color = "black", inherit.aes = FALSE
-#   ) +
-#   theme_bw() +
-#   xlab("") +
-#   ylab("|Log Fold Change|") +  
-#   ggtitle("|Log Fold Change| for p53 Target Genes") +
-#   theme(
-#     plot.title = element_text(size = rel(1.5), hjust = 0.5),
-#     axis.title = element_text(size = 15, color = "black"),
-#     axis.line = element_line(linewidth = 1.5),
-#     strip.background = element_rect(fill = "gray"),  
-#     strip.text = element_text(size = 12, color = "black", face = "bold"),  
-#     axis.text.x = element_text(size = 8, color = "black")
-#   )
-```
 
 
-I am going to now identify the proportion of DDR genes within my timepoints and compare against non-DEGs for all timepoints
+I am now going to identify the proportion of DDR genes within my timepoints and compare against non-DEGs for all timepoints
 #Proportion Barplots of Gene Sets
 ```{r Proportion Barplot DDR RUVs DEGs vs nonDEGs}
 
 #read in my DDR gene set
 DNA_damage <- readRDS("data/new/RUV/DDR_Genes_list_RUV.RDS")
+DNA_damage <- as.list(DNA_damage)
 
 #pull out only the unique values that are not NA (there aren't any anyways)
-ddr_set <- unique(na.omit(DNA_damage$Entrez_ID))
-#pull out the gene symbols
-gene_symbols_DDR_R <- names(DNA_damage)
+ddr_set <- unique(na.omit(names(DNA_damage)))
 #pull out the entrez ids
-entrezids_DDR_R <- unname(DNA_damage)
+entrezids_DDR_R <- names(DNA_damage)
+#pull out the symbols
+gene_symbols_DDR_R <- unname(DNA_damage)
 #calculate the total length of my gene set for proportion analysis
 total_ddr_genes <- length(ddr_set)
 cat("Total DNA damage genes:", total_ddr_genes, "\n")
@@ -6378,6 +6429,11 @@ fisher_results_ddr <- purrr::map_dfr(names(timepoint_DEGs_RUV), function(tp_ddr)
   test_ddr <- fisher.test(contingency_deg_ddr)
   #print these results
   print(test_ddr)
+  
+# Print odds ratio and p-value
+  cat("Timepoint:", tp_ddr,
+      "\n  Odds Ratio:", round(test_ddr$estimate, 3),
+      "\n  P-value:", signif(test_ddr$p.value, 4), "\n")
 
   tibble(
     Timepoint = tp_ddr,
@@ -6393,8 +6449,8 @@ fisher_results_ddr <- purrr::map_dfr(names(timepoint_DEGs_RUV), function(tp_ddr)
 })
 
 #configure my results for plotting
-motif_long_degs_ddr <- fisher_results_ddr %>%
-  select(Timepoint, In_DEG_DDR, In_DEG_NonDDR, P_Value, Significant) %>%
+time_long_degs_ddr <- fisher_results_ddr %>%
+  dplyr::select(Timepoint, In_DEG_DDR, In_DEG_NonDDR, P_Value, Significant) %>%
   pivot_longer(cols = c(In_DEG_DDR, In_DEG_NonDDR),
                names_to = "Category", values_to = "Count") %>%
   mutate(
@@ -6403,16 +6459,16 @@ motif_long_degs_ddr <- fisher_results_ddr %>%
   )
 
 #set category order (Yes on top)
-motif_long_degs_ddr$Category <- 
-  factor(motif_long_degs_ddr$Category, levels = c("Yes", "No"))
+time_long_degs_ddr$Category <- 
+  factor(time_long_degs_ddr$Category, levels = c("Yes", "No"))
 
 #label positions for significance stars
-label_positions_degs_ddr <- motif_long_degs_ddr %>%
+label_positions_degs_ddr <- time_long_degs_ddr %>%
   filter(Category == "Yes") %>%
   mutate(y_pos = Fraction + 1.01)
 
 #plot results in a barplot
-ggplot(motif_long_degs_ddr, aes(x = Timepoint, y = Fraction, fill = Category)) +
+ggplot(time_long_degs_ddr, aes(x = Timepoint, y = Fraction, fill = Category)) +
   geom_bar(stat = "identity", position = "stack") +
   geom_text(
     data = label_positions_degs_ddr %>% filter(Significant != ""),
@@ -6441,89 +6497,490 @@ print(fisher_results_ddr)
 
 
 
-###########################################
-#DDR genes inside each timepoint
-in_24T_DDR <- sum(DEGs_24T_R %in% ddr_set)
-in_24R_DDR <- sum(DEGs_24R_R %in% ddr_set)
-in_144R_DDR <- sum(DEGs_144R_R %in% ddr_set)
+# ###########################################
+# #DDR genes inside each timepoint
+# in_24T_DDR <- sum(DEGs_24T_R %in% ddr_set)
+# in_24R_DDR <- sum(DEGs_24R_R %in% ddr_set)
+# in_144R_DDR <- sum(DEGs_144R_R %in% ddr_set)
+# 
+# #non-DDR genes inside each motif
+# in_24T_nonDDR <- length(DEGs_24T_R) - in_24T_DDR
+# in_24R_nonDDR <- length(DEGs_24R_R) - in_24R_DDR
+# in_144R_nonDDR <- length(DEGs_144R_R) - in_144R_DDR
+# 
+# #make contingency tables for fishers exact tests
+# contingency_degs_ddr <- matrix(c(
+#   in_24T_DDR, in_24T_nonDDR,
+#   in_24R_DDR, in_24R_nonDDR,
+#   in_144R_DDR, in_144R_nonDDR),
+#   nrow = 3, byrow = TRUE
+# )
+# 
+# #print the contingency tables
+# print(contingency_degs_ddr)
+# 
+# #perform a fisher's exact test (small sample size)
+# fisher_test_degs_ddr <- fisher.test(contingency_degs_ddr)
+# #print fisher's exact test results
+# print(fisher_test_degs_ddr)
+# 
+# #make a summary table of all of these data to plot
+# degs_summary_DDR <- tibble(
+#   Motif = c("Motif1", "Motif2"),
+#   DDR = c(in_motif1_DDR, in_motif2_DDR),
+#   non_DDR = c(in_motif1_nonDDR, in_motif2_nonDDR)
+# ) %>%
+#   pivot_longer(cols = c(DDR, non_DDR), names_to = "Category", values_to = "Count") %>%
+#   mutate(
+#     Category = ifelse(Category == "DDR", "Yes", "No"),
+#     Fraction = Count / ave(Count, Motif, FUN = sum),
+#     Significant = ifelse(Category == "Yes" & fisher_test_motifs_DDR$p.value < 0.05, "*", "")
+#   )
+# 
+# #position significance stars just above bars
+# label_positions_DDR <- motif_summary_DDR %>%
+#   filter(Category == "Yes") %>%
+#   mutate(y_pos = Fraction + 1.01)
+# 
+# #change the ordering so that yes is on the top
+# motif_summary_DDR$Category <- factor(motif_summary_DDR$Category, levels = c("Yes", "No"))
+# 
+# #plot the proportions in a barplot
+# ggplot(motif_summary_DDR, aes(x = Motif, y = Fraction, fill = Category)) +
+#   geom_bar(stat = "identity", position = "stack") +
+#   geom_text(
+#     data = label_positions_DDR %>% filter(Significant != ""),
+#     aes(x = Motif, y = y_pos, label = Significant),
+#     size = 6,
+#     color = "black",
+#     fontface = "bold"
+#   ) +
+#   scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1.08)) +
+#   scale_fill_manual(values = c("Yes" = "#e41a1c", "No" = "#377eb8")) +
+#   labs(
+#     title = "Proportion of DDR Genes in Motif 1 vs Motif 2 (RUVs clust + p.post)",
+#     x = "Cormotif Motif",
+#     y = "Percentage",
+#     fill = "DDR Gene"
+#   ) +
+#   theme_minimal() +
+#   theme(
+#     axis.title = element_text(size = 14),
+#     axis.text = element_text(size = 12),
+#     plot.title = element_text(size = 16, hjust = 0.5)
+#   )
+# 
+# 
+# #print the proportions and p values
+# prop_motif1_DDR <- in_motif1_DDR / length(final_genes_1_RUV)
+# prop_motif2_DDR <- in_motif2_DDR / length(final_genes_2_RUV)
+# p_val_DDR <- fisher_test_motifs_DDR$p.value
+# 
+# cat(sprintf("Motif1: %.2f%% DDR genes (%d/%d)\n", 100*prop_motif1_DDR, in_motif1_DDR, length(final_genes_1_RUV)))
+# cat(sprintf("Motif2: %.2f%% DDR genes (%d/%d)\n", 100*prop_motif2_DDR, in_motif2_DDR, length(final_genes_2_RUV)))
+# cat(sprintf("DDR Fisher's Exact Test p-value: %.5f\n", p_val_DDR))
+# cat(sprintf("Odds ratio: %.3f\n", fisher_test_motifs_DDR$estimate))
 
-#non-DDR genes inside each motif
-in_24T_nonDDR <- length(DEGs_24T_R) - in_24T_DDR
-in_24R_nonDDR <- length(DEGs_24R_R) - in_24R_DDR
-in_144R_nonDDR <- length(DEGs_144R_R) - in_144R_DDR
+```
 
-#make contingency tables for fishers exact tests
-contingency_degs_ddr <- matrix(c(
-  in_24T_DDR, in_24T_nonDDR,
-  in_24R_DDR, in_24R_nonDDR,
-  in_144R_DDR, in_144R_nonDDR),
-  nrow = 3, byrow = TRUE
+#Forest Plot DDR
+```{r Forest plot of odds ratios DDR}
+
+# Calculate proportions, odds ratios, and Fisher's test results per timepoint
+proportion_data_ddr <- purrr::map_dfr(names(timepoint_DEGs_ddr), function(tp_ddr) {
+  degs_ddr <- unique(timepoint_DEGs_ddr[[tp_ddr]])
+  nondegs_ddr <- setdiff(all_genes, degs_ddr)
+  
+  in_deg_ddr <- sum(degs_ddr %in% ddr_set)
+  in_deg_nonddr <- length(degs_ddr) - in_deg_ddr
+  
+  in_nondeg_ddr <- sum(nondegs_ddr %in% ddr_set)
+  in_nondeg_nonddr <- length(nondegs_ddr) - in_nondeg_ddr
+  
+  contingency_degs_ddr <- matrix(c(in_deg_ddr, in_deg_nonddr,
+                                   in_nondeg_ddr, in_nondeg_nonddr),
+                                 nrow = 2, byrow = TRUE)
+  
+  fisher_res_ddr <- fisher.test(contingency_degs_ddr)
+  
+  p_val_ddr <- fisher_res_ddr$p.value
+  odds_ratio_ddr <- unname(fisher_res_ddr$estimate)
+  ci_low_ddr <- fisher_res_ddr$conf.int[1]
+  ci_high_ddr <- fisher_res_ddr$conf.int[2]
+  
+  tibble(
+    Timepoint = tp_ddr,
+    Odds_Ratio = odds_ratio_ddr,
+    CI_low = ci_low_ddr,
+    CI_high = ci_high_ddr,
+    P_Value = p_val_ddr,
+    Significant = p_val_ddr < 0.05
+  )
+})
+
+# Format Timepoint factor and add significance label/color
+proportion_data_ddr <- proportion_data_ddr %>%
+  mutate(
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+    Sig_Label = ifelse(Significant, "Significant", "Not Significant")
+  )
+
+# Plot horizontal forest plot with color by significance
+ggplot(proportion_data_ddr, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = c("Significant" = "#e41a1c", "Not Significant" = "gray40")) +
+  labs(
+    title = "Odds Ratios of DDR Gene Enrichment in DEGs vs nonDEGs by Timepoint",
+    y = "Timepoint",
+    x = "Odds Ratio (95% CI)",
+    color = "Significance"
+  ) +
+  scale_y_discrete(limits = rev(levels(proportion_data_ddr$Timepoint)))
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
+
+
+```
+
+
+```{r Forest plot backwards DDR}
+
+library(forcats)
+
+# =====================
+# Load DDR gene set
+# =====================
+DNA_damage <- readRDS("data/new/RUV/DDR_Genes_list_RUV.RDS")
+entrezids_DDR_R <- unlist(names(DNA_damage))
+gene_symbols_DDR_R <- unname(DNA_damage)
+total_ddr_genes <- length(entrezids_DDR_R)
+cat("Total DDR genes:", total_ddr_genes, "\n")
+
+# =====================
+# Load DEGs for each timepoint
+# =====================
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
+DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
+
+timepoint_DEGs_RUV <- list(
+  "24T" = DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05],
+  "24R" = DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05],
+  "144R" = DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
 )
 
-#print the contingency tables
-print(contingency_degs_ddr)
-
-#perform a fisher's exact test (small sample size)
-fisher_test_degs_ddr <- fisher.test(contingency_degs_ddr)
-#print fisher's exact test results
-print(fisher_test_motifs_DDR)
-
-#make a summary table of all of these data to plot
-motif_summary_DDR <- tibble(
-  Motif = c("Motif1", "Motif2"),
-  DDR = c(in_motif1_DDR, in_motif2_DDR),
-  non_DDR = c(in_motif1_nonDDR, in_motif2_nonDDR)
-) %>%
-  pivot_longer(cols = c(DDR, non_DDR), names_to = "Category", values_to = "Count") %>%
-  mutate(
-    Category = ifelse(Category == "DDR", "Yes", "No"),
-    Fraction = Count / ave(Count, Motif, FUN = sum),
-    Significant = ifelse(Category == "Yes" & fisher_test_motifs_DDR$p.value < 0.05, "*", "")
+# =====================
+# Build DDR dataframe
+# =====================
+DDR_df <- map_dfr(names(timepoint_DEGs_RUV), function(tp) {
+  degs <- timepoint_DEGs_RUV[[tp]]
+  data.frame(
+    Entrez_ID = entrezids_DDR_R,
+    DEG_status = ifelse(entrezids_DDR_R %in% degs, "DEG", "non-DEG"),
+    timepoint = tp
   )
+}) %>% mutate(timepoint = factor(timepoint, levels = c("24T", "24R", "144R")))
 
-#position significance stars just above bars
-label_positions_DDR <- motif_summary_DDR %>%
-  filter(Category == "Yes") %>%
-  mutate(y_pos = Fraction + 1.01)
+# Count and compute proportions
+prop_df <- DDR_df %>%
+  dplyr::count(timepoint, DEG_status) %>%
+  tidyr::complete(timepoint = factor(levels = c("24T", "24R", "144R")),
+                  DEG_status = c("DEG", "non-DEG"),
+                  fill = list(n = 0)) %>%
+  dplyr::mutate(prop = n / total_ddr_genes * 100)
 
-#change the ordering so that yes is on the top
-motif_summary_DDR$Category <- factor(motif_summary_DDR$Category, levels = c("Yes", "No"))
+# =====================
+# Stacked bar plot with annotations
+# =====================
+# stacked_bar_plot <- ggplot(prop_df, aes(x = timepoint, y = prop, fill = DEG_status)) +
+#   geom_bar(stat = "identity", position = "stack", color = "black") +
+#   geom_text(aes(label = n), 
+#             position = position_stack(vjust = 0.5), 
+#             size = 5, color = "white") +
+#   scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+#   scale_fill_manual(values = c("DEG" = "red", "non-DEG" = "grey")) +
+#   labs(
+#     x = "Timepoint",
+#     y = "Proportion of DDR Genes (%)",
+#     title = "Proportion of DDR Genes that are DEGs vs non-DEGs",
+#     fill = "Status"
+#   ) +
+#   theme_minimal(base_size = 14)
+# 
+# print(stacked_bar_plot)
 
-#plot the proportions in a barplot
-ggplot(motif_summary_DDR, aes(x = Motif, y = Fraction, fill = Category)) +
-  geom_bar(stat = "identity", position = "stack") +
-  geom_text(
-    data = label_positions_DDR %>% filter(Significant != ""),
-    aes(x = Motif, y = y_pos, label = Significant),
-    size = 6,
-    color = "black",
-    fontface = "bold"
-  ) +
-  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1.08)) +
-  scale_fill_manual(values = c("Yes" = "#e41a1c", "No" = "#377eb8")) +
+# =====================
+# Fisher's exact test and forest plot per timepoint
+# =====================
+forest_df <- map_dfr(names(timepoint_DEGs_RUV), function(tp) {
+  degs <- timepoint_DEGs_RUV[[tp]]
+  
+  # contingency table for DDR vs non-DDR genes
+  DEG_in_DDR <- sum(entrezids_DDR_R %in% degs)
+  DEG_not_DDR <- length(degs) - DEG_in_DDR
+  nonDEG_in_DDR <- total_ddr_genes - DEG_in_DDR
+  nonDEG_not_DDR <- (length(unique(c(DOX_24T_R$Entrez_ID,
+                                     DOX_24R_R$Entrez_ID,
+                                     DOX_144R_R$Entrez_ID))) - total_ddr_genes) - DEG_not_DDR
+  
+  mat <- matrix(c(DEG_in_DDR, DEG_not_DDR, nonDEG_in_DDR, nonDEG_not_DDR),
+                nrow = 2, byrow = TRUE)
+  rownames(mat) <- c("DDR", "non-DDR")
+  colnames(mat) <- c("DEG", "non-DEG")
+  
+  test <- fisher.test(mat)
+  
+  tibble(
+    timepoint = tp,
+    odds_ratio = as.numeric(test$estimate),
+    conf_low = test$conf.int[1],
+    conf_high = test$conf.int[2],
+    p_value = test$p.value,
+    sig = ifelse(test$p.value < 0.05, "sig", "ns")
+  )
+})
+
+forest_df$timepoint <- factor(forest_df$timepoint, levels = c("24T", "24R", "144R"))
+
+forest_plot <- ggplot(forest_df, aes(x = odds_ratio, y = forcats::fct_rev(timepoint),
+                                     xmin = conf_low, xmax = conf_high,
+                                     color = sig)) +
+  geom_pointrange(size = 1) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+  scale_x_log10() +
+  scale_color_manual(values = c("sig" = "red", "ns" = "grey")) +
   labs(
-    title = "Proportion of DDR Genes in Motif 1 vs Motif 2 (RUVs clust + p.post)",
-    x = "Cormotif Motif",
-    y = "Percentage",
-    fill = "DDR Gene"
+    x = "Odds Ratio (log scale)",
+    y = "Timepoint",
+    title = "DDR Gene Enrichment in DEGs per Timepoint"
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 14)
+
+print(forest_plot)
+
+
+```
+
+
+
+#Forest Plot of Odds Ratios DDR
+```{r Forest Plot of DDR Odds Ratios}
+
+# Calculate proportions, odds ratios, and Fisher's test results per timepoint
+proportion_data_ddr <- purrr::map_dfr(names(timepoint_DEGs_ddr), function(tp_ddr) {
+  degs_ddr <- unique(timepoint_DEGs_ddr[[tp_ddr]])
+  nondegs_ddr <- setdiff(all_genes, degs_ddr)
+  
+  in_deg_ddr <- sum(degs_ddr %in% ddr_set)
+  in_deg_nonddr <- length(degs_ddr) - in_deg_ddr
+  
+  in_nondeg_ddr <- sum(nondegs_ddr %in% ddr_set)
+  in_nondeg_nonddr <- length(nondegs_ddr) - in_nondeg_ddr
+  
+  contingency_degs_ddr <- matrix(c(in_deg_ddr, in_deg_nonddr,
+                                   in_nondeg_ddr, in_nondeg_nonddr),
+                                 nrow = 2, byrow = TRUE)
+  
+  fisher_res_ddr <- fisher.test(contingency_degs_ddr)
+  
+  p_val_ddr <- fisher_res_ddr$p.value
+  odds_ratio_ddr <- unname(fisher_res_ddr$estimate)
+  ci_low_ddr <- fisher_res_ddr$conf.int[1]
+  ci_high_ddr <- fisher_res_ddr$conf.int[2]
+  
+  tibble(
+    Timepoint = tp_ddr,
+    Odds_Ratio = odds_ratio_ddr,
+    CI_low = ci_low_ddr,
+    CI_high = ci_high_ddr,
+    P_Value = p_val_ddr,
+    Significant = p_val_ddr < 0.05
+  )
+})
+
+#adjust p value for multiple testing correction BH
+proportion_data_ddr <- proportion_data_ddr %>%
+  mutate(
+    Adj_P_Value = p.adjust(P_Value, method = "BH"),
+    Significant = Adj_P_Value < 0.05,
+    Sig_Label = ifelse(Significant, "Significant", "Not Significant"),
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"))
+  )
+
+# Plot horizontal forest plot with color by significance
+ggplot(proportion_data_ddr, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = c("Significant" = "#e41a1c", "Not Significant" = "gray40")) +
+  labs(
+    title = "Odds Ratios of ddr Gene Enrichment in DEGs vs nonDEGs by Timepoint",
+    y = "Timepoint",
+    x = "Odds Ratio (95% CI)",
+    color = "Adj. P. Value") +
+  scale_y_discrete(limits = rev(levels(proportion_data_ddr$Timepoint))) +
+  theme_minimal(base_size = 14) +
   theme(
-    axis.title = element_text(size = 14),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, hjust = 0.5)
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "top"
   )
 
 
-#print the proportions and p values
-prop_motif1_DDR <- in_motif1_DDR / length(final_genes_1_RUV)
-prop_motif2_DDR <- in_motif2_DDR / length(final_genes_2_RUV)
-p_val_DDR <- fisher_test_motifs_DDR$p.value
+```
 
-cat(sprintf("Motif1: %.2f%% DDR genes (%d/%d)\n", 100*prop_motif1_DDR, in_motif1_DDR, length(final_genes_1_RUV)))
-cat(sprintf("Motif2: %.2f%% DDR genes (%d/%d)\n", 100*prop_motif2_DDR, in_motif2_DDR, length(final_genes_2_RUV)))
-cat(sprintf("DDR Fisher's Exact Test p-value: %.5f\n", p_val_DDR))
-cat(sprintf("Odds ratio: %.3f\n", fisher_test_motifs_DDR$estimate))
+```{r Forest Plot DDR genes Backwards}
+#try this the opposite direction:
+#are DDR genes more likely to be DEGs at different timepoints?
+
+# background: all genes tested = all_genes
+# DDR gene set: ddr_set
+# DEGs per timepoint: DEGs_24T_R, DEGs_24R_R, DEGs_144R_R
+
+# For each timepoint:
+# Count how many ddr genes are DEGs and how many are non-DEGs
+# Count how many Non-ddr genes are DEGs and how many are non-DEGs
+
+proportion_data_ddr_backward <- purrr::map_dfr(names(timepoint_DEGs_ddr), function(tp) {
+  degs_ddr <- unique(timepoint_DEGs_ddr[[tp]])
+  nondegs_ddr <- setdiff(all_genes, degs_ddr)
+  
+  # DDR genes that are DEGs/non-DEGs
+  ddr_deg <- sum(ddr_set %in% degs_ddr)
+  ddr_non_deg <- sum(ddr_set %in% nondegs_ddr)
+  
+  # Non-DDR genes that are DEGs/non-DEGs
+  non_ddr_set <- setdiff(all_genes, ddr_set)
+  non_ddr_deg <- sum(non_ddr_set %in% degs_ddr)
+  non_ddr_non_deg <- sum(non_ddr_set %in% nondegs_ddr)
+  
+  # Contingency table for Fisher's test
+  contingency_ddr <- matrix(c(ddr_deg, ddr_non_deg,
+                          non_ddr_deg, non_ddr_non_deg),
+                        nrow = 2, byrow = TRUE)
+  
+  fisher_res_ddr <- fisher.test(contingency_ddr)
+  
+  tibble(
+    Timepoint = tp,
+    ddr_DEGs = ddr_deg,
+    ddr_nonDEGs = ddr_non_deg,
+    Nonddr_DEGs = non_ddr_deg,
+    Nonddr_nonDEGs = non_ddr_non_deg,
+    Odds_Ratio = unname(fisher_res_ddr$estimate),
+    CI_low = fisher_res_ddr$conf.int[1],
+    CI_high = fisher_res_ddr$conf.int[2],
+    P_Value = fisher_res_ddr$p.value
+  )
+})
+
+# Adjust p-values for multiple testing
+proportion_data_ddr_backward <- proportion_data_ddr_backward %>%
+  mutate(
+    Adj_P_Value = p.adjust(P_Value, method = "BH"),
+    Significant = Adj_P_Value < 0.05,
+    Sig_Label = ifelse(Significant, "Significant", "Not Significant"),
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"))
+  )
+
+# Plotting forest plot (like before)
+ggplot(proportion_data_ddr_backward, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = c("Significant" = "#e41a1c", "Not Significant" = "gray40")) +
+  scale_y_discrete(limits = rev(c("24T", "24R", "144R"))) +  #make sure in order
+  labs(
+    title = "Odds Ratios for DEGs Proportion Within ddr Gene Set",
+    y = "Timepoint",
+    x = "Odds Ratio (95% CI)",
+    color = "Adj. P. Value"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
+
+```
+
+```{r Forest Plot DDR Other}
+library(broom)
+
+# Calculate odds ratio and fisher test per timepoint for DDR gene set
+ddr_results <- purrr::map_dfr(names(timepoint_DEGs_ddr), function(tp) {
+  degs <- unique(timepoint_DEGs_ddr[[tp]])
+  
+  # Construct 2x2 contingency: DDR genes (DEGs vs non-DEGs)
+  ddr_deg_count <- sum(ddr_set %in% degs)
+  ddr_non_deg_count <- length(ddr_set) - ddr_deg_count
+  
+  # For background: non-DDR genes (DEGs vs non-DEGs)
+  non_ddr_genes <- setdiff(all_genes, ddr_set)
+  non_ddr_deg_count <- sum(non_ddr_genes %in% degs)
+  non_ddr_non_deg_count <- length(non_ddr_genes) - non_ddr_deg_count
+  
+  contingency_table <- matrix(c(ddr_deg_count, ddr_non_deg_count,
+                                non_ddr_deg_count, non_ddr_non_deg_count),
+                              nrow = 2, byrow = TRUE)
+  
+  fisher_res <- fisher.test(contingency_table)
+  tidy_res <- broom::tidy(fisher_res)
+  
+  tibble(
+    Timepoint = tp,
+    DDR_DEGs = ddr_deg_count,
+    DDR_nonDEGs = ddr_non_deg_count,
+    NonDDR_DEGs = non_ddr_deg_count,
+    NonDDR_nonDEGs = non_ddr_non_deg_count,
+    Odds_Ratio = tidy_res$estimate,
+    CI_low = tidy_res$conf.low,
+    CI_high = tidy_res$conf.high,
+    P_Value = tidy_res$p.value
+  )
+}) %>%
+  mutate(
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+    Adj_P_Value = p.adjust(P_Value, method = "BH"),
+    Sig_Label = ifelse(Adj_P_Value < 0.05, "Significant", "Not Significant")
+  )
+
+# Forest plot of odds ratios with significance coloring
+forest_plot <- ggplot(ddr_results, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.25, size = 1) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = c("Significant" = "#e41a1c", "Not Significant" = "gray50")) +
+  scale_y_discrete(limits = rev(levels(ddr_results$Timepoint))) +
+  labs(
+    title = "Odds Ratio of DEGs Enrichment Within DDR Genes by Timepoint",
+    y = "Timepoint",
+    x = "Odds Ratio (95% Confidence Interval)",
+    color = "Significance (BH adj p-value)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5), legend.position = "top")
+
+print(forest_plot)
+
+# --- Optional pairwise test for difference in proportions of DDR genes as DEGs across timepoints ---
+# Uncomment to run this block
+# {
+#   prop_test_df <- ddr_results %>%
+#     select(Timepoint, DDR_DEGs, DDR_nonDEGs) %>%
+#     mutate(Total = DDR_DEGs + DDR_nonDEGs)
+# 
+#   pairwise_results <- pairwise.prop.test(
+#     x = prop_test_df$DDR_DEGs,
+#     n = prop_test_df$Total,
+#     p.adjust.method = "BH"
+#   )
+#   print(pairwise_results)
+# }
 
 ```
 
@@ -6578,11 +7035,17 @@ proportion_data_ddr <- purrr::map_dfr(names(timepoint_DEGs_ddr), function(tp_ddr
                         nrow = 2, byrow = TRUE)
 
   fisher_res_ddr <- fisher.test(contingency_degs_ddr)
+  odds_ddr <- as.numeric(fisher_res_ddr$estimate)
   p_val_ddr <- fisher_res_ddr$p.value
   sig_ddr <- ifelse(p_val_ddr < 0.05, "*", "")
   
   #print the fisher's exact test values
   print(fisher_res_ddr)
+  
+    # Print odds ratio + p-value
+  cat("Timepoint:", tp_ddr,
+      "\n  Odds Ratio:", round(odds_ddr, 3),
+      "\n  P-value:", signif(p_val_ddr, 4), "\n")
   
 tibble(
   Timepoint = rep(tp_ddr, 4),
@@ -6590,8 +7053,9 @@ tibble(
   Category = c("Yes", "No", "Yes", "No"),
   Count = c(in_deg_ddr, in_deg_nonddr, in_nondeg_ddr, in_nondeg_nonddr),
   Total = c(length(degs_ddr), length(degs_ddr), length(nondegs_ddr), length(nondegs_ddr)),
+  Odds_Ratio = rep(odds_ddr, 4),
   P_Value = rep(p_val_ddr, 4),
-  Significant = rep(sig_ddr, 4)
+  Significant = ifelse(c("Yes", "No", "Yes", "No") == "Yes", sig_ddr, "")
 )
 }) %>%
   mutate(
@@ -6605,9 +7069,9 @@ tibble(
     Category = factor(Category, levels = c("Yes", "No"))  # Stack "Yes" on top
   )
 
-# Prepare position labels
+# Prepare position labels only on sig
 label_positions_ddr <- proportion_data_ddr %>%
-  filter(Category == "Yes") %>%
+  filter(Category == "Yes" & Significant != "") %>%
   mutate(y_pos = Fraction + 1.02)
 
 #make it so that yes is on top
@@ -6617,7 +7081,7 @@ proportion_data_ddr$Category <- factor(proportion_data_ddr$Category, levels = c(
 ggplot(proportion_data_ddr, aes(x = Group_Label, y = Fraction, fill = Category)) +
   geom_bar(stat = "identity", position = "stack") +
   geom_text(
-    data = label_positions_ddr %>% filter(Significant != ""),
+    data = label_positions_ddr,
     aes(x = Group_Label, y = y_pos, label = Significant),
     size = 6,
     color = "black",
@@ -6753,9 +7217,149 @@ ggplot(proportion_data_dic, aes(x = Group_Label, y = Fraction, fill = Category))
   )
 
 ```
+#Forest Plot of Odds Ratios DIC
+```{r Forest Plot of DIC Odds Ratios}
 
-##Proportion Barplots AIC DEGs
-```{r AIC Proportion Barplots fig.height=6, fig.width=10}
+# Calculate proportions, odds ratios, and Fisher's test results per timepoint
+proportion_data_dic <- purrr::map_dfr(names(timepoint_DEGs_dic), function(tp_dic) {
+  degs_dic <- unique(timepoint_DEGs_dic[[tp_dic]])
+  nondegs_dic <- setdiff(all_genes, degs_dic)
+  
+  in_deg_dic <- sum(degs_dic %in% dic_set)
+  in_deg_nondic <- length(degs_dic) - in_deg_dic
+  
+  in_nondeg_dic <- sum(nondegs_dic %in% dic_set)
+  in_nondeg_nondic <- length(nondegs_dic) - in_nondeg_dic
+  
+  contingency_degs_dic <- matrix(c(in_deg_dic, in_deg_nondic,
+                                   in_nondeg_dic, in_nondeg_nondic),
+                                 nrow = 2, byrow = TRUE)
+  
+  fisher_res_dic <- fisher.test(contingency_degs_dic)
+  
+  p_val_dic <- fisher_res_dic$p.value
+  odds_ratio_dic <- unname(fisher_res_dic$estimate)
+  ci_low_dic <- fisher_res_dic$conf.int[1]
+  ci_high_dic <- fisher_res_dic$conf.int[2]
+  
+  tibble(
+    Timepoint = tp_dic,
+    Odds_Ratio = odds_ratio_dic,
+    CI_low = ci_low_dic,
+    CI_high = ci_high_dic,
+    P_Value = p_val_dic,
+    Significant = p_val_dic < 0.05
+  )
+})
+
+#adjust p value for multiple testing correction BH
+proportion_data_dic <- proportion_data_dic %>%
+  mutate(
+    Adj_P_Value = p.adjust(P_Value, method = "BH"),
+    Significant = Adj_P_Value < 0.05,
+    Sig_Label = ifelse(Significant, "Significant", "Not Significant"),
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"))
+  )
+
+# Plot horizontal forest plot with color by significance
+ggplot(proportion_data_dic, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = c("Significant" = "#e41a1c", "Not Significant" = "gray40")) +
+  labs(
+    title = "Odds Ratios of DIC Gene Enrichment in DEGs vs nonDEGs by Timepoint",
+    y = "Timepoint",
+    x = "Odds Ratio (95% CI)",
+    color = "Adj. P. Value") +
+  scale_y_discrete(limits = rev(levels(proportion_data_dic$Timepoint))) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
+
+
+```
+
+```{r Forest Plot DIC genes Backwards}
+#try this the opposite direction:
+#are DDR genes more likely to be DEGs at different timepoints?
+
+# background: all genes tested = all_genes
+# DDR gene set: ddr_set
+# DEGs per timepoint: DEGs_24T_R, DEGs_24R_R, DEGs_144R_R
+
+# For each timepoint:
+# Count how many DIC genes are DEGs and how many are non-DEGs
+# Count how many Non-DIC genes are DEGs and how many are non-DEGs
+
+proportion_data_dic_backward <- purrr::map_dfr(names(timepoint_DEGs_dic), function(tp) {
+  degs_dic <- unique(timepoint_DEGs_dic[[tp]])
+  nondegs_dic <- setdiff(all_genes, degs_dic)
+  
+  # DDR genes that are DEGs/non-DEGs
+  dic_deg <- sum(dic_set %in% degs_dic)
+  dic_non_deg <- sum(dic_set %in% nondegs_dic)
+  
+  # Non-DDR genes that are DEGs/non-DEGs
+  non_dic_set <- setdiff(all_genes, dic_set)
+  non_dic_deg <- sum(non_dic_set %in% degs_dic)
+  non_dic_non_deg <- sum(non_dic_set %in% nondegs_dic)
+  
+  # Contingency table for Fisher's test
+  contingency_dic <- matrix(c(dic_deg, dic_non_deg,
+                          non_dic_deg, non_dic_non_deg),
+                        nrow = 2, byrow = TRUE)
+  
+  fisher_res_dic <- fisher.test(contingency_dic)
+  
+  tibble(
+    Timepoint = tp,
+    DIC_DEGs = dic_deg,
+    DIC_nonDEGs = dic_non_deg,
+    NonDIC_DEGs = non_dic_deg,
+    NonDIC_nonDEGs = non_dic_non_deg,
+    Odds_Ratio = unname(fisher_res_dic$estimate),
+    CI_low = fisher_res_dic$conf.int[1],
+    CI_high = fisher_res_dic$conf.int[2],
+    P_Value = fisher_res_dic$p.value
+  )
+})
+
+# Adjust p-values for multiple testing
+proportion_data_dic_backward <- proportion_data_dic_backward %>%
+  mutate(
+    Adj_P_Value = p.adjust(P_Value, method = "BH"),
+    Significant = Adj_P_Value < 0.05,
+    Sig_Label = ifelse(Significant, "Significant", "Not Significant"),
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"))
+  )
+
+# Plotting forest plot (like before)
+ggplot(proportion_data_dic_backward, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = c("Significant" = "#e41a1c", "Not Significant" = "gray40")) +
+  scale_y_discrete(limits = rev(c("24T", "24R", "144R"))) +  #make sure in order
+  labs(
+    title = "Odds Ratios for DEGs Proportion Within DIC Gene Set",
+    y = "Timepoint",
+    x = "Odds Ratio (95% CI)",
+    color = "Adj. P. Value"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "top"
+  )
+
+```
+
+
+##AIC DEGs Proportion Barplots
+```{r AIC Proportion Barplots, fig.height=6, fig.width=10}
 # Inputs:
 #  - DEGs_24T_R, DEGs_24R_R, DEGs_144R_R: vectors of significant DEG Entrez IDs
 #  - all_genes: vector of all tested genes (e.g., from full expression matrix)
@@ -6875,7 +7479,7 @@ ggplot(proportion_data_AIC, aes(x = Group_Label, y = Fraction, fill = Category))
 # Inputs:
 #  - DEGs_24T_R, DEGs_24R_R, DEGs_144R_R: vectors of significant DEG Entrez IDs
 #  - all_genes: vector of all tested genes (e.g., from full expression matrix)
-#  - ddr_set: vector of DNA damage response gene Entrez IDs
+#  - p53_set: vector of DNA damage response gene Entrez IDs
 
 #read in my gene set
 p53_target_genes <- readRDS("data/new/RUV/p53_targetgenes_entrezid.RDS")
@@ -6900,7 +7504,7 @@ timepoint_DEGs_p53 <- list(
 all_genes <- rownames(filcpm_matrix)
 length(all_genes)
 #14319 in length, containing all genes tested (background)
-
+# saveRDS(all_genes, "data/new/RUV/all_genes_background.RDS")
 
 #collect results into a data frame
 proportion_data_p53 <- purrr::map_dfr(names(timepoint_DEGs_p53), function(tp_p53) {
@@ -6980,6 +7584,211 @@ ggplot(proportion_data_p53, aes(x = Group_Label, y = Fraction, fill = Category))
     axis.text = element_text(size = 12),
     plot.title = element_text(size = 16, hjust = 0.5)
   )
+```
+#Forest Plots and Proportion Barplots All Gene Sets
+```{r Forest and Barplot All Gene Sets}
+
+
+# =====================
+# Function to process a gene set
+# =====================
+analyze_gene_set <- function(entrez_ids, gene_set_name, deg_list, total_background_genes) {
+  total_genes <- length(entrez_ids)
+  cat(paste0("Total ", gene_set_name, " genes: ", total_genes, "\n"))
+  
+  # Build dataframe for proportions
+  gene_df <- map_dfr(names(deg_list), function(tp) {
+    degs <- deg_list[[tp]]
+    data.frame(
+      Entrez_ID = entrez_ids,
+      DEG_status = ifelse(entrez_ids %in% degs, "DEG", "non-DEG"),
+      timepoint = tp
+    )
+  }) %>%
+    mutate(timepoint = factor(timepoint, levels = c("24T", "24R", "144R")))
+  
+  # Count and compute proportions
+  prop_df <- gene_df %>%
+    dplyr::count(timepoint, DEG_status) %>%
+    tidyr::complete(timepoint = factor(levels = c("24T", "24R", "144R")),
+                    DEG_status = c("DEG", "non-DEG"),
+                    fill = list(n = 0)) %>%
+    dplyr::mutate(prop = n / total_genes * 100)
+  
+  # Stacked bar plot
+  bar_plot <- ggplot(prop_df, aes(x = timepoint, y = prop, fill = DEG_status)) +
+    geom_bar(stat = "identity", position = "stack", color = "black") +
+    geom_text(aes(label = paste0(round(prop,1), "%")),
+              position = position_stack(vjust = 0.5), size = 5, color = "white") +
+    scale_y_continuous(limits = c(0, 102), expand = c(0, 0)) +
+    scale_fill_manual(
+      values = c("DEG" = "#377EB8", "non-DEG" = "#E41A1C"),
+      labels = c("DEG", paste0("non-DEG (n=", total_genes, ")"))
+    ) +
+    labs(
+      x = "Timepoint",
+      y = paste0("Proportion of ", gene_set_name, " Genes (%)"),
+      title = paste0("Proportion of ", gene_set_name, " Genes that are DEGs vs non-DEGs"),
+      fill = "Status"
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(bar_plot)
+  
+  # Forest plot
+  forest_df <- map_dfr(names(deg_list), function(tp) {
+    degs <- deg_list[[tp]]
+    
+    # contingency table
+    DEG_in_set <- sum(entrez_ids %in% degs)
+    DEG_not_set <- length(degs) - DEG_in_set
+    nonDEG_in_set <- total_genes - DEG_in_set
+    nonDEG_not_set <- total_background_genes - total_genes - DEG_not_set
+    
+    mat <- matrix(c(DEG_in_set, DEG_not_set, nonDEG_in_set, nonDEG_not_set),
+                  nrow = 2, byrow = TRUE)
+    rownames(mat) <- c(gene_set_name, paste0("non-", gene_set_name))
+    colnames(mat) <- c("DEG", "non-DEG")
+    
+    test <- fisher.test(mat)
+    
+    tibble(
+      timepoint = tp,
+      odds_ratio = as.numeric(test$estimate),
+      conf_low = test$conf.int[1],
+      conf_high = test$conf.int[2],
+      p_value = test$p.value,
+      sig = ifelse(test$p.value < 0.05, "sig", "ns")
+    )
+  })
+  
+  forest_df$timepoint <- factor(forest_df$timepoint, levels = c("24T", "24R", "144R"))
+  
+  forest_plot <- ggplot(forest_df, aes(x = odds_ratio, y = forcats::fct_rev(timepoint),
+                                       xmin = conf_low, xmax = conf_high,
+                                       color = sig)) +
+    geom_pointrange(size = 1) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+    scale_x_log10() +
+    scale_color_manual(values = c("sig" = "red", "ns" = "grey")) +
+    labs(
+      x = "Odds Ratio (log scale)",
+      y = "Timepoint",
+      title = paste0("Proportion of ", gene_set_name, " Genes that are DEGs vs non-DEGs")
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(forest_plot)
+  
+  return(list(prop_df = prop_df, forest_df = forest_df))
+}
+
+# =====================
+# Load DEGs for all timepoints
+# =====================
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
+DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
+
+deg_list <- list(
+  "24T" = DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05],
+  "24R" = DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05],
+  "144R" = DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
+)
+
+# Background genes (all genes tested)
+all_genes <- rownames(filcpm_matrix)
+total_background_genes <- length(all_genes)
+cat("Total background genes:", total_background_genes, "\n")
+
+# =====================
+# Run for DDR, P53, DIC sets
+# =====================
+DDR_results <- analyze_gene_set(ddr_set, "DDR", deg_list, total_background_genes)
+P53_results <- analyze_gene_set(p53_set, "P53", deg_list, total_background_genes)
+DIC_results <- analyze_gene_set(dic_set, "DIC", deg_list, total_background_genes)
+
+
+```
+
+
+#Forest Plots all Gene Sets
+```{r Forest Plots All Gene Sets out of DEGsvsnonDEGs set}
+
+# Gene sets
+gene_sets <- list(
+  DDR = ddr_set,
+  P53 = p53_set,
+  DIC = dic_set
+)
+
+# DEGs per timepoint (already defined)
+# deg_list <- list("24T" = DEGs_24T_R, "24R" = DEGs_24R_R, "144R" = DEGs_144R_R)
+
+# Universe
+all_genes <- rownames(filcpm_matrix)
+total_background_genes <- length(all_genes)
+
+# Function to generate forest data for a gene set
+generate_forest_inverse <- function(gene_set, gene_set_name) {
+  map_dfr(names(deg_list), function(tp) {
+    degs <- deg_list[[tp]]
+    non_degs <- setdiff(all_genes, degs)
+    
+    # Genes in DEGs and non-DEGs
+    gene_in_DEGs <- sum(degs %in% gene_set)
+    gene_not_in_DEGs <- sum(non_degs %in% gene_set)
+    
+    # Genes outside gene set
+    not_gene_in_DEGs <- length(degs) - gene_in_DEGs
+    not_gene_not_in_DEGs <- length(non_degs) - gene_not_in_DEGs
+    
+    # Contingency table
+    mat <- matrix(c(gene_in_DEGs, not_gene_in_DEGs,
+                    gene_not_in_DEGs, not_gene_not_in_DEGs),
+                  nrow = 2, byrow = TRUE)
+    rownames(mat) <- c("DEG", "non-DEG")
+    colnames(mat) <- c("in_set", "not_in_set")
+    
+    test <- fisher.test(mat)
+    
+    tibble(
+      gene_set = gene_set_name,
+      timepoint = tp,
+      odds_ratio = as.numeric(test$estimate),
+      conf_low = test$conf.int[1],
+      conf_high = test$conf.int[2],
+      p_value = test$p.value,
+      sig = ifelse(test$p.value < 0.05, "sig", "ns")
+    )
+  })
+}
+
+# ----------------------------
+# Generate and plot each gene set separately
+# ----------------------------
+for(gs_name in names(gene_sets)) {
+  forest_df <- generate_forest_inverse(gene_sets[[gs_name]], gs_name)
+  forest_df$timepoint <- factor(forest_df$timepoint, levels = c("24T", "24R", "144R"))
+  
+  p <- ggplot(forest_df, 
+              aes(x = odds_ratio, y = forcats::fct_rev(timepoint),
+                  xmin = conf_low, xmax = conf_high,
+                  color = sig)) +
+    geom_pointrange(size = 1) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+    scale_x_log10() +
+    scale_color_manual(values = c("sig" = "red", "ns" = "grey")) +
+    labs(
+      x = "Odds Ratio (log scale)",
+      y = "Timepoint",
+      title = paste0(gs_name, " Gene Set Enrichment in DEGs/Non-DEGs per Timepoint")
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(p)
+}
+
 ```
 
 
@@ -9809,10 +10618,10 @@ cat("Number of genes passing both filters:", length(final_genes_2_RUV), "\n")
 
 #what is the proportion of my genes that are included?
 #p.post and clustlike together
-7673+501
-#8174
-(8174/14319)*100
-#57.08% of my genes are represented here out of the 14319 original
+7602+501
+#8103
+(8103/14319)*100
+#56.59% of my genes are represented here out of the 14319 original
 
 #what is the proportion of my genes that are included?
 #clustlike only
@@ -9938,6 +10747,7 @@ combined_toptables_dxr_RUV <- bind_rows(
   d24r_toptable_dxr_RUV,
   d144r_toptable_dxr_RUV)
 
+# saveRDS(combined_toptables_dxr_RUV, "data/new/RUV/combined_toptables_RUVs.RDS")
 
 #Filter the data based on each motif
 filt_toptable_dxr_fin_RUV <- combined_toptables_dxr_RUV %>% 
@@ -10132,6 +10942,191 @@ filt_toptable_2_abs_fin_RUV
 
 ```
 
+##Line Plot logFC/abslogFC top 100 genes by motif RUVs log2cpm NC
+```{r LogFC line plot top 100 genes per motif}
+#I want to plot the top 100 genes per motif by adj p value and see their median logFC and abs logFC
+#I then want to plot these across all timepoints to get the logFC over time
+
+#load in my motif sets
+##motif 1 - recovered
+length(final_genes_1_RUV)
+##motif 2 - sustained
+length(final_genes_2_RUV)
+
+#load in my combined toptables from limma
+combined_toptables_dxr_RUV <- readRDS("data/new/RUV/combined_toptables_RUVs.RDS")
+
+#create a toptable with all of the genes marked by motif 1 or motif 2
+filt_toptable_motifgenes_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(motif = case_when(
+    Entrez_ID %in% final_genes_1_RUV ~ "M1",
+    Entrez_ID %in% final_genes_2_RUV ~ "M2",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(motif)) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("24T", "24R", "144R"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#slice top 100 genes per motif by adj p value
+top_100_motifgenes <- filt_toptable_motifgenes_RUV %>%
+  filter(motif %in% c("M1", "M2")) %>%
+  group_by(motif, Entrez_ID) %>%
+  summarize(min_adjP = min(adj.P.Val), groups = "drop") %>% 
+  arrange(motif, min_adjP) %>%
+  group_by(motif) %>%
+  slice_head(n = 100)
+
+#now I have the top 100 genes in each motif based on adj. p value
+#I want to be able to plot 200 lines that span all three timepoints
+
+plot_top100_motifgenes <- filt_toptable_motifgenes_RUV %>% 
+  semi_join(top_100_motifgenes, by = c("Entrez_ID", "motif"))
+
+
+#now I've made a group of 600 genes, taking the top 100 genes for each motif and pulling them out at each timepoint
+dim(plot_top100_motifgenes)
+
+#calculate the median logFCs for each motif out of ALL genes
+medians_allgenes_RUV <- filt_toptable_motifgenes_RUV %>% 
+  group_by(motif, time) %>% 
+  summarise(median_logFC = median(logFC), 
+            median_abslogFC = median(absFC),
+            .groups = "drop")
+
+print(medians_allgenes_RUV)
+
+#now that I've found the median for both logFC and abslogFC over time, plot the line graphs
+
+#specify colors
+motif_cols <- c("M1" = "#BAD893",
+                "M2" = "#5A8CA9")
+
+med_cols <- c("M1" = "#8CA153",
+              "M2" = "#3D6680")
+
+#plot logFC
+labs_logFC_top100 <- medians_allgenes_RUV %>%
+  group_by(motif) %>%
+  mutate(label = paste0(
+    motif, "\nmedian logFC =\n",
+    paste0(time, "=", round(median_logFC, 2), collapse = "\n")
+  ), .groups = "drop") %>%
+  pull(label)
+
+names(labs_logFC_top100) <- c("M1", "M1", "M1", "M2", "M2", "M2")
+
+#retain the two correct motifs
+labs_logFC_top100 <- labs_logFC_top100[c(1,4)]
+
+
+plot_motifs100_logFC <- 
+  ggplot() +
+  geom_line(data = plot_top100_motifgenes,
+            aes(x = time, y = logFC, group = Entrez_ID, color = motif),
+            alpha = 0.4, size = 0.9) +
+  geom_line(data = medians_allgenes_RUV %>% 
+              dplyr::filter(motif == "M1"),
+            aes(x = time, y = median_logFC, 
+                group = motif),
+            color = "#8CA153", size = 2) +
+  geom_line(data = medians_allgenes_RUV %>% 
+              dplyr::filter(motif == "M2"),
+            aes(x = time, y = median_logFC, 
+                group = motif),
+            color = "#3D6680", size =2) +
+  scale_color_manual(values = c(motif_cols),
+                     labels = labs_logFC_top100) +
+  labs(title = "logFC Top 100 Genes by Motif",
+       y = "logFC", x = "Time", color = "Motif") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_motifs100_logFC
+
+#plot abs logFC now
+labs_abslogFC_top100 <- medians_allgenes_RUV %>%
+  group_by(motif) %>%
+  mutate(label = paste0(
+    motif, "\nmedian |logFC| =\n",
+    paste0(time, "=", round(median_abslogFC, 2), collapse = "\n")
+  ), .groups = "drop") %>%
+  pull(label)
+
+names(labs_abslogFC_top100) <- c("M1", "M1", "M1", "M2", "M2", "M2")
+
+#retain the two correct motifs
+labs_abslogFC_top100 <- labs_abslogFC_top100[c(1,4)]
+
+
+plot_motifs100_abslogFC <- 
+  ggplot() +
+  geom_line(data = plot_top100_motifgenes,
+            aes(x = time, y = absFC, group = Entrez_ID, color = motif),
+            alpha = 0.4, size = 0.9) +
+  geom_line(data = medians_allgenes_RUV %>% 
+              dplyr::filter(motif == "M1"),
+            aes(x = time, y = median_abslogFC, group = motif),
+            color = "#8CA153", size = 2) +
+  geom_line(data = medians_allgenes_RUV %>%
+              dplyr::filter(motif == "M2"),
+            aes(x = time, y = median_abslogFC, group = motif),
+            color = "#3D6680", size =2) +
+  scale_color_manual(values = c(motif_cols),
+                     labels = labs_abslogFC_top100) +
+  labs(title = "|logFC| Top 100 Genes by Motif",
+       y = "|logFC|", x = "Time", color = "Motif") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_motifs100_abslogFC
+
+
+```
+Now do this but with only the sustained response genes (M2)
+```{r logFC line plot sustained}
+#I want to plot all of the sustained M2 genes in a line plot
+#No need to slice, include all 501 genes and the median
+
+plot_M2_allgenes <- filt_toptable_motifgenes_RUV %>% 
+  dplyr::filter(motif == "M2")
+
+# Calculate medians for ALL motif 2 genes across timepoints
+medians_motif2_RUV <- plot_M2_allgenes %>%
+  group_by(time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+# Label with median values
+labs_logFC_motif2 <- paste0(
+  "M2\nmedian logFC =\n",
+  paste0(medians_motif2_RUV$time, "=", round(medians_motif2_RUV$median_logFC, 2), collapse = "\n")
+)
+
+# Plot all lines for motif 2 genes
+plot_motif2_logFC <- ggplot() +
+  geom_line(data = plot_M2_allgenes,
+            aes(x = time, y = logFC, group = Entrez_ID),
+            color = "#5A8CA9", alpha = 0.4, size = 0.9) +
+  geom_line(data = medians_motif2_RUV,
+            aes(x = time, y = median_logFC, group = 1),
+            color = "#3D6680", size = 2) +
+  scale_color_manual(values = c("M2" = "#5A8CA9"),
+                     labels = labs_logFC_motif2) +
+  labs(title = "logFC — Motif 2 Genes (n = 501)",
+       y = "logFC", x = "Time", color = "Motif") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_motif2_logFC
+
+```
+
+
 ###log2cpm Example Genes Cormotif RUVs log2cpm Norm Counts
 ```{r log2cpm Example Genes Cormotif log2cpm Norm Counts}
 #use the final genes from cross-verifying with clustlike + p.post
@@ -10301,7 +11296,7 @@ for (gene in initial_test_genes2_fin_RUV) {
 
 ##log2cpm Example Genes Cormotif clustlike
 
-```{r log2cpm Example Genes Cormotif RUVs clustlike}
+```{r log2cpm Example Genes Cormotif RUVs clustlike, include=FALSE}
 #use the final genes from cross-verifying with clustlike + p.post
 
 #Load in my count matrices
@@ -10642,7 +11637,7 @@ table_motif2_genes_KEGG_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name
 
 ```
 
-```{r GO/KEGG Cormotif log2cpm clustlike only}
+```{r GO/KEGG Cormotif log2cpm clustlike only, include=FALSE}
 
 #now take these final gene sets for each motif - clustlike + p.post consensus genes
 
@@ -10657,177 +11652,177 @@ table_motif2_genes_KEGG_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name
 
 # saveRDS(motif1_genes_matrix_RUV_clust, "data/new/RUV/CMF/motif1_genes_matrix_RUV_clustlike.RDS")
 
-motif1_genes_matrix_RUV_clust <- readRDS("data/new/RUV/CMF/motif1_genes_matrix_RUV_clustlike.RDS")
-length(motif1_genes_matrix_RUV_clust)
-#13600 genes in this set for motif 1
-
-motif1_mat_GOKEGG_RUV_clust <- gost(query = motif1_genes_matrix_RUV_clust,
-                          organism = "hsapiens",
-                          ordered_query = FALSE,
-                          measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
-                          user_threshold = 0.05,
-                          custom_bg = all_genes,
-                          correction_method = c("fdr"),
-                          sources = c("GO:BP", "KEGG"))
-
-motif1_GOKEGG_genes_RUV_clust <- gostplot(motif1_mat_GOKEGG_RUV_clust, capped = FALSE, interactive = TRUE)
-motif1_GOKEGG_genes_RUV_clust
-
-table_motif1_GOKEGG_genes_RUV_clust <- motif1_mat_GOKEGG_RUV_clust$result %>% 
-  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
-
-table_motif1_GOKEGG_genes_RUV_clust %>% 
-  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
-  kableExtra::kable(.,) %>% 
-  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
-  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
-  kableExtra::scroll_box(width = "100%", height = "400px")
-
-# write.csv(table_motif1_GOKEGG_genes, "data/new/table_motif1_GOKEGG_genes.csv")
-
-#GO:BP
-table_motif1_genes_GOBP_RUV_clust <- table_motif1_GOKEGG_genes_RUV_clust %>% 
-  dplyr::filter(source=="GO:BP") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-# saveRDS(table_motif1_genes_GOBP, "data/table_motif1_genes_GOBP.RDS")
-
-table_motif1_genes_GOBP_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("M1 Enriched GO:BP Terms RUVs clustlike")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
-  ylab("GO:BP term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_bw()+
-  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
-        axis.title = element_text(size = 15, colour = "black"),
-        axis.ticks = element_line(linewidth = 1.5),
-        axis.line = element_line(linewidth = 1.5),
-        axis.text = element_text(size = 10, colour = "black", angle = 0),
-        strip.text = element_text(size = 15, colour = "black", face = "bold"))
-
-#KEGG
-table_motif1_genes_KEGG_RUV_clust <- table_motif1_GOKEGG_genes_RUV_clust %>% 
-  dplyr::filter(source=="KEGG") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-table_motif1_genes_KEGG_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("M1 DEGs Enriched KEGG Terms RUVs clustlike")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
-  ylab("KEGG term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_bw()+
-  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
-        axis.title = element_text(size = 15, colour = "black"),
-        axis.ticks = element_line(linewidth = 1.5),
-        axis.line = element_line(linewidth = 1.5),
-        axis.text = element_text(size = 10, colour = "black", angle = 0),
-        strip.text = element_text(size = 15, colour = "black", face = "bold"))
-
-#####Motif 2 Genes#####
-# motif2_genes_matrix_RUV_clust <- as.matrix(clust2_genes_RUV)
-# colnames(motif2_genes_matrix_RUV_clust) <- c("entrezgene_ID")
-
-# saveRDS(motif2_genes_matrix_RUV_clust, "data/new/RUV/CMF/motif2_genes_matrix_RUV_clustlike.RDS")
-
-motif2_genes_matrix_RUV_clust <- readRDS("data/new/RUV/CMF/motif2_genes_matrix_RUV_clustlike.RDS")
-length(motif2_genes_matrix_RUV_clust)
-#517 genes in this set for motif 2
-
-motif2_mat_GOKEGG_RUV_clust <- gost(query = motif2_genes_matrix_RUV_clust,
-                          organism = "hsapiens",
-                          ordered_query = FALSE,
-                          measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
-                          user_threshold = 0.05,
-                          custom_bg = all_genes,
-                          correction_method = c("fdr"),
-                          sources = c("GO:BP", "KEGG"))
-
-motif2_GOKEGG_genes_RUV_clust <- gostplot(motif2_mat_GOKEGG_RUV_clust, capped = FALSE, interactive = TRUE)
-motif2_GOKEGG_genes_RUV_clust
-
-table_motif2_GOKEGG_genes_RUV_clust <- motif2_mat_GOKEGG_RUV_clust$result %>% 
-  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
-
-table_motif2_GOKEGG_genes_RUV_clust %>% 
-  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
-  kableExtra::kable(.,) %>% 
-  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
-  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
-  kableExtra::scroll_box(width = "100%", height = "400px")
-
-# write.csv(table_motif2_GOKEGG_genes, "data/new/table_motif2_GOKEGG_genes.csv")
-
-#GO:BP
-table_motif2_genes_GOBP_RUV_clust <- table_motif2_GOKEGG_genes_RUV_clust %>% 
-  dplyr::filter(source=="GO:BP") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-# saveRDS(table_motif2_genes_GOBP, "data/table_motif2_genes_GOBP.RDS")
-
-table_motif2_genes_GOBP_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("M2 Enriched GO:BP Terms RUVs clustlike")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
-  ylab("GO:BP term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_bw()+
-  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
-        axis.title = element_text(size = 15, colour = "black"),
-        axis.ticks = element_line(linewidth = 1.5),
-        axis.line = element_line(linewidth = 1.5),
-        axis.text = element_text(size = 10, colour = "black", angle = 0),
-        strip.text = element_text(size = 15, colour = "black", face = "bold"))
-
-#KEGG
-table_motif2_genes_KEGG_RUV_clust <- table_motif2_GOKEGG_genes_RUV_clust %>% 
-  dplyr::filter(source=="KEGG") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-table_motif2_genes_KEGG_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("M2 DEGs Enriched KEGG Terms RUVs clustlike")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
-  ylab("KEGG term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_bw()+
-  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
-        axis.title = element_text(size = 15, colour = "black"),
-        axis.ticks = element_line(linewidth = 1.5),
-        axis.line = element_line(linewidth = 1.5),
-        axis.text = element_text(size = 10, colour = "black", angle = 0),
-        strip.text = element_text(size = 15, colour = "black", face = "bold"))
+# motif1_genes_matrix_RUV_clust <- readRDS("data/new/RUV/CMF/motif1_genes_matrix_RUV_clustlike.RDS")
+# length(motif1_genes_matrix_RUV_clust)
+# #13600 genes in this set for motif 1
+# 
+# motif1_mat_GOKEGG_RUV_clust <- gost(query = motif1_genes_matrix_RUV_clust,
+#                           organism = "hsapiens",
+#                           ordered_query = FALSE,
+#                           measure_underrepresentation = FALSE,
+#                           evcodes = FALSE,
+#                           user_threshold = 0.05,
+#                           custom_bg = all_genes,
+#                           correction_method = c("fdr"),
+#                           sources = c("GO:BP", "KEGG"))
+# 
+# motif1_GOKEGG_genes_RUV_clust <- gostplot(motif1_mat_GOKEGG_RUV_clust, capped = FALSE, interactive = TRUE)
+# motif1_GOKEGG_genes_RUV_clust
+# 
+# table_motif1_GOKEGG_genes_RUV_clust <- motif1_mat_GOKEGG_RUV_clust$result %>% 
+#   dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+# 
+# table_motif1_GOKEGG_genes_RUV_clust %>% 
+#   mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+#   kableExtra::kable(.,) %>% 
+#   kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+#   kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+#   kableExtra::scroll_box(width = "100%", height = "400px")
+# 
+# # write.csv(table_motif1_GOKEGG_genes, "data/new/table_motif1_GOKEGG_genes.csv")
+# 
+# #GO:BP
+# table_motif1_genes_GOBP_RUV_clust <- table_motif1_GOKEGG_genes_RUV_clust %>% 
+#   dplyr::filter(source=="GO:BP") %>% 
+#   dplyr::select(p_value, term_name, intersection_size) %>% 
+#   dplyr::slice_min(., n=10, order_by=p_value) %>% 
+#   mutate(log_val = -log10(p_value))
+# 
+# # saveRDS(table_motif1_genes_GOBP, "data/table_motif1_genes_GOBP.RDS")
+# 
+# table_motif1_genes_GOBP_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
+#   geom_point(aes(size = intersection_size)) +
+#   ggtitle("M1 Enriched GO:BP Terms RUVs clustlike")+
+#   xlab(expression("-log"[10]~"p-value"))+
+#   guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
+#   ylab("GO:BP term")+
+#   scale_y_discrete(labels = scales::label_wrap(30))+
+#   theme_bw()+
+#   theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+#         axis.title = element_text(size = 15, colour = "black"),
+#         axis.ticks = element_line(linewidth = 1.5),
+#         axis.line = element_line(linewidth = 1.5),
+#         axis.text = element_text(size = 10, colour = "black", angle = 0),
+#         strip.text = element_text(size = 15, colour = "black", face = "bold"))
+# 
+# #KEGG
+# table_motif1_genes_KEGG_RUV_clust <- table_motif1_GOKEGG_genes_RUV_clust %>% 
+#   dplyr::filter(source=="KEGG") %>% 
+#   dplyr::select(p_value, term_name, intersection_size) %>% 
+#   dplyr::slice_min(., n=10, order_by=p_value) %>% 
+#   mutate(log_val = -log10(p_value))
+# 
+# table_motif1_genes_KEGG_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
+#   geom_point(aes(size = intersection_size)) +
+#   ggtitle("M1 DEGs Enriched KEGG Terms RUVs clustlike")+
+#   xlab(expression("-log"[10]~"p-value"))+
+#   guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
+#   ylab("KEGG term")+
+#   scale_y_discrete(labels = scales::label_wrap(30))+
+#   theme_bw()+
+#   theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+#         axis.title = element_text(size = 15, colour = "black"),
+#         axis.ticks = element_line(linewidth = 1.5),
+#         axis.line = element_line(linewidth = 1.5),
+#         axis.text = element_text(size = 10, colour = "black", angle = 0),
+#         strip.text = element_text(size = 15, colour = "black", face = "bold"))
+# 
+# #####Motif 2 Genes#####
+# # motif2_genes_matrix_RUV_clust <- as.matrix(clust2_genes_RUV)
+# # colnames(motif2_genes_matrix_RUV_clust) <- c("entrezgene_ID")
+# 
+# # saveRDS(motif2_genes_matrix_RUV_clust, "data/new/RUV/CMF/motif2_genes_matrix_RUV_clustlike.RDS")
+# 
+# motif2_genes_matrix_RUV_clust <- readRDS("data/new/RUV/CMF/motif2_genes_matrix_RUV_clustlike.RDS")
+# length(motif2_genes_matrix_RUV_clust)
+# #517 genes in this set for motif 2
+# 
+# motif2_mat_GOKEGG_RUV_clust <- gost(query = motif2_genes_matrix_RUV_clust,
+#                           organism = "hsapiens",
+#                           ordered_query = FALSE,
+#                           measure_underrepresentation = FALSE,
+#                           evcodes = FALSE,
+#                           user_threshold = 0.05,
+#                           custom_bg = all_genes,
+#                           correction_method = c("fdr"),
+#                           sources = c("GO:BP", "KEGG"))
+# 
+# motif2_GOKEGG_genes_RUV_clust <- gostplot(motif2_mat_GOKEGG_RUV_clust, capped = FALSE, interactive = TRUE)
+# motif2_GOKEGG_genes_RUV_clust
+# 
+# table_motif2_GOKEGG_genes_RUV_clust <- motif2_mat_GOKEGG_RUV_clust$result %>% 
+#   dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+# 
+# table_motif2_GOKEGG_genes_RUV_clust %>% 
+#   mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+#   kableExtra::kable(.,) %>% 
+#   kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+#   kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+#   kableExtra::scroll_box(width = "100%", height = "400px")
+# 
+# # write.csv(table_motif2_GOKEGG_genes, "data/new/table_motif2_GOKEGG_genes.csv")
+# 
+# #GO:BP
+# table_motif2_genes_GOBP_RUV_clust <- table_motif2_GOKEGG_genes_RUV_clust %>% 
+#   dplyr::filter(source=="GO:BP") %>% 
+#   dplyr::select(p_value, term_name, intersection_size) %>% 
+#   dplyr::slice_min(., n=10, order_by=p_value) %>% 
+#   mutate(log_val = -log10(p_value))
+# 
+# # saveRDS(table_motif2_genes_GOBP, "data/table_motif2_genes_GOBP.RDS")
+# 
+# table_motif2_genes_GOBP_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
+#   geom_point(aes(size = intersection_size)) +
+#   ggtitle("M2 Enriched GO:BP Terms RUVs clustlike")+
+#   xlab(expression("-log"[10]~"p-value"))+
+#   guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
+#   ylab("GO:BP term")+
+#   scale_y_discrete(labels = scales::label_wrap(30))+
+#   theme_bw()+
+#   theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+#         axis.title = element_text(size = 15, colour = "black"),
+#         axis.ticks = element_line(linewidth = 1.5),
+#         axis.line = element_line(linewidth = 1.5),
+#         axis.text = element_text(size = 10, colour = "black", angle = 0),
+#         strip.text = element_text(size = 15, colour = "black", face = "bold"))
+# 
+# #KEGG
+# table_motif2_genes_KEGG_RUV_clust <- table_motif2_GOKEGG_genes_RUV_clust %>% 
+#   dplyr::filter(source=="KEGG") %>% 
+#   dplyr::select(p_value, term_name, intersection_size) %>% 
+#   dplyr::slice_min(., n=10, order_by=p_value) %>% 
+#   mutate(log_val = -log10(p_value))
+# 
+# table_motif2_genes_KEGG_RUV_clust %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
+#   geom_point(aes(size = intersection_size)) +
+#   ggtitle("M2 DEGs Enriched KEGG Terms RUVs clustlike")+
+#   xlab(expression("-log"[10]~"p-value"))+
+#   guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
+#   ylab("KEGG term")+
+#   scale_y_discrete(labels = scales::label_wrap(30))+
+#   theme_bw()+
+#   theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+#         axis.title = element_text(size = 15, colour = "black"),
+#         axis.ticks = element_line(linewidth = 1.5),
+#         axis.line = element_line(linewidth = 1.5),
+#         axis.text = element_text(size = 10, colour = "black", angle = 0),
+#         strip.text = element_text(size = 15, colour = "black", face = "bold"))
 
 ```
 
 
 ##Attempt Cormotif with Norm Counts Only
-```{r RUVs Cormotif Plain Norm Counts}
-# #now since I'm having some strange outputs with the transformed data
-# #I want to try and just feed in the normalized counts only
+```{r RUVs Cormotif Plain Norm Counts, include=FALSE}
+# # #now since I'm having some strange outputs with the transformed data
+# # #I want to try and just feed in the normalized counts only
+# # 
+# normcounts_CMF_rep <- as.data.frame(set1$normalizedCounts)
+# # 
+# #first want to cut out the replicate samples as not needed for Cormotif
+# normcounts_CMF <- as.data.frame(normcounts_CMF_rep) %>%
+#   dplyr::select(-(contains("6R")))
 # 
-normcounts_CMF_rep <- as.data.frame(set1$normalizedCounts)
-# 
-#first want to cut out the replicate samples as not needed for Cormotif
-normcounts_CMF <- as.data.frame(normcounts_CMF_rep) %>%
-  dplyr::select(-(contains("6R")))
-
-# #14319 genes in 36 columns, set up for plugging into Cormotif
+# # #14319 genes in 36 columns, set up for plugging into Cormotif
 
 # #now I need to set up my groupid and compid accordingly
 # #put together my group id and comparison id to make the correct comparisons between experimental conditions
@@ -10880,16 +11875,16 @@ normcounts_CMF <- as.data.frame(normcounts_CMF_rep) %>%
 #   DOX_144R_6 = 3,
 #   DMSO_144R_6 = 6
 # )
-
-groupid_other <- readRDS("data/new/RUV/groupid_other_unrearranged.RDS")
-
-compid <- data.frame(Cond1 = c(1, 3, 5), Cond2 = c(2, 4, 6))
-compid1 <- data.frame(Cond1 = c(1, 2, 3), Cond2 = c(4, 5, 6))
+# 
+# groupid_other <- readRDS("data/new/RUV/groupid_other_unrearranged.RDS")
+# 
+# compid <- data.frame(Cond1 = c(1, 3, 5), Cond2 = c(2, 4, 6))
+# compid1 <- data.frame(Cond1 = c(1, 2, 3), Cond2 = c(4, 5, 6))
 
 ```
 
 ###Run Cormotif Norm Counts Only
-```{r RUVs Run Cormotif NormCounts Only}
+```{r RUVs Run Cormotif NormCounts Only, include=FALSE}
 
 # #set the seed the same as the previous one to ensure consistency
 # 
@@ -10907,27 +11902,27 @@ compid1 <- data.frame(Cond1 = c(1, 2, 3), Cond2 = c(4, 5, 6))
 # #   runtype = "counts"
 # # )
 # 
-#saveRDS(motif.fit_RUV_NC_test, "data/new/RUV/motif.fit_RUVnormcounts_compid_250630.RDS")
-motif.fit_RUV_NC_test <- readRDS("data/new/RUV/motif.fit_RUVnormcounts_250630.RDS")
+# #saveRDS(motif.fit_RUV_NC_test, "data/new/RUV/motif.fit_RUVnormcounts_compid_250630.RDS")
+# motif.fit_RUV_NC_test <- readRDS("data/new/RUV/motif.fit_RUVnormcounts_250630.RDS")
 
 ```
 ###Plot Cormotif Norm Counts Only
-```{r RUVs Plot Cormotif NormCounts Only}
+```{r RUVs Plot Cormotif NormCounts Only, include=FALSE}
 # #plot the AIC and BIC (we're interested in the Bayesian most of all)
-
-plotIC(motif.fit_RUV_NC_test)
 # 
-# #visual check of the lowest BIC
-# motif.fit_RUV_NC_test$bic
+# plotIC(motif.fit_RUV_NC_test)
+# # 
+# # #visual check of the lowest BIC
+# # motif.fit_RUV_NC_test$bic
+# # 
+# # #plot the motifs
+# plotMotif(motif.fit_RUV_NC_test)
+# # 
+# #plot the probability legend
+# myColors <-  rev(c("#FFFFFF", "#E6E6E6" ,"#CCCCCC", "#B3B3B3", "#999999", "#808080", "#666666","#4C4C4C", "#333333", "#191919","#000000"))
 # 
-# #plot the motifs
-plotMotif(motif.fit_RUV_NC_test)
-# 
-#plot the probability legend
-myColors <-  rev(c("#FFFFFF", "#E6E6E6" ,"#CCCCCC", "#B3B3B3", "#999999", "#808080", "#666666","#4C4C4C", "#333333", "#191919","#000000"))
-
-plot.new()
-legend('bottomleft',fill=myColors, legend =rev(c("0", "0.1", "0.2", "0.3", "0.4",  "0.5", "0.6", "0.7", "0.8","0.9", "1")), box.col="white",title = "Probability\nlegend", horiz=FALSE,title.cex=.8)
+# plot.new()
+# legend('bottomleft',fill=myColors, legend =rev(c("0", "0.1", "0.2", "0.3", "0.4",  "0.5", "0.6", "0.7", "0.8","0.9", "1")), box.col="white",title = "Probability\nlegend", horiz=FALSE,title.cex=.8)
 
 ```
 
@@ -11373,7 +12368,7 @@ motif_enrichment_RUV <- purrr::map_dfr(names(CMF_genes_RUV), function(motif_name
 
 # Recreate motif_long from motif_enrichment (with fixed column names)
 motif_long_RUV <- motif_enrichment_RUV %>%
-  select(Motif, In_Motif_DDR, In_Motif_NonDDR, P_Value) %>%  # include P_Value
+  dplyr::select(Motif, In_Motif_DDR, In_Motif_NonDDR, P_Value) %>%  # include P_Value
   pivot_longer(cols = c(In_Motif_DDR, In_Motif_NonDDR),
                names_to = "Category", values_to = "Count") %>%
   mutate(
@@ -11785,6 +12780,7 @@ ggplot(motif_long_p53_RUV_clust, aes(x = Motif, y = Fraction, fill = Category)) 
 print(motif_long_p53_RUV_clust)
 
 ```
+
 ###p53 Target Genes Cormotif RUVs p.post + clustlike
 ```{r p53 Target Genes Cormotif RUVs p.post + clustlike}
 
@@ -12095,6 +13091,472 @@ cat(sprintf("Odds ratio: %.3f\n", fisher_test_motifs_DIC$estimate))
 
 ```
 
+Now, I want to convert these into forest plots
+#Forest Plots and Proportion Barplots
+```{r Forest Plots}
+
+# ----------------------------
+# Define motifs and gene sets
+# ----------------------------
+motifs <- list(
+  M1 = final_genes_1_RUV,
+  M2 = final_genes_2_RUV
+)
+
+gene_sets <- list(
+  DDR = ddr_set,
+  P53 = p53_set,
+  DIC = dic_set
+)
+
+all_genes <- unique(unlist(motifs))  # universe of tested genes
+
+# ----------------------------
+# Function to calculate motif enrichment and Fisher test
+# ----------------------------
+compute_enrichment <- function(motifs_list, gene_set, gene_set_name) {
+  map_dfr(names(motifs_list), function(motif_name) {
+    motif_genes <- motifs_list[[motif_name]]
+    non_motif_genes <- setdiff(all_genes, motif_genes)
+    
+    # Counts
+    in_motif <- sum(motif_genes %in% gene_set)
+    in_motif_non <- length(motif_genes) - in_motif
+    out_motif <- sum(non_motif_genes %in% gene_set)
+    out_motif_non <- length(non_motif_genes) - out_motif
+    
+    # Contingency table
+    mat <- matrix(c(in_motif, in_motif_non, out_motif, out_motif_non),
+                  nrow = 2, byrow = TRUE)
+    rownames(mat) <- c("Motif", "Non-motif")
+    colnames(mat) <- c("In_Set", "Not_In_Set")
+    
+    # Fisher test
+    test <- fisher.test(mat)
+    
+    tibble(
+      Gene_Set = gene_set_name,
+      Motif = motif_name,
+      In_Set = in_motif,
+      Not_In_Set = in_motif_non,
+      Odds_Ratio = as.numeric(test$estimate),
+      CI_Low = test$conf.int[1],
+      CI_High = test$conf.int[2],
+      P_Value = test$p.value
+    )
+  })
+}
+
+# ----------------------------
+# Compute enrichment for all gene sets
+# ----------------------------
+enrichment_results <- map_dfr(names(gene_sets), function(gs_name) {
+  compute_enrichment(motifs, gene_sets[[gs_name]], gs_name)
+})
+
+# ----------------------------
+# Generate barplots per gene set
+# ----------------------------
+for(gs_name in names(gene_sets)) {
+  df <- enrichment_results %>% dplyr::filter(Gene_Set == gs_name)
+  
+  # Prepare long format for stacked bar
+  motif_long <- df %>%
+    dplyr::select(Motif, In_Set, Not_In_Set, P_Value) %>%
+    pivot_longer(cols = c(In_Set, Not_In_Set),
+                 names_to = "Category", values_to = "Count") %>%
+    mutate(
+      Category = ifelse(Category == "In_Set", "Yes", "No"),
+      Fraction = Count / ave(Count, Motif, FUN = sum),
+      Significant = ifelse(Category == "Yes" & P_Value < 0.05, "*", "")
+    )
+  
+  motif_long$Category <- factor(motif_long$Category, levels = c("Yes", "No"))
+  
+  label_positions <- motif_long %>%
+    dplyr::filter(Category == "Yes") %>%
+    mutate(y_pos = Fraction + 0.02)
+  
+  # Barplot
+  p_bar <- ggplot(motif_long, aes(x = Motif, y = Fraction, fill = Category)) +
+    geom_bar(stat = "identity", position = "stack") +
+    geom_text(data = label_positions %>% filter(Significant != ""),
+              aes(x = Motif, y = y_pos, label = Significant),
+              size = 6, fontface = "bold", color = "black") +
+    scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1.08)) +
+    scale_fill_manual(values = c("Yes" = "#e41a1c", "No" = "#377eb8")) +
+    labs(
+      title = paste0("Proportion of ", gs_name, " Genes per Motif"),
+      x = "Cormotif Motif",
+      y = "Percentage",
+      fill = paste0(gs_name, " Gene")
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(p_bar)
+}
+
+# ----------------------------
+# Generate forest plots per gene set with CI & OR table
+# ----------------------------
+for(gs_name in names(gene_sets)) {
+  df <- enrichment_results %>% dplyr::filter(Gene_Set == gs_name)
+  
+  # Forest plot
+  p_forest <- ggplot(df, aes(x = Odds_Ratio, y = forcats::fct_rev(Motif),
+                             xmin = CI_Low, xmax = CI_High)) +
+    geom_pointrange(size = 1) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+    scale_x_log10() +
+    labs(
+      x = "Odds Ratio (log scale)",
+      y = "Motif",
+      title = paste0(gs_name, " Gene Enrichment per Motif")
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(p_forest)
+  
+  # Print summary table
+  table_df <- df %>%
+    dplyr::select(Motif, Odds_Ratio, CI_Low, CI_High, P_Value) %>%
+    mutate(
+      Odds_Ratio = round(Odds_Ratio, 3),
+      CI_Low = round(CI_Low, 3),
+      CI_High = round(CI_High, 3),
+      P_Value = signif(P_Value, 3)
+    )
+  
+  cat("\n---", gs_name, "Enrichment Summary ---\n")
+  print(table_df)
+}
+
+```
+#Forest Plots
+```{r Motif Forest Plots DEGs vs nonDEGs}
+# =====================
+# Function to process a gene set
+# =====================
+analyze_gene_set <- function(entrez_ids, gene_set_name, deg_list, total_background_genes) {
+  total_genes <- length(entrez_ids)
+  cat(paste0("Total ", gene_set_name, " genes: ", total_genes, "\n"))
+  
+  # Build dataframe for proportions
+  gene_df <- map_dfr(names(deg_list), function(tp) {
+    degs <- deg_list[[tp]]
+    data.frame(
+      Entrez_ID = entrez_ids,
+      DEG_status = ifelse(entrez_ids %in% degs, "DEG", "non-DEG"),
+      timepoint = tp
+    )
+  }) %>%
+    mutate(timepoint = factor(timepoint, levels = c("24T", "24R", "144R")))
+  
+  # Count and compute proportions
+  prop_df <- gene_df %>%
+    dplyr::count(timepoint, DEG_status) %>%
+    tidyr::complete(timepoint = factor(levels = c("24T", "24R", "144R")),
+                    DEG_status = c("DEG", "non-DEG"),
+                    fill = list(n = 0)) %>%
+    dplyr::mutate(prop = n / total_genes * 100)
+  
+  # Stacked bar plot
+  bar_plot <- ggplot(prop_df, aes(x = timepoint, y = prop, fill = DEG_status)) +
+    geom_bar(stat = "identity", position = "stack", color = "black") +
+    geom_text(aes(label = paste0(round(prop,1), "%")),
+              position = position_stack(vjust = 0.5), size = 5, color = "white") +
+    scale_y_continuous(limits = c(0, 102), expand = c(0, 0)) +
+    scale_fill_manual(
+      values = c("DEG" = "#377EB8", "non-DEG" = "#E41A1C"),
+      labels = c("DEG", paste0("non-DEG (n=", total_genes, ")"))
+    ) +
+    labs(
+      x = "Timepoint",
+      y = paste0("Proportion of ", gene_set_name, " Genes (%)"),
+      title = paste0("Proportion of ", gene_set_name, " Genes that are DEGs vs non-DEGs"),
+      fill = "Status"
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(bar_plot)
+  
+  # Forest plot
+  forest_df <- map_dfr(names(deg_list), function(tp) {
+    degs <- deg_list[[tp]]
+    
+    # contingency table
+    DEG_in_set <- sum(entrez_ids %in% degs)
+    DEG_not_set <- length(degs) - DEG_in_set
+    nonDEG_in_set <- total_genes - DEG_in_set
+    nonDEG_not_set <- total_background_genes - total_genes - DEG_not_set
+    
+    mat <- matrix(c(DEG_in_set, DEG_not_set, nonDEG_in_set, nonDEG_not_set),
+                  nrow = 2, byrow = TRUE)
+    rownames(mat) <- c(gene_set_name, paste0("non-", gene_set_name))
+    colnames(mat) <- c("DEG", "non-DEG")
+    
+    test <- fisher.test(mat)
+    
+    tibble(
+      timepoint = tp,
+      odds_ratio = as.numeric(test$estimate),
+      conf_low = test$conf.int[1],
+      conf_high = test$conf.int[2],
+      p_value = test$p.value,
+      sig = ifelse(test$p.value < 0.05, "sig", "ns")
+    )
+  })
+  
+  forest_df$timepoint <- factor(forest_df$timepoint, levels = c("24T", "24R", "144R"))
+  
+  forest_plot <- ggplot(forest_df, aes(x = odds_ratio, y = forcats::fct_rev(timepoint),
+                                       xmin = conf_low, xmax = conf_high,
+                                       color = sig)) +
+    geom_pointrange(size = 1) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+    scale_x_log10() +
+    scale_color_manual(values = c("sig" = "red", "ns" = "grey")) +
+    labs(
+      x = "Odds Ratio (log scale)",
+      y = "Timepoint",
+      title = paste0("Proportion of ", gene_set_name, " Genes that are DEGs vs non-DEGs")
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(forest_plot)
+  
+  return(list(prop_df = prop_df, forest_df = forest_df))
+}
+
+# =====================
+# Load DEGs for all timepoints
+# =====================
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
+DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
+
+deg_list <- list(
+  "24T" = DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05],
+  "24R" = DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05],
+  "144R" = DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
+)
+
+# Background genes (all genes tested)
+all_genes <- rownames(filcpm_matrix)
+total_background_genes <- length(all_genes)
+cat("Total background genes:", total_background_genes, "\n")
+
+# =====================
+# Run for DDR, P53, DIC sets
+# =====================
+DDR_results <- analyze_gene_set(ddr_set, "DDR", deg_list, total_background_genes)
+P53_results <- analyze_gene_set(p53_set, "P53", deg_list, total_background_genes)
+DIC_results <- analyze_gene_set(dic_set, "DIC", deg_list, total_background_genes)
+
+
+```
+
+
+```{r Forest Plots of Motifs}
+
+# ----------------------------
+# Define motifs and gene sets
+# ----------------------------
+motifs <- list(
+  "M1" = final_genes_1_RUV,
+  "M2" = final_genes_2_RUV
+)
+
+gene_sets <- list(
+  DDR = ddr_set,
+  P53 = p53_set,
+  DIC = dic_set
+)
+
+# Background: all genes tested
+all_genes <- rownames(filcpm_matrix)
+total_background_genes <- length(all_genes)
+
+# ----------------------------
+# Function to summarize motifs for a gene set
+# ----------------------------
+summarize_motif_genes <- function(gene_set, gene_set_name, motifs_list) {
+  
+  motif_summary <- map_dfr(names(motifs_list), function(motif_name) {
+    motif_genes <- motifs_list[[motif_name]]
+    non_motif_genes <- setdiff(all_genes, motif_genes)
+    
+    # Genes in motif that are in the gene set
+    in_set <- sum(motif_genes %in% gene_set)
+    not_in_set <- length(motif_genes) - in_set
+    
+    # Contingency table for Fisher's test
+    gene_out_set_in_motif <- sum(non_motif_genes %in% gene_set)
+    gene_out_set_not_in_motif <- length(non_motif_genes) - gene_out_set_in_motif
+    
+    mat <- matrix(c(in_set, not_in_set,
+                    gene_out_set_in_motif, gene_out_set_not_in_motif),
+                  nrow = 2, byrow = TRUE)
+    rownames(mat) <- c(motif_name, paste0("Non-", motif_name))
+    colnames(mat) <- c("in_set", "not_in_set")
+    
+    test <- fisher.test(mat)
+    
+    tibble(
+      motif = motif_name,
+      gene_set = gene_set_name,
+      genes_in_set = in_set,
+      total_genes_in_set = length(gene_set),
+      odds_ratio = as.numeric(test$estimate),
+      conf_low = test$conf.int[1],
+      conf_high = test$conf.int[2],
+      p_value = test$p.value
+    )
+  })
+  
+  # Barplot: proportion of gene set in each motif
+  bar_df <- motif_summary %>%
+    mutate(non_genes_in_set = total_genes_in_set - genes_in_set) %>%
+    pivot_longer(cols = c(genes_in_set, non_genes_in_set),
+                 names_to = "Category", values_to = "Count") %>%
+    mutate(Category = ifelse(Category == "genes_in_set", "Yes", "No"),
+           Fraction = Count / total_genes_in_set)
+  
+  # Plot barplot
+  p_bar <- ggplot(bar_df, aes(x = motif, y = Fraction, fill = Category)) +
+    geom_bar(stat = "identity", position = "stack") +
+    geom_text(aes(label = scales::percent(Fraction, accuracy = 0.1)),
+              position = position_stack(vjust = 0.5), color = "white", size = 5) +
+    scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0,1.2)) +
+    scale_fill_manual(values = c("Yes" = "#377EB8", "No" = "#E41A1C")) +
+    labs(
+      title = paste0("Proportion of ", gene_set_name, " Genes in Motifs"),
+      x = "Motif",
+      y = "Percentage of Gene Set",
+      fill = gene_set_name
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(p_bar)
+  
+  # Forest plot: odds ratios
+  p_forest <- ggplot(motif_summary, aes(x = odds_ratio, y = forcats::fct_rev(motif),
+                                        xmin = conf_low, xmax = conf_high)) +
+    geom_pointrange(size = 1) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+    scale_x_log10() +
+    labs(
+      title = paste0("Odds Ratio of ", gene_set_name, " Genes in Motifs"),
+      x = "Odds Ratio (log scale)",
+      y = "Motif"
+    ) +
+    theme_minimal(base_size = 14)
+  
+  print(p_forest)
+  
+  return(motif_summary)
+}
+
+# ----------------------------
+# Run workflow for all gene sets
+# ----------------------------
+results_list <- imap(gene_sets, function(gene_set, gs_name) {
+  summarize_motif_genes(gene_set, gs_name, motifs)
+})
+
+```
+
+
+```{r AIC Genes Proportion Cormotif RUVs}
+#read in my AIC gene set
+AIC_genes <- readRDS("data/new/RUV/AIC_genes_entrezid.RDS")
+
+AIC_set <- unique(na.omit(AIC_genes))
+
+#DIC genes inside each motif
+in_motif1_AIC <- sum(final_genes_1_RUV %in% AIC_set)
+in_motif2_AIC <- sum(final_genes_2_RUV %in% AIC_set)
+
+#non-AIC genes inside each motif
+in_motif1_nonAIC <- length(final_genes_1_RUV) - in_motif1_AIC
+in_motif2_nonAIC <- length(final_genes_2_RUV) - in_motif2_AIC
+
+#make contingency tables for fishers exact tests
+contingency_motifs_AIC <- matrix(c(
+  in_motif1_AIC, in_motif1_nonAIC,
+  in_motif2_AIC, in_motif2_nonAIC),
+  nrow = 2, byrow = TRUE
+)
+
+#print the contingency tables
+print(contingency_motifs_AIC)
+
+#perform a fisher's exact test (small sample size)
+fisher_test_motifs_AIC <- fisher.test(contingency_motifs_AIC)
+#print fisher's exact test results
+print(fisher_test_motifs_AIC)
+
+#make a summary table of all of these data to plot
+motif_summary_AIC <- tibble(
+  Motif = c("Motif1", "Motif2"),
+  AIC = c(in_motif1_AIC, in_motif2_AIC),
+  non_AIC = c(in_motif1_nonAIC, in_motif2_nonAIC)
+) %>%
+  pivot_longer(cols = c(AIC, non_AIC), names_to = "Category", values_to = "Count") %>%
+  mutate(
+    Category = ifelse(Category == "AIC", "Yes", "No"),
+    Fraction = Count / ave(Count, Motif, FUN = sum),
+    Significant = ifelse(Category == "Yes" & fisher_test_motifs_AIC$p.value < 0.05, "*", "")
+  )
+
+#position significance stars just above bars
+label_positions_AIC <- motif_summary_AIC %>%
+  filter(Category == "Yes") %>%
+  mutate(y_pos = Fraction + 1.01)
+
+#change the ordering so that yes is on the top
+motif_summary_AIC$Category <- factor(motif_summary_AIC$Category, levels = c("Yes", "No"))
+
+#plot the proportions in a barplot
+ggplot(motif_summary_AIC, aes(x = Motif, y = Fraction, fill = Category)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(
+    data = label_positions_AIC %>% filter(Significant != ""),
+    aes(x = Motif, y = y_pos, label = Significant),
+    size = 6,
+    color = "black",
+    fontface = "bold"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1.08)) +
+  scale_fill_manual(values = c("Yes" = "#e41a1c", "No" = "#377eb8")) +
+  labs(
+    title = "Proportion of AIC Genes in Motif 1 vs Motif 2 (RUVs clust + p.post)",
+    x = "Cormotif Motif",
+    y = "Percentage",
+    fill = "AIC Gene"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    plot.title = element_text(size = 16, hjust = 0.5)
+  )
+
+
+#print the proportions and p values
+prop_motif1_AIC <- in_motif1_AIC / length(final_genes_1_RUV)
+prop_motif2_AIC <- in_motif2_AIC / length(final_genes_2_RUV)
+p_val_AIC <- fisher_test_motifs_AIC$p.value
+
+cat(sprintf("Motif1: %.2f%% AIC genes (%d/%d)\n", 100*prop_motif1_AIC, in_motif1_AIC, length(final_genes_1_RUV)))
+cat(sprintf("Motif2: %.2f%% AIC genes (%d/%d)\n", 100*prop_motif2_AIC, in_motif2_AIC, length(final_genes_2_RUV)))
+cat(sprintf("AIC Fisher's Exact Test p-value: %.5f\n", p_val_AIC))
+cat(sprintf("Odds ratio: %.3f\n", fisher_test_motifs_AIC$estimate))
+
+
+```
+
+
 ##p53 Targets Proportion Barplots Redo
 ```{r p53 Cormotif RUVs Proportion Barplots clustlike + p.post}
 
@@ -12203,62 +13665,65 @@ flow_dxr <- read_csv("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR P
 flow <- flow_dxr %>% column_to_rownames("Line")
 
 ####now that I've loaded in the lenient gating number for each, let's make a boxplot
+# 
+# flow_dxr %>% ggplot(aes(x=Individual, y=Purity, color = Line)) +
+#   geom_boxplot() +
+#   theme_bw(base_size = 16) + 
+#   labs(title = "Percent TNNT2 Positive iPSC-CMs") +
+#   ylim(0,105) +
+#   scale_color_manual(values = ind_col)
+#   
 
-flow_dxr %>% ggplot(aes(x=Individual, y=Purity, color = Line)) +
-  geom_boxplot() +
-  theme_bw(base_size = 16) + 
-  labs(title = "Percent TNNT2 Positive iPSC-CMs") +
-  ylim(0,105) +
-  scale_color_manual(values = ind_col)
-  
-
-##make subsets based on species
-flow_dxr %>% ggplot(aes(x=Individual, y=Purity, color = Individual)) +
-  geom_boxplot() +
-  theme_bw(base_size = 15) + 
-  labs(title = "Percent TNNT2 Positive iPSC-CMs") +
-  ylim(0,105) +
-  scale_color_manual(values = ind_col)
-
-leg_show <- c(size = FALSE, color = TRUE, alpha = FALSE)
-
-  
-ggplot(flow_dxr, aes(x = Individual, y = Purity))+
-  geom_boxplot(aes(fill = Individual), show.legend = FALSE)+
-  geom_point(aes(color = Individual, size = 5, alpha = 0.9), show.legend = leg_show) +
-  ylim(0,105) +
-  labs(title = "Percent TNNT2 Positive iPSC-CMs")+
-  theme_bw(base_size = 16)+
-  scale_color_manual(values = c("#003F5C", 
-                                "#45AE91", 
-                                "#58209D", 
-                                "#8B3E9B", 
-                                "#FF6361", 
-                                "#BC4169", 
-                                "#FF2362"))
+# flow_dxr %>% ggplot(aes(x=Individual, y=Purity, color = Individual)) +
+#   geom_boxplot() +
+#   theme_bw(base_size = 15) + 
+#   labs(title = "Percent TNNT2 Positive iPSC-CMs") +
+#   ylim(0,105) +
+#   scale_color_manual(values = ind_col)
+# 
+# leg_show <- c(size = FALSE, color = TRUE, alpha = FALSE)
+# 
+#   
+# ggplot(flow_dxr, aes(x = Individual, y = Purity))+
+#   geom_boxplot(aes(fill = Individual), show.legend = FALSE)+
+#   geom_point(aes(color = Individual, size = 5, alpha = 0.9), show.legend = leg_show) +
+#   ylim(0,105) +
+#   labs(title = "Percent TNNT2 Positive iPSC-CMs")+
+#   theme_bw(base_size = 16)+
+#   scale_color_manual(values = c("#003F5C", 
+#                                 "#45AE91", 
+#                                 "#58209D", 
+#                                 "#8B3E9B", 
+#                                 "#FF6361", 
+#                                 "#BC4169", 
+#                                 "#FF2362"))
 
 ###make a barplot as well
 ####put a line where the average is - 91.34
+####change the line to the median and label it
 
 flow_dxr_df <- as.data.frame(flow_dxr)
 
 # Compute mean value
 avg_vals_dxr <- mean(flow_dxr_df$Purity)
 
+#compute median value
+medi_vals_dxr <- median(flow_dxr_df$Purity)
+
 # Plot
 ggplot(flow_dxr_df, aes(x = Individual, y = Purity)) +
   geom_bar(stat = "identity", 
            fill = ind_col_norep,
            width = 0.9) +
-  geom_hline(yintercept = avg_vals_dxr, 
+  geom_hline(yintercept = medi_vals_dxr, 
              linetype = "dashed", 
              color = "black", 
              linewidth = 0.7) +
-  # annotate("text", x = 5, 
-  #          y = avg_vals_dxr + 2, 
-  #          label = paste0(round(avg_vals_dxr, 1), "%"),
-  #          color = "black", 
-  #          hjust = 3.9) +
+  annotate("text", x = 5, cex = 3,
+           y = medi_vals_dxr + 2,
+           label = paste0(round(medi_vals_dxr, 1), "%"),
+           color = "black",
+           hjust = -0.6) +
   scale_y_continuous(limits = c(0, 100), 
                      expand = c(0, 0)) +
   scale_x_discrete(expand = expansion(mult = c(0.02, 0.02)))+
@@ -12268,4 +13733,723 @@ ggplot(flow_dxr_df, aes(x = Individual, y = Purity)) +
   theme_minimal(base_size = 14)
 
 ```
+
+
+#Immunofluorescence Assay for yH2AX expression
+```{r yH2AX quantification boxplots}
+#I have performed an IFA on iPSC-CMs after tx according to my timepoints with DOX + DMSO
+##I measured expression of yH2AX, a known DNA damage marker, and hoescht for nuclei staining
+
+h2ax_87 <- read.csv("data/Master_summary_87-1_EMP_250811_final.csv")
+h2ax_75 <- read.csv("data/Master_summary_75-1_EMP_250811_final.csv")
+
+#now that I've read in my data, let's organize my matrix so I can create a bar plot
+
+yh2ax_all <- bind_rows(h2ax_87, h2ax_75) %>% 
+  as.data.frame() %>% 
+  dplyr::select(-(contains("2nd")))
+
+# write.csv(yh2ax_all_df, "data/yh2ax_all_df_EMP_250812.csv")
+
+# Define timepoint order
+timepoint_order <- c("24T", "24R", "144R")
+magnifications <- unique(yh2ax_all_df$Magnification)
+
+yh2ax_all_df %>% 
+  dplyr::select(-(contains("2nd")))
+
+# Step 1: Calculate proportion positive
+yh2ax_all_df <- yh2ax_all_df %>%
+  mutate(Proportion_Positive = Positive_ROIs / Total_ROIs,
+         Condition = Name,                       # Full treatment name
+         Timepoint = gsub("DOX|DMSO", "", Name), # Extract timepoint
+         Treatment = Drug,                       # Drug name
+         Individual = factor(Individual),
+         Condition_Fill = Condition)             # For coloring by condition
+
+# Step 2: Plot boxplots per magnification including all conditions
+for (mag in magnifications) {
+  
+  df_mag <- yh2ax_all_df %>%
+    dplyr::filter(Magnification == mag) %>%
+    mutate(Timepoint = factor(Timepoint, levels = timepoint_order))
+  
+  p <- ggplot(df_mag, aes(x = Timepoint, y = Proportion_Positive, fill = Condition_Fill)) +
+    geom_boxplot(outlier.shape = NA, alpha = 0.6, position = position_dodge(width = 0.8)) +
+    geom_jitter(aes(color = Individual), width = 0.15, size = 2, show.legend = FALSE) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1), expand = c(0, 0)) +
+    labs(title = paste0("yH2AX Percent Positive - ", mag),
+         y = "Percent Positive Nuclei",
+         x = "Timepoint",
+         fill = "Condition") +
+    theme_minimal(base_size = 14) +
+    theme(legend.position = "bottom")
+  
+  print(p)
+}
+
+
+```
+
+
+```{r Boxplots IF quantification}
+library(ggsignif)
+
+# Define colors
+#tx_col
+ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
+
+# Step 1: Filter and simplify
+yh2ax_filtered <- yh2ax_all_df %>%
+  dplyr::filter(Drug %in% c("DOX","DMSO")) %>%
+  mutate(Treatment = Drug,
+         Timepoint = gsub("DOX|DMSO", "", Name),
+         Individual = factor(ifelse(Individual == "87", "Ind2",
+                                    ifelse(Individual == "75", "Ind4", as.character(Individual)))))
+
+# Step 2: Keep top 3 most consistent images per condition × individual × magnification
+yh2ax_consistent <- yh2ax_filtered %>%
+  group_by(Treatment, Timepoint, Individual, Magnification) %>%
+  arrange(desc(Proportion_Positive)) %>%  # for positive proportion
+  slice_head(n = 3) %>%
+  ungroup()
+
+# Step 3: Loop over magnifications and plot both Proportion_Positive and avg_mean_intensity
+magnifications <- unique(yh2ax_consistent$Magnification)
+
+for (mag in magnifications) {
+  
+  df_mag <- yh2ax_consistent %>%
+    dplyr::filter(Magnification == mag)
+  
+  # ---- Proportion Positive plot ----
+  y_max_prop <- max(df_mag$Proportion_Positive, na.rm = TRUE)
+  
+  p_prop <- ggplot(df_mag, aes(x = Treatment, y = Proportion_Positive)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "wilcox.test",
+      map_signif_level = FALSE,
+      y_position = y_max_prop + 0.05
+    ) +
+    facet_wrap(~Timepoint) +
+    scale_y_continuous(limits = c(0,1), expand = c(0,0)) +
+    scale_fill_manual(values = tx_col) +
+    scale_color_manual(values = ind_col) +
+    theme_bw(base_size = 14) +
+    labs(
+      title = paste0("yH2AX Percent Positive - ", mag),
+      y = "Percent Positive Nuclei",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    )
+  
+  print(p_prop)
+  
+  # ---- Avg Mean Intensity plot ----
+  y_max_int <- max(df_mag$Avg_Mean_Intensity, na.rm = TRUE)
+  
+  p_int <- ggplot(df_mag, aes(x = Treatment, y = Avg_Mean_Intensity)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "wilcox.test",
+      map_signif_level = FALSE,
+      y_position = y_max_int + 0.05 * y_max_int
+    ) +
+    facet_wrap(~Timepoint) +
+    scale_fill_manual(values = tx_col) +
+    scale_color_manual(values = ind_col) +
+    theme_bw(base_size = 14) +
+    labs(
+      title = paste0("yH2AX Avg Mean Intensity - ", mag),
+      y = "Average Mean Intensity",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    )
+  
+  print(p_int)
+}
+
+
+```
+
+```{r Test}
+
+library(ggsignif)
+
+# Define treatment and individual colors
+#tx_col
+ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
+
+# Step 1: Filter and calculate proportion positive
+yh2ax_filtered <- yh2ax_all_df %>%
+  dplyr::select(Timepoint = Name, Individual, Drug, Magnification, Positive_ROIs, Total_ROIs) %>%
+  dplyr::filter(Drug %in% c("DOX","DMSO")) %>%
+  mutate(Proportion_Positive = Positive_ROIs / Total_ROIs,
+         Treatment = Drug,
+         Timepoint = gsub("DOX|DMSO", "", Timepoint),
+         Individual = factor(ifelse(Individual == "87", "Ind2",
+                                    ifelse(Individual == "75", "Ind4", as.character(Individual)))))
+
+# Step 2: Assign A/B groups and pivot wider
+yh2ax_grouped <- yh2ax_filtered %>%
+  group_by(Treatment, Timepoint, Individual, Magnification) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>%
+  tidyr::pivot_wider(
+    id_cols = c(Timepoint, Individual, Treatment, Magnification),
+    names_from = group_number,
+    values_from = Proportion_Positive,
+    values_fn = mean  # averages duplicates if present
+  ) %>%
+  ungroup() %>%
+  mutate(total = round(rowMeans(cbind(A,B), na.rm = TRUE), 3),
+         Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+         Treatment = factor(Treatment, levels = c("DOX","DMSO")))
+
+# Step 3: Loop over magnifications and plot
+magnifications <- unique(yh2ax_grouped$Magnification)
+
+for (mag in magnifications) {
+  
+  df_mag <- yh2ax_grouped %>%
+    dplyr::filter(Magnification == mag)
+  
+  p <- ggplot(df_mag, aes(x = Treatment, y = total)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      step_increase = 0.1,
+      map_signif_level = FALSE,
+      test = "wilcox.test"
+    ) +
+    facet_wrap(~Timepoint) +
+    theme_bw(base_size = 14) +
+    scale_fill_manual(values = tx_col) +
+    scale_color_manual(values = ind_col) +
+    labs(
+      title = paste0("yH2AX Percent Positive - ", mag),
+      y = "Percent Positive Nuclei",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    )
+  
+  print(p)
+}
+
+```
+
+```{r}
+
+# Define colors
+
+ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
+
+# Step 1: Filter and simplify
+yh2ax_filtered <- yh2ax_all_df %>%
+  dplyr::filter(Drug %in% c("DOX","DMSO")) %>%
+  mutate(Treatment = Drug,
+         Timepoint = gsub("DOX|DMSO", "", Name),
+         Individual = factor(ifelse(Individual == "87", "Ind2",
+                                    ifelse(Individual == "75", "Ind4", as.character(Individual)))))
+
+# Step 2: Keep top 3 most consistent images per condition × individual × magnification
+yh2ax_consistent <- yh2ax_filtered %>%
+  group_by(Treatment, Timepoint, Individual, Magnification) %>%
+  arrange(desc(Proportion_Positive)) %>%  # for positive proportion
+  slice_head(n = 3) %>%
+  ungroup()
+
+# Step 3: Loop over magnifications and plot both Proportion_Positive and avg_mean_intensity
+magnifications <- unique(yh2ax_consistent$Magnification)
+
+for (mag in magnifications) {
+  
+  df_mag <- yh2ax_consistent %>%
+    dplyr::filter(Magnification == mag)
+  
+  # ---- Proportion Positive plot ----
+  y_max_prop <- max(df_mag$Proportion_Positive, na.rm = TRUE)
+  
+  p_prop <- ggplot(df_mag, aes(x = Treatment, y = Proportion_Positive)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "wilcox.test",
+      map_signif_level = FALSE,
+      y_position = y_max_prop + 0.05
+    ) +
+    facet_wrap(~Timepoint) +
+    scale_y_continuous(limits = c(0,1), expand = c(0,0)) +
+    scale_fill_manual(values = tx_col) +
+    scale_color_manual(values = ind_col) +
+    theme_bw(base_size = 14) +
+    labs(
+      title = paste0("yH2AX Percent Positive - ", mag),
+      y = "Percent Positive Nuclei",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    )
+  
+  print(p_prop)
+  
+  # ---- Avg Mean Intensity plot ----
+  y_max_int <- max(df_mag$Avg_Mean_Intensity, na.rm = TRUE)
+  
+  p_int <- ggplot(df_mag, aes(x = Treatment, y = Avg_Mean_Intensity)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "wilcox.test",
+      map_signif_level = FALSE,
+      y_position = y_max_int + 0.05 * y_max_int
+    ) +
+    facet_wrap(~Timepoint) +
+    scale_fill_manual(values = tx_col) +
+    scale_color_manual(values = ind_col) +
+    theme_bw(base_size = 14) +
+    labs(
+      title = paste0("yH2AX Avg Mean Intensity - ", mag),
+      y = "Average Mean Intensity",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    )
+  
+  print(p_int)
+}
+
+```
+
+```{r Boxplots of Percentage and Mean Intensity}
+
+# Set factor levels explicitly for timepoints
+timepoint_levels <- c("24T", "24R", "144R")
+
+# Colors
+ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
+#tx_col
+
+
+# -------------------------------
+#percent positive samples
+yh2ax_filtered <- yh2ax_all_df %>%
+  dplyr::select(Timepoint = Name, Individual, Drug, Magnification, Positive_ROIs, Total_ROIs) %>%
+  dplyr::filter(Drug %in% c("DOX","DMSO")) %>%
+  mutate(Proportion_Positive = Positive_ROIs / Total_ROIs,
+         Treatment = Drug,
+         Timepoint = gsub("DOX|DMSO", "", Timepoint),
+         Individual = factor(ifelse(Individual == "87", "Ind2",
+                                    ifelse(Individual == "75", "Ind4", as.character(Individual)))))
+
+# Top 3 most consistent images per condition
+yh2ax_consistent <- yh2ax_filtered %>%
+  group_by(Treatment, Timepoint, Individual, Magnification) %>%
+  arrange(desc(Proportion_Positive)) %>%
+  slice_head(n = 3) %>%
+  ungroup()
+
+# Group A/B and average
+yh2ax_grouped <- yh2ax_consistent %>%
+  group_by(Treatment, Timepoint, Individual, Magnification) %>%
+  mutate(group_number = rep(c("A","B"), length.out = n())) %>%
+  pivot_wider(
+    id_cols = c(Timepoint, Individual, Treatment, Magnification),
+    names_from = group_number,
+    values_from = Proportion_Positive,
+    values_fn = mean
+  ) %>%
+  ungroup() %>%
+  mutate(total = round(rowMeans(cbind(A,B), na.rm = TRUE), 3),
+         Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+         Treatment = factor(Treatment, levels = c("DOX","DMSO")))
+
+# Plot Percent Positive
+magnifications <- unique(yh2ax_grouped$Magnification)
+for (mag in magnifications) {
+  
+  df_mag <- yh2ax_grouped %>%
+    dplyr::filter(Magnification == mag)
+  
+  y_max <- max(df_mag$total, na.rm = TRUE)
+  
+  p <- ggplot(df_mag, aes(x = Treatment, y = total)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(colour = Individual), size = 3,show.legend = TRUE) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "wilcox.test",
+      map_signif_level = FALSE,
+      y_position = y_max
+    ) +
+    facet_wrap(~Timepoint) +
+    scale_y_continuous(limits = c(0,1.1), expand = c(0,0)) +
+    scale_fill_manual(values = tx_col) +
+    scale_color_manual(values = ind_col) +
+    theme_bw(base_size = 14) +
+    labs(
+      title = paste0("yH2AX Percent Positive - ", mag),
+      y = "Percent Positive Nuclei",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    )
+  
+  print(p)
+}
+
+
+```
+
+
+#Measure Intensity from .csv summary files
+```{r Intensity yH2AX per nucleus}
+
+# library(stringr)
+
+#save this for posterity, but don't run again since it's hundreds of .csv files
+
+# #read in the DAPI counts new folder from each individual
+# ind2_dir <- "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/DAPI counts new"  
+# ind4_dir <- "D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/DAPI counts new"  
+# 
+# #combine my folders into a single list
+# folders <- list(
+#   Ind2 = ind2_dir,  # individual 87
+#   Ind4 = ind4_dir   # individual 75
+# )
+# 
+#read in all of these csv files to process into summaries
+# intensity_df <- map_dfr(names(folders), function(indiv_label) {
+#   csv_files <- list.files(folders[[indiv_label]], pattern = "\\.csv$", full.names = TRUE, recursive = TRUE)
+# 
+#   map_dfr(csv_files, function(file) {
+#     df <- read_csv(file, show_col_types = FALSE)
+# 
+#     # Extract image name
+#     img_name <- str_remove(basename(file), "^cell_intensity_")
+#     img_name <- str_remove(img_name, "\\.csv$")
+# 
+#     # Parse Treatment, Timepoint, Magnification
+#     df %>%
+#       mutate(
+#         Individual = indiv_label,
+#         Image = img_name,
+#         Treatment = case_when(
+#           str_detect(img_name, regex("DOX", ignore_case = TRUE)) ~ "DOX",
+#           str_detect(img_name, regex("DMSO", ignore_case = TRUE)) ~ "DMSO",
+#           TRUE ~ NA_character_
+#         ),
+#         Timepoint = case_when(
+#           str_detect(img_name, "24T") ~ "24T",
+#           str_detect(img_name, "24R") ~ "24R",
+#           str_detect(img_name, "144R") ~ "144R",
+#           TRUE ~ NA_character_
+#         ),
+#         Magnification = case_when(
+#           str_detect(img_name, "10X") ~ "10X",
+#           str_detect(img_name, "20X") ~ "20X",
+#           str_detect(img_name, "40X") ~ "40X",
+#           TRUE ~ NA_character_
+#         )
+#       )
+#   })
+# })
+# 
+# #make a summary for each image
+# image_summary <- intensity_df %>%
+#   group_by(Individual, Image, Treatment, Timepoint, Magnification, Area, Mean, Min, Max, Norm_Intensity) %>%
+#   summarise(
+#     Mean_Intensity = mean(Mean, na.rm = TRUE),
+#     Median_Intensity = median(Mean, na.rm = TRUE),
+#     Nuclei_Count = n(),
+#     .groups = "drop"
+#   )
+# 
+# #make a summary for each treatment condition
+# treatment_summary <- image_summary %>%
+#   group_by(Individual, Treatment, Timepoint, Magnification, Area, Mean, Min, Max, Norm_Intensity) %>%
+#   summarise(
+#     Avg_of_Image_Means = mean(Mean_Intensity, na.rm = TRUE),
+#     Median_of_Image_Medians = median(Median_Intensity, na.rm = TRUE),
+#     Total_Nuclei = sum(Nuclei_Count, na.rm = TRUE),
+#     .groups = "drop"
+#   )
+# 
+# #save to a csv for both outputs
+# write_csv(image_summary, "data/new/IF_all_image_intensity_summary.csv")
+# write_csv(treatment_summary, "data/new/IF_treatment_intensity_summary.csv")
+
+```
+
+Mean → average pixel intensity per nucleus
+
+Median_Intensity → median of the per-nucleus means
+
+Nuclei_Count → number of nuclei in that image
+
+
+```{r Insert .roi files for Analysis of Intensity, message=FALSE, warning=FALSE, include=FALSE}
+#I'm going to import all of the .roi files I have to get a per-nucleus measurement of intensity
+library(Momocs)
+library(RImageJROI)
+library(fs)
+
+####Commented out because it will take a long time to run multiple times, saved as an R object for the final summary sheet with all ROIs####
+
+#combine my paths into a list
+# folders_roi <- c(
+#   "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new",
+#   "D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new"
+# )
+
+# individuals_roi <- c("Ind2", "Ind4")
+
+# #confirm that there are zip files in these folders containing roi files
+# list.files(folders_roi[1], pattern = "\\.zip$", full.names = TRUE)
+# list.files(folders_roi[2], pattern = "\\.zip$", full.names = TRUE)
+# 
+# #run an example first to check the columns
+# # example_zip <- "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/2ndonly_87_yh2ax_10X_dup_RGB_0001_DAPI.zip"
+# # roi_data_example <- read.ijzip(example_zip)
+# 
+# #now remove any zip files that are secondary only samples
+# zip_list <- folders_roi %>% 
+#   map(~ fs::dir_ls(path = ., glob = "*.zip")) %>% 
+#   unlist() %>% 
+#   .[!grepl("2nd", .)]
+# 
+# extract_roi_summary <- function(zip_path) {
+#   roi_data <- read.ijzip(zip_path)
+#   
+# # Parse metadata from filename
+#   filename <- basename(zip_path)
+#   Individual <- ifelse(grepl("87", filename), "Ind2", "Ind4")
+#   Timepoint <- stringr::str_extract(filename, "24T|24R|144R") %>% 
+#     factor(levels = c("24T","24R","144R"))
+#   Treatment <- ifelse(grepl("DOX", filename), "DOX", "DMSO")
+#   Magnification <- stringr::str_extract(filename, "10X|20X|40X")
+#   
+#   
+# #build an roi table
+#     roi_df <- purrr::map_dfr(roi_data, function(roi) {
+#     pixels <- roi$coords
+#     if(is.null(pixels)) return(NULL)
+#     tibble(
+#       ROI_ID = roi$name %||% NA_character_,
+#       Area = roi$width * roi$height,
+#       Mean = mean(pixels, na.rm = TRUE),
+#       Min = min(pixels, na.rm = TRUE),
+#       Max = max(pixels, na.rm = TRUE)
+#     )
+#   })
+#     
+# # Summarize per image
+#   image_summary <- roi_df %>%
+#     summarise(
+#       Nuclei_Count = n(),
+#       Mean_Intensity = mean(Mean, na.rm = TRUE),
+#       Median_Intensity = median(Mean, na.rm = TRUE),
+#       Total_Intensity = sum(Mean * Area, na.rm = TRUE)
+#     ) %>%
+#     mutate(
+#       Image = filename,
+#       Individual = Individual,
+#       Timepoint = Timepoint,
+#       Treatment = Treatment,
+#       Magnification = Magnification
+#     )
+#   
+#   return(image_summary)
+# }
+# 
+# summary_all <- purrr::map_dfr(zip_list, extract_roi_summary)
+# 
+# saveRDS(summary_all, "data/summary_all_IF_ROI.RDS")
+
+summary_all <- readRDS("data/summary_all_IF_ROI.RDS")
+
+```
+
+Now that I have found the mean and median intensities, stratify by magnification
+Then sort all of the treatment/timepoint information by individual
+```{r Set up Dataframe for Boxplots IF Intensity}
+
+sorted_summary <- summary_all %>% 
+  arrange(Magnification, Treatment, Timepoint, Individual, desc(Nuclei_Count)) %>% 
+  group_by(Magnification, Treatment, Timepoint, Individual) %>% 
+  mutate(Rank = row_number()) %>% 
+  ungroup()
+
+
+```
+
+
+
+```{r Plot Intensity Boxplots yH2AX}
+
+#read in .csv summary files
+read.csv("data/new/IF_all_image_intensity_summary.csv")
+read.csv("data/new/IF_treatment_intensity_summary.csv")
+
+#prepare data for plotting by removing 2nd only samples
+image_summary <- image_summary %>%
+  dplyr::filter(!is.na(Treatment))
+
+treatment_summary <- treatment_summary %>%
+  dplyr::filter(!is.na(Treatment))
+
+####plot this data
+
+plot_df <- image_summary %>%
+  filter(Treatment %in% c("DOX","DMSO")) %>%
+  mutate(
+    Individual = factor(Individual, levels = c("Ind2", "Ind4")),
+    Treatment = factor(Treatment, levels = c("DOX","DMSO")),
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"))
+  )
+
+magnifications <- unique(plot_df$Magnification)
+
+for (mag in magnifications) {
+  df_mag <- plot_df %>% filter(Magnification == mag)
+  
+  p <- ggplot(df_mag, aes(x = Treatment, y = Mean_Intensity)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(color = Individual), position = position_dodge(width = 0.8), size = 2) +
+    facet_wrap(~Timepoint) +
+    scale_color_manual(values = ind_col) +
+    scale_fill_manual(values = tx_col) +
+    labs(
+      title = paste0("yH2AX Mean Intensity - ", mag),
+      y = "Mean Intensity per Nucleus (pixels)",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    ) +
+    theme_bw(base_size = 14) +
+    scale_y_continuous(limits = c(0, NA)) +
+    # Statistical comparison: DOX vs DMSO per timepoint
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      map_signif_level = TRUE,
+      test = "wilcox.test"
+    )
+  
+  print(p)
+}
+
+
+####try making a percent of maximum to normalize into a percentage
+max_intensity <- max(plot_df$Mean_Intensity, na.rm = TRUE)
+
+plot_df_int <- plot_df %>%
+  mutate(Percent_of_Max = (Mean_Intensity / max_intensity) * 100,
+         Individual = factor(Individual, levels = c("Ind2","Ind4")),
+         Treatment = factor(Treatment, levels = c("DOX","DMSO")),
+         Timepoint = factor(Timepoint, levels = c("24T","24R","144R")))
+
+magnifications <- unique(plot_df_int$Magnification)
+ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
+tx_col <- c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")
+
+for (mag in magnifications) {
+  df_mag <- plot_df_int %>% filter(Magnification == mag)
+  
+  p <- ggplot(df_mag, aes(x = Treatment, y = Percent_of_Max)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(color = Individual), position = position_dodge(width = 0.8), size = 2) +
+    facet_wrap(~Timepoint) +
+    scale_color_manual(values = ind_col) +
+    scale_fill_manual(values = tx_col) +
+    scale_y_continuous(limits = c(0,110)) +  # allow slight buffer over 100%
+    labs(
+      title = paste0("yH2AX Mean Intensity (% of Max) - ", mag),
+      y = "Percent of Maximum Intensity",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    ) +
+    theme_bw(base_size = 14) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "wilcox.test",
+      map_signif_level = TRUE
+    )
+  
+  print(p)
+}
+
+####now try median
+median_df <- image_summary %>%
+  filter(!is.na(Treatment)) 
+
+#keep 5 most consistent images per condition and individual (since some have many more nuclei)
+median_df_consistent <- median_df %>%
+  group_by(Individual, Treatment, Timepoint, Magnification) %>%
+  arrange(desc(Nuclei_Count)) %>%  # largest number of nuclei first
+  slice_head(n = 5) %>%            # keep top 5
+  ungroup()
+
+#compute the percent of max median intensity
+max_median <- max(median_df_consistent$Median_Intensity, na.rm = TRUE)
+
+median_df_consistent <- median_df_consistent %>%
+  mutate(Percent_of_Max = (Median_Intensity / max_median) * 100,
+         Individual = factor(Individual, levels = c("Ind2","Ind4")),
+         Treatment = factor(Treatment, levels = c("DOX","DMSO")),
+         Timepoint = factor(Timepoint, levels = c("24T","24R","144R")))
+
+magnifications <- unique(median_df_consistent$Magnification)
+ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
+tx_col <- c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")
+
+
+#plot as above
+for (mag in magnifications) {
+  df_mag <- median_df_consistent %>% filter(Magnification == mag)
+  
+  p <- ggplot(df_mag, aes(x = Treatment, y = Percent_of_Max)) +
+    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
+    geom_point(aes(color = Individual), position = position_dodge(width = 0.8), size = 2) +
+    facet_wrap(~Timepoint) +
+    scale_color_manual(values = ind_col) +
+    scale_fill_manual(values = tx_col) +
+    scale_y_continuous(limits = c(0,110)) +  # slight buffer over 100%
+    labs(
+      title = paste0("yH2AX Median Intensity (% of Max) - ", mag),
+      y = "Percent of Maximum Median Intensity",
+      x = "Treatment",
+      fill = "Treatment",
+      colour = "Individual"
+    ) +
+    theme_bw(base_size = 14) +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "wilcox.test",
+      map_signif_level = TRUE
+    )
+  
+  print(p)
+}
+
+
+```
+
+```{r Plot Intensity as Total Fluorescence mean x area}
+
+
+
+```
+
 

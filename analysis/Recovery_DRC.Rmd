@@ -18,9 +18,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 This contains data from all three individuals used for this timecourse experiment
-75-1, 78-1, 17-3 iPSCs
+78-1, 75-1, 17-3 iPSCs
 50,000 cells in 60 wells of 6x 96 well plates 
 Treated with varying concentrations of doxrubicin, 5-fluorouracil, and DMSO vehicle matched controls
+
+78-1 = Ind3
+75-1 = Ind4
+17-3 = Ind5
 
 ```{r Libraries, echo = FALSE}
 library(tidyverse)
@@ -37,17 +41,23 @@ AllData <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR 
      sheet = "Fin_Sheet_Analysis")
 View(AllData)
 
-Ind1_75_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
-     sheet = "Fin_75_Sheet")
-View(Ind1_75_data)
-
-Ind2_78_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+Ind3_78_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
      sheet = "Fin_78_Sheet")
-View(Ind2_78_data)
+View(Ind3_78_data)
 
-Ind3_17_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+#this is actually ind 3 according to my RNAseq - 78-1 F
+
+Ind4_75_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+     sheet = "Fin_75_Sheet")
+View(Ind4_75_data)
+
+#this is actually ind 4 according to my RNAseq - 75-1 F
+
+Ind5_17_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
      sheet = "Fin_17_Sheet")
-View(Ind3_17_data)
+View(Ind5_17_data)
+
+#this is actually ind 5 according to my RNAseq - 17-3 M
 
 ```
 
@@ -55,25 +65,31 @@ Now that I've imported my data, let's go ahead and filter the data to reflect ti
 ```{r Filter Data, echo=FALSE}
 ####all ind####
 dox_all <- AllData %>% filter(Drug =="DOX")
-fluo_all <- AllData %>% filter(Drug =="FLUO")
 dmso_all <- AllData %>% filter(Drug =="DMSO")
 
-####Ind1 75-1####
-dox_75 <- Ind1_75_data %>% filter(Drug=="DOX")
-fluo_75 <- Ind1_75_data %>% filter(Drug=="FLUO")
-dmso_75 <- Ind1_75_data %>% filter(Drug=="DMSO")
+####Ind1 78-1####
+dox_78 <- Ind3_78_data %>% filter(Drug=="DOX")
+dmso_78 <- Ind3_78_data %>% filter(Drug=="DMSO")
 
-####Ind2 78-1####
-dox_78 <- Ind2_78_data %>% filter(Drug=="DOX")
-fluo_78 <- Ind2_78_data %>% filter(Drug=="FLUO")
-dmso_78 <- Ind2_78_data %>% filter(Drug=="DMSO")
+####Ind4 75-1####
+dox_75 <- Ind4_75_data %>% filter(Drug=="DOX")
+dmso_75 <- Ind4_75_data %>% filter(Drug=="DMSO")
 
-####Ind3 17-3####
-dox_17 <- Ind3_17_data %>% filter(Drug=="DOX")
-fluo_17 <- Ind3_17_data %>% filter(Drug=="FLUO")
-dmso_17 <- Ind3_17_data %>% filter(Drug=="DMSO")
+####Ind5 17-3####
+dox_17 <- Ind5_17_data %>% filter(Drug=="DOX")
+dmso_17 <- Ind5_17_data %>% filter(Drug=="DMSO")
 ```
 
+```{r 5FU Data, include=FALSE}
+# fluo_all <- AllData %>% filter(Drug =="FLUO")
+# 
+# fluo_75 <- Ind1_75_data %>% filter(Drug=="FLUO")
+# 
+# fluo_78 <- Ind2_78_data %>% filter(Drug=="FLUO")
+# 
+# fluo_17 <- Ind3_17_data %>% filter(Drug=="FLUO")
+
+```
 
 I have three timepoints that I'm investigating through this experiment, they will be treated separately
 Let's filter the data accordingly by timepoint (24hr, 48hr, 72hr)
@@ -84,10 +100,6 @@ dox24hrall <- dox_all %>% filter(FinTime == "24hr")
 dox48hrall <- dox_all %>% filter(FinTime == "48hr")
 dox72hrall <- dox_all %>% filter(FinTime == "72hr")
 
-####FLUO Timepoints All####
-fluo24hrall <- fluo_all %>% filter(FinTime == "24hr")
-fluo48hrall <- fluo_all %>% filter(FinTime == "48hr")
-fluo72hrall <- fluo_all %>% filter(FinTime == "72hr")
 
 ####DMSO Timepoints All####
 dmso24hrall <- dmso_all %>% filter(FinTime == "24hr")
@@ -101,11 +113,6 @@ dox24hr75 <- dox_75 %>% filter(FinTime == "24hr")
 dox48hr75 <- dox_75 %>% filter(FinTime == "48hr")
 dox72hr75 <- dox_75 %>% filter(FinTime == "72hr")
 
-####FLUO Timepoints 75-1####
-fluo24hr75 <- fluo_75 %>% filter(FinTime == "24hr")
-fluo48hr75 <- fluo_75 %>% filter(FinTime == "48hr")
-fluo72hr75 <- fluo_75 %>% filter(FinTime == "72hr")
-
 ####DMSO Timepoints 75-1####
 dmso24hr75 <- dmso_75 %>% filter(FinTime == "24hr")
 dmso48hr75 <- dmso_75 %>% filter(FinTime == "48hr")
@@ -115,11 +122,6 @@ dmso72hr75 <- dmso_75 %>% filter(FinTime == "72hr")
 dox24hr78 <- dox_78 %>% filter(FinTime == "24hr")
 dox48hr78 <- dox_78 %>% filter(FinTime == "48hr")
 dox72hr78 <- dox_78 %>% filter(FinTime == "72hr")
-
-####FLUO Timepoints 78-1####
-fluo24hr78 <- fluo_78 %>% filter(FinTime == "24hr")
-fluo48hr78 <- fluo_78 %>% filter(FinTime == "48hr")
-fluo72hr78 <- fluo_78 %>% filter(FinTime == "72hr")
 
 ####DMSO Timepoints 78-1####
 dmso24hr78 <- dmso_78 %>% filter(FinTime == "24hr")
@@ -131,11 +133,6 @@ dox24hr17 <- dox_17 %>% filter(FinTime == "24hr")
 dox48hr17 <- dox_17 %>% filter(FinTime == "48hr")
 dox72hr17 <- dox_17 %>% filter(FinTime == "72hr")
 
-####FLUO Timepoints 17-3####
-fluo24hr17 <- fluo_17 %>% filter(FinTime == "24hr")
-fluo48hr17 <- fluo_17 %>% filter(FinTime == "48hr")
-fluo72hr17 <- fluo_17 %>% filter(FinTime == "72hr")
-
 ####DMSO Timepoints 17-3####
 dmso24hr17 <- dmso_17 %>% filter(FinTime == "24hr")
 dmso48hr17 <- dmso_17 %>% filter(FinTime == "48hr")
@@ -143,6 +140,30 @@ dmso72hr17 <- dmso_17 %>% filter(FinTime == "72hr")
 
 ```
 
+
+```{r 5FU Filter Data, include=FALSE}
+
+# ####FLUO Timepoints All####
+# fluo24hrall <- fluo_all %>% filter(FinTime == "24hr")
+# fluo48hrall <- fluo_all %>% filter(FinTime == "48hr")
+# fluo72hrall <- fluo_all %>% filter(FinTime == "72hr")
+# 
+# ####FLUO Timepoints 75-1####
+# fluo24hr75 <- fluo_75 %>% filter(FinTime == "24hr")
+# fluo48hr75 <- fluo_75 %>% filter(FinTime == "48hr")
+# fluo72hr75 <- fluo_75 %>% filter(FinTime == "72hr")
+# 
+# ####FLUO Timepoints 78-1####
+# fluo24hr78 <- fluo_78 %>% filter(FinTime == "24hr")
+# fluo48hr78 <- fluo_78 %>% filter(FinTime == "48hr")
+# fluo72hr78 <- fluo_78 %>% filter(FinTime == "72hr")
+# 
+# ####FLUO Timepoints 17-3####
+# fluo24hr17 <- fluo_17 %>% filter(FinTime == "24hr")
+# fluo48hr17 <- fluo_17 %>% filter(FinTime == "48hr")
+# fluo72hr17 <- fluo_17 %>% filter(FinTime == "72hr")
+
+```
 
 
 Now that these are filtered by individual, time, and drug - I will start plotting the data
@@ -214,70 +235,6 @@ boxplot(dox24hr17$Ind3_17_Fin ~ dox24hr17$Conc,
         main = "DOXORUBICIN 24hr 17-3 Raw Data"
 )
 
-#####FLUO samples#####
-#FLUO 78-1 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 78-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr78$Ind2_78_In ~ fluo24hr78$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1"
-)
-
-boxplot(fluo24hr78$Ind2_78_Fin ~ fluo24hr78$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 78-1"
-)
-
-#FLUO 75-1 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 75-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr75$Ind1_75_In ~ fluo24hr75$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1"
-)
-
-boxplot(fluo24hr75$Ind1_75_Fin ~ fluo24hr75$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 75-1"
-)
-
-#FLUO 17-3 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 17-3 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr17$Ind3_17_In ~ fluo24hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3"
-)
-
-boxplot(fluo24hr17$Ind3_17_Fin ~ fluo24hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 17-3"
-)
-
 #####DMSO samples#####
 #DMSO 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -344,6 +301,73 @@ boxplot(dmso24hr17$Ind3_17_Fin ~ dmso24hr17$Conc,
 
 ```
 
+```{r 5FU Raw Data 24hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 78-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr78$Ind2_78_In ~ fluo24hr78$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1"
+# )
+# 
+# boxplot(fluo24hr78$Ind2_78_Fin ~ fluo24hr78$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 78-1"
+# )
+# 
+# #FLUO 75-1 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 75-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr75$Ind1_75_In ~ fluo24hr75$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1"
+# )
+# 
+# boxplot(fluo24hr75$Ind1_75_Fin ~ fluo24hr75$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 75-1"
+# )
+# 
+# #FLUO 17-3 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 17-3 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr17$Ind3_17_In ~ fluo24hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3"
+# )
+# 
+# boxplot(fluo24hr17$Ind3_17_Fin ~ fluo24hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 17-3"
+# )
+```
+
+
 Now let's look at the raw data for the 48hr timepoint
 ```{r Boxplots Raw Data 48hr}
 
@@ -409,69 +433,6 @@ boxplot(dox48hr17$Ind3_17_Fin ~ dox48hr17$Conc,
         ylab = "Cell Viability (RFLU)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 48hr 17-3"
-)
-#####FLUO samples#####
-#FLUO 78-1 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 78-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr78$Ind2_78_In ~ fluo48hr78$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1"
-)
-
-boxplot(fluo48hr78$Ind2_78_Fin ~ fluo48hr78$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 78-1"
-)
-
-#FLUO 75-1 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 75-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr75$Ind1_75_In ~ fluo48hr75$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1"
-)
-
-boxplot(fluo48hr75$Ind1_75_Fin ~ fluo48hr75$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 75-1"
-)
-
-#FLUO 17-3 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 17-3 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr17$Ind3_17_In ~ fluo48hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3"
-)
-
-boxplot(fluo48hr17$Ind3_17_Fin ~ fluo48hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 17-3"
 )
 
 #####DMSO samples#####
@@ -541,6 +502,73 @@ boxplot(dmso48hr17$Ind3_17_Fin ~ dmso48hr17$Conc,
 
 ```
 
+```{r 5FU Raw Samples 48hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 78-1 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr78$Ind2_78_In ~ fluo48hr78$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1"
+# )
+# 
+# boxplot(fluo48hr78$Ind2_78_Fin ~ fluo48hr78$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 78-1"
+# )
+# 
+# #FLUO 75-1 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 75-1 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr75$Ind1_75_In ~ fluo48hr75$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1"
+# )
+# 
+# boxplot(fluo48hr75$Ind1_75_Fin ~ fluo48hr75$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 75-1"
+# )
+# 
+# #FLUO 17-3 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 17-3 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr17$Ind3_17_In ~ fluo48hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3"
+# )
+# 
+# boxplot(fluo48hr17$Ind3_17_Fin ~ fluo48hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 17-3"
+# )
+```
+
+
 ```{r Boxplots Raw Data 72hr}
 
 #####DOX Samples#####
@@ -607,70 +635,6 @@ boxplot(dox72hr17$Ind3_17_Fin ~ dox72hr17$Conc,
         main = "DOXORUBICIN 72hr 17-3"
 )
 
-#####FLUO samples#####
-#FLUO 78-1 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 78-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr78$Ind2_78_In ~ fluo72hr78$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1"
-)
-
-boxplot(fluo72hr78$Ind2_78_Fin ~ fluo72hr78$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 78-1"
-)
-
-#FLUO 75-1 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 75-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr75$Ind1_75_In ~ fluo72hr75$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1"
-)
-
-boxplot(fluo72hr75$Ind1_75_Fin ~ fluo72hr75$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 75-1"
-)
-
-#FLUO 17-3 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"RFLU by Concentration FLUO - 17-3 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr17$Ind3_17_In ~ fluo72hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3"
-)
-
-boxplot(fluo72hr17$Ind3_17_Fin ~ fluo72hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 17-3"
-)
-
 #####DMSO samples#####
 #DMSO 78-1 72HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -735,6 +699,75 @@ boxplot(dmso72hr17$Ind3_17_Fin ~ dmso72hr17$Conc,
         main = "DMSO VEHICLE 72hr 17-3"
 )
 ```
+
+
+```{r 5FU Raw Data 72hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 78-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr78$Ind2_78_In ~ fluo72hr78$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1"
+# )
+# 
+# boxplot(fluo72hr78$Ind2_78_Fin ~ fluo72hr78$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 78-1"
+# )
+# 
+# #FLUO 75-1 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 75-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr75$Ind1_75_In ~ fluo72hr75$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1"
+# )
+# 
+# boxplot(fluo72hr75$Ind1_75_Fin ~ fluo72hr75$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 75-1"
+# )
+# 
+# #FLUO 17-3 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"RFLU by Concentration FLUO - 17-3 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr17$Ind3_17_In ~ fluo72hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3"
+# )
+# 
+# boxplot(fluo72hr17$Ind3_17_Fin ~ fluo72hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 17-3"
+# )
+
+```
+
 
 Now that I've taken a look at the raw data, let's look at the analyzed data step by step
 The following steps were taken in analysis:
@@ -808,70 +841,6 @@ boxplot(dox24hr17$Ind3_17_Fin_noBG ~ dox24hr17$Conc,
         main = "DOXORUBICIN 24hr 17-3 no BG"
 )
 
-#####FLUO samples#####
-#FLUO 78-1 no BG 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 78-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr78$Ind2_78_In_noBG ~ fluo24hr78$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG"
-)
-
-boxplot(fluo24hr78$Ind2_78_Fin_noBG ~ fluo24hr78$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 78-1 no BG"
-)
-
-#FLUO 75-1 no BG 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 75-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr75$Ind1_75_In_noBG ~ fluo24hr75$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG"
-)
-
-boxplot(fluo24hr75$Ind1_75_Fin_noBG ~ fluo24hr75$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 75-1 no BG"
-)
-
-#FLUO 17-3 no BG 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 17-3 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr17$Ind3_17_In_noBG ~ fluo24hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG"
-)
-
-boxplot(fluo24hr17$Ind3_17_Fin_noBG ~ fluo24hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 17-3 no BG"
-)
-
 #####DMSO samples#####
 #DMSO 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -938,6 +907,74 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG ~ dmso24hr17$Conc,
 
 ```
 
+
+```{r 5FU Samples BG removed 24hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 78-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr78$Ind2_78_In_noBG ~ fluo24hr78$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG"
+# )
+# 
+# boxplot(fluo24hr78$Ind2_78_Fin_noBG ~ fluo24hr78$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 78-1 no BG"
+# )
+# 
+# #FLUO 75-1 no BG 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 75-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr75$Ind1_75_In_noBG ~ fluo24hr75$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG"
+# )
+# 
+# boxplot(fluo24hr75$Ind1_75_Fin_noBG ~ fluo24hr75$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 75-1 no BG"
+# )
+# 
+# #FLUO 17-3 no BG 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 17-3 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr17$Ind3_17_In_noBG ~ fluo24hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG"
+# )
+# 
+# boxplot(fluo24hr17$Ind3_17_Fin_noBG ~ fluo24hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 17-3 no BG"
+# )
+```
+
+
 ```{r Boxplots BG Removed 48hr}
 #####DOX Samples#####
 #dox 78-1 no BG 48HR
@@ -1001,70 +1038,6 @@ boxplot(dox48hr17$Ind3_17_Fin_noBG ~ dox48hr17$Conc,
         ylab = "Cell Viability (RFLU)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 48hr 17-3 no BG"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 78-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr78$Ind2_78_In_noBG ~ fluo48hr78$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG"
-)
-
-boxplot(fluo48hr78$Ind2_78_Fin_noBG ~ fluo48hr78$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 78-1 no BG"
-)
-
-#FLUO 75-1 no BG 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 75-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr75$Ind1_75_In_noBG ~ fluo48hr75$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG"
-)
-
-boxplot(fluo48hr75$Ind1_75_Fin_noBG ~ fluo48hr75$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 75-1 no BG"
-)
-
-#FLUO 17-3 no BG 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 17-3 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr17$Ind3_17_In_noBG ~ fluo48hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG"
-)
-
-boxplot(fluo48hr17$Ind3_17_Fin_noBG ~ fluo48hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 17-3 no BG"
 )
 
 #####DMSO samples#####
@@ -1133,6 +1106,75 @@ boxplot(dmso48hr17$Ind3_17_Fin_noBG ~ dmso48hr17$Conc,
 
 ```
 
+
+```{r 5FU Samples BG Removed 48hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 78-1 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr78$Ind2_78_In_noBG ~ fluo48hr78$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG"
+# )
+# 
+# boxplot(fluo48hr78$Ind2_78_Fin_noBG ~ fluo48hr78$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 78-1 no BG"
+# )
+# 
+# #FLUO 75-1 no BG 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 75-1 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr75$Ind1_75_In_noBG ~ fluo48hr75$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG"
+# )
+# 
+# boxplot(fluo48hr75$Ind1_75_Fin_noBG ~ fluo48hr75$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 75-1 no BG"
+# )
+# 
+# #FLUO 17-3 no BG 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 17-3 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr17$Ind3_17_In_noBG ~ fluo48hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG"
+# )
+# 
+# boxplot(fluo48hr17$Ind3_17_Fin_noBG ~ fluo48hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 17-3 no BG"
+# )
+
+```
+
+
 ```{r Boxplots BG Removed 72hr}
 
 #####DOX Samples#####
@@ -1197,70 +1239,6 @@ boxplot(dox72hr17$Ind3_17_Fin_noBG ~ dox72hr17$Conc,
         ylab = "Cell Viability (RFLU)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 72hr 17-3 no BG"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 78-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr78$Ind2_78_In_noBG ~ fluo72hr78$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG"
-)
-
-boxplot(fluo72hr78$Ind2_78_Fin_noBG ~ fluo72hr78$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 78-1 no BG"
-)
-
-#FLUO 75-1 no BG 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 75-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr75$Ind1_75_In_noBG ~ fluo72hr75$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG"
-)
-
-boxplot(fluo72hr75$Ind1_75_Fin_noBG ~ fluo72hr75$Conc, 
-        ylim = c(0,80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 75-1 no BG"
-)
-
-#FLUO 17-3 no BG 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG - 17-3 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr17$Ind3_17_In_noBG ~ fluo72hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG"
-)
-
-boxplot(fluo72hr17$Ind3_17_Fin_noBG ~ fluo72hr17$Conc, 
-        ylim = c(0, 80000), 
-        ylab = "Cell Viability (RFLU)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 17-3 no BG"
 )
 
 #####DMSO samples#####
@@ -1328,6 +1306,74 @@ boxplot(dmso72hr17$Ind3_17_Fin_noBG ~ dmso72hr17$Conc,
 )
 ```
 
+```{r 5FU Samples BG Removed 72hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 78-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr78$Ind2_78_In_noBG ~ fluo72hr78$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG"
+# )
+# 
+# boxplot(fluo72hr78$Ind2_78_Fin_noBG ~ fluo72hr78$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 78-1 no BG"
+# )
+# 
+# #FLUO 75-1 no BG 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 75-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr75$Ind1_75_In_noBG ~ fluo72hr75$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG"
+# )
+# 
+# boxplot(fluo72hr75$Ind1_75_Fin_noBG ~ fluo72hr75$Conc, 
+#         ylim = c(0,80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 75-1 no BG"
+# )
+# 
+# #FLUO 17-3 no BG 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG - 17-3 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr17$Ind3_17_In_noBG ~ fluo72hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG"
+# )
+# 
+# boxplot(fluo72hr17$Ind3_17_Fin_noBG ~ fluo72hr17$Conc, 
+#         ylim = c(0, 80000), 
+#         ylab = "Cell Viability (RFLU)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 17-3 no BG"
+# )
+
+```
+
+
 Now let's plot the next step: subtracting the empty wells
 ```{r Boxplots Empty Wells Removed 24hr}
 #####DOX Samples#####
@@ -1392,70 +1438,6 @@ boxplot(dox24hr17$Ind3_17_Fin_noBG_Low ~ dox24hr17$Conc,
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 24hr 17-3 no BG Empty"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 78-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr78$Ind2_78_In_noBG_Low ~ fluo24hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG Empty"
-)
-
-boxplot(fluo24hr78$Ind2_78_Fin_noBG_Low ~ fluo24hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 78-1 no BG Empty"
-)
-
-#FLUO 75-1 no BG Empty 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 75-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr75$Ind1_75_In_noBG_Low ~ fluo24hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG Empty"
-)
-
-boxplot(fluo24hr75$Ind1_75_Fin_noBG_Low ~ fluo24hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 75-1 no BG Empty"
-)
-
-#FLUO 17-3 no BG Empty 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 17-3 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr17$Ind3_17_In_noBG_Low ~ fluo24hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG Empty"
-)
-
-boxplot(fluo24hr17$Ind3_17_Fin_noBG_Low ~ fluo24hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 17-3 no BG Empty"
 )
 
 #####DMSO samples#####
@@ -1524,6 +1506,75 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low ~ dmso24hr17$Conc,
 
 ```
 
+```{r 5FU Samples Empty Well Removed 24hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 78-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr78$Ind2_78_In_noBG_Low ~ fluo24hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG Empty"
+# )
+# 
+# boxplot(fluo24hr78$Ind2_78_Fin_noBG_Low ~ fluo24hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 78-1 no BG Empty"
+# )
+# 
+# #FLUO 75-1 no BG Empty 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 75-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr75$Ind1_75_In_noBG_Low ~ fluo24hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG Empty"
+# )
+# 
+# boxplot(fluo24hr75$Ind1_75_Fin_noBG_Low ~ fluo24hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 75-1 no BG Empty"
+# )
+# 
+# #FLUO 17-3 no BG Empty 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 17-3 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr17$Ind3_17_In_noBG_Low ~ fluo24hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG Empty"
+# )
+# 
+# boxplot(fluo24hr17$Ind3_17_Fin_noBG_Low ~ fluo24hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 17-3 no BG Empty"
+# )
+
+```
+
+
+
 ```{r Boxplots Empty Wells Removed 48hr}
 #####DOX Samples#####
 #dox 78-1 Empty Wells 48HR
@@ -1587,70 +1638,6 @@ boxplot(dox48hr17$Ind3_17_Fin_noBG_Low ~ dox48hr17$Conc,
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 48hr 17-3 no BG Empty"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 78-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr78$Ind2_78_In_noBG_Low ~ fluo48hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG Empty"
-)
-
-boxplot(fluo48hr78$Ind2_78_Fin_noBG_Low ~ fluo48hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 78-1 no BG Empty"
-)
-
-#FLUO 75-1 no BG Empty 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 75-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr75$Ind1_75_In_noBG_Low ~ fluo48hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG Empty"
-)
-
-boxplot(fluo48hr75$Ind1_75_Fin_noBG_Low ~ fluo48hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 75-1 no BG Empty"
-)
-
-#FLUO 17-3 no BG Empty 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 17-3 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr17$Ind3_17_In_noBG_Low ~ fluo48hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG Empty"
-)
-
-boxplot(fluo48hr17$Ind3_17_Fin_noBG_Low ~ fluo48hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 17-3 no BG Empty"
 )
 
 #####DMSO samples#####
@@ -1718,6 +1705,74 @@ boxplot(dmso48hr17$Ind3_17_Fin_noBG_Low ~ dmso48hr17$Conc,
 )
 ```
 
+```{r 5FU Samples Empty Wells Removed 48hr}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 78-1 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr78$Ind2_78_In_noBG_Low ~ fluo48hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG Empty"
+# )
+# 
+# boxplot(fluo48hr78$Ind2_78_Fin_noBG_Low ~ fluo48hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 78-1 no BG Empty"
+# )
+# 
+# #FLUO 75-1 no BG Empty 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 75-1 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr75$Ind1_75_In_noBG_Low ~ fluo48hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG Empty"
+# )
+# 
+# boxplot(fluo48hr75$Ind1_75_Fin_noBG_Low ~ fluo48hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 75-1 no BG Empty"
+# )
+# 
+# #FLUO 17-3 no BG Empty 48HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 17-3 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr17$Ind3_17_In_noBG_Low ~ fluo48hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG Empty"
+# )
+# 
+# boxplot(fluo48hr17$Ind3_17_Fin_noBG_Low ~ fluo48hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 48hr 17-3 no BG Empty"
+# )
+
+```
+
+
 ```{r Boxplots Empty Wells Removed 72hr}
 #####DOX Samples#####
 #dox 78-1 Empty Wells 72HR
@@ -1781,70 +1836,6 @@ boxplot(dox72hr17$Ind3_17_Fin_noBG_Low ~ dox72hr17$Conc,
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 72hr 17-3 no BG Empty"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 78-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr78$Ind2_78_In_noBG_Low ~ fluo72hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG Empty"
-)
-
-boxplot(fluo72hr78$Ind2_78_Fin_noBG_Low ~ fluo72hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 78-1 no BG Empty"
-)
-
-#FLUO 75-1 no BG Empty 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 75-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr75$Ind1_75_In_noBG_Low ~ fluo72hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG Empty"
-)
-
-boxplot(fluo72hr75$Ind1_75_Fin_noBG_Low ~ fluo72hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 75-1 no BG Empty"
-)
-
-#FLUO 17-3 no BG Empty 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty - 17-3 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr17$Ind3_17_In_noBG_Low ~ fluo72hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG Empty"
-)
-
-boxplot(fluo72hr17$Ind3_17_Fin_noBG_Low ~ fluo72hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 17-3 no BG Empty"
 )
 
 #####DMSO samples#####
@@ -1912,6 +1903,75 @@ boxplot(dmso72hr17$Ind3_17_Fin_noBG_Low ~ dmso72hr17$Conc,
 )
 ```
 
+
+```{r 5FU Samples no bg empty 72hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 78-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr78$Ind2_78_In_noBG_Low ~ fluo72hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG Empty"
+# )
+# 
+# boxplot(fluo72hr78$Ind2_78_Fin_noBG_Low ~ fluo72hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 78-1 no BG Empty"
+# )
+# 
+# #FLUO 75-1 no BG Empty 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 75-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr75$Ind1_75_In_noBG_Low ~ fluo72hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG Empty"
+# )
+# 
+# boxplot(fluo72hr75$Ind1_75_Fin_noBG_Low ~ fluo72hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 75-1 no BG Empty"
+# )
+# 
+# #FLUO 17-3 no BG Empty 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty - 17-3 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr17$Ind3_17_In_noBG_Low ~ fluo72hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG Empty"
+# )
+# 
+# boxplot(fluo72hr17$Ind3_17_Fin_noBG_Low ~ fluo72hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 17-3 no BG Empty"
+# )
+
+```
+
+
 Now let's plot the third step: dividing the matched vehicle values
 ```{r Boxplots Matched Vehicle Divided 24hr}
 #####DOX Samples#####
@@ -1976,70 +2036,6 @@ boxplot(dox24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dox24hr17$Conc,
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 24hr 17-3 no BG Empty Veh"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 78-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr78$Ind2_78_In_noBG_Low_Veh ~ fluo24hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG Empty Veh"
-)
-
-boxplot(fluo24hr78$Ind2_78_Fin_noBG_Low_Veh ~ fluo24hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 78-1 no BG Empty Veh"
-)
-
-#FLUO 75-1 no BG Empty 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 75-1 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr75$Ind1_75_In_noBG_Low_Veh ~ fluo24hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG Empty Veh"
-)
-
-boxplot(fluo24hr75$Ind1_75_Fin_noBG_Low_Veh ~ fluo24hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 75-1 no BG Empty Veh"
-)
-
-#FLUO 17-3 no BG Empty 24HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 17-3 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr17$Ind3_17_In_noBG_Low_Veh ~ fluo24hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG Empty Veh"
-)
-
-boxplot(fluo24hr17$Ind3_17_Fin_noBG_Low_Veh ~ fluo24hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 24hr 17-3 no BG Empty Veh"
 )
 
 #####DMSO samples#####
@@ -2108,6 +2104,73 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso24hr17$Conc,
 
 ```
 
+```{r 5FU Samples Matched Vehicle noBG 24hr, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty Veh - 78-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr78$Ind2_78_In_noBG_Low_Veh ~ fluo24hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG Empty Veh"
+# )
+# 
+# boxplot(fluo24hr78$Ind2_78_Fin_noBG_Low_Veh ~ fluo24hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 78-1 no BG Empty Veh"
+# )
+# 
+# #FLUO 75-1 no BG Empty 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty Veh - 75-1 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr75$Ind1_75_In_noBG_Low_Veh ~ fluo24hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG Empty Veh"
+# )
+# 
+# boxplot(fluo24hr75$Ind1_75_Fin_noBG_Low_Veh ~ fluo24hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 75-1 no BG Empty Veh"
+# )
+# 
+# #FLUO 17-3 no BG Empty 24HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty Veh - 17-3 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr17$Ind3_17_In_noBG_Low_Veh ~ fluo24hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG Empty Veh"
+# )
+# 
+# boxplot(fluo24hr17$Ind3_17_Fin_noBG_Low_Veh ~ fluo24hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 24hr 17-3 no BG Empty Veh"
+# )
+```
+
+
 ```{r Boxplots Matched Vehicle Divided 48hr}
 #####DOX Samples#####
 #dox 78-1 Veh 48HR
@@ -2171,70 +2234,6 @@ boxplot(dox48hr17$Ind3_17_Fin_noBG_Low_Veh ~ dox48hr17$Conc,
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 48hr 17-3 no BG Empty Veh"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 78-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr78$Ind2_78_In_noBG_Low_Veh ~ fluo48hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG Empty Veh"
-)
-
-boxplot(fluo48hr78$Ind2_78_Fin_noBG_Low_Veh ~ fluo48hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 78-1 no BG Empty Veh"
-)
-
-#FLUO 75-1 no BG Empty 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 75-1 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr75$Ind1_75_In_noBG_Low_Veh ~ fluo48hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG Empty Veh"
-)
-
-boxplot(fluo48hr75$Ind1_75_Fin_noBG_Low_Veh ~ fluo48hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 75-1 no BG Empty Veh"
-)
-
-#FLUO 17-3 no BG Empty 48HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 17-3 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr17$Ind3_17_In_noBG_Low_Veh ~ fluo48hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG Empty Veh"
-)
-
-boxplot(fluo48hr17$Ind3_17_Fin_noBG_Low_Veh ~ fluo48hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 48hr 17-3 no BG Empty Veh"
 )
 
 #####DMSO samples#####
@@ -2302,6 +2301,73 @@ boxplot(dmso48hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso48hr17$Conc,
 )
 ```
 
+```{r 5FU Samples Boxplots 48hr Matched Veh Div, include=FALSE}
+#####FLUO samples#####
+#FLUO 78-1 no BG 48HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"FLUO no BG Empty Veh - 78-1 48hr",cex = 2,font = 2)
+
+boxplot(fluo48hr78$Ind2_78_In_noBG_Low_Veh ~ fluo48hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "5-FLUOROURACIL 0hr 78-1 no BG Empty Veh"
+)
+
+boxplot(fluo48hr78$Ind2_78_Fin_noBG_Low_Veh ~ fluo48hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "5-FLUOROURACIL 48hr 78-1 no BG Empty Veh"
+)
+
+#FLUO 75-1 no BG Empty 48HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"FLUO no BG Empty Veh - 75-1 48hr",cex = 2,font = 2)
+
+boxplot(fluo48hr75$Ind1_75_In_noBG_Low_Veh ~ fluo48hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "5-FLUOROURACIL 0hr 75-1 no BG Empty Veh"
+)
+
+boxplot(fluo48hr75$Ind1_75_Fin_noBG_Low_Veh ~ fluo48hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "5-FLUOROURACIL 48hr 75-1 no BG Empty Veh"
+)
+
+#FLUO 17-3 no BG Empty 48HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"FLUO no BG Empty Veh - 17-3 48hr",cex = 2,font = 2)
+
+boxplot(fluo48hr17$Ind3_17_In_noBG_Low_Veh ~ fluo48hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "5-FLUOROURACIL 0hr 17-3 no BG Empty Veh"
+)
+
+boxplot(fluo48hr17$Ind3_17_Fin_noBG_Low_Veh ~ fluo48hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "5-FLUOROURACIL 48hr 17-3 no BG Empty Veh"
+)
+```
+
+
 ```{r Boxplots Matched Vehicle Divided 72hr}
 #####DOX Samples#####
 #dox 78-1 Veh 72HR
@@ -2365,70 +2431,6 @@ boxplot(dox72hr17$Ind3_17_Fin_noBG_Low_Veh ~ dox72hr17$Conc,
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
         main = "DOXORUBICIN 72hr 17-3 no BG Empty Veh"
-)
-
-#####FLUO samples#####
-#FLUO 78-1 no BG 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 78-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr78$Ind2_78_In_noBG_Low_Veh ~ fluo72hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 78-1 no BG Empty Veh"
-)
-
-boxplot(fluo72hr78$Ind2_78_Fin_noBG_Low_Veh ~ fluo72hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 78-1 no BG Empty Veh"
-)
-
-#FLUO 75-1 no BG Empty 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 75-1 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr75$Ind1_75_In_noBG_Low_Veh ~ fluo72hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 75-1 no BG Empty Veh"
-)
-
-boxplot(fluo72hr75$Ind1_75_Fin_noBG_Low_Veh ~ fluo72hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 75-1 no BG Empty Veh"
-)
-
-#FLUO 17-3 no BG Empty 72HR
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"FLUO no BG Empty Veh - 17-3 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr17$Ind3_17_In_noBG_Low_Veh ~ fluo72hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 0hr 17-3 no BG Empty Veh"
-)
-
-boxplot(fluo72hr17$Ind3_17_Fin_noBG_Low_Veh ~ fluo72hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "5-FLUOROURACIL 72hr 17-3 no BG Empty Veh"
 )
 
 #####DMSO samples#####
@@ -2496,6 +2498,73 @@ boxplot(dmso72hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso72hr17$Conc,
 )
 ```
 
+```{r 5FU Samples Boxplots 72hr noBG, include=FALSE}
+# #####FLUO samples#####
+# #FLUO 78-1 no BG 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty Veh - 78-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr78$Ind2_78_In_noBG_Low_Veh ~ fluo72hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 78-1 no BG Empty Veh"
+# )
+# 
+# boxplot(fluo72hr78$Ind2_78_Fin_noBG_Low_Veh ~ fluo72hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 78-1 no BG Empty Veh"
+# )
+# 
+# #FLUO 75-1 no BG Empty 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty Veh - 75-1 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr75$Ind1_75_In_noBG_Low_Veh ~ fluo72hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 75-1 no BG Empty Veh"
+# )
+# 
+# boxplot(fluo72hr75$Ind1_75_Fin_noBG_Low_Veh ~ fluo72hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 75-1 no BG Empty Veh"
+# )
+# 
+# #FLUO 17-3 no BG Empty 72HR
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"FLUO no BG Empty Veh - 17-3 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr17$Ind3_17_In_noBG_Low_Veh ~ fluo72hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 0hr 17-3 no BG Empty Veh"
+# )
+# 
+# boxplot(fluo72hr17$Ind3_17_Fin_noBG_Low_Veh ~ fluo72hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "5-FLUOROURACIL 72hr 17-3 no BG Empty Veh"
+# )
+```
+
+
 Now for the final step, dividing the final timepoint by the initial baseline reading at 0hr
 ```{r Boxplots Final Data 24hr}
 #####DOX Samples#####
@@ -2521,34 +2590,6 @@ boxplot(dox24hr75$Ind1_75_Div ~ dox24hr75$Conc,
 )
 
 boxplot(dox24hr17$Ind3_17_Div ~ dox24hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "17-3 Div"
-)
-
-#####FLUO samples#####
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"5-FLUOROURACIL - 24hr",cex = 2,font = 2)
-
-boxplot(fluo24hr78$Ind2_78_Div ~ fluo24hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "78-1 Div"
-)
-
-boxplot(fluo24hr75$Ind1_75_Div ~ fluo24hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "75-1 Div"
-)
-
-boxplot(fluo24hr17$Ind3_17_Div ~ fluo24hr17$Conc, 
         ylim = c(0, 1.5), 
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
@@ -2585,6 +2626,41 @@ boxplot(dmso24hr17$Ind3_17_Div ~ dmso24hr17$Conc,
 )
 ```
 
+```{r 5FU Boxplots 24hr, include=FALSE}
+
+# #####FLUO samples#####
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"5-FLUOROURACIL - 24hr",cex = 2,font = 2)
+# 
+# boxplot(fluo24hr78$Ind2_78_Div ~ fluo24hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "78-1 Div"
+# )
+# 
+# boxplot(fluo24hr75$Ind1_75_Div ~ fluo24hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "75-1 Div"
+# )
+# 
+# boxplot(fluo24hr17$Ind3_17_Div ~ fluo24hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "17-3 Div"
+# )
+
+```
+
+
+
+#DOX + DMSO Final Data 48hr Boxplots
 ```{r Boxplots Final Data 48hr}
 #####DOX Samples#####
 #dox All 48HR
@@ -2609,34 +2685,6 @@ boxplot(dox48hr75$Ind1_75_Div ~ dox48hr75$Conc,
 )
 
 boxplot(dox48hr17$Ind3_17_Div ~ dox48hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "17-3 Div"
-)
-
-#####FLUO samples#####
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"5-FLUOROURACIL - 48hr",cex = 2,font = 2)
-
-boxplot(fluo48hr78$Ind2_78_Div ~ fluo48hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "78-1 Div"
-)
-
-boxplot(fluo48hr75$Ind1_75_Div ~ fluo48hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "75-1 Div"
-)
-
-boxplot(fluo48hr17$Ind3_17_Div ~ fluo48hr17$Conc, 
         ylim = c(0, 1.5), 
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
@@ -2673,6 +2721,38 @@ boxplot(dmso48hr17$Ind3_17_Div ~ dmso48hr17$Conc,
 )
 ```
 
+```{r 5FU Boxplots Final Data 48hr, include=FALSE}
+# #####FLUO samples#####
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"5-FLUOROURACIL - 48hr",cex = 2,font = 2)
+# 
+# boxplot(fluo48hr78$Ind2_78_Div ~ fluo48hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "78-1 Div"
+# )
+# 
+# boxplot(fluo48hr75$Ind1_75_Div ~ fluo48hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "75-1 Div"
+# )
+# 
+# boxplot(fluo48hr17$Ind3_17_Div ~ fluo48hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "17-3 Div"
+# )
+```
+
+
+#DOX + DMSO Boxplots 72hr
 ```{r Boxplots Final Data 72hr}
 #####DOX Samples#####
 #dox All 72HR
@@ -2697,34 +2777,6 @@ boxplot(dox72hr75$Ind1_75_Div ~ dox72hr75$Conc,
 )
 
 boxplot(dox72hr17$Ind3_17_Div ~ dox72hr17$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "17-3 Div"
-)
-
-#####FLUO samples#####
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"5-FLUOROURACIL - 72hr",cex = 2,font = 2)
-
-boxplot(fluo72hr78$Ind2_78_Div ~ fluo72hr78$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "78-1 Div"
-)
-
-boxplot(fluo72hr75$Ind1_75_Div ~ fluo72hr75$Conc, 
-        ylim = c(0, 1.5), 
-        ylab = "Cell Viability (%)", 
-        xlab = "Concentration (uM)", 
-        main = "75-1 Div"
-)
-
-boxplot(fluo72hr17$Ind3_17_Div ~ fluo72hr17$Conc, 
         ylim = c(0, 1.5), 
         ylab = "Cell Viability (%)", 
         xlab = "Concentration (uM)", 
@@ -2760,6 +2812,37 @@ boxplot(dmso72hr17$Ind3_17_Div ~ dmso72hr17$Conc,
         main = "17-3 Div"
 )
 ```
+```{r 5FU Boxplots, include=FALSE}
+# #####FLUO samples#####
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"5-FLUOROURACIL - 72hr",cex = 2,font = 2)
+# 
+# boxplot(fluo72hr78$Ind2_78_Div ~ fluo72hr78$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "78-1 Div"
+# )
+# 
+# boxplot(fluo72hr75$Ind1_75_Div ~ fluo72hr75$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "75-1 Div"
+# )
+# 
+# boxplot(fluo72hr17$Ind3_17_Div ~ fluo72hr17$Conc, 
+#         ylim = c(0, 1.5), 
+#         ylab = "Cell Viability (%)", 
+#         xlab = "Concentration (uM)", 
+#         main = "17-3 Div"
+# )
+
+```
+
 
 Now that I've plotted out all of the analysis steps and nothing looks amiss, let's start fitting my models for DRC
 I used the DRC package in R
@@ -2796,38 +2879,41 @@ summary(dox72tox_78$response)
 dox72tox_17 <- dox72hr17 %>% mutate(response = Ind3_17_Div*100)
 summary(dox72tox_17$response)
 
-#####FLUO Samples#####
-#24hr FLUO
-fluo24tox_75 <- fluo24hr75 %>% mutate(response = Ind1_75_Div*100)
-summary(fluo24tox_75$response)
-
-fluo24tox_78 <- fluo24hr78 %>% mutate(response = Ind2_78_Div*100)
-summary(fluo24tox_78$response)
-
-fluo24tox_17 <- fluo24hr17 %>% mutate(response = Ind3_17_Div*100)
-summary(fluo24tox_17$response)
-
-#48hr fluo
-fluo48tox_75 <- fluo48hr75 %>% mutate(response = Ind1_75_Div*100)
-summary(fluo48tox_75$response)
-
-fluo48tox_78 <- fluo48hr78 %>% mutate(response = Ind2_78_Div*100)
-summary(fluo48tox_78$response)
-
-fluo48tox_17 <- fluo48hr17 %>% mutate(response = Ind3_17_Div*100)
-summary(fluo48tox_17$response)
-
-#72hr fluo
-fluo72tox_75 <- fluo72hr75 %>% mutate(response = Ind1_75_Div*100)
-summary(fluo72tox_75$response)
-
-fluo72tox_78 <- fluo72hr78 %>% mutate(response = Ind2_78_Div*100)
-summary(fluo72tox_78$response)
-
-fluo72tox_17 <- fluo72hr17 %>% mutate(response = Ind3_17_Div*100)
-summary(fluo72tox_17$response)
-
 ```
+
+```{r 5FU Samples Models, include=FALSE}
+#####FLUO Samples#####
+# #24hr FLUO
+# fluo24tox_75 <- fluo24hr75 %>% mutate(response = Ind1_75_Div*100)
+# summary(fluo24tox_75$response)
+# 
+# fluo24tox_78 <- fluo24hr78 %>% mutate(response = Ind2_78_Div*100)
+# summary(fluo24tox_78$response)
+# 
+# fluo24tox_17 <- fluo24hr17 %>% mutate(response = Ind3_17_Div*100)
+# summary(fluo24tox_17$response)
+# 
+# #48hr fluo
+# fluo48tox_75 <- fluo48hr75 %>% mutate(response = Ind1_75_Div*100)
+# summary(fluo48tox_75$response)
+# 
+# fluo48tox_78 <- fluo48hr78 %>% mutate(response = Ind2_78_Div*100)
+# summary(fluo48tox_78$response)
+# 
+# fluo48tox_17 <- fluo48hr17 %>% mutate(response = Ind3_17_Div*100)
+# summary(fluo48tox_17$response)
+# 
+# #72hr fluo
+# fluo72tox_75 <- fluo72hr75 %>% mutate(response = Ind1_75_Div*100)
+# summary(fluo72tox_75$response)
+# 
+# fluo72tox_78 <- fluo72hr78 %>% mutate(response = Ind2_78_Div*100)
+# summary(fluo72tox_78$response)
+# 
+# fluo72tox_17 <- fluo72hr17 %>% mutate(response = Ind3_17_Div*100)
+# summary(fluo72tox_17$response)
+```
+
 Now that I've fit the models and taken a look at their summary, let's plot some dose-response curves through the DRC package
 
 I would like to have all individuals on the same plot, for each timepoint
@@ -2839,50 +2925,50 @@ layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.3, 1, 1, 1
 plot.new()
 text(0.5,0.5,"DOXORUBICIN RECOVERY CONCENTRATION-RESPONSE",cex = 2,font = 2)
 #24hr plots
-doxtox24_75_model <- drm(response~Conc, data = dox24tox_75, fct = LL.4(fixed = c(NA, 0, 100, NA)))
-plot(doxtox24_75_model, type = "none", broken = TRUE, 
+doxtox24_78_model <- drm(response~Conc, data = dox24tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+plot(doxtox24_78_model, type = "none", broken = TRUE, 
      xt = c(0.01, 0.1, 0.5, 1, 5, 10, 50, 100, 1000), xttrim = FALSE,  
      ylim = c(0,110), cex = 1, col = "#9ACCDE", lwd = 4, ylab = "Percent Viability (%)",
      xlab = "Concentration (uM)", main = "24HR FOLLOWING TREATMENT", lty = c(1),
      xaxs = "i", yaxs = "i")
 
 par(new=TRUE)
-doxtox24_78_model <- drm(response~Conc, data = dox24tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
-plot(doxtox24_78_model, add = TRUE, col = "#499FBD", lwd = 4, lty = c(1), type = "none")
+doxtox24_75_model <- drm(response~Conc, data = dox24tox_75, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+plot(doxtox24_75_model, add = TRUE, col = "#499FBD", lwd = 4, lty = c(1), type = "none")
 
 par(new=TRUE)
 doxtox24_17_model <- drm(response~Conc, data = dox24tox_17, fct = LL.4(fixed = c(NA, 0, 100, NA)))
 plot(doxtox24_17_model, add = TRUE, col = "#254F5E", lwd = 4, lty = c(1), type = "none")
 
 par(new=TRUE)
-legend(x = "bottomleft", legend = c("75-1", "78-1", "17-3"), lty = c(1, 1, 1, 1), col = c("#9ACCDE", "#499FBD", "#254F5E"), lwd = 4, cex = 1, title = "iPSC-CM Lines")
+legend(x = "bottomleft", legend = c("78-1", "75-1", "17-3"), lty = c(1, 1, 1, 1), col = c("#9ACCDE", "#499FBD", "#254F5E"), lwd = 4, cex = 1, title = "iPSC-CM Lines")
 
 #48hr plots
-doxtox48_75_model <- drm(response~Conc, data = dox48tox_75, fct = LL.4(fixed = c(NA, NA, 100, NA)))
-plot(doxtox48_75_model, type = "none", broken = TRUE, 
+doxtox48_78_model <- drm(response~Conc, data = dox48tox_78, fct = LL.4(fixed = c(NA, NA, 100, NA)))
+plot(doxtox48_78_model, type = "none", broken = TRUE, 
      xt = c(0.01, 0.1, 0.5, 1, 5, 10, 50, 100, 1000), xttrim = FALSE,  
      ylim = c(0,110), cex = 1, col = "#9ACCDE", lwd = 4, ylab = "Percent Viability (%)", xlab = "Concentration (uM)", main = "48HR FOLLOWING TREATMENT", lty = c(2),
      xaxs = "i", yaxs = "i")
 
 par(new=TRUE)
-doxtox48_78_model <- drm(response~Conc, data = dox48tox_78, fct = LL.4(fixed = c(NA, NA, NA, NA)))
-plot(doxtox48_78_model, add = TRUE, col = "#499FBD", lwd = 4, lty = c(2), type = "none")
+doxtox48_75_model <- drm(response~Conc, data = dox48tox_75, fct = LL.4(fixed = c(NA, NA, NA, NA)))
+plot(doxtox48_75_model, add = TRUE, col = "#499FBD", lwd = 4, lty = c(2), type = "none")
 
 par(new=TRUE)
 doxtox48_17_model <- drm(response~Conc, data = dox48tox_17, fct = LL.4(fixed = c(NA, 0, 100, NA)))
 plot(doxtox48_17_model, add = TRUE, col = "#254F5E", lwd = 4, lty = c(2), type = "none")
 
 #72hr plots
-doxtox72_75_model <- drm(response~Conc, data = dox72tox_75, fct = LL.4(fixed = c(NA, NA, 100, NA)))
-plot(doxtox72_75_model, type = "none", broken = TRUE, 
+doxtox72_78_model <- drm(response~Conc, data = dox72tox_78, fct = LL.4(fixed = c(NA, NA, 100, NA)))
+plot(doxtox72_78_model, type = "none", broken = TRUE, 
      xt = c(0.01, 0.1, 0.5, 1, 5, 10, 50, 100, 1000), xttrim = FALSE,  
      ylim = c(0, 110), cex = 1, col = "#9ACCDE", lwd = 4, ylab = "Percent Viability (%)",
      xlab = "Concentration (uM)", main = "72HR FOLLOWING TREATMENT", lty = c(3), 
      xaxs = "i", yaxs = "i")
 
 par(new=TRUE)
-doxtox72_78_model <- drm(response~Conc, data = dox72tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
-plot(doxtox72_78_model, add = TRUE, col = "#499FBD", lwd = 4, lty = c(3), type = "none")
+doxtox72_75_model <- drm(response~Conc, data = dox72tox_75, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+plot(doxtox72_75_model, add = TRUE, col = "#499FBD", lwd = 4, lty = c(3), type = "none")
 
 par(new=TRUE)
 doxtox72_17_model <- drm(response~Conc, data = dox72tox_17, fct = LL.4(fixed = c(NA, 0, 100, NA)))
@@ -2891,62 +2977,62 @@ plot(doxtox72_17_model, add = TRUE, col = "#254F5E", lwd = 4, lty = c(3), type =
 
 ```
 
-```{r DRCs 5-Fluorouracil All Timepoints, fig.width=10, fig.height=6, warning=FALSE}
+```{r DRCs 5-Fluorouracil All Timepoints, fig.width=10, fig.height=6, warning=FALSE, include=FALSE}
 
-par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
-layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.3, 1, 1, 1))
-#layout.show(3)
-plot.new()
-text(0.5,0.5,"5-FLUOROURACIL RECOVERY CONCENTRATION-RESPONSE",cex = 2,font = 2)
-#24hr plots
-fluotox24_75_model <- drm(response~Conc, data = fluo24tox_75, fct = LL.4(fixed = c(NA, NA, NA, NA)))
-plot(fluotox24_75_model, type = "none", broken = TRUE, 
-     xt = c(0.01, 0.1, 1, 5, 10, 50, 100, 1000, 10000), xttrim = FALSE,  
-     ylim = c(0,110), cex = 1, col = "#DCACED", lwd = 4, ylab = "Percent Viability (%)",
-     xlab = "Concentration (uM)", main = "24HR FOLLOWING TREATMENT", lty = c(1),
-     xaxs = "i", yaxs = "i")
-
-par(new=TRUE)
-fluotox24_78_model <- drm(response~Conc, data = fluo24tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
-plot(fluotox24_78_model, add = TRUE, col = "#674C71", lwd = 4, lty = c(1), type = "none")
-
-par(new=TRUE)
-fluotox24_17_model <- drm(response~Conc, data = fluo24tox_17, fct = LL.4(fixed = c(NA, NA, NA, NA)))
-plot(fluotox24_17_model, add = TRUE, col = "#EACDF4", lwd = 4, lty = c(1), type = "none")
-
-par(new=TRUE)
-legend(x = "bottomleft", legend = c("75-1", "78-1", "17-3"), lty = c(1, 1, 1, 1), col = c("#DCACED", "#674C71", "#EACDF4"), lwd = 4, cex = 1, title = "iPSC-CM Lines")
-
-#48hr plots
-fluotox48_75_model <- drm(response~Conc, data = fluo48tox_75, fct = LL.4(fixed = c(NA, NA, NA, NA)))
-plot(fluotox48_75_model, type = "none", broken = TRUE, 
-     xt = c(0.01, 0.1, 1, 5, 10, 50, 100, 1000, 10000), xttrim = FALSE,  
-     ylim = c(0,110), cex = 1, col = "#DCACED", lwd = 4, ylab = "Percent Viability (%)", xlab = "Concentration (uM)", main = "48HR FOLLOWING TREATMENT", lty = c(2),
-     xaxs = "i", yaxs = "i")
-
-par(new=TRUE)
-fluotox48_78_model <- drm(response~Conc, data = fluo48tox_78, fct = LL.4(fixed = c(NA, NA, NA, NA)))
-plot(fluotox48_78_model, add = TRUE, col = "#674C71", lwd = 4, lty = c(2), type = "none")
-
-par(new=TRUE)
-fluotox48_17_model <- drm(response~Conc, data = fluo48tox_17, fct = LL.4(fixed = c(NA, NA, 100, NA)))
-plot(fluotox48_17_model, add = TRUE, col = "#EACDF4", lwd = 4, lty = c(2), type = "none")
-
-#72hr plots
-fluotox72_75_model <- drm(response~Conc, data = fluo72tox_75, fct = LL.4(fixed = c(NA, NA, 100, NA)))
-plot(fluotox72_75_model, type = "none", broken = TRUE, 
-     xt = c(0.01, 0.1, 1, 5, 10, 50, 100, 1000, 10000), xttrim = FALSE,  
-     ylim = c(0, 110), cex = 1, col = "#DCACED", lwd = 4, ylab = "Percent Viability (%)",
-     xlab = "Concentration (uM)", main = "72HR FOLLOWING TREATMENT", lty = c(3), 
-     xaxs = "i", yaxs = "i")
-
-par(new=TRUE)
-fluotox72_78_model <- drm(response~Conc, data = fluo72tox_78, fct = LL.4(fixed = c(NA, NA, 100, NA)))
-plot(fluotox72_78_model, add = TRUE, col = "#674C71", lwd = 4, lty = c(3), type = "none")
-
-par(new=TRUE)
-fluotox72_17_model <- drm(response~Conc, data = fluo72tox_17, fct = LL.4(fixed = c(NA, NA, NA, NA)))
-plot(fluotox72_17_model, add = TRUE, col = "#EACDF4", lwd = 4, lty = c(3), type = "none")
+# par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+# layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.3, 1, 1, 1))
+# #layout.show(3)
+# plot.new()
+# text(0.5,0.5,"5-FLUOROURACIL RECOVERY CONCENTRATION-RESPONSE",cex = 2,font = 2)
+# #24hr plots
+# fluotox24_75_model <- drm(response~Conc, data = fluo24tox_75, fct = LL.4(fixed = c(NA, NA, NA, NA)))
+# plot(fluotox24_75_model, type = "none", broken = TRUE, 
+#      xt = c(0.01, 0.1, 1, 5, 10, 50, 100, 1000, 10000), xttrim = FALSE,  
+#      ylim = c(0,110), cex = 1, col = "#DCACED", lwd = 4, ylab = "Percent Viability (%)",
+#      xlab = "Concentration (uM)", main = "24HR FOLLOWING TREATMENT", lty = c(1),
+#      xaxs = "i", yaxs = "i")
+# 
+# par(new=TRUE)
+# fluotox24_78_model <- drm(response~Conc, data = fluo24tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+# plot(fluotox24_78_model, add = TRUE, col = "#674C71", lwd = 4, lty = c(1), type = "none")
+# 
+# par(new=TRUE)
+# fluotox24_17_model <- drm(response~Conc, data = fluo24tox_17, fct = LL.4(fixed = c(NA, NA, NA, NA)))
+# plot(fluotox24_17_model, add = TRUE, col = "#EACDF4", lwd = 4, lty = c(1), type = "none")
+# 
+# par(new=TRUE)
+# legend(x = "bottomleft", legend = c("75-1", "78-1", "17-3"), lty = c(1, 1, 1, 1), col = c("#DCACED", "#674C71", "#EACDF4"), lwd = 4, cex = 1, title = "iPSC-CM Lines")
+# 
+# #48hr plots
+# fluotox48_75_model <- drm(response~Conc, data = fluo48tox_75, fct = LL.4(fixed = c(NA, NA, NA, NA)))
+# plot(fluotox48_75_model, type = "none", broken = TRUE, 
+#      xt = c(0.01, 0.1, 1, 5, 10, 50, 100, 1000, 10000), xttrim = FALSE,  
+#      ylim = c(0,110), cex = 1, col = "#DCACED", lwd = 4, ylab = "Percent Viability (%)", xlab = "Concentration (uM)", main = "48HR FOLLOWING TREATMENT", lty = c(2),
+#      xaxs = "i", yaxs = "i")
+# 
+# par(new=TRUE)
+# fluotox48_78_model <- drm(response~Conc, data = fluo48tox_78, fct = LL.4(fixed = c(NA, NA, NA, NA)))
+# plot(fluotox48_78_model, add = TRUE, col = "#674C71", lwd = 4, lty = c(2), type = "none")
+# 
+# par(new=TRUE)
+# fluotox48_17_model <- drm(response~Conc, data = fluo48tox_17, fct = LL.4(fixed = c(NA, NA, 100, NA)))
+# plot(fluotox48_17_model, add = TRUE, col = "#EACDF4", lwd = 4, lty = c(2), type = "none")
+# 
+# #72hr plots
+# fluotox72_75_model <- drm(response~Conc, data = fluo72tox_75, fct = LL.4(fixed = c(NA, NA, 100, NA)))
+# plot(fluotox72_75_model, type = "none", broken = TRUE, 
+#      xt = c(0.01, 0.1, 1, 5, 10, 50, 100, 1000, 10000), xttrim = FALSE,  
+#      ylim = c(0, 110), cex = 1, col = "#DCACED", lwd = 4, ylab = "Percent Viability (%)",
+#      xlab = "Concentration (uM)", main = "72HR FOLLOWING TREATMENT", lty = c(3), 
+#      xaxs = "i", yaxs = "i")
+# 
+# par(new=TRUE)
+# fluotox72_78_model <- drm(response~Conc, data = fluo72tox_78, fct = LL.4(fixed = c(NA, NA, 100, NA)))
+# plot(fluotox72_78_model, add = TRUE, col = "#674C71", lwd = 4, lty = c(3), type = "none")
+# 
+# par(new=TRUE)
+# fluotox72_17_model <- drm(response~Conc, data = fluo72tox_17, fct = LL.4(fixed = c(NA, NA, NA, NA)))
+# plot(fluotox72_17_model, add = TRUE, col = "#EACDF4", lwd = 4, lty = c(3), type = "none")
 
 ```
 
