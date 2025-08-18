@@ -61,6 +61,9 @@ library(VennDetail)
 library(BiocParallel)
 library(RUVSeq)
 library(SummarizedExperiment)
+library(ggsignif)
+library(purrr)
+library(rstatix)
 ```
 
 
@@ -271,6 +274,10 @@ fC_DOXCounts %>%
         axis.text.x = element_text(size =10, color = "black", angle = 0, hjust = 1),
         #strip.text.x = element_text(size = 15, color = "black", face = "bold"),
         strip.text.y = element_text(color = "white"))
+
+####Total Reads Per Timepoint####
+
+
 
 ####Total Mapped Reads Per Drug####
 
@@ -2618,9 +2625,6 @@ print(top10_DEGs_RUV$Entrez_ID)
 # Toptable_RUV_144R
 
 # Load DEGs Data
-DOX_24T_1 <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv")
-DOX_24R_1 <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv")
-DOX_144R_1 <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv")
 
 #make a list of all of the genes in this set so I can plot the logFC in other sets
 D24T_DEGs_1 <- DOX_24T_1$Entrez_ID[DOX_24T_1$adj.P.Val < 0.05]
@@ -5087,7 +5091,7 @@ Heatmap(logFC_mat_DDR_RUV,
         show_row_names = TRUE,
         show_column_names = FALSE,
         row_names_gp = gpar(fontsize = 10),
-        column_title = "DDR Gene Expression Response (n = 68)\n DOX Recovery (RUVs Corrected)",
+        column_title = "DDR Gene Expression Response (n = 65)\n DOX Recovery (RUVs Corrected)",
         column_title_gp = gpar(fontsize = 14, fontface = "bold"),
         cell_fun = function(j, i, x, y, width, height, fill) {
           grid.text(signif_mat_DDR[i, j], x, y, gp = gpar(fontsize = 9))
@@ -6101,8 +6105,8 @@ Heatmap(logFC_mat_p53_RUV,
 ```
 
 Now, I want to convert the above heatmap to only have genes DE at 144R
-#p53 HM DE 144R
-```{r p53 target genes logFC heatmap 144R, fig.height=10, fig.width=6}
+#p53 HM DEGs D144R
+```{r p53 target genes logFC heatmap D144R, fig.height=10, fig.width=6}
 
 # Load DEG files
 load_deg <- function(path) read.csv(path)
@@ -6220,8 +6224,6 @@ Heatmap(logFC_mat_p53_RUV,
         column_title = "P53 Target Genes Expression\nDOX Recovery (RUVs Corrected)",
         column_title_gp = gpar(fontsize = 14, fontface = "bold")
 )
-
-
 
 
 ```
@@ -6637,7 +6639,7 @@ ggplot(proportion_data_ddr, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label
     x = "Odds Ratio (95% CI)",
     color = "Significance"
   ) +
-  scale_y_discrete(limits = rev(levels(proportion_data_ddr$Timepoint)))
+  scale_y_discrete(limits = rev(levels(proportion_data_ddr$Timepoint)))+
   theme_minimal(base_size = 14) +
   theme(
     plot.title = element_text(hjust = 0.5),
@@ -7357,6 +7359,85 @@ ggplot(proportion_data_dic_backward, aes(y = Timepoint, x = Odds_Ratio, color = 
 
 ```
 
+```{r DIC logFC Line Plot}
+#I want to plot all of the DIC genes on this line plot
+
+#read in my DIC gene set
+DOX_cardiotox_genes <- readRDS("data/new/RUV/DIC_genes_entrezid.RDS")
+
+dic_set <- unique(na.omit(DOX_cardiotox_genes))
+
+#create a toptable with all of the genes for DIC
+filt_toptable_dic_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(DIC = case_when(
+    Entrez_ID %in% dic_set ~ "DIC",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(DIC)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("24T", "24R", "144R"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#calculate medians for ALL DIC genes across timepoints
+medians_dic_RUV <- filt_toptable_dic_RUV %>%
+  group_by(time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_dic <- paste0(
+  "DIC\nmedian logFC =\n",
+  paste0(medians_dic_RUV$time, "=", round(medians_dic_RUV$median_logFC, 2), collapse = "\n")
+)
+
+#sdd a column that labels positive/negative direction
+filt_toptable_dic_RUV <- filt_toptable_dic_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_dic_RUV <- medians_dic_RUV %>%
+  mutate(direction = "median")
+
+plot_dic_logFC <- ggplot() +
+  geom_line(data = filt_toptable_dic_RUV,
+            aes(x = time, 
+                y = logFC, 
+                group = Entrez_ID, 
+                color = direction),
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_dic_RUV,
+            aes(x = time, 
+                y = median_logFC, 
+                group = 1, 
+                color = direction),
+            linewidth = 2, 
+            linetype = 1) +
+  scale_color_manual(
+    breaks = c("up", "down", "median"), 
+    values = c("up" = "#5A8CA9", 
+               "down" = "#E07B91", 
+               "median" = "#3D6680"),
+    labels = c(
+      up = "Generally up-regulated",
+      down = "Generally down-regulated",
+      median = labs_logFC_dic
+    ),
+    name = NULL
+  ) +
+  labs(title = "logFC — DIC Genes (n = 27)",
+       y = "logFC", x = "Time") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_dic_logFC
+
+```
+
 
 ##AIC DEGs Proportion Barplots
 ```{r AIC Proportion Barplots, fig.height=6, fig.width=10}
@@ -7472,6 +7553,92 @@ ggplot(proportion_data_AIC, aes(x = Group_Label, y = Fraction, fill = Category))
     plot.title = element_text(size = 16, hjust = 0.5)
   )
 ```
+
+
+```{r AIC Line Plot}
+#I want to plot all of the AIC genes on this line plot
+
+#read in my AIC gene set
+AIC_genes <- readRDS("data/new/RUV/AIC_genes_entrezid.RDS")
+
+aic_set <- unique(na.omit(AIC_genes))
+
+#create a toptable with all of the genes for AIC
+filt_toptable_aic_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(AIC = case_when(
+    Entrez_ID %in% aic_set ~ "AIC",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(AIC)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("24T", "24R", "144R"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#calculate medians for ALL AIC genes across timepoints
+medians_aic_RUV <- filt_toptable_aic_RUV %>%
+  group_by(time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_aic <- paste0(
+  "AIC\nmedian logFC =\n",
+  paste0(medians_aic_RUV$time, "=", round(medians_aic_RUV$median_logFC, 2), collapse = "\n")
+)
+
+#sdd a column that labels positive/negative direction
+filt_toptable_aic_RUV <- filt_toptable_aic_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_aic_RUV <- medians_aic_RUV %>%
+  mutate(direction = "median")
+
+plot_aic_logFC <- ggplot() +
+  geom_line(data = filt_toptable_aic_RUV,
+            aes(x = time, 
+                y = logFC, 
+                group = Entrez_ID, 
+                color = direction),
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_aic_RUV,
+            aes(x = time, 
+                y = median_logFC, 
+                group = 1, 
+                color = direction),
+            linewidth = 2, 
+            linetype = 1) +
+  scale_color_manual(
+    breaks = c("up", "down", "median"), 
+    values = c("up" = "#5A8CA9", 
+               "down" = "#E07B91", 
+               "median" = "#3D6680"),
+    labels = c(
+      up = "Generally up-regulated",
+      down = "Generally down-regulated",
+      median = labs_logFC_aic
+    ),
+    name = NULL
+  ) +
+  labs(title = "logFC — AIC Genes (n = 38)",
+       y = "logFC", x = "Time") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_aic_logFC
+
+#find how many genes are up and how many are down
+aic_directionality <- filt_toptable_dic_RUV %>%
+  group_by(time, direction) %>%
+  summarise(n = n(), .groups = "drop")
+
+```
+
 
 ##Proportion Barplots p53 DEGs
 ```{r p53 Proportion Barplots DEGs vs nonDEGs, fig.height=6, fig.width=10}
@@ -10713,6 +10880,10 @@ clusterdata_dxr_fin_RUV_clust %>% ggplot(aes(x = "", y = Value, fill = Category)
   scale_fill_manual(values = piecolors_dxr_fin)
 
 #now, continue by plotting the logFC of all of these gene sets per motif, as well as look at some random genes for log2cpm to see if the patterns are reflected in the example genes
+
+# saveRDS(final_genes_1_RUV, "data/new/RUV/CMF/final_genes_1_RUV.RDS")
+# saveRDS(final_genes_2_RUV, "data/new/RUV/CMF/final_genes_2_RUV.RDS")
+
 ```
 ###clustlike RUVs log2cpm Norm Counts RUVs logFC
 ```{r logFC Cormotif log2cpm Norm Counts RUVs Plot}
@@ -13091,6 +13262,9 @@ cat(sprintf("Odds ratio: %.3f\n", fisher_test_motifs_DIC$estimate))
 
 ```
 
+
+
+
 Now, I want to convert these into forest plots
 #Forest Plots and Proportion Barplots
 ```{r Forest Plots}
@@ -13745,43 +13919,52 @@ h2ax_75 <- read.csv("data/Master_summary_75-1_EMP_250811_final.csv")
 
 #now that I've read in my data, let's organize my matrix so I can create a bar plot
 
-yh2ax_all <- bind_rows(h2ax_87, h2ax_75) %>% 
+yh2ax_all_df <- bind_rows(h2ax_87, h2ax_75) %>% 
   as.data.frame() %>% 
-  dplyr::select(-(contains("2nd")))
+  dplyr::filter(!is.na(Treatment))
 
 # write.csv(yh2ax_all_df, "data/yh2ax_all_df_EMP_250812.csv")
 
-# Define timepoint order
+#define data factors like timepoint and magnification
 timepoint_order <- c("24T", "24R", "144R")
+condition_order <- c("DOX_24T", 
+                     "DMSO_24T", 
+                     "DOX_24R",
+                     "DMSO_24R", 
+                     "DOX_144R", 
+                     "DMSO_144R")
 magnifications <- unique(yh2ax_all_df$Magnification)
 
-yh2ax_all_df %>% 
-  dplyr::select(-(contains("2nd")))
-
-# Step 1: Calculate proportion positive
+#calculate proportion of positive vs negative nuclei
 yh2ax_all_df <- yh2ax_all_df %>%
   mutate(Proportion_Positive = Positive_ROIs / Total_ROIs,
-         Condition = Name,                       # Full treatment name
-         Timepoint = gsub("DOX|DMSO", "", Name), # Extract timepoint
-         Treatment = Drug,                       # Drug name
+         Condition = Condition,                 
+         Timepoint = Timepoint, 
+         Treatment = Treatment,                       
          Individual = factor(Individual),
-         Condition_Fill = Condition)             # For coloring by condition
+         Condition_Fill = factor(Condition),
+         Treatment_Fill = Treatment,
+         Positive_Percent = (Proportion_Positive*100))             
 
-# Step 2: Plot boxplots per magnification including all conditions
+#plot boxplots per magnification including all conditions
 for (mag in magnifications) {
   
   df_mag <- yh2ax_all_df %>%
     dplyr::filter(Magnification == mag) %>%
-    mutate(Timepoint = factor(Timepoint, levels = timepoint_order))
+    mutate(Condition = factor(Condition, levels = condition_order))
   
-  p <- ggplot(df_mag, aes(x = Timepoint, y = Proportion_Positive, fill = Condition_Fill)) +
-    geom_boxplot(outlier.shape = NA, alpha = 0.6, position = position_dodge(width = 0.8)) +
-    geom_jitter(aes(color = Individual), width = 0.15, size = 2, show.legend = FALSE) +
-    scale_y_continuous(labels = scales::percent_format(accuracy = 1), expand = c(0, 0)) +
+  p <- ggplot(df_mag, aes(x = Condition, y = Proportion_Positive, fill = Treatment_Fill)) +
+    geom_boxplot(outlier.shape = NA, alpha = 0.6) +
     labs(title = paste0("yH2AX Percent Positive - ", mag),
          y = "Percent Positive Nuclei",
-         x = "Timepoint",
-         fill = "Condition") +
+         x = "Condition",
+         fill = "Treatment") +
+    ggsignif::geom_signif(
+      comparisons = list(c("DMSO", "DOX")),
+      test = "t.test",
+      map_signif_level = TRUE,
+      y_position = y_max_prop + 0.05
+    ) +
     theme_minimal(base_size = 14) +
     theme(legend.position = "bottom")
   
@@ -13791,95 +13974,7 @@ for (mag in magnifications) {
 
 ```
 
-
-```{r Boxplots IF quantification}
-library(ggsignif)
-
-# Define colors
-#tx_col
-ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
-
-# Step 1: Filter and simplify
-yh2ax_filtered <- yh2ax_all_df %>%
-  dplyr::filter(Drug %in% c("DOX","DMSO")) %>%
-  mutate(Treatment = Drug,
-         Timepoint = gsub("DOX|DMSO", "", Name),
-         Individual = factor(ifelse(Individual == "87", "Ind2",
-                                    ifelse(Individual == "75", "Ind4", as.character(Individual)))))
-
-# Step 2: Keep top 3 most consistent images per condition × individual × magnification
-yh2ax_consistent <- yh2ax_filtered %>%
-  group_by(Treatment, Timepoint, Individual, Magnification) %>%
-  arrange(desc(Proportion_Positive)) %>%  # for positive proportion
-  slice_head(n = 3) %>%
-  ungroup()
-
-# Step 3: Loop over magnifications and plot both Proportion_Positive and avg_mean_intensity
-magnifications <- unique(yh2ax_consistent$Magnification)
-
-for (mag in magnifications) {
-  
-  df_mag <- yh2ax_consistent %>%
-    dplyr::filter(Magnification == mag)
-  
-  # ---- Proportion Positive plot ----
-  y_max_prop <- max(df_mag$Proportion_Positive, na.rm = TRUE)
-  
-  p_prop <- ggplot(df_mag, aes(x = Treatment, y = Proportion_Positive)) +
-    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
-    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
-    ggsignif::geom_signif(
-      comparisons = list(c("DMSO", "DOX")),
-      test = "wilcox.test",
-      map_signif_level = FALSE,
-      y_position = y_max_prop + 0.05
-    ) +
-    facet_wrap(~Timepoint) +
-    scale_y_continuous(limits = c(0,1), expand = c(0,0)) +
-    scale_fill_manual(values = tx_col) +
-    scale_color_manual(values = ind_col) +
-    theme_bw(base_size = 14) +
-    labs(
-      title = paste0("yH2AX Percent Positive - ", mag),
-      y = "Percent Positive Nuclei",
-      x = "Treatment",
-      fill = "Treatment",
-      colour = "Individual"
-    )
-  
-  print(p_prop)
-  
-  # ---- Avg Mean Intensity plot ----
-  y_max_int <- max(df_mag$Avg_Mean_Intensity, na.rm = TRUE)
-  
-  p_int <- ggplot(df_mag, aes(x = Treatment, y = Avg_Mean_Intensity)) +
-    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
-    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
-    ggsignif::geom_signif(
-      comparisons = list(c("DMSO", "DOX")),
-      test = "wilcox.test",
-      map_signif_level = FALSE,
-      y_position = y_max_int + 0.05 * y_max_int
-    ) +
-    facet_wrap(~Timepoint) +
-    scale_fill_manual(values = tx_col) +
-    scale_color_manual(values = ind_col) +
-    theme_bw(base_size = 14) +
-    labs(
-      title = paste0("yH2AX Avg Mean Intensity - ", mag),
-      y = "Average Mean Intensity",
-      x = "Treatment",
-      fill = "Treatment",
-      colour = "Individual"
-    )
-  
-  print(p_int)
-}
-
-
-```
-
-```{r Test}
+```{r yH2AX Βoxplots with Stats Positive vs Negative}
 
 library(ggsignif)
 
@@ -13889,13 +13984,15 @@ ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
 
 # Step 1: Filter and calculate proportion positive
 yh2ax_filtered <- yh2ax_all_df %>%
-  dplyr::select(Timepoint = Name, Individual, Drug, Magnification, Positive_ROIs, Total_ROIs) %>%
-  dplyr::filter(Drug %in% c("DOX","DMSO")) %>%
+  dplyr::select(Timepoint = Timepoint, Individual, Treatment, Magnification, Positive_ROIs, Total_ROIs) %>%
+  dplyr::filter(Treatment %in% c("DOX","DMSO")) %>%
   mutate(Proportion_Positive = Positive_ROIs / Total_ROIs,
-         Treatment = Drug,
-         Timepoint = gsub("DOX|DMSO", "", Timepoint),
+         Treatment = Treatment,
+         Timepoint = Timepoint,
          Individual = factor(ifelse(Individual == "87", "Ind2",
-                                    ifelse(Individual == "75", "Ind4", as.character(Individual)))))
+                                    ifelse(Individual == "75", "Ind4",
+                                           as.character(Individual)))),
+         Condition = gsub(Treatment, paste0("_"), Timepoint))
 
 # Step 2: Assign A/B groups and pivot wider
 yh2ax_grouped <- yh2ax_filtered %>%
@@ -13909,8 +14006,18 @@ yh2ax_grouped <- yh2ax_filtered %>%
   ) %>%
   ungroup() %>%
   mutate(total = round(rowMeans(cbind(A,B), na.rm = TRUE), 3),
-         Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
-         Treatment = factor(Treatment, levels = c("DOX","DMSO")))
+         Timepoint = factor(Timepoint, levels = c("24T", 
+                                                  "24R", 
+                                                  "144R")),
+         Treatment = factor(Treatment, levels = c("DOX",
+                                                  "DMSO")),
+         Condition = factor(Condition, levels = c("DOX_24T", 
+                                                  "DMSO_24T", 
+                                                  "DOX_24R", 
+                                                  "DMSO_24R",
+                                                  "DOX_144R",
+                                                  "DMSO_144R"))
+         )
 
 # Step 3: Loop over magnifications and plot
 magnifications <- unique(yh2ax_grouped$Magnification)
@@ -13922,7 +14029,6 @@ for (mag in magnifications) {
   
   p <- ggplot(df_mag, aes(x = Treatment, y = total)) +
     geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
-    geom_point(aes(colour = Individual), size = 3, position = position_dodge(width = 0.8)) +
     ggsignif::geom_signif(
       comparisons = list(c("DMSO", "DOX")),
       step_increase = 0.1,
@@ -13945,6 +14051,9 @@ for (mag in magnifications) {
 }
 
 ```
+
+
+
 
 ```{r}
 
@@ -14220,8 +14329,8 @@ library(fs)
 # list.files(folders_roi[2], pattern = "\\.zip$", full.names = TRUE)
 # 
 # #run an example first to check the columns
-# # example_zip <- "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/2ndonly_87_yh2ax_10X_dup_RGB_0001_DAPI.zip"
-# # roi_data_example <- read.ijzip(example_zip)
+# example_zip <- "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/2ndonly_87_yh2ax_10X_dup_RGB_0001_DAPI.zip"
+# roi_data_example <- read.ijzip(example_zip)
 # 
 # #now remove any zip files that are secondary only samples
 # zip_list <- folders_roi %>% 
@@ -14260,7 +14369,8 @@ library(fs)
 #       Nuclei_Count = n(),
 #       Mean_Intensity = mean(Mean, na.rm = TRUE),
 #       Median_Intensity = median(Mean, na.rm = TRUE),
-#       Total_Intensity = sum(Mean * Area, na.rm = TRUE)
+#       Total_Intensity = sum(Mean * Area, na.rm = TRUE),
+#       Max_Intensity = 
 #     ) %>%
 #     mutate(
 #       Image = filename,
@@ -14283,173 +14393,1201 @@ summary_all <- readRDS("data/summary_all_IF_ROI.RDS")
 
 Now that I have found the mean and median intensities, stratify by magnification
 Then sort all of the treatment/timepoint information by individual
-```{r Set up Dataframe for Boxplots IF Intensity}
-
-sorted_summary <- summary_all %>% 
-  arrange(Magnification, Treatment, Timepoint, Individual, desc(Nuclei_Count)) %>% 
-  group_by(Magnification, Treatment, Timepoint, Individual) %>% 
-  mutate(Rank = row_number()) %>% 
-  ungroup()
-
-
-```
-
-
-
-```{r Plot Intensity Boxplots yH2AX}
-
-#read in .csv summary files
-read.csv("data/new/IF_all_image_intensity_summary.csv")
-read.csv("data/new/IF_treatment_intensity_summary.csv")
-
-#prepare data for plotting by removing 2nd only samples
-image_summary <- image_summary %>%
-  dplyr::filter(!is.na(Treatment))
-
-treatment_summary <- treatment_summary %>%
-  dplyr::filter(!is.na(Treatment))
-
-####plot this data
-
-plot_df <- image_summary %>%
-  filter(Treatment %in% c("DOX","DMSO")) %>%
-  mutate(
-    Individual = factor(Individual, levels = c("Ind2", "Ind4")),
-    Treatment = factor(Treatment, levels = c("DOX","DMSO")),
-    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"))
+```{r Normalize Intensity Data}
+# 1: Baseline DMSO medians and means per group
+baseline <- matched_images %>%
+  group_by(Magnification, Timepoint, Individual) %>%
+  filter(Treatment == "DMSO") %>%
+  summarise(
+    baseline_median = median(Median_Intensity, na.rm = TRUE),
+    baseline_mean   = mean(Median_Intensity,   na.rm = TRUE)
   )
 
-magnifications <- unique(plot_df$Magnification)
+# 2: Max per condition (Magnification × Timepoint × Treatment × Individual)
+max_by_condition <- matched_images %>%
+  group_by(Magnification, Timepoint, Treatment, Individual) %>%
+  summarise(max_intensity = max(Median_Intensity, na.rm = TRUE), .groups = "drop")
+
+# 3: Join and compute percentages
+matched_norm <- matched_images %>%
+  left_join(baseline,        by=c("Magnification","Timepoint","Individual")) %>%
+  left_join(max_by_condition,by=c("Magnification","Timepoint","Treatment","Individual")) %>%
+  mutate(
+    pct_baseline_median = 100 * Median_Intensity / baseline_median,
+    pct_baseline_mean   = 100 * Median_Intensity / baseline_mean,
+    pct_of_max          = 100 * Median_Intensity / max_intensity
+  )
+
+```
+
+
+```{r Plot Normalized Data IF yH2AX}
+
+# Clean data
+summary_all_clean <- summary_all %>%
+  filter(Magnification %in% c("10X", "20X")) %>%
+  mutate(
+    Mean_Intensity = as.numeric(Mean_Intensity),
+    Median_Intensity = as.numeric(Median_Intensity),
+    Mean_norm_baseline = as.numeric(Mean_norm_baseline),
+    Median_norm_baseline = as.numeric(Median_norm_baseline)
+  ) %>%
+  filter(
+    is.finite(Mean_Intensity), is.finite(Median_Intensity),
+    is.finite(Mean_norm_baseline), is.finite(Median_norm_baseline)
+  )
+
+# Loop over magnifications
+magnifications <- unique(summary_all_clean$Magnification)
 
 for (mag in magnifications) {
-  df_mag <- plot_df %>% filter(Magnification == mag)
   
-  p <- ggplot(df_mag, aes(x = Treatment, y = Mean_Intensity)) +
-    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
-    geom_point(aes(color = Individual), position = position_dodge(width = 0.8), size = 2) +
-    facet_wrap(~Timepoint) +
-    scale_color_manual(values = ind_col) +
-    scale_fill_manual(values = tx_col) +
-    labs(
-      title = paste0("yH2AX Mean Intensity - ", mag),
-      y = "Mean Intensity per Nucleus (pixels)",
-      x = "Treatment",
-      fill = "Treatment",
-      colour = "Individual"
-    ) +
-    theme_bw(base_size = 14) +
-    scale_y_continuous(limits = c(0, NA)) +
-    # Statistical comparison: DOX vs DMSO per timepoint
+  df_mag <- summary_all_clean %>% filter(Magnification == mag)
+  
+  comparisons <- list(c("DMSO", "DOX"))
+  
+  # Mean intensity raw
+  p_mean <- ggplot(df_mag, aes(x=Treatment, y=Mean_Intensity, fill=Treatment)) +
+    geom_boxplot(alpha=0.6) +
+    # facet_wrap(~Timepoint) +
     ggsignif::geom_signif(
-      comparisons = list(c("DMSO", "DOX")),
-      map_signif_level = TRUE,
-      test = "wilcox.test"
-    )
+      comparisons = comparisons,
+      test = "t.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity - ", mag),
+         y="Mean Intensity (pixels)", x="Treatment")
   
-  print(p)
+  print(p_mean)
+  
+  # Median intensity raw
+  p_median <- ggplot(df_mag, aes(x=Treatment, y=Median_Intensity, fill=Treatment)) +
+    geom_boxplot(alpha=0.6) +
+    # facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "t.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity - ", mag),
+         y="Median Intensity (pixels)", x="Treatment")
+  
+  print(p_median)
+  
+  # Mean normalized to baseline
+  p_mean_norm <- ggplot(df_mag, aes(x=Treatment, y=Mean_norm_baseline, fill=Treatment)) +
+    geom_boxplot(alpha=0.6) +
+    # facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "t.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity Normalized to Baseline - ", mag),
+         y="Normalized Mean Intensity (%)", x="Treatment")
+  
+  print(p_mean_norm)
+  
+  # Median normalized to baseline
+  p_median_norm <- ggplot(df_mag, aes(x=Treatment, y=Median_norm_baseline, fill=Treatment)) +
+    geom_boxplot(alpha=0.6) +
+    # facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "t.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity Normalized to Baseline - ", mag),
+         y="Normalized Median Intensity (%)", x="Treatment")
+  
+  print(p_median_norm)
 }
 
+```
 
-####try making a percent of maximum to normalize into a percentage
-max_intensity <- max(plot_df$Mean_Intensity, na.rm = TRUE)
 
-plot_df_int <- plot_df %>%
-  mutate(Percent_of_Max = (Mean_Intensity / max_intensity) * 100,
-         Individual = factor(Individual, levels = c("Ind2","Ind4")),
-         Treatment = factor(Treatment, levels = c("DOX","DMSO")),
-         Timepoint = factor(Timepoint, levels = c("24T","24R","144R")))
+```{r Plot Intensity}
 
-magnifications <- unique(plot_df_int$Magnification)
-ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
-tx_col <- c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")
+# Ensure factors are ordered
+summary_all_clean <- summary_all_clean %>%
+  dplyr::mutate(
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+    Treatment = factor(Treatment, levels = c("DOX", "DMSO"))
+  )
+
+# Normalize to percent of max per Magnification
+summary_all_clean <- summary_all_clean %>%
+  dplyr::group_by(Magnification) %>%
+  dplyr::mutate(
+    Mean_pct_max = Mean_Intensity / max(Mean_Intensity, na.rm = TRUE) * 100,
+    Median_pct_max = Median_Intensity / max(Median_Intensity, na.rm = TRUE) * 100
+  ) %>%
+  dplyr::ungroup()
+
+# Step: select top 5 most consistent images per condition
+summary_top5 <- summary_all_clean %>%
+  dplyr::group_by(Magnification, Timepoint, Treatment) %>%
+  dplyr::mutate(diff_from_median = abs(Nuclei_Count - median(Nuclei_Count, na.rm = TRUE))) %>%
+  dplyr::arrange(diff_from_median) %>%
+  dplyr::slice_head(n = 5) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(-diff_from_median)
+
+# Loop over magnifications
+magnifications <- unique(summary_top5$Magnification)
 
 for (mag in magnifications) {
-  df_mag <- plot_df_int %>% filter(Magnification == mag)
   
-  p <- ggplot(df_mag, aes(x = Treatment, y = Percent_of_Max)) +
-    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
-    geom_point(aes(color = Individual), position = position_dodge(width = 0.8), size = 2) +
+  df_mag <- summary_top5 %>% dplyr::filter(Magnification == mag)
+  
+  comparisons <- list(c("DMSO", "DOX"))
+  
+  # Plot Mean Intensity
+  p_mean <- ggplot(df_mag, aes(x=Treatment, y=Mean_Intensity, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
     facet_wrap(~Timepoint) +
-    scale_color_manual(values = ind_col) +
-    scale_fill_manual(values = tx_col) +
-    scale_y_continuous(limits = c(0,110)) +  # allow slight buffer over 100%
-    labs(
-      title = paste0("yH2AX Mean Intensity (% of Max) - ", mag),
-      y = "Percent of Maximum Intensity",
-      x = "Treatment",
-      fill = "Treatment",
-      colour = "Individual"
-    ) +
-    theme_bw(base_size = 14) +
     ggsignif::geom_signif(
-      comparisons = list(c("DMSO", "DOX")),
+      comparisons = comparisons,
       test = "wilcox.test",
       map_signif_level = TRUE
-    )
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity - ", mag), y="Mean Intensity (pixels)", x="Treatment")
+  print(p_mean)
   
-  print(p)
+  # Plot Median Intensity
+  p_median <- ggplot(df_mag, aes(x=Treatment, y=Median_Intensity, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "wilcox.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity - ", mag), y="Median Intensity (pixels)", x="Treatment")
+  print(p_median)
+  
+  # Plot Mean normalized to baseline
+  p_mean_norm <- ggplot(df_mag, aes(x=Treatment, y=Mean_norm_baseline, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "wilcox.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity Normalized to Baseline - ", mag), y="Normalized Mean Intensity (%)", x="Treatment")
+  print(p_mean_norm)
+  
+  # Plot Median normalized to baseline
+  p_median_norm <- ggplot(df_mag, aes(x=Treatment, y=Median_norm_baseline, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "wilcox.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity Normalized to Baseline - ", mag), y="Normalized Median Intensity (%)", x="Treatment")
+  print(p_median_norm)
+  
+  # Plot Mean percent of max
+  p_mean_pct <- ggplot(df_mag, aes(x=Treatment, y=Mean_pct_max, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "wilcox.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity (% of Max) - ", mag), y="Mean Intensity (% of Max)", x="Treatment")
+  print(p_mean_pct)
+  
+  # Plot Median percent of max
+  p_median_pct <- ggplot(df_mag, aes(x=Treatment, y=Median_pct_max, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(
+      comparisons = comparisons,
+      test = "wilcox.test",
+      map_signif_level = TRUE
+    ) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity (% of Max) - ", mag), y="Median Intensity (% of Max)", x="Treatment")
+  print(p_median_pct)
 }
 
-####now try median
-median_df <- image_summary %>%
-  filter(!is.na(Treatment)) 
+```
 
-#keep 5 most consistent images per condition and individual (since some have many more nuclei)
-median_df_consistent <- median_df %>%
-  group_by(Individual, Treatment, Timepoint, Magnification) %>%
-  arrange(desc(Nuclei_Count)) %>%  # largest number of nuclei first
-  slice_head(n = 5) %>%            # keep top 5
+
+```{r}
+
+# Ensure factors are ordered
+summary_all_clean <- summary_all_clean %>%
+  dplyr::mutate(
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+    Treatment = factor(Treatment, levels = c("DOX", "DMSO"))
+  )
+
+# Normalize to percent of max per Magnification
+summary_all_clean <- summary_all_clean %>%
+  dplyr::group_by(Magnification) %>%
+  dplyr::mutate(
+    Mean_pct_max = Mean_Intensity / max(Mean_Intensity, na.rm = TRUE) * 100,
+    Median_pct_max = Median_Intensity / max(Median_Intensity, na.rm = TRUE) * 100
+  ) %>%
+  dplyr::ungroup()
+
+# Loop over magnifications
+magnifications <- unique(summary_all_clean$Magnification)
+
+for (mag in magnifications) {
+  
+  df_mag <- summary_all_clean %>% dplyr::filter(Magnification == mag)
+  
+  comparisons <- list(c("DMSO", "DOX"))
+  
+  # Mean intensity raw
+  p_mean <- ggplot(df_mag, aes(x=Treatment, y=Mean_Intensity, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(comparisons = comparisons, test = "wilcox.test", map_signif_level = TRUE) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity - ", mag), y="Mean Intensity (pixels)", x="Treatment")
+  print(p_mean)
+  
+  # Median intensity raw
+  p_median <- ggplot(df_mag, aes(x=Treatment, y=Median_Intensity, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(comparisons = comparisons, test = "wilcox.test", map_signif_level = TRUE) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity - ", mag), y="Median Intensity (pixels)", x="Treatment")
+  print(p_median)
+  
+  # Mean normalized to baseline
+  p_mean_norm <- ggplot(df_mag, aes(x=Treatment, y=Mean_norm_baseline, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(comparisons = comparisons, test = "wilcox.test", map_signif_level = TRUE) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity Normalized to Baseline - ", mag), y="Normalized Mean Intensity (%)", x="Treatment")
+  print(p_mean_norm)
+  
+  # Median normalized to baseline
+  p_median_norm <- ggplot(df_mag, aes(x=Treatment, y=Median_norm_baseline, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(comparisons = comparisons, test = "wilcox.test", map_signif_level = TRUE) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity Normalized to Baseline - ", mag), y="Normalized Median Intensity (%)", x="Treatment")
+  print(p_median_norm)
+  
+  # Mean normalized to percent of max
+  p_mean_pct <- ggplot(df_mag, aes(x=Treatment, y=Mean_pct_max, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(comparisons = comparisons, test = "wilcox.test", map_signif_level = TRUE) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Mean Intensity (% of Max) - ", mag), y="Mean Intensity (% of Max)", x="Treatment")
+  print(p_mean_pct)
+  
+  # Median normalized to percent of max
+  p_median_pct <- ggplot(df_mag, aes(x=Treatment, y=Median_pct_max, fill=Treatment)) +
+    geom_boxplot(alpha=0.6, outlier.shape = NA) +
+    facet_wrap(~Timepoint) +
+    ggsignif::geom_signif(comparisons = comparisons, test = "wilcox.test", map_signif_level = TRUE) +
+    scale_fill_manual(values = tx_col) +
+    theme_bw(base_size=14) +
+    labs(title=paste0("Median Intensity (% of Max) - ", mag), y="Median Intensity (% of Max)", x="Treatment")
+  print(p_median_pct)
+}
+
+```
+
+#yH2AX Intensity Quantification
+
+```{r Separate Stats by Individual yH2AX Intensity}
+
+
+#read in summary files (csv)
+image_summary <- read.csv("data/new/IF_all_image_intensity_summary.csv")
+treatment_summary <- read.csv("data/new/IF_treatment_intensity_summary.csv")
+
+# Remove rows with NA treatment
+image_summary <- image_summary %>% filter(!is.na(Treatment)) %>% 
+  dplyr::filter(Max >=255)
+treatment_summary <- treatment_summary %>% filter(!is.na(Treatment))
+
+#collapse data from single nuclei to image level 
+image_level_summary <- image_summary %>%
+  group_by(Individual, Treatment, Timepoint, Magnification, Image) %>%
+  summarize(
+    Mean_Intensity = mean(Mean_Intensity, na.rm = TRUE),
+    Median_Intensity = median(Median_Intensity, na.rm = TRUE),
+    Max_Intensity = max(Mean_Intensity, na.rm = TRUE),
+    Nuclei_Count = n()
+  ) %>%
   ungroup()
 
-#compute the percent of max median intensity
-max_median <- max(median_df_consistent$Median_Intensity, na.rm = TRUE)
+#save to an RDS file
+# saveRDS(image_level_summary, "data/new/image_level_summary_yH2AX_quant.RDS")
 
-median_df_consistent <- median_df_consistent %>%
-  mutate(Percent_of_Max = (Median_Intensity / max_median) * 100,
-         Individual = factor(Individual, levels = c("Ind2","Ind4")),
-         Treatment = factor(Treatment, levels = c("DOX","DMSO")),
-         Timepoint = factor(Timepoint, levels = c("24T","24R","144R")))
+#also save to a csv file just in case
+# write.csv(image_level_summary, "data/image_level_summary_yH2AX_quant.csv")
 
-magnifications <- unique(median_df_consistent$Magnification)
-ind_col <- c("Ind2" = "#45AE91", "Ind4" = "#8B3E9B")
-tx_col <- c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")
-
-
-#plot as above
-for (mag in magnifications) {
-  df_mag <- median_df_consistent %>% filter(Magnification == mag)
-  
-  p <- ggplot(df_mag, aes(x = Treatment, y = Percent_of_Max)) +
-    geom_boxplot(aes(fill = Treatment), alpha = 0.6) +
-    geom_point(aes(color = Individual), position = position_dodge(width = 0.8), size = 2) +
-    facet_wrap(~Timepoint) +
-    scale_color_manual(values = ind_col) +
-    scale_fill_manual(values = tx_col) +
-    scale_y_continuous(limits = c(0,110)) +  # slight buffer over 100%
-    labs(
-      title = paste0("yH2AX Median Intensity (% of Max) - ", mag),
-      y = "Percent of Maximum Median Intensity",
-      x = "Treatment",
-      fill = "Treatment",
-      colour = "Individual"
-    ) +
-    theme_bw(base_size = 14) +
-    ggsignif::geom_signif(
-      comparisons = list(c("DMSO", "DOX")),
-      test = "wilcox.test",
-      map_signif_level = TRUE
+#create a function to run stats and save files
+run_stats <- function(df, value_col, out_file) {
+  stat_results <- df %>%
+    group_by(Individual, Timepoint) %>%
+    summarize(
+      DOX_vs_DMSO_p = wilcox.test(get(value_col)[Treatment == "DOX"],
+                                  get(value_col)[Treatment == "DMSO"])$p.value,
+      .groups = "drop"
     )
-  
-  print(p)
+  write.csv(stat_results, out_file, row.names = FALSE)
+  return(stat_results)
 }
 
+#------------------------------------
+# 4. Normalize percent of max
+#------------------------------------
+max_intensity <- max(image_level_summary$Mean_Intensity, na.rm = TRUE)
+max_median <- max(image_level_summary$Median_Intensity, na.rm = TRUE)
+
+image_level_summary <- image_level_summary %>%
+  mutate(
+    Percent_Max_Mean = (Mean_Intensity / max_intensity) * 100,
+    Percent_Max_Median = (Median_Intensity / max_median) * 100,
+    Individual = factor(Individual, levels = c("Ind2","Ind4")),
+    Treatment = factor(Treatment, levels = c("DOX","DMSO")),
+    Timepoint = factor(Timepoint, levels = c("24T","24R","144R"))
+  )
+
+#------------------------------------
+# 5. Select 5 most consistent images per condition & individual
+#------------------------------------
+consistent_images <- image_level_summary %>%
+  group_by(Individual, Treatment, Timepoint, Magnification) %>%
+  arrange(desc(Nuclei_Count)) %>%
+  slice_head(n = 5) %>%
+  ungroup()
+
+#------------------------------------
+# 6. Plotting function
+#------------------------------------
+plot_box <- function(df, value_col, ylab, title_text, save_file) {
+  mags <- unique(df$Magnification)
+  tx_col <- c("DOX"="#499FBD", "DMSO"="#BBBBBC")
+  
+  for (mag in mags) {
+    df_mag <- df %>% filter(Magnification == mag)
+    
+    p <- ggplot(df_mag, aes(x=Treatment, y=.data[[value_col]])) +
+      geom_boxplot(aes(fill=Treatment), alpha=0.6) +
+      facet_wrap(~Timepoint) +
+      scale_fill_manual(values = tx_col) +
+      labs(
+        title=paste0(title_text, " - ", mag),
+        x="Treatment",
+        y=ylab,
+        fill="Treatment"
+      ) +
+      theme_bw(base_size=14) +
+      scale_y_continuous(limits=c(0, NA)) +
+      ggsignif::geom_signif(
+        comparisons = list(c("DMSO","DOX")),
+        test = "wilcox.test",
+        map_signif_level = TRUE
+      )
+    
+    print(p)
+    ggsave(paste0("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/", save_file, "_", mag, "EMP_250818.png"), plot=p, width=6, height=5)
+    
+    # Run stats and save
+    stat_file <- paste0("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/", save_file, "_", mag, "_stats.csv")
+    run_stats(df_mag, value_col, stat_file)
+  }
+}
+
+#------------------------------------
+# 7. Run all plots for all images
+#------------------------------------
+plot_box(image_level_summary, "Mean_Intensity", "Mean Intensity (pixels)", "Raw Mean Intensity", "raw_mean_all")
+plot_box(image_level_summary, "Median_Intensity", "Median Intensity (pixels)", "Raw Median Intensity", "raw_median_all")
+plot_box(image_level_summary, "Percent_Max_Mean", "Percent of Maximum", "Percent Max Mean Intensity", "percent_max_mean_all")
+plot_box(image_level_summary, "Percent_Max_Median", "Percent of Maximum", "Percent Max Median Intensity", "percent_max_median_all")
+
+#------------------------------------
+# 8. Run all plots for 5 most consistent images
+#------------------------------------
+plot_box(consistent_images, "Mean_Intensity", "Mean Intensity (pixels)", "Raw Mean Intensity (5 Consistent)", "raw_mean_5consistent")
+plot_box(consistent_images, "Median_Intensity", "Median Intensity (pixels)", "Raw Median Intensity (5 Consistent)", "raw_median_5consistent")
+plot_box(consistent_images, "Percent_Max_Mean", "Percent of Maximum", "Percent Max Mean Intensity (5 Consistent)", "percent_max_mean_5consistent")
+plot_box(consistent_images, "Percent_Max_Median", "Percent of Maximum", "Percent Max Median Intensity (5 Consistent)", "percent_max_median_5consistent")
 
 ```
 
-```{r Plot Intensity as Total Fluorescence mean x area}
+#Image-level analysis yH2AX Median Nuclei
+```{r yH2AX Image Level Boxplots Final}
 
+output_dir <- c("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data")
+
+# Use image_level_summary
+image_level_df <- image_level_summary %>%
+  dplyr::filter(!is.na(Treatment), Treatment %in% c("DOX","DMSO")) %>% 
+  dplyr::filter(!(magnifications))
+
+#factor my data so that everything stays in the right order
+image_level_df <- image_level_df %>%
+  mutate(
+    Individual = factor(Individual, levels = c("Ind2","Ind4")),
+    Treatment = factor(Treatment, levels = c("DOX","DMSO")),
+    Timepoint = factor(Timepoint, levels = c("24T","24R","144R")),
+    Magnification = factor(Magnification, levels = c("10X","20X","40X"))
+  )
+
+
+#-------------------------------
+# Select 5 most consistent images per condition
+#-------------------------------
+consistent_images <- image_level_df %>%
+  group_by(Individual, Treatment, Timepoint, Magnification) %>%
+  mutate(
+    median_nuclei = median(Nuclei_Count),
+    nuclei_deviation = abs(Nuclei_Count - median_nuclei)
+  ) %>%
+  arrange(nuclei_deviation) %>%
+  slice_head(n = 5) %>%
+  ungroup() %>%
+  select(-median_nuclei, -nuclei_deviation)
+
+#-------------------------------
+# Compute percent of max intensity per magnification
+#-------------------------------
+image_level_df <- image_level_df %>%
+  group_by(Magnification) %>%
+  mutate(
+    Percent_of_Max_Mean = Mean_Intensity / max(Mean_Intensity, na.rm=TRUE) * 100,
+    Percent_of_Max_Median = Median_Intensity / max(Median_Intensity, na.rm=TRUE) * 100
+  ) %>%
+  ungroup()
+
+consistent_images <- consistent_images %>%
+  group_by(Magnification) %>%
+  mutate(
+    Percent_of_Max_Mean = Mean_Intensity / max(Mean_Intensity, na.rm=TRUE) * 100,
+    Percent_of_Max_Median = Median_Intensity / max(Median_Intensity, na.rm=TRUE) * 100
+  ) %>%
+  ungroup()
+
+#-------------------------------
+# Plot function
+#-------------------------------
+plot_box <- function(image_level_df, y_col, y_label, title_prefix, file_suffix) {
+  mags <- unique(image_level_df$Magnification)
+  stats_list <- list()
+  
+  for (mag in mags) {
+    df_mag <- image_level_df %>% filter(Magnification == mag)
+    
+    # Wilcoxon test per individual per timepoint
+    stat_results <- df_mag %>%
+      group_by(Individual, Timepoint) %>%
+      summarise(p_value = wilcox.test(.data[[y_col]] ~ Treatment)$p.value,
+                .groups="drop") %>%
+      mutate(Magnification = mag, Value = y_col)
+    
+    stats_list[[mag]] <- stat_results
+    
+    # Boxplot
+    p <- ggplot(df_mag, aes(x = Treatment, y = .data[[y_col]])) +
+      geom_boxplot(aes(fill=Treatment), alpha=0.6) +
+      facet_wrap(~Timepoint) +
+      scale_fill_manual(values = tx_col) +
+      labs(
+        title=paste0(title_prefix," - ",mag),
+        y=y_label, x="Treatment", fill="Treatment"
+      ) +
+      theme_bw(base_size=14) +
+      scale_y_continuous(limits=c(0,NA)) +
+      ggsignif::geom_signif(
+        comparisons = list(c("DMSO","DOX")),
+        test="wilcox.test",
+        map_signif_level = TRUE
+      )
+    
+    # Print plot in console
+    print(p)
+    
+    # Save PNG
+    ggsave(filename = paste0(output_dir, "yH2AX_quant_", file_suffix,"_",mag,".png"), plot=p, width=7, height=5)
+  }
+  
+  bind_rows(stats_list)
+}
+
+#-------------------------------
+# Plot all images - raw mean
+#-------------------------------
+stats_all_raw_mean <- plot_box(image_level_df, "Mean_Intensity", "Mean Intensity (pixels)", "Raw Mean Intensity", "raw_mean_all")
+
+# Plot all images - raw median
+stats_all_raw_median <- plot_box(image_level_df, "Median_Intensity", "Median Intensity (pixels)", "Raw Median Intensity", "raw_median_all")
+
+# Plot all images - percent of max
+stats_all_perc_mean <- plot_box(image_level_df, "Percent_of_Max_Mean", "Percent of Max Mean Intensity", "Mean (% of Max)", "perc_mean_all")
+stats_all_perc_median <- plot_box(image_level_df, "Percent_of_Max_Median", "Percent of Max Median Intensity", "Median (% of Max)", "perc_median_all")
+
+#-------------------------------
+# Plot 5 most consistent images
+#-------------------------------
+stats_cons_raw_mean <- plot_box(consistent_images, "Mean_Intensity", "Mean Intensity (pixels)", "Raw Mean - 5 Consistent", "raw_mean_consistent")
+stats_cons_raw_median <- plot_box(consistent_images, "Median_Intensity", "Median Intensity (pixels)", "Raw Median - 5 Consistent", "raw_median_consistent")
+stats_cons_perc_mean <- plot_box(consistent_images, "Percent_of_Max_Mean", "Percent of Max Mean Intensity", "Mean (% of Max) - 5 Consistent", "perc_mean_consistent")
+stats_cons_perc_median <- plot_box(consistent_images, "Percent_of_Max_Median", "Percent of Max Median Intensity", "Median (% of Max) - 5 Consistent", "perc_median_consistent")
+
+#-------------------------------
+# Save stats
+#-------------------------------
+all_stats <- bind_rows(
+  stats_all_raw_mean, stats_all_raw_median,
+  stats_all_perc_mean, stats_all_perc_median,
+  stats_cons_raw_mean, stats_cons_raw_median,
+  stats_cons_perc_mean, stats_cons_perc_median
+)
+write_csv(all_stats, paste0(output_dir,"image_level_stats_all_conditions.csv"))
+
+
+#also try with combined ind just to see
+#-------------------------------
+# Plot function: combined individuals
+#-------------------------------
+plot_box_combined <- function(image_level_df, y_col, y_label, title_prefix, file_suffix) {
+  mags <- unique(image_level_df$Magnification)
+  stats_list <- list()
+  
+  for (mag in mags) {
+    df_mag <- image_level_df %>% filter(Magnification == mag)
+    
+    # Wilcoxon test per timepoint (combined individuals)
+    stat_results <- df_mag %>%
+      group_by(Timepoint) %>%
+      summarise(p_value = wilcox.test(.data[[y_col]] ~ Treatment)$p.value,
+                .groups="drop") %>%
+      mutate(Magnification = mag, Value = y_col)
+    
+    stats_list[[mag]] <- stat_results
+    
+    # Boxplot
+    p <- ggplot(df_mag, aes(x = Treatment, y = .data[[y_col]])) +
+      geom_boxplot(aes(fill=Treatment), alpha=0.6) +
+      facet_wrap(~Timepoint) +
+      scale_fill_manual(values = tx_col) +
+      labs(
+        title=paste0(title_prefix," - ",mag),
+        y=y_label, x="Treatment", fill="Treatment"
+      ) +
+      theme_bw(base_size=14) +
+      scale_y_continuous(limits=c(0,NA)) +
+      ggsignif::geom_signif(
+        comparisons = list(c("DMSO","DOX")),
+        test="wilcox.test",
+        map_signif_level = TRUE
+      )
+    
+    # Print plot in console
+    print(p)
+    
+    # Save PNG
+    ggsave(filename = paste0(output_dir, "yH2AX_quant_", file_suffix,"_",mag,".png"), plot=p, width=7, height=5)
+  }
+  
+  bind_rows(stats_list)
+}
+
+#-------------------------------
+# Plot all images - combined individuals
+#-------------------------------
+stats_all_raw_mean_combined <- plot_box_combined(image_level_df, "Mean_Intensity", "Mean Intensity (pixels)", "Raw Mean Intensity (Combined Individuals)", "raw_mean_all_combined")
+stats_all_raw_median_combined <- plot_box_combined(image_level_df, "Median_Intensity", "Median Intensity (pixels)", "Raw Median Intensity (Combined Individuals)", "raw_median_all_combined")
+stats_all_perc_mean_combined <- plot_box_combined(image_level_df, "Percent_of_Max_Mean", "Percent of Max Mean Intensity", "Mean (% of Max, Combined Individuals)", "perc_mean_all_combined")
+stats_all_perc_median_combined <- plot_box_combined(image_level_df, "Percent_of_Max_Median", "Percent of Max Median Intensity", "Median (% of Max, Combined Individuals)", "perc_median_all_combined")
+
+#-------------------------------
+# Plot 5 most consistent images - combined individuals
+#-------------------------------
+stats_cons_raw_mean_combined <- plot_box_combined(consistent_images, "Mean_Intensity", "Mean Intensity (pixels)", "Raw Mean - 5 Consistent (Combined Individuals)", "raw_mean_consistent_combined")
+stats_cons_raw_median_combined <- plot_box_combined(consistent_images, "Median_Intensity", "Median Intensity (pixels)", "Raw Median - 5 Consistent (Combined Individuals)", "raw_median_consistent_combined")
+stats_cons_perc_mean_combined <- plot_box_combined(consistent_images, "Percent_of_Max_Mean", "Percent of Max Mean Intensity", "Mean (% of Max) - 5 Consistent (Combined Individuals)", "perc_mean_consistent_combined")
+stats_cons_perc_median_combined <- plot_box_combined(consistent_images, "Percent_of_Max_Median", "Percent of Max Median Intensity", "Median (% of Max) - 5 Consistent (Combined Individuals)", "perc_median_consistent_combined")
+
+#-------------------------------
+# Save stats for combined individuals
+#-------------------------------
+all_stats_combined <- bind_rows(
+  stats_all_raw_mean_combined, stats_all_raw_median_combined,
+  stats_all_perc_mean_combined, stats_all_perc_median_combined,
+  stats_cons_raw_mean_combined, stats_cons_raw_median_combined,
+  stats_cons_perc_mean_combined, stats_cons_perc_median_combined
+)
+write_csv(all_stats_combined, paste0(output_dir,"image_level_stats_all_conditions_combined_individuals.csv"))
+
+```
+
+#Top2i Genes Comparisons
+```{r Load in Top2i DEG sets}
+
+#Renee's Top2i drug datasets
+DEGs_RM_list <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Renee/siglist_final.RDS") 
+
+#only keep the conditions that I want to compare to
+keep_conditions <- c("sigVDA24", "sigVDX24", "sigVEP24", "sigVMT24")
+
+DEGs_RM_24 <- DEGs_RM_list[keep_conditions]
+
+#change the first column to Entrez_ID for all sets
+DEGs_RM_24 <- lapply(DEGs_RM_24, function(df) {
+  # Rename the first column to Entrez_ID, regardless of current name
+  colnames(df)[1] <- "Entrez_ID"
+  return(df)
+})
+
+#DOX
+DOX_RM_DEGs <- DEGs_RM_24$sigVDX24 %>% 
+  as.data.frame()
+
+dim(DOX_RM_DEGs)
+#6645 genes
+
+#Das.data.frame()#DNR
+DNR_RM_DEGs <- DEGs_RM_24$sigVDA24 %>% 
+  as.data.frame()
+
+dim(DNR_RM_DEGs)
+#7017 genes
+
+#EPI
+EPI_RM_DEGs <- DEGs_RM_24$sigVEP24 %>% 
+  as.data.frame()
+
+dim(EPI_RM_DEGs)
+#6328 genes
+
+#MTX
+MTX_RM_DEGs <- DEGs_RM_24$sigVMT24 %>% 
+  as.data.frame()
+
+dim(MTX_RM_DEGs)
+#1115 genes
+
+#now combine these all into one dataframe for later
+
+DEGs_RM_24_df <- dplyr::bind_rows(
+  DOX_RM_DEGs %>% mutate(Drug = "DOX_RM"),
+  DNR_RM_DEGs %>% mutate(Drug = "DAUN_RM"),
+  EPI_RM_DEGs %>% mutate(Drug = "EPI_RM"),
+  MTX_RM_DEGs %>% mutate(Drug = "MITO_RM"),
+)
+
+
+#Sayan's Top2i drug datasets
+
+#CX 0.5 24hr
+CX_SP_24 <- read.csv("C:/Users/emmap/RDirectory/Recovery_RNAseq/Sayan/Toptable_CX_0.5_24.csv") 
+
+dim(CX_SP_24)
+#14279 genes, make sure to now filter this for significance
+
+#DOX 0.5 24hr
+DOX_SP_24 <- read.csv("C:/Users/emmap/RDirectory/Recovery_RNAseq/Sayan/Toptable_DOX_0.5_24.csv")
+dim(DOX_SP_24)
+#14279 genes, filter for significance
+
+#filter both above for adj.P.Val < 0.05
+
+DEGs_SP_sig <- list(
+  "CX_SP" = CX_SP_24$Entrez_ID[CX_SP_24$adj.P.Val < 0.05],
+  "DOX_SP" = DOX_SP_24$Entrez_ID[DOX_SP_24$adj.P.Val < 0.05]
+)
+
+#now make dataframes and place them with RM's data to complete my Top2i comparative dataframe
+
+CX_SP_DEGs <- CX_SP_24 %>%
+  filter(adj.P.Val < 0.05) %>%
+  as.data.frame() 
+
+dim(CX_SP_DEGs)
+#278 genes
+
+DOX_SP_DEGs <- DOX_SP_24 %>%
+  filter(adj.P.Val < 0.05) %>%
+  as.data.frame()
+
+dim(DOX_SP_DEGs)
+#9828 genes
+
+#since SP's data has Entrez_ID as an integer rather than a character, coerce these to character in order for bind_rows to work properly
+
+CX_SP_DEGs$Entrez_ID <- as.character(CX_SP_DEGs$Entrez_ID)
+DOX_SP_DEGs$Entrez_ID <- as.character(DOX_SP_DEGs$Entrez_ID)
+
+#these two also don't have a SYMBOL column so let's add that in
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+library(dplyr)
+
+#CX df
+CX_SP_DEGs <- CX_SP_DEGs %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  ) %>%
+  dplyr::select(Entrez_ID, SYMBOL, everything())  # move SYMBOL to second column
+
+# Same for df6
+DOX_SP_DEGs <- DOX_SP_DEGs %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  ) %>%
+  dplyr::select(Entrez_ID, SYMBOL, everything())
+
+
+DEGs_Top2i_24_df <- dplyr::bind_rows(
+  DOX_RM_DEGs %>% mutate(Treatment = "DOX_RM"),
+  DNR_RM_DEGs %>% mutate(Treatment = "DAUN_RM"),
+  EPI_RM_DEGs %>% mutate(Treatment = "EPI_RM"),
+  MTX_RM_DEGs %>% mutate(Treatment = "MITO_RM"),
+  CX_SP_DEGs %>% mutate(Treatment = "CX_SP"),
+  DOX_SP_DEGs %>% mutate(Treatment = "DOX_SP")
+) 
+  
+#now this table has all columns consistently named and in the same formats
+
+# saveRDS(DEGs_Top2i_24_df, "data/new/DEGlist_Top2i_SP_RM.RDS")
+
+DEGs_Top2i_24_df <- readRDS("data/new/DEGlist_Top2i_SP_RM.RDS")
+
+#also make a list version just in case
+
+DEGs_Top2i_24_list <- list(
+  "DOX_RM" = DOX_RM_DEGs,
+  "DNR_RM" = DNR_RM_DEGs,
+  "EPI_RM" = EPI_RM_DEGs,
+  "MTX_RM" = MTX_RM_DEGs,
+  "CX_SP" = CX_SP_DEGs,
+  "DOX_SP" = DOX_SP_DEGs
+)
+
+# saveRDS(DEGs_Top2i_24_list, "data/new/DEGs_Top2i_RM_SP_list.RDS")
 
 
 ```
 
+##Proportion Barplots with Top2i DEGs
+```{r Proportion Barplots Top2i DEGs}
+
+#read in my DEGs for D24T
+
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
+DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
+
+deg_list <- list(
+  "24T" = DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05],
+  "24R" = DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05],
+  "144R" = DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
+)
+
+#separate out D24T since that's what I'm testing against here
+
+D24T_DEG_list <- deg_list$"24T" %>% as.character()
+
+# Background genes (all genes tested)
+all_genes <- rownames(filcpm_matrix)
+total_background_genes <- length(all_genes)
+cat("Total background genes:", total_background_genes, "\n")
+
+
+#Now that I have my DEGs, make proportion barplots
+
+#D24T DEGs reference 
+D24T_DEG_list
+d24t_set <- unique(na.omit(D24T_DEG_list))
+total_d24t_genes <- length(d24t_set)
+cat("Total D24T DE genes:", total_d24t_genes, "\n")
+
+#pull out the test DEGs lists comparison
+DEGs_Top2i_24_list
+
+#convert the above list into character vectors to check against
+comparison_DEGs <- list(
+  DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
+  DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
+  EPI_RM = as.character(EPI_RM_DEGs$Entrez_ID),
+  MTX_RM = as.character(MTX_RM_DEGs$Entrez_ID),
+  CX_SP  = as.character(CX_SP_DEGs$Entrez_ID),
+  DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
+)
+
+#now plot into bar plots
+
+plot_df <- purrr::map_dfr(names(comparison_DEGs), function(name) {
+  comp_DEGs <- unique(comparison_DEGs[[name]])
+  
+  # Overlap
+  overlap <- sum(d24t_set %in% comp_DEGs)
+  non_overlap <- length(d24t_set) - overlap
+  
+  # Background
+  non_ref_genes <- setdiff(all_genes, d24t_set)
+  overlap_bg <- sum(non_ref_genes %in% comp_DEGs)
+  non_overlap_bg <- length(non_ref_genes) - overlap_bg
+  
+  # Fisher's exact test
+  contingency <- matrix(c(overlap, non_overlap, overlap_bg, non_overlap_bg), nrow=2)
+  fisher_res <- fisher.test(contingency)
+  
+  p_val <- fisher_res$p.value
+  odds_ratio <- unname(fisher_res$estimate)
+  sig <- ifelse(p_val < 0.05, "*", "")
+  
+  tibble(
+    Treatment = name,
+    Category = c("Overlap", "Non-overlap"),
+    Count = c(overlap, non_overlap),
+    Total = length(d24t_set),
+    Fraction = c(overlap, non_overlap)/length(d24t_set),
+    P_Value = p_val,
+    Odds_Ratio = odds_ratio,
+    Significant = sig
+  )
+})
+
+# Summary stats table
+stats_table <- plot_df %>%
+  dplyr::filter(Category == "Overlap") %>%
+  dplyr::select(Treatment, Count, Total, Odds_Ratio, P_Value, Significant) %>%
+  dplyr::rename(Overlap = Count, Total_Ref_DEGs = Total)
+
+# ================================================
+# Prepare barplot
+# ================================================
+plot_df <- plot_df %>%
+  mutate(
+    Treatment = factor(Treatment, levels = names(comparison_DEGs)),
+    Category = factor(Category, levels = c("Overlap", "Non-overlap"))
+  )
+
+# Label stars slightly above bars
+label_positions <- plot_df %>%
+  dplyr::filter(Category == "Overlap" & Significant != "") %>%
+  dplyr::mutate(y_pos = Fraction + 0.05)
+
+# Create legend labels with counts
+legend_labels <- plot_df %>%
+  dplyr::filter(Category == "Overlap") %>%
+  dplyr::mutate(Label = paste0(Category, " (n=", Count, ")")) %>%
+  dplyr::select(Treatment, Label) %>%
+  deframe()
+
+# ================================================
+# Plot
+# ================================================
+ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(
+    data = label_positions,
+    aes(x = Treatment, y = y_pos, label = Significant),
+    size = 6,
+    fontface = "bold",
+    color = "black"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1.15)) +
+  scale_fill_manual(values = c("Overlap" = "#e41a1c", "Non-overlap" = "#377eb8"),
+                    labels = legend_labels) +
+  labs(
+    title = "Proportion of D24T DEGs in TOP2i DEGs",
+    x = "Treatment",
+    y = "Percentage",
+    fill = "D24T DEGs"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.title = element_text(size = 14),
+    plot.title = element_text(size = 16, hjust = 0.5)
+  )
+
+# ================================================
+# Print summary stats table
+# ================================================
+print(stats_table)
+```
+
+#Forest Plots of TOP2i DEGs vs D24T DEGs
+```{r Forest Plots TOP2i D24T}
+# Prepare forest plot data
+forest_df <- purrr::map_dfr(names(comparison_DEGs), function(name) {
+  comp_DEGs <- unique(comparison_DEGs[[name]])
+  
+  # Overlap and background
+  overlap <- sum(d24t_set %in% comp_DEGs)
+  non_overlap <- length(d24t_set) - overlap
+  non_ref_genes <- setdiff(all_genes, d24t_set)
+  overlap_bg <- sum(non_ref_genes %in% comp_DEGs)
+  non_overlap_bg <- length(non_ref_genes) - overlap_bg
+  
+  # Fisher's exact test
+  contingency <- matrix(c(overlap, non_overlap, overlap_bg, non_overlap_bg), nrow=2)
+  fisher_res <- fisher.test(contingency)
+  
+  tibble(
+    Treatment = name,
+    Odds_Ratio = unname(fisher_res$estimate),
+    CI_low = fisher_res$conf.int[1],
+    CI_high = fisher_res$conf.int[2],
+    P_Value = fisher_res$p.value
+  )
+})
+
+# Adjust p-value with BH method
+forest_df <- forest_df %>%
+  mutate(
+    Adj_P_Value = p.adjust(P_Value, method = "BH"),
+    Significant = Adj_P_Value < 0.05,
+    Treatment = factor(Treatment, levels = names(comparison_DEGs))
+  )
+
+# Plot horizontal forest plot
+ggplot(forest_df, aes(y = Treatment, x = Odds_Ratio)) +
+  geom_point(size = 5, color = "black") +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2, color = "black") +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  labs(
+    title = "Odds Ratios of D24T DEGs in TOP2i DEGs",
+    y = "Treatment",
+    x = "Odds Ratio (95% CI)"
+  ) +
+  scale_y_discrete(limits = rev(levels(forest_df$Treatment))) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "none"
+  )
+
+# Optional: print forest_df table
+print(forest_df)
+
+```
+
+#Proportion Barplots of TOP2i against Sustained Motif 2
+```{r Proportion Barplots TOP2i Drugs vs Sustained Motif}
+
+#read in my sustained motif 2 genes
+final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
+final_genes_1_RUV <- readRDS("data/new/RUV/CMF/final_genes_1_RUV.RDS")
+
+
+#sustained motif genes
+sustained_set <- unique(na.omit(final_genes_2_RUV))
+total_sus_genes <- length(sustained_set)
+cat("Total Sustained DE genes:", total_sus_genes, "\n")
+
+# Comparison DEG sets from TOP2i experiments
+comparison_DEGs <- list(
+  DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
+  DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
+  EPI_RM = as.character(EPI_RM_DEGs$Entrez_ID),
+  MTX_RM = as.character(MTX_RM_DEGs$Entrez_ID),
+  CX_SP  = as.character(CX_SP_DEGs$Entrez_ID),
+  DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
+)
+
+#all tested genes from my cormotif cutoffs
+all_tested_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
+length(all_tested_genes)
+
+# --- Function to compute overlaps, contingency, and stats ---
+compute_overlap_stats <- function(ref_genes, test_list, background) {
+  
+  purrr::map_dfr(names(test_list), function(treatment_name) {
+    test_degs <- unique(test_list[[treatment_name]])
+    
+    # Contingency table counts
+    a <- sum(ref_genes %in% test_degs)                  # overlap
+    b <- length(ref_genes) - a                         # ref genes not in DEGs
+    c <- sum(test_degs %in% background & !(test_degs %in% ref_genes)) # DEGs not in ref
+    d <- length(background) - a - b - c               # remaining genes
+    
+    contingency <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE)
+    
+    # Fisher's exact test
+    fisher_res <- fisher.test(contingency)
+    odds_ratio <- unname(fisher_res$estimate)
+    p_val <- fisher_res$p.value
+    
+    # Prepare barplot dataframe
+    bar_df <- tibble(
+      Treatment = treatment_name,
+      Category = c("Overlap", "Non-overlap"),
+      Count = c(a, b),
+      Total = length(ref_genes),
+      Fraction = c(a, b)/length(ref_genes),
+      Odds_Ratio = odds_ratio,
+      P_Value = p_val,
+      Significant = ifelse(p_val < 0.05, "*", "")
+    )
+    
+    return(bar_df)
+  })
+}
+
+# --- Compute stats ---
+plot_df <- compute_overlap_stats(
+  ref_genes = sustained_set,
+  test_list = comparison_DEGs,
+  background = all_tested_genes
+)
+
+# --- Barplot ---
+# ensure proper order and stacking
+plot_df <- plot_df %>%
+  mutate(
+    Treatment = factor(Treatment, levels = names(comparison_DEGs)),
+    Category = factor(Category, levels = c("Overlap", "Non-overlap"))
+  )
+
+# positions for stars
+label_positions <- plot_df %>%
+  filter(Category == "Overlap") %>%
+  mutate(y_pos = Fraction + 0.05)  # 5% above bar
+
+ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(
+    data = label_positions %>% filter(Significant != ""),
+    aes(x = Treatment, y = y_pos, label = Significant),
+    size = 6,
+    color = "black",
+    fontface = "bold"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1.2)) +
+  scale_fill_manual(values = c("Overlap" = "#e41a1c", "Non-overlap" = "#377eb8")) +
+  labs(
+    title = "Proportion of Sustained DEGs in TOP2i DEGs",
+    x = "Treatment",
+    y = "Percentage",
+    fill = "Sustained DEGs"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    plot.title = element_text(size = 16, hjust = 0.5)
+  )
+
+# --- Summary stats table ---
+stats_table_bp <- plot_df %>%
+  dplyr::filter(Category == "Overlap") %>%
+  dplyr::select(Treatment, Count, Total, Odds_Ratio, P_Value, Significant) %>%
+  dplyr::rename(Overlap = Count, Total_Ref_DEGs = Total)
+
+print(stats_table_bp)
+
+```
+
+##Forest Plot Sustained TOP2i
+```{r Forest Plot of Sustained vs TOP2i DEGs}
+# Compute Fisher's test, odds ratios, and CIs for each treatment
+forest_df <- purrr::map_dfr(names(comparison_DEGs), function(treatment_name) {
+  degs <- unique(comparison_DEGs[[treatment_name]])
+  nondegs <- setdiff(all_tested_genes, degs)
+  
+  # counts
+  overlap <- sum(degs %in% d24t_set)       # reference DEGs overlapping
+  degs_only <- length(degs) - overlap      # DEGs not in reference
+  ref_only <- sum(nondegs %in% d24t_set)  # reference genes outside DEGs
+  neither <- length(nondegs) - ref_only    # genes in neither
+  
+  # contingency table
+  contingency <- matrix(c(overlap, degs_only, ref_only, neither), nrow = 2, byrow = TRUE)
+  
+  # Fisher's exact test
+  fisher_res <- fisher.test(contingency)
+  
+  tibble(
+    Treatment = treatment_name,
+    Overlap = overlap,
+    Total_DEGs = length(degs),
+    Odds_Ratio = unname(fisher_res$estimate),
+    CI_low = fisher_res$conf.int[1],
+    CI_high = fisher_res$conf.int[2],
+    P_Value = fisher_res$p.value,
+    Significant = fisher_res$p.value < 0.05
+  )
+})
+
+# Adjust p-values for multiple testing
+forest_df <- forest_df %>%
+  mutate(
+    Adj_P_Value = p.adjust(P_Value, method = "BH"),
+    Sig_Label = ifelse(Adj_P_Value < 0.05, "Significant", "Not Significant"),
+    Treatment = factor(Treatment, levels = names(comparison_DEGs))
+  )
+
+# Plot horizontal forest plot
+ggplot(forest_df, aes(x = Odds_Ratio, y = Treatment)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  labs(
+    title = "Odds Ratios of Sustained DEGs in TOP2i DEGs",
+    x = "Odds Ratio (95% CI)",
+    y = "Treatment"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Print summary stats table
+stats_table_fp <- forest_df %>%
+  dplyr::select(Treatment, Overlap, Total_DEGs, Odds_Ratio, CI_low, CI_high, P_Value, Adj_P_Value, Significant)
+
+print(stats_table_fp)
+
+```
 
