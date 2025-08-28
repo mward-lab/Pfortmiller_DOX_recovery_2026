@@ -11,7 +11,7 @@ output:
     theme: journal
     highlight: textmate
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 editor_options: 
@@ -276,7 +276,45 @@ fC_DOXCounts %>%
         strip.text.y = element_text(color = "white"))
 
 ####Total Reads Per Timepoint####
+reads_by_time <- c("24" = "#238B45",
+                 "24rec" = "#74C476",
+                 "144rec" = "#C7E9C0")
+fC_DOXCounts %>% 
+  ggplot(., aes (x = Conditions, y = Assigned_Align, fill = Time, group_by = Line))+
+  geom_col()+
+ geom_hline(aes(yintercept=20000000))+
+ scale_fill_manual(values=reads_by_time)+
+  ggtitle(expression("Total number of mapped reads by timepoint"))+
+  xlab("")+
+  ylab(expression("RNA-sequencing reads"))+
+  theme_bw()+
+  theme(plot.title = element_text(size = rel(2), hjust = 0.5),
+        axis.title = element_text(size = 15, color = "black"),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.text.y = element_text(size =10, color = "black", angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(size =10, color = "black", angle = 90, hjust = 1, vjust = 0.2),
+        #strip.text.x = element_text(size = 15, color = "black", face = "bold"),
+        strip.text.y = element_text(color = "white"))
 
+fC_DOXCounts$Time <- factor(fC_DOXCounts$Time, 
+                            levels = c("24", "24rec", "144rec"))
+
+fC_DOXCounts %>% 
+  ggplot(., aes (x =Time, y= Assigned_Align, fill = Time))+
+  geom_boxplot()+
+ scale_fill_manual(values=reads_by_time)+
+  ggtitle(expression("Total number of mapped reads by timepoint"))+
+  xlab("")+
+  ylab(expression("RNA-sequencing reads"))+
+  theme_bw()+
+  
+  theme(plot.title = element_text(size = rel(2), hjust = 0.5),
+        axis.title = element_text(size = 15, color = "black"),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.text.y = element_text(size =10, color = "black", angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(size =10, color = "black", angle = 90, hjust = 1, vjust = 0.2),
+        #strip.text.x = element_text(size = 15, color = "black", face = "bold"),
+        strip.text.y = element_text(color = "white"))
 
 
 ####Total Mapped Reads Per Drug####
@@ -5611,7 +5649,7 @@ Heatmap(logFC_mat_DIC_RUV,
         cell_fun = function(j, i, x, y, width, height, fill) {
           grid.text(signif_mat_DIC_RUV[i, j], x, y, gp = gpar(fontsize = 9))
         },
-        column_title = "DIC Genes Expression (n=29)\nDOX Recovery (RUVs Corrected)",
+        column_title = "DIC Genes Expression (n=29)\nDOX Recovery (RUVs Corrected)",`
         column_title_gp = gpar(fontsize = 14, fontface = "bold")
 )
 ```
@@ -7595,9 +7633,9 @@ labs_logFC_aic <- paste0(
   paste0(medians_aic_RUV$time, "=", round(medians_aic_RUV$median_logFC, 2), collapse = "\n")
 )
 
-#sdd a column that labels positive/negative direction
-filt_toptable_aic_RUV <- filt_toptable_aic_RUV %>%
-  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+# #sdd a column that labels positive/negative direction
+# filt_toptable_aic_RUV <- filt_toptable_aic_RUV %>%
+#   mutate(direction = ifelse(logFC >= 0, "up", "down"))
 
 #label direction
 medians_aic_RUV <- medians_aic_RUV %>%
@@ -7607,15 +7645,13 @@ plot_aic_logFC <- ggplot() +
   geom_line(data = filt_toptable_aic_RUV,
             aes(x = time, 
                 y = logFC, 
-                group = Entrez_ID, 
-                color = direction),
+                group = Entrez_ID,
             alpha = 0.4, 
             linewidth = 0.9) +
   geom_line(data = medians_aic_RUV,
             aes(x = time, 
                 y = median_logFC, 
-                group = 1, 
-                color = direction),
+                group = 1,
             linewidth = 2, 
             linetype = 1) +
   scale_color_manual(
@@ -7624,8 +7660,6 @@ plot_aic_logFC <- ggplot() +
                "down" = "#E07B91", 
                "median" = "#3D6680"),
     labels = c(
-      up = "Generally up-regulated",
-      down = "Generally down-regulated",
       median = labs_logFC_aic
     ),
     name = NULL
@@ -10893,6 +10927,58 @@ clusterdata_dxr_fin_RUV_clust %>% ggplot(aes(x = "", y = Value, fill = Category)
 final_genes_1_RUV <- readRDS("data/new/RUV/CMF/final_genes_1_RUV.RDS")
 final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 
+# write.csv(final_genes_1_RUV, "data/new/RUV/CMF/Recovered_genes_RUV.csv")
+# write.csv(final_genes_2_RUV, "data/new/RUV/CMF/Sustained_genes_RUV.csv")
+
+```
+
+
+```{r Gene Symbols CMF RUV final set}
+
+#I want to add in the gene symbol names for my Motif 1 and Motif 2 gene sets
+#final sets are saved in data/new/RUV/CMF in csv format (keep this code for posterity)
+
+#Recovered Motif 1 Genes vector
+# rec_m1_genes <- final_genes_1_RUV
+
+#map my Entrez_ID to SYMBOL
+# mapped_genes_rec <- AnnotationDbi::select(org.Hs.eg.db,
+#                                       keys = rec_m1_genes,
+#                                       columns = c("SYMBOL"),
+#                                       keytype = "ENTREZID")
+
+#remove duplicates if necessary
+# mapped_genes_rec <- unique(mapped_genes_rec)
+
+#check the number of genes (should be 7602)
+# dim(mapped_genes_rec)
+#7602 genes
+
+#save to CSV
+# write.csv(mapped_genes_rec, "data/new/RUV/CMF/Recovered_M1_genes_clustlike_ppost_RUV_EMP_250828.csv", row.names = FALSE)
+
+
+#Sustained Motif 2 Genes vector
+# sus_m2_genes <- final_genes_2_RUV
+
+#map my Entrez_ID to SYMBOL
+# mapped_genes_sus <- AnnotationDbi::select(org.Hs.eg.db,
+#                                       keys = sus_m2_genes,
+#                                       columns = c("SYMBOL"),
+#                                       keytype = "ENTREZID")
+
+#remove duplicates if necessary (unlikely to have any)
+# mapped_genes_sus <- unique(mapped_genes_sus)
+
+#check the number of genes (should be 501)
+# dim(mapped_genes_sus)
+#501 genes
+
+#save to CSV
+# write.csv(mapped_genes_sus, "data/new/RUV/CMF/Sustained_M2_genes_clustlike_ppost_RUV_EMP_250828.csv", row.names = FALSE)
+
+
+
 ```
 
 
@@ -13417,6 +13503,354 @@ for(gs_name in names(gene_sets)) {
 }
 
 ```
+
+#USE THIS Forest Plot Update AIC DIC DDR p53
+```{r Forest Plot Motif 2 vs Motif 1 DDR p53 AIC DIC DEGs}
+# ----------------------------
+# Define motifs and gene sets
+# ----------------------------
+motifs <- list(
+  M1 = final_genes_1_RUV,
+  M2 = final_genes_2_RUV
+)
+
+gene_sets <- list(
+  DDR = ddr_set,
+  P53 = p53_set,
+  AIC = aic_set,
+  DIC = dic_set
+)
+
+all_genes <- unique(unlist(motifs))  # universe of tested genes
+
+# ----------------------------
+# Direct Motif2 vs Motif1 comparison
+# ----------------------------
+compare_motifs <- function(motif1, motif2, gene_set, gene_set_name) {
+  in_m2 <- sum(motif2 %in% gene_set)
+  out_m2 <- length(motif2) - in_m2
+  in_m1 <- sum(motif1 %in% gene_set)
+  out_m1 <- length(motif1) - in_m1
+  
+  mat <- matrix(c(in_m2, out_m2, in_m1, out_m1), nrow = 2, byrow = TRUE)
+  rownames(mat) <- c("Motif2", "Motif1")
+  colnames(mat) <- c("In_Set", "Not_In_Set")
+  
+  test <- fisher.test(mat)
+  
+  tibble(
+    Gene_Set = gene_set_name,
+    Motif_Comparison = "Motif2_vs_Motif1",
+    In_Set_M2 = in_m2,
+    In_Set_M1 = in_m1,
+    Odds_Ratio = as.numeric(test$estimate),
+    CI_Low = test$conf.int[1],
+    CI_High = test$conf.int[2],
+    P_Value = test$p.value
+  )
+}
+
+# ----------------------------
+# Apply for each gene set
+# ----------------------------
+comparison_results <- map_dfr(names(gene_sets), function(gs_name) {
+  compare_motifs(final_genes_1_RUV, final_genes_2_RUV, gene_sets[[gs_name]], gs_name)
+})
+
+print(comparison_results)
+
+
+# ----------------------------
+# Forest plot: Motif2 vs Motif1
+# ----------------------------
+
+# Forest plot across all gene sets
+p_comparison <- ggplot(comparison_results,
+                       aes(x = Odds_Ratio, 
+                           y = forcats::fct_rev(Gene_Set),
+                           xmin = CI_Low, xmax = CI_High)) +
+  geom_pointrange(size = 1) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+  scale_x_log10() +
+  labs(
+    x = "Odds Ratio Sustained vs Recovered (log scale)",
+    y = "Gene Set",
+    title = "Enrichment of ",
+  ) +
+  theme_minimal(base_size = 14)
+
+print(p_comparison)
+
+# ----------------------------
+# Add percent overlap and significance stars
+# ----------------------------
+comparison_results <- comparison_results %>%
+  mutate(
+    Perc_M2 = round((In_Set_M2 / length(final_genes_2_RUV)) * 100, 2),
+    Perc_M1 = round((In_Set_M1 / length(final_genes_1_RUV)) * 100, 2),
+    Significance = case_when(
+      P_Value < 0.001 ~ "***",
+      P_Value < 0.01  ~ "**",
+      P_Value < 0.05  ~ "*",
+      TRUE ~ ""
+    ),
+    Odds_Ratio = round(Odds_Ratio, 3),
+    CI_Low = round(CI_Low, 3),
+    CI_High = round(CI_High, 3),
+    P_Value = signif(P_Value, 3)
+  )
+
+# ----------------------------
+# Final summary table
+# ----------------------------
+summary_table <- comparison_results %>%
+  dplyr::select(
+    Gene_Set,
+    In_Set_M2, Perc_M2,
+    In_Set_M1, Perc_M1,
+    Odds_Ratio, CI_Low, CI_High, P_Value, Significance
+  )
+
+cat("\n--- Sustained vs Recovered Direct Enrichment Summary ---\n")
+print(summary_table)
+
+# ----------------------------
+# Separate forest plots for each gene set
+# ----------------------------
+for(gs_name in unique(comparison_results$Gene_Set)) {
+  df <- comparison_results %>% filter(Gene_Set == gs_name)
+  
+  p <- ggplot(df, aes(x = Odds_Ratio, 
+                      y = Gene_Set, 
+                      xmin = CI_Low, xmax = CI_High)) +
+    geom_pointrange(size = 1) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+    geom_text(aes(label = Significance, 
+                  x = CI_High * 1.2), 
+              vjust = 0.5, hjust = 0, size = 6) +
+    scale_x_log10() +
+    labs(
+      x = "Odds Ratio (Sustained vs Recovered, log scale)",
+      y = NULL,
+      title = paste0("Enrichment of ", gs_name, " in Sustained vs Recovered")
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(axis.text.y = element_blank(),
+          axis.ticks.y = element_blank())
+  
+  print(p)
+}
+
+
+```
+
+#Updated Forest Plots EMMA
+```{r Forest Plots p53 DDR AIC DIC RUV Updates, fig.height=4, fig.width=6}
+
+#motif gene lists
+motif1_genes <- final_genes_1_RUV  # Recovered
+motif2_genes <- final_genes_2_RUV  # Sustained
+
+#put all gene sets into a list
+gene_sets <- list(
+  DDR = ddr_set,
+  P53 = p53_set,
+  DIC = dic_set,
+  AIC = aic_set
+)
+
+#function to test enrichment between motifs
+compare_motifs <- function(set_genes, motif1, motif2, set_name) {
+  in_m1 <- sum(motif1 %in% set_genes)
+  in_m2 <- sum(motif2 %in% set_genes)
+  
+  out_m1 <- length(motif1) - in_m1
+  out_m2 <- length(motif2) - in_m2
+  
+  fisher_mat <- matrix(c(in_m2, out_m2, in_m1, out_m1), nrow = 2, byrow = TRUE)
+  ft <- fisher.test(fisher_mat)
+  
+  data.frame(
+    Gene_Set = set_name,
+    Total_Motif1 = length(motif1),
+    Total_Motif2 = length(motif2),
+    In_Motif1 = in_m1,
+    In_Motif2 = in_m2,
+    Perc_M1 = round(100 * in_m1 / length(motif1), 1),
+    Perc_M2 = round(100 * in_m2 / length(motif2), 1),
+    Odds_Ratio = ft$estimate,
+    CI_Low = ft$conf.int[1],
+    CI_High = ft$conf.int[2],
+    P_value = ft$p.value,
+    Significance = case_when(
+      ft$p.value < 0.001 ~ "***",
+      ft$p.value < 0.01  ~ "**",
+      ft$p.value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+}
+
+#run comparisons for all gene sets
+comparison_results <- do.call(rbind, lapply(names(gene_sets), function(gs) {
+  compare_motifs(gene_sets[[gs]], motif1_genes, motif2_genes, gs)
+}))
+
+#prepare OR/CI for plotting (replace 0 or NA with small number so no error)
+comparison_results_plot <- comparison_results %>%
+  mutate(
+    Odds_Ratio_plot = ifelse(!is.finite(Odds_Ratio) | Odds_Ratio <= 0, 0.01, Odds_Ratio),
+    CI_Low_plot    = ifelse(!is.finite(CI_Low)    | CI_Low <= 0, 0.01, CI_Low),
+    CI_High_plot   = ifelse(!is.finite(CI_High)   | CI_High <= 0, 0.01, CI_High)
+  )
+
+
+# Shared x-axis limits
+# xlims <- c(0.01, 100)
+
+# ----------------------------
+# Output directory
+# ----------------------------
+outdir <- "plots"
+if (!dir.exists(outdir)) dir.create(outdir)
+
+# ----------------------------
+# Forest plots with counts
+# ----------------------------
+for(gs_name in unique(comparison_results_plot$Gene_Set)) {
+  df <- comparison_results_plot %>% filter(Gene_Set == gs_name)
+  
+  # Label as "overlap / total"
+  df <- df %>% mutate(Label = paste0(In_Motif2, "/", Total_Motif2, " vs ", In_Motif1, "/", Total_Motif1))
+  
+  p <- ggplot(df, aes(x = Odds_Ratio_plot, y = Gene_Set, xmin = CI_Low_plot, xmax = CI_High_plot)) +
+    geom_pointrange(size = 1) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+    geom_text(aes(label = Label, x = Odds_Ratio_plot, y = Gene_Set),
+              vjust = -1.2, size = 4, color = "black") +
+    geom_text(aes(label = Significance, x = CI_High_plot * 1.2),
+              vjust = 0.5, hjust = 0, size = 6) +
+    # scale_x_log10(limits = xlims) +
+    labs(
+      x = "Odds Ratio (Sustained vs Recovered, log scale)",
+      y = NULL,
+      title = paste0("Enrichment of ", gs_name, " in Sustained vs Recovered")
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(axis.text.y = element_blank(),
+          axis.ticks.y = element_blank())
+  
+  print(p)
+  
+  # Save
+  ggsave(filename = file.path(outdir, paste0(gs_name, "_forest_EMP_250828.pdf")),
+         plot = p, width = 6, height = 4)
+  ggsave(filename = file.path(outdir, paste0(gs_name, "_forest_EMP_250828.png")),
+         plot = p, width = 6, height = 4, dpi = 300)
+}
+
+# ----------------------------
+# Save summary table with counts and percentages
+# ----------------------------
+summary_table <- comparison_results %>%
+  dplyr::select(
+    Gene_Set,
+    Total_Motif1, Total_Motif2,
+    In_Motif1, In_Motif2,
+    Perc_M1, Perc_M2,
+    Odds_Ratio, CI_Low, CI_High, P_value, Significance
+  )
+
+write.csv(summary_table, file.path(outdir, "Motif2_vs_Motif1_summary.csv"), row.names = FALSE)
+cat("\n--- Motif2 vs Motif1 Summary ---\n")
+print(summary_table)
+
+
+
+```
+
+```{r log2cpm 1 gene in Sustained from AIC}
+#First, let's find out which gene from AIC is shared with Sustained motif
+
+intersect(aic_set, mapped_genes_sus)
+#29899 gene - GPSM2
+
+#plot a log2cpm boxplot of this gene as I have above
+
+boxplots_cormotif <- boxplot1
+
+#Define gene
+GPSM2 <- dplyr::filter(boxplots_cormotif, Entrez_ID == "29899")  
+
+#Now put in the function I want to use to generate boxplots of genes
+process_gene_sus_aic <- function(gene) {
+  gene_data <- boxplots_cormotif %>% filter(SYMBOL == gene)
+  long_data <- gene_data %>%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = "Sample", values_to = "log2CPM") %>%
+    mutate(
+      Drug = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("DMSO", Sample) ~ "DMSO",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("_24T_", Sample) ~ "24T",
+        grepl("_24R_", Sample) ~ "24R",
+        grepl("_144R_", Sample) ~ "144R",
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl("Ind1$", Sample) ~ "1",
+        grepl("Ind2$", Sample) ~ "2",
+        grepl("Ind3$", Sample) ~ "3",
+        grepl("Ind4$", Sample) ~ "4",
+        grepl("Ind5$", Sample) ~ "5",
+        grepl("Ind6$", Sample) ~ "6",
+        grepl("Ind6REP$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = "_")
+    )
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c(
+      "DOX_24T", 
+      "DMSO_24T", 
+      "DOX_24R", 
+      "DMSO_24R", 
+      "DOX_144R", 
+      "DMSO_144R"
+    )
+  )
+  return(long_data)
+}
+
+#this function is saved under process_gene_data so I will save as an R object
+
+#saveRDS(process_gene_data, "data/new/process_gene_data_funct.RDS")
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in GPSM2) {
+  gene_data <- process_gene_sus_aic(gene)
+  p <- ggplot(gene_data, aes(x = Condition, y = log2CPM, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")) +
+    ggtitle(paste("Log2cpm", gene, "AIC Sustained Gene")) +
+    labs(x = "Treatment", y = "log2CPM") +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90, hjust = 1)
+    )
+  print(p)
+}
+
+
+```
+
+
 #Forest Plots
 ```{r Motif Forest Plots DEGs vs nonDEGs}
 # =====================
@@ -13658,7 +14092,7 @@ AIC_genes <- readRDS("data/new/RUV/AIC_genes_entrezid.RDS")
 
 AIC_set <- unique(na.omit(AIC_genes))
 
-#DIC genes inside each motif
+#AIC genes inside each motif
 in_motif1_AIC <- sum(final_genes_1_RUV %in% AIC_set)
 in_motif2_AIC <- sum(final_genes_2_RUV %in% AIC_set)
 
@@ -13890,7 +14324,7 @@ flow <- flow_dxr %>% column_to_rownames("Line")
 flow_dxr_df <- as.data.frame(flow_dxr)
 
 # Compute mean value
-avg_vals_dxr <- mean(flow_dxr_df$Purity)
+# avg_vals_dxr <- mean(flow_dxr_df$Purity)
 
 #compute median value
 medi_vals_dxr <- median(flow_dxr_df$Purity)
@@ -13996,12 +14430,20 @@ ind4_img_summary <- collapse_to_image(ind4_roi) %>% mutate(Individual = "Ind4")
 # saveRDS(ind2_img_summary, "data/new/IF_quant/ind2_image_level_summary.RDS")
 # saveRDS(ind4_img_summary, "data/new/IF_quant/ind4_image_level_summary.RDS")
 
+ind2_img_summary <- readRDS("data/new/IF_quant/ind2_image_level_summary.RDS")
+
+ind4_img_summary <- readRDS("data/new/IF_quant/ind4_image_level_summary.RDS")
+
 #now that I've made these summaries for both individuals, combine them together
 roi_image_level_summary <- bind_rows(ind2_img_summary, ind4_img_summary)
 
 #make sure to remove secondary only samples
 roi_image_level_summary <- roi_image_level_summary %>% 
   dplyr::filter(!grepl("^2nd", Image, ignore.case = TRUE))
+
+# saveRDS(roi_image_level_summary, "data/new/IF_quant/roi_image_level_summary.RDS")
+
+roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary.RDS")
 
 #now I want to make a metadata table from my image_level_summary with the nuclei counts
 image_level_metadata <- read.csv("data/image_level_summary_yH2AX_quant.csv")
@@ -14018,7 +14460,7 @@ image_level_metadata <- image_level_metadata %>%
 
 merged_image_summary <- image_level_metadata %>% 
   dplyr::select(Individual, Treatment, Timepoint, Magnification, Image, Nuclei_Count) %>% 
-  dplyr::left_join(roi_image_level_summmary, by = c("Image", "Individual")) %>% 
+  dplyr::left_join(roi_image_level_summary, by = c("Image", "Individual")) %>% 
   dplyr::filter(!grepl("40X", Magnification)) %>%
   dplyr::filter(!grepl("^2nd", Image))
 
@@ -14051,7 +14493,7 @@ consistent_images_top_nuclei <- merged_image_summary %>%
   ungroup() %>%
   mutate(Percent_Red_Positive = Mean_Percent_Red_Positive)
 
-#collapse per individual for plotting (pre-normalized)
+#collapse per individual for plotting (after normalization)
 
 individual_summary_step4 <- consistent_images_top_nuclei %>%
   group_by(Magnification, Individual, Treatment, Timepoint, Condition) %>%
@@ -14647,17 +15089,19 @@ ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
 #Proportion Barplots of TOP2i against Sustained Motif 2
 ```{r Proportion Barplots TOP2i Drugs vs Sustained Motif}
 
-#read in my sustained motif 2 genes
-final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
+library(tidyverse)
+
+# =======================
+# Inputs
+# =======================
 final_genes_1_RUV <- readRDS("data/new/RUV/CMF/final_genes_1_RUV.RDS")
+final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 
+motif1_set <- unique(na.omit(final_genes_1_RUV))
+motif2_set <- unique(na.omit(final_genes_2_RUV))
 
-#sustained motif genes
-sustained_set <- unique(na.omit(final_genes_2_RUV))
-total_sus_genes <- length(sustained_set)
-cat("Total Sustained DE genes:", total_sus_genes, "\n")
+all_tested_genes <- unique(c(motif1_set, motif2_set))
 
-# Comparison DEG sets from TOP2i experiments
 comparison_DEGs <- list(
   DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
   DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
@@ -14667,96 +15111,231 @@ comparison_DEGs <- list(
   DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
 )
 
-#all tested genes from my cormotif cutoffs
-all_tested_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
-length(all_tested_genes)
-
-# --- Function to compute overlaps, contingency, and stats ---
-compute_overlap_stats <- function(ref_genes, test_list, background) {
+# =======================
+# Permutation test function
+# =======================
+perm_test_overlap <- function(ref_genes, test_genes, background, n_perm = 10000) {
+  observed <- length(intersect(ref_genes, test_genes))
   
-  purrr::map_dfr(names(test_list), function(treatment_name) {
-    test_degs <- unique(test_list[[treatment_name]])
-    
-    # Contingency table counts
-    a <- sum(ref_genes %in% test_degs)                  # overlap
-    b <- length(ref_genes) - a                         # ref genes not in DEGs
-    c <- sum(test_degs %in% background & !(test_degs %in% ref_genes)) # DEGs not in ref
-    d <- length(background) - a - b - c               # remaining genes
-    
-    contingency <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE)
-    
-    # Fisher's exact test
-    fisher_res <- fisher.test(contingency)
-    odds_ratio <- unname(fisher_res$estimate)
-    p_val <- fisher_res$p.value
-    
-    # Prepare barplot dataframe
-    bar_df <- tibble(
-      Treatment = treatment_name,
-      Category = c("Overlap", "Non-overlap"),
-      Count = c(a, b),
-      Total = length(ref_genes),
-      Fraction = c(a, b)/length(ref_genes),
-      Odds_Ratio = odds_ratio,
-      P_Value = p_val,
-      Significant = ifelse(p_val < 0.05, "*", "")
+  perm_overlaps <- replicate(n_perm, {
+    random_genes <- sample(background, length(ref_genes))
+    length(intersect(random_genes, test_genes))
+  })
+  
+  p_val <- mean(perm_overlaps >= observed)
+  enrichment <- observed / mean(perm_overlaps)
+  
+  tibble(
+    Observed = observed,
+    Expected = mean(perm_overlaps),
+    Enrichment = enrichment,
+    P_Value = p_val
+  )
+}
+
+# =======================
+# Function to create barplot dataframe for one motif
+# =======================
+prepare_plot_df <- function(motif_set, motif_name) {
+  map_dfr(names(comparison_DEGs), function(treat) {
+    res <- perm_test_overlap(motif_set, comparison_DEGs[[treat]], all_tested_genes)
+    tibble(
+      Treatment = treat,
+      Category = c("DEG", "Non-DEG"),
+      Count = c(res$Observed, length(motif_set) - res$Observed),
+      Fraction = c(res$Observed / length(motif_set), 1 - res$Observed / length(motif_set)),
+      P_Value = res$P_Value,
+      Significant = case_when(
+        res$P_Value < 0.001 ~ "***",
+        res$P_Value < 0.01  ~ "**",
+        res$P_Value < 0.05  ~ "*",
+        TRUE ~ ""
+      ),
+      Motif = motif_name
     )
-    
-    return(bar_df)
   })
 }
 
-# --- Compute stats ---
-plot_df <- compute_overlap_stats(
-  ref_genes = sustained_set,
-  test_list = comparison_DEGs,
-  background = all_tested_genes
+# =======================
+# Prepare data for Motif 1 and Motif 2
+# =======================
+plot_df_motif1 <- prepare_plot_df(motif1_set, "Motif1")
+plot_df_motif2 <- prepare_plot_df(motif2_set, "Motif2")
+
+# =======================
+# Plotting function
+# =======================
+plot_motif <- function(plot_df, motif_name) {
+  label_positions <- plot_df %>%
+    filter(Category == "DEG") %>%
+    mutate(y_pos = 1.0)  # fixed position for stars
+
+  ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
+    geom_bar(stat = "identity") +
+    geom_text(aes(y = Fraction + 0.05, label = Significant),
+              data = label_positions, size = 6, fontface = "bold", color = "black") +
+    scale_y_continuous(labels = scales::percent_format(scale = 100), limits = c(0,1)) +
+    scale_fill_manual(values = c("DEG" = "blue", "Non-DEG" = "red")) +
+    labs(
+      title = paste0("Overlap of TOP2i DEGs on ", motif_name, " Genes"),
+      x = "Treatment",
+      y = "Percent Overlap",
+      fill = ""
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      plot.title = element_text(hjust = 0.5, face = "bold")
+    )
+}
+
+# =======================
+# Plot Motif 1 and Motif 2 separately
+# =======================
+plot_motif(plot_df_motif1, "Motif 1")
+plot_motif(plot_df_motif2, "Motif 2")
+
+# =======================
+# Summary stats tables
+# =======================
+stats_table_motif1 <- plot_df_motif1 %>%
+  filter(Category == "DEG") %>%
+  mutate(Percent = Fraction * 100) %>%
+  select(Treatment, Count, Percent, Enrichment, P_Value, Significant)
+
+stats_table_motif2 <- plot_df_motif2 %>%
+  filter(Category == "DEG") %>%
+  mutate(Percent = Fraction * 100) %>%
+  select(Treatment, Count, Percent, Enrichment, P_Value, Significant)
+
+print(stats_table_motif1)
+print(stats_table_motif2)
+
+```
+
+```{r TOP2i in Sustained vs Recovered Motifs}
+
+library(tidyverse)
+
+# =======================
+# Inputs
+# =======================
+final_genes_1_RUV <- readRDS("data/new/RUV/CMF/final_genes_1_RUV.RDS")
+final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
+
+motif1_set <- unique(na.omit(final_genes_1_RUV))
+motif2_set <- unique(na.omit(final_genes_2_RUV))
+
+all_tested_genes <- unique(c(motif1_set, motif2_set))
+
+comparison_DEGs <- list(
+  DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
+  DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
+  EPI_RM = as.character(EPI_RM_DEGs$Entrez_ID),
+  MTX_RM = as.character(MTX_RM_DEGs$Entrez_ID),
+  CX_SP  = as.character(CX_SP_DEGs$Entrez_ID),
+  DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
 )
 
-# --- Barplot ---
-# ensure proper order and stacking
-plot_df <- plot_df %>%
-  mutate(
-    Treatment = factor(Treatment, levels = names(comparison_DEGs)),
-    Category = factor(Category, levels = c("Overlap", "Non-overlap"))
+# =======================
+# Fisher's exact test per treatment
+# =======================
+fisher_test_overlap <- function(motif1, motif2, degs) {
+  a <- sum(motif1 %in% degs)
+  b <- length(motif1) - a
+  c <- sum(motif2 %in% degs)
+  d <- length(motif2) - c
+  
+  contingency <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE)
+  fisher_res <- fisher.test(contingency)
+  
+  list(
+    contingency = contingency,
+    p_value = fisher_res$p.value,
+    significant = case_when(
+      fisher_res$p.value < 0.001 ~ "***",
+      fisher_res$p.value < 0.01  ~ "**",
+      fisher_res$p.value < 0.05  ~ "*",
+      TRUE ~ ""
+    )
   )
+}
 
-# positions for stars
-label_positions <- plot_df %>%
-  filter(Category == "Overlap") %>%
-  mutate(y_pos = Fraction + 0.05)  # 5% above bar
+# =======================
+# Prepare summary table for plotting
+# =======================
+plot_summary <- map_dfr(names(comparison_DEGs), function(treat) {
+  degs <- comparison_DEGs[[treat]]
+  
+  # Fisher test
+  fisher_res <- fisher_test_overlap(motif1_set, motif2_set, degs)
+  
+  # Counts for each motif
+  motif1_overlap <- sum(motif1_set %in% degs)
+  motif1_nonoverlap <- length(motif1_set) - motif1_overlap
+  motif2_overlap <- sum(motif2_set %in% degs)
+  motif2_nonoverlap <- length(motif2_set) - motif2_overlap
+  
+  tibble(
+    Treatment = treat,
+    Motif = rep(c("Motif1", "Motif2"), each = 2),
+    Category = rep(c("DEG", "Non-DEG"), 2),
+    Count = c(motif1_overlap, motif1_nonoverlap, motif2_overlap, motif2_nonoverlap),
+    Fraction = c(motif1_overlap, motif1_nonoverlap, motif2_overlap, motif2_nonoverlap) /
+               c(length(motif1_set), length(motif1_set), length(motif2_set), length(motif2_set)),
+    Significant = rep(c(fisher_res$significant, ""), 2)  # only on DEG bars
+  )
+})
 
-ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
+# Ensure correct order
+plot_summary$Category <- factor(plot_summary$Category, levels = c("DEG", "Non-DEG"))
+
+# Position stars at y = 1
+label_positions <- plot_summary %>%
+  filter(Category == "DEG") %>%
+  mutate(y_pos = 1)
+
+# =======================
+# Plot
+# =======================
+ggplot(plot_summary, aes(x = Treatment, y = Fraction, fill = Category)) +
   geom_bar(stat = "identity", position = "stack") +
-  geom_text(
-    data = label_positions %>% filter(Significant != ""),
-    aes(x = Treatment, y = y_pos, label = Significant),
-    size = 6,
-    color = "black",
-    fontface = "bold"
-  ) +
-  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1.2)) +
-  scale_fill_manual(values = c("Overlap" = "#e41a1c", "Non-overlap" = "#377eb8")) +
+  geom_text(data = label_positions %>% filter(Significant != ""),
+            aes(x = Treatment, y = y_pos, label = Significant),
+            inherit.aes = FALSE, size = 6, fontface = "bold", color = "black") +
+  geom_text(aes(label = paste0(round(Fraction*100,1), "%")),
+            position = position_stack(vjust = 0.5), size = 5, color = "white") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 1)) +
+  scale_fill_manual(values = c("DEG" = "blue", "Non-DEG" = "red")) +
+  facet_wrap(~Motif) +
   labs(
-    title = "Proportion of Sustained DEGs in TOP2i DEGs",
+    title = "Overlap of TOP2i DEGs on Motif 1 vs Motif 2 Genes",
     x = "Treatment",
-    y = "Percentage",
-    fill = "Sustained DEGs"
+    y = "Percent Overlap",
+    fill = ""
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
   theme(
-    axis.title = element_text(size = 14),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, hjust = 0.5)
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold")
   )
 
-# --- Summary stats table ---
-stats_table_bp <- plot_df %>%
-  dplyr::filter(Category == "Overlap") %>%
-  dplyr::select(Treatment, Count, Total, Odds_Ratio, P_Value, Significant) %>%
-  dplyr::rename(Overlap = Count, Total_Ref_DEGs = Total)
+# =======================
+# Print percentages and p-values
+# =======================
+for(treat in names(comparison_DEGs)) {
+  degs <- comparison_DEGs[[treat]]
+  motif1_overlap <- sum(motif1_set %in% degs)
+  motif2_overlap <- sum(motif2_set %in% degs)
+  prop1 <- motif1_overlap / length(motif1_set)
+  prop2 <- motif2_overlap / length(motif2_set)
+  fisher_res <- fisher_test_overlap(motif1_set, motif2_set, degs)
+  
+  cat(sprintf("%s - Motif1: %.2f%% (%d/%d), Motif2: %.2f%% (%d/%d), Fisher p = %.5f\n",
+              treat, 100*prop1, motif1_overlap, length(motif1_set),
+              100*prop2, motif2_overlap, length(motif2_set),
+              fisher_res$p_value))
+}
 
-print(stats_table_bp)
 
 ```
 
