@@ -11,7 +11,7 @@ output:
     theme: journal
     highlight: textmate
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 editor_options: 
@@ -64,6 +64,7 @@ library(SummarizedExperiment)
 library(ggsignif)
 library(purrr)
 library(rstatix)
+library(ggrastr)
 ```
 
 
@@ -1503,7 +1504,7 @@ ggplot2::autoplot(prcomp_res_1_cpm,
                   data = annot, 
                   colour = "Condition", 
                   shape = "Time", 
-                  size = 4,
+                  size = 7,
                   x=1,
                   y=2)+
   theme_bw(base_size = 14)+
@@ -1514,12 +1515,13 @@ ggplot2::autoplot(prcomp_res_1_cpm,
                            cex = 5)+
   ggtitle("RUVs Correction k=1 log2cpm")
 
+
 ###PC2/3
 ggplot2::autoplot(prcomp_res_1_cpm, 
                   data = annot, 
                   colour = "Condition", 
                   shape = "Time", 
-                  size = 4, 
+                  size = 8, 
                   x=2, 
                   y=3)+
   theme_bw()+
@@ -1528,6 +1530,30 @@ ggplot2::autoplot(prcomp_res_1_cpm,
                            vjust = -0.5, 
                            max.overlaps = 30)+
   ggtitle("RUVs Correction k=1 log2cpm")
+
+
+#make a larger version where the points stay together for figures
+
+autoplot(prcomp_res_1_cpm,
+         data = annot,
+         colour = "Condition",
+         shape = "Time",
+         size = 7,
+         x = 1,
+         y = 2) +
+  theme_bw(base_size = 14) +
+  scale_color_manual(values = cond_col) +
+  geom_text_repel(aes(label = ind_num),       # use aes() here
+                  nudge_y = 0.05,            # small nudge instead of vjust
+                  max.overlaps = 50,
+                  size = 6,                   # cex is not needed in ggplot2
+                  segment.color = "grey50") + 
+  ggtitle("RUVs Correction k=1 log2cpm")
+
+#save for figure generation
+
+ggsave("fig2a_pca_6x8_EMP.pdf", width = 6, height = 8, device = cairo_pdf)
+
 
 ```
 
@@ -2928,7 +2954,7 @@ ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
     hjust = -0.1, vjust = 1.5,
     size = 4
   ) +
-  scale_color_manual(values = c("#238B45", "#74C476", "#C7E9C0")) +
+  scale_color_manual(values = c("#2c6cb0", "#5b8fd1", "#aed6f1")) +
   labs(
     x = "log2FC (Timepoint X)",
     y = "log2FC (Timepoint Y)",
@@ -2936,6 +2962,32 @@ ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
   ) +
   theme_minimal(base_size = 14) +
   theme(legend.position = "none")
+
+#make a rasterized version
+
+# library(ggrastr)
+
+ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
+  geom_point_rast(alpha = 0.5, raster.dpi = 300) +   # rasterized points
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black") +
+  facet_wrap(~comparison, scales = "free") +
+  geom_text(
+    data = scatter_df %>% distinct(comparison, rho_label),
+    aes(x = -Inf, y = Inf, label = rho_label),
+    inherit.aes = FALSE,
+    hjust = -0.1, vjust = 1.5,
+    size = 4
+  ) +
+  scale_color_manual(values = c("#2c6cb0", "#5b8fd1", "#aed6f1")) +
+  labs(
+    x = "log2FC (Timepoint X)",
+    y = "log2FC (Timepoint Y)",
+    title = "Pairwise Scatterplots of log2FC with Spearman Correlation"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+
+
 
 ```
 
@@ -6271,6 +6323,126 @@ Heatmap(logFC_mat_p53_RUV,
 
 ```
 
+```{r DDR target genes logFC heatmap D144R, fig.height=10, fig.width=6}
+
+# Load DEG files
+load_deg <- function(path) read.csv(path)
+
+DOX_24T_R <- load_deg("data/new/DEGs/Toptable_RUV_24T_final.csv")
+DOX_24R_R <- load_deg("data/new/DEGs/Toptable_RUV_24R_final.csv")
+DOX_144R_R <- load_deg("data/new/DEGs/Toptable_RUV_144R_final.csv")
+
+
+#target Entrez_ID
+entrez_category_DDR <- tribble(
+  ~ENTREZID, ~Category,
+  317, "Apoptosis", 355, "Apoptosis", 581, "Apoptosis", 637, "Apoptosis",
+  836, "Apoptosis", 841, "Apoptosis", 842, "Apoptosis", 27113, "Apoptosis",
+  5366, "Apoptosis", 54205, "Apoptosis", 55367, "Apoptosis", 8795, "Apoptosis",
+  1026, "Cell Cycle / Checkpoint", 1027, "Cell Cycle / Checkpoint", 595, "Cell Cycle / Checkpoint",
+  894, "Cell Cycle / Checkpoint", 896, "Cell Cycle / Checkpoint", 898, "Cell Cycle / Checkpoint",
+  9133, "Cell Cycle / Checkpoint", 9134, "Cell Cycle / Checkpoint", 891, "Cell Cycle / Checkpoint",
+  983, "Cell Cycle / Checkpoint", 1017, "Cell Cycle / Checkpoint", 1019, "Cell Cycle / Checkpoint",
+  1020, "Cell Cycle / Checkpoint", 1021, "Cell Cycle / Checkpoint", 993, "Cell Cycle / Checkpoint",
+  995, "Cell Cycle / Checkpoint", 1869, "Cell Cycle / Checkpoint", 4609, "Cell Cycle / Checkpoint",
+  5925, "Cell Cycle / Checkpoint", 9874, "Cell Cycle / Checkpoint", 11011, "Cell Cycle / Checkpoint",
+  1385, "Cell Cycle / Checkpoint",
+  472, "Damage Sensors / Signal Transducers", 545, "Damage Sensors / Signal Transducers",
+  5591, "Damage Sensors / Signal Transducers", 5810, "Damage Sensors / Signal Transducers",
+  5883, "Damage Sensors / Signal Transducers", 5884, "Damage Sensors / Signal Transducers",
+  6118, "Damage Sensors / Signal Transducers", 4361, "Damage Sensors / Signal Transducers",
+  10111, "Damage Sensors / Signal Transducers", 4683, "Damage Sensors / Signal Transducers",
+  84126, "Damage Sensors / Signal Transducers", 3014, "Damage Sensors / Signal Transducers",
+  672, "DNA Repair", 2177, "DNA Repair", 5888, "DNA Repair", 5893, "DNA Repair",
+  1647, "DNA Repair", 4616, "DNA Repair", 10912, "DNA Repair", 1111, "DNA Repair",
+  11200, "DNA Repair", 1643, "DNA Repair", 8243, "DNA Repair", 5981, "DNA Repair",
+  7157, "p53 Regulators / Targets", 4193, "p53 Regulators / Targets", 5371, "p53 Regulators / Targets",
+  27244, "p53 Regulators / Targets", 50484, "p53 Regulators / Targets",
+  207, "Miscellaneous / Broad", 25, "Miscellaneous / Broad"
+)
+
+entrez_ids_DDR_R <- entrez_category_DDR$ENTREZID
+
+# saveRDS(entrez_ids_DDR_R, "data/new/RUV/DDR_genes_entrezid.RDS")
+
+# Function to extract relevant data
+extract_data_DDR_RUV <- function(df, name) {
+  df %>%
+    filter(Entrez_ID %in% entrez_ids_DDR_R) %>%
+    mutate(Gene = mapIds(org.Hs.eg.db, 
+                         as.character(Entrez_ID),
+                         column = "SYMBOL", 
+                         keytype = "ENTREZID", 
+                         multiVals = "first"),
+           Condition = name,
+           Signif = ifelse(adj.P.Val < 0.05, "*", ""))
+}
+
+
+# Collect all data
+# DEG list
+deg_list_RUV <- list("DOX_24T" = DOX_24T_R, 
+                 "DOX_24R" = DOX_24R_R, 
+                 "DOX_144R" = DOX_144R_R
+)
+
+# Combine all DEGs and annotate
+all_data_DDR_RUV <- bind_rows(mapply(extract_data_DDR_RUV, deg_list_RUV, names(deg_list_RUV), SIMPLIFY = FALSE)) 
+
+#now make a filtering step to only include DEGs at 144R
+sig_genes_144R <- all_data_DDR_RUV %>% 
+  dplyr::filter(Condition == "DOX_144R", adj.P.Val < 0.05) %>% 
+  pull(Gene) %>% 
+  unique()
+
+filt_DDR_data_144R <- all_data_DDR_RUV %>% 
+  dplyr::filter(Gene %in% sig_genes_144R) %>% 
+  dplyr::select(-("X"))
+
+# Create matrices
+logFC_mat_DDR_RUV <- acast(filt_DDR_data_144R, Gene ~ Condition, value.var = "logFC")
+signif_mat_DDR_RUV <- acast(filt_DDR_data_144R, Gene ~ Condition, value.var = "Signif")
+
+# Desired column order
+desired_order <- c("DOX_24T",
+                   "DOX_24R",
+                   "DOX_144R")
+
+logFC_mat_DDR_RUV <- logFC_mat_DDR_RUV[, desired_order]
+signif_mat_DDR_RUV <- signif_mat_DDR_RUV[, desired_order]
+
+# Column annotation
+meta_DDR_RUV <- str_split_fixed(colnames(logFC_mat_DDR_RUV), "_", 3)
+meta_DDR_RUV <- str_split_fixed(colnames(logFC_mat_DDR_RUV), "_", 2)
+col_annot_DDR_RUV <- HeatmapAnnotation(
+  Drug = meta_DDR_RUV[, 1],
+  Time = meta_DDR_RUV[, 2],
+  col = list(
+    Drug = c("DOX" = "#499FBD"),
+    Time = c("24T" = "#238B45", 
+             "24R" = "#74C476", 
+             "144R" = "#C7E9C0")
+  ),
+  annotation_height = unit(c(1, 1, 1), "cm")
+)
+
+# Draw heatmap
+Heatmap(logFC_mat_DDR_RUV,
+        name = "logFC",
+        top_annotation = col_annot,
+        cluster_columns = FALSE,
+        cluster_rows = TRUE,
+        show_row_names = TRUE,
+        show_column_names = FALSE,
+        layer_fun = function(j, i, x, y, width, height, fill) {
+          grid.text(signif_mat_DDR_RUV[cbind(i, j)], x, y, gp = gpar(fontsize = 9))
+        },
+        column_title = "DDR Target Genes Expression\nDOX Recovery (RUVs Corrected)",
+        column_title_gp = gpar(fontsize = 14, fontface = "bold")
+)
+
+
+```
 
 ##p53 logFC boxplots
 ```{r logFC Boxplots p53 RUVs}
@@ -10725,7 +10897,7 @@ legend('bottomleft',fill=myColors, legend =rev(c("0", "0.1", "0.2", "0.3", "0.4"
 #Log2cpm Norm Counts Cormotif Downstream Analysis
 ```{r Cormotif log2cpm Norm Counts clustlike + p.post}
 
-#extract the posterior probability that these DEGs belong to motifs
+#extract the posterior probability that these genes belong to motifs
 gene_prob_all_RUV <- motif.fit_RUV_logNC_cpm$bestmotif$p.post
 rownames(gene_prob_all_RUV) <- rownames(lognormcounts_CMF_cpm)
 
@@ -11268,11 +11440,11 @@ print(medians_allgenes_RUV)
 #now that I've found the median for both logFC and abslogFC over time, plot the line graphs
 
 #specify colors
-motif_cols <- c("M1" = "#BAD893",
-                "M2" = "#5A8CA9")
+motif_cols <- c("M1" = "#c998d9",
+                "M2" = "#7dd67d")
 
-med_cols <- c("M1" = "#8CA153",
-              "M2" = "#3D6680")
+med_cols <- c("M1" = "#c998d9",
+              "M2" = "#7dd67d")
 
 #plot logFC
 labs_logFC_top100 <- medians_allgenes_RUV %>%
@@ -11298,12 +11470,12 @@ plot_motifs100_logFC <-
               dplyr::filter(motif == "M1"),
             aes(x = time, y = median_logFC, 
                 group = motif),
-            color = "#8CA153", size = 2) +
+            color = "#c998d9", size = 2) +
   geom_line(data = medians_allgenes_RUV %>% 
               dplyr::filter(motif == "M2"),
             aes(x = time, y = median_logFC, 
                 group = motif),
-            color = "#3D6680", size =2) +
+            color = "#7dd67d", size =2) +
   scale_color_manual(values = c(motif_cols),
                      labels = labs_logFC_top100) +
   labs(title = "logFC Top 100 Genes by Motif",
@@ -11336,11 +11508,11 @@ plot_motifs100_abslogFC <-
   geom_line(data = medians_allgenes_RUV %>% 
               dplyr::filter(motif == "M1"),
             aes(x = time, y = median_abslogFC, group = motif),
-            color = "#8CA153", size = 2) +
+            color = "#c998d9", size = 2) +
   geom_line(data = medians_allgenes_RUV %>%
               dplyr::filter(motif == "M2"),
             aes(x = time, y = median_abslogFC, group = motif),
-            color = "#3D6680", size =2) +
+            color = "#7dd67d", size =2) +
   scale_color_manual(values = c(motif_cols),
                      labels = labs_abslogFC_top100) +
   labs(title = "|logFC| Top 100 Genes by Motif",
@@ -11352,6 +11524,23 @@ plot_motifs100_abslogFC
 
 
 ```
+#line plot Motifs
+```{r Top 100 genes by Motif}
+#Now I want to make this more simple and order these by probability of motif membership rather than find the logFC and adj P
+
+#load in my gene lists from cormotif
+
+final_genes_1_RUV
+
+final_genes_2_RUV
+
+
+
+
+```
+
+
+
 Now do this but with only the sustained response genes (M2)
 ```{r logFC line plot sustained}
 #I want to plot all of the sustained M2 genes in a line plot
@@ -11393,7 +11582,75 @@ plot_motif2_logFC <- ggplot() +
 plot_motif2_logFC
 
 ```
+#Top 100 Motif Genes by Clustlike
+```{r M1 vs M2 top100}
+motif.fit_RUV_logNC_cpm <- readRDS("data/new/RUV/motif.fit_RUVnormcounts_log2cpm_250630.RDS")
 
+row.names(motif.fit_RUV_logNC_cpm$bestmotif$clustlike) <- row.names(lognormcounts_CMF_cpm)
+cmf_logNC_cpm <- lognormcounts_CMF_cpm$bestmotif$clustlike %>% 
+  as.data.frame() %>% 
+  rownames_to_column("Entrez_ID")
+
+cmf_sets <- list(
+  Set1="V1",
+  Set2="V2")
+
+
+Sets_cmf_cpmNC <- H3K27me3_toptable_list %>% 
+  mutate(cluster=case_when(genes %in% final_genes_1_RUV$. ~ "Set1",
+                           genes %in% final_genes_2_RUV$. ~ "Set2",
+                           TRUE ~ "not_assigned")) %>% 
+  left_join(., H3K27me3_clustlike,by=c("genes"="Peakid")) %>% 
+  dplyr::filter(cluster!="not_assigned")
+
+###This code uses the H3K27me3_clusters list and filters through Sets_H3K27me3 data frame by selecting
+Sets_H3K27me3_top <- map_dfr(names(H3K27me3_clusters), function(cl) {
+  col <- H3K27me3_clusters[[cl]]
+  Sets_H3K27me3 %>%
+    filter(cluster == cl) %>%
+    # group_by(group) %>% 
+    slice_max(order_by = .data[[col]], n = 100)
+}) %>%
+  ungroup()
+
+## now plot
+
+Sets_H3K27me3_top %>% 
+  mutate(group=factor(group, levels = c("H3K27me3_24T","H3K27me3_24R","H3K27me3_144R")),
+         cluster=factor(cluster, levels=c("Set1","Set2"))) %>% 
+  ggplot(., aes(x= group,y = logFC, group = interaction(cluster, genes), color=cluster))+
+  geom_point()+
+  geom_line(aes(alpha = 0.8))+
+  theme_bw()+
+  facet_wrap(~cluster)+
+  ggtitle("LFC across time for H3K27me3 top 100 by Set")+
+  theme(axis.text.x = element_text(angle=90) )
+
+# saveRDS(Sets_H3K27me3_top,"data/motif_lists/H3K27me3_toplistbymotif.RDS")
+
+###MY CODE###
+filt_toptable_motifgenes_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(motif = case_when(
+    Entrez_ID %in% final_genes_1_RUV ~ "M1",
+    Entrez_ID %in% final_genes_2_RUV ~ "M2",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(motif)) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("24T", "24R", "144R"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#slice top 100 genes per motif by adj p value
+top_100_motifgenes <- filt_toptable_motifgenes_RUV %>%
+  filter(motif %in% c("M1", "M2")) %>%
+  group_by(motif, Entrez_ID) %>%
+  summarize(min_adjP = min(adj.P.Val), groups = "drop") %>% 
+  arrange(motif, min_adjP) %>%
+  group_by(motif) %>%
+  slice_head(n = 100)
+
+```
 
 ###log2cpm Example Genes Cormotif RUVs log2cpm Norm Counts
 ```{r log2cpm Example Genes Cormotif log2cpm Norm Counts}
@@ -11418,7 +11675,9 @@ dim(motif2_genes_fin_RUV)
 
 #pull out some random genes for each using sample
 
-m1_genes_fin_RUV <- motif1_genes_fin_RUV[sample(nrow(motif1_genes_fin_RUV), 3), , drop = FALSE]
+m1_genes_fin_RUV <- motif1_genes_fin_RUV %>% dplyr::filter(SYMBOL == "ZMYND8")
+  
+  # motif1_genes_fin_RUV[sample(nrow(motif1_genes_fin_RUV), 3), , drop = FALSE]
 
 #Define gene list(s)
 #these are the genes pulled out by m1_genes
@@ -11488,7 +11747,10 @@ for (gene in initial_test_genes1_fin_RUV) {
 
 #####motif 2#####
 
-m2_genes_fin_RUV <- motif2_genes_fin_RUV[sample(nrow(motif2_genes_fin_RUV), 3), , drop = FALSE]
+m2_genes_fin_RUV <- motif2_genes_fin_RUV %>% dplyr::filter(SYMBOL == "CCNB2")
+  
+  
+  # motif2_genes_fin_RUV[sample(nrow(motif2_genes_fin_RUV), 3), , drop = FALSE]
 
 #Define gene list(s)
 #these are the genes pulled out by m1_genes
@@ -13849,6 +14111,83 @@ for (gene in GPSM2) {
 
 
 ```
+```{r}
+#plot Top2A
+
+#plot a log2cpm boxplot of this gene as I have above
+
+boxplots_cormotif <- boxplot1
+
+#Define gene
+GPSM2 <- dplyr::filter(boxplots_cormotif, Entrez_ID == "29899")  
+
+#Now put in the function I want to use to generate boxplots of genes
+process_gene_sus_aic <- function(gene) {
+  gene_data <- boxplots_cormotif %>% filter(SYMBOL == gene)
+  long_data <- gene_data %>%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = "Sample", values_to = "log2CPM") %>%
+    mutate(
+      Drug = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("DMSO", Sample) ~ "DMSO",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("_24T_", Sample) ~ "24T",
+        grepl("_24R_", Sample) ~ "24R",
+        grepl("_144R_", Sample) ~ "144R",
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl("Ind1$", Sample) ~ "1",
+        grepl("Ind2$", Sample) ~ "2",
+        grepl("Ind3$", Sample) ~ "3",
+        grepl("Ind4$", Sample) ~ "4",
+        grepl("Ind5$", Sample) ~ "5",
+        grepl("Ind6$", Sample) ~ "6",
+        grepl("Ind6REP$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = "_")
+    )
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c(
+      "DOX_24T", 
+      "DMSO_24T", 
+      "DOX_24R", 
+      "DMSO_24R", 
+      "DOX_144R", 
+      "DMSO_144R"
+    )
+  )
+  return(long_data)
+}
+
+#this function is saved under process_gene_data so I will save as an R object
+
+#saveRDS(process_gene_data, "data/new/process_gene_data_funct.RDS")
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in GPSM2) {
+  gene_data <- process_gene_sus_aic(gene)
+  p <- ggplot(gene_data, aes(x = Condition, y = log2CPM, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")) +
+    ggtitle(paste("Log2cpm", gene, "AIC Sustained Gene")) +
+    labs(x = "Treatment", y = "log2CPM") +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90, hjust = 1)
+    )
+  print(p)
+}
+
+
+```
 
 
 #Forest Plots
@@ -14374,6 +14713,7 @@ ind4_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new/anal
 
 ```
 
+#Step 1 - Create Dataframes and Combine all ROIs by Image
 ```{r Create Summary Sheets}
 #create a group of this before running the actual function to combine them below
 ind_roi_all <- bind_rows(ind2_roi, ind4_roi) %>% 
@@ -14477,7 +14817,23 @@ merged_image_summary <- merged_image_summary %>%
 
 ```
 
+#Step 2 - Select Consistent Nuclei Numbers - 3 Images vs 5
 ```{r Select Consistent Nuclei Images}
+
+#select top 3 nuclei consistent images per individual/magnification/condition
+#with ±20% consistency filter
+consistent_images_top_nuclei_3 <- merged_image_summary %>%
+  group_by(Individual, Magnification, Timepoint, Treatment) %>%
+  mutate(Median_Nuclei = median(Nuclei_Count, na.rm = TRUE)) %>%
+  # Keep images within ±20% of median nuclei
+  filter(Nuclei_Count >= 0.8 * Median_Nuclei,
+         Nuclei_Count <= 1.2 * Median_Nuclei) %>%
+  ungroup() %>%
+  group_by(Individual, Magnification, Condition) %>%
+  slice_max(order_by = Nuclei_Count, n = 3, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(Percent_Red_Positive = Mean_Percent_Red_Positive)
+
 
 #select top 5 nuclei consistent images per individual/magnification/condition
 #with ±20% consistency filter
@@ -14493,50 +14849,87 @@ consistent_images_top_nuclei <- merged_image_summary %>%
   ungroup() %>%
   mutate(Percent_Red_Positive = Mean_Percent_Red_Positive)
 
+
+```
+
+#Step 3 - Normalize 5 Images by Max Intensity
+```{r Normalize 5 Consistent Images by Max Intensity}
+
+#calculate the maximum percentage of red intensity per each magnification
+max_percent_per_mag_3 <- consistent_images_top_nuclei_3 %>%
+  group_by(Magnification) %>%
+  summarise(Max_Percent = max(Mean_of_Max, na.rm = TRUE), .groups = "drop")
+
+max_percent_per_mag_5 <- consistent_images_top_nuclei %>% 
+  group_by(Magnification) %>% 
+  summarise(Max_Percent = max(Mean_of_Max, na.rm = TRUE), .groups = "drop")
+
+#then make a summary with the percentages for normalization
+individual_summary_step3_3 <- consistent_images_top_nuclei_3 %>%
+  left_join(max_percent_per_mag, by = "Magnification") %>%
+  mutate(Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Percent) * 100)
+
+individual_summary_step3_5 <- consistent_images_top_nuclei %>%
+  left_join(max_percent_per_mag, by = "Magnification") %>%
+  mutate(Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Percent) * 100)
+
+#normalize the data from the previous step
+max_percent_per_mag_3 <- consistent_images_top_nuclei_3 %>%
+  group_by(Magnification) %>%
+  summarise(Max_Percent = max(Mean_Percent_Red_Positive, na.rm = TRUE), .groups = "drop")
+
+max_percent_per_mag_5 <- consistent_images_top_nuclei %>%
+  group_by(Magnification) %>%
+  summarise(Max_Percent = max(Mean_Percent_Red_Positive, na.rm = TRUE), .groups = "drop")
+
+#put these into individual summaries for both 3 and 5 consistent nuclei images
+individual_summary_step3_3 <- consistent_images_top_nuclei_3 %>%
+  left_join(max_percent_per_mag, by = "Magnification") %>%
+  mutate(Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Percent) * 100)
+
+individual_summary_step3_5 <- consistent_images_top_nuclei %>%
+  left_join(max_percent_per_mag, by = "Magnification") %>%
+  mutate(Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Percent) * 100)
+
+```
+
+#Step 4 - Collapse Images by Individual
+```{r Mean of Individual}
+
 #collapse per individual for plotting (after normalization)
 
-individual_summary_step4 <- consistent_images_top_nuclei %>%
+individual_summary_step4_3 <- individual_summary_step3_3 %>%
   group_by(Magnification, Individual, Treatment, Timepoint, Condition) %>%
   summarise(
     Mean_Percent_Positive = mean(Percent_Red_Positive, na.rm = TRUE),
     .groups = "drop"
   )
 
-```
 
-```{r Normalize Boxplots by Max Per Mag}
-#calculate the maximum percentage of red intensity per each magnification
-max_percent_per_mag <- individual_summary_step4 %>%
-  group_by(Magnification) %>%
-  summarise(Max_Percent = max(Mean_Percent_Positive, na.rm = TRUE), .groups = "drop")
+individual_summary_step4_5 <- individual_summary_step3_5 %>%
+  group_by(Magnification, Individual, Treatment, Timepoint, Condition) %>%
+  summarise(
+    Mean_Percent_Positive = mean(Percent_Red_Positive, na.rm = TRUE),
+    .groups = "drop"
+  )
 
-#then make a summary with the percentages for normalization
-individual_summary_step5 <- individual_summary_step4 %>%
-  left_join(max_percent_per_mag, by = "Magnification") %>%
-  mutate(Norm_Percent_Positive = (Mean_Percent_Positive / Max_Percent) * 100)
 
-#normalize the data from the previous step
-max_percent_per_mag <- individual_summary_step4 %>%
-  group_by(Magnification) %>%
-  summarise(Max_Percent = max(Mean_Percent_Positive, na.rm = TRUE), .groups = "drop")
-
-individual_summary_step5 <- individual_summary_step4 %>%
-  left_join(max_percent_per_mag, by = "Magnification") %>%
-  mutate(Norm_Percent_Positive = (Mean_Percent_Positive / Max_Percent) * 100)
 
 ```
 
+#Step 5 - Test for Significance with T tests on Step 4
 ```{r Statistical Testing - T Tests}
 
 #calculate significance using a t test across conditions
 #test DOX vs DMSO at each timepoint
 
-stats_t_table_IF <- consistent_images_top_nuclei %>%
+#3 images
+stats_t_table_IF_3 <- individual_summary_step4_3 %>%
   filter(Treatment %in% c("DOX","DMSO")) %>%
   group_by(Magnification, Timepoint) %>%
   summarise(
-    t_test = list(t.test(Mean_Percent_Red_Positive[Treatment=="DOX"],
-                         Mean_Percent_Red_Positive[Treatment=="DMSO"])),
+    t_test = list(t.test(Norm_Percent_Positive[Treatment=="DOX"],
+                         Norm_Percent_Positive[Treatment=="DMSO"])),
     .groups = "drop"
   ) %>%
   rowwise() %>%
@@ -14551,9 +14944,34 @@ stats_t_table_IF <- consistent_images_top_nuclei %>%
       TRUE ~ "ns"
     )
   ) %>%
-  select(Magnification, Timepoint, t_stat, df, p_value, signif)
+  dplyr::select(Magnification, Timepoint, t_stat, df, p_value, signif)
 
-print(stats_t_table_IF)
+print(stats_t_table_IF_3)
+
+#5 images
+stats_t_table_IF_5 <- individual_summary_step4_5 %>%
+  filter(Treatment %in% c("DOX","DMSO")) %>%
+  group_by(Magnification, Timepoint) %>%
+  summarise(
+    t_test = list(t.test(Norm_Percent_Positive[Treatment=="DOX"],
+                         Norm_Percent_Positive[Treatment=="DMSO"])),
+    .groups = "drop"
+  ) %>%
+  rowwise() %>%
+  mutate(
+    t_stat = t_test$statistic,
+    df = t_test$parameter,
+    p_value = t_test$p.value,
+    signif = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01  ~ "**",
+      p_value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  ) %>%
+  dplyr::select(Magnification, Timepoint, t_stat, df, p_value, signif)
+
+print(stats_t_table_IF_5)
 
 ```
 
@@ -14608,7 +15026,7 @@ condition_levels <- c("DOX24T", "DOX24R", "DOX144R", "DMSO24T", "DMSO24R", "DMSO
 
 plot_step1 <- ggplot(ind_roi_all, 
                      aes(x = paste0(Treatment, Timepoint), y = Percent_Red_Positive)) +
-  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_boxplot() +
   geom_point(aes(color = Individual), alpha = 0.6, size = 1.5, position = position_identity()) +
   facet_wrap(~Magnification, scales = "free_x") +
   scale_x_discrete(limits = condition_levels) +
@@ -14620,12 +15038,11 @@ plot_step1 <- ggplot(ind_roi_all,
 
 plot_step1
 
-
 #step 1.5: raw image-level summary data
 
 plot_step1.5 <- ggplot(merged_image_summary, 
                        aes(x = Condition, y = Mean_Percent_Red_Positive)) +
-  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_boxplot() +
   geom_point(aes(color = Individual), alpha = 0.6, size = 2, position = position_identity()) +
   facet_wrap(~Magnification, scales = "free_x") +
   labs(title = "Step 1.5: Image-Level Percent Red Positive",
@@ -14639,60 +15056,177 @@ plot_step1.5
 
 
 #step 2: selecting consistent nuclei for each condition
-plot_step2 <- ggplot(consistent_images_top_nuclei, 
+plot_step2_3 <- ggplot(consistent_images_top_nuclei_3, 
                      aes(x = Condition, y = Mean_Percent_Red_Positive)) +
-  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_boxplot() +
   geom_point(aes(color = Individual), alpha = 0.6, size = 2, position = position_identity()) +
   facet_wrap(~Magnification, scales = "free_x") +
-  labs(title = "Step 2: Top 5 Nuclei Images per Condition",
+  labs(title = "Step 2: 3 Consistent Nuclei Images per Condition",
        x = "Condition", y = "Percent Red Positive") +
   theme_bw() +
   scale_x_discrete(limits = condition_levels) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "top")
 
-plot_step2
+plot_step2_3
 
-#step 3: mean by individual of 5 images
-
-individual_summary_step3 <- consistent_images %>%
-  group_by(Individual, Magnification, Condition) %>%
-  summarise(Mean_Percent_Positive = mean(Mean_Percent_Red_Positive, na.rm = TRUE),
-            .groups = "drop")
-
-plot_step3 <- ggplot(individual_summary_step3, 
-                     aes(x = Condition, y = Mean_Percent_Positive)) +
-  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
-  geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+#step 2: selecting consistent nuclei for each condition (5 images)
+plot_step2_5 <- ggplot(consistent_images_top_nuclei, 
+                     aes(x = Condition, y = Mean_Percent_Red_Positive)) +
+  geom_boxplot() +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 2, position = position_identity()) +
   facet_wrap(~Magnification, scales = "free_x") +
-  labs(title = "Step 3: Mean Percent Positive per Individual",
-       x = "Condition", y = "Mean Percent Red Positive") +
+  labs(title = "Step 2: 5 Consistent Nuclei Images per Condition",
+       x = "Condition", y = "Percent Red Positive") +
   theme_bw() +
   scale_x_discrete(limits = condition_levels) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "top")
 
-plot_step3
+plot_step2_5
 
-#step 4: normalized by individual for percent red positive by area
+#step 3: normalized 3 images per condition for percent red positive by area
 
-plot_step4 <- ggplot(individual_summary_step5, 
+#make individual summaries for consistent images (3 or 5) but not collapsed by individual
+individual_summary_step3_3 <- consistent_images_top_nuclei_3 %>%
+  left_join(max_percent_per_mag, by = "Magnification") %>%
+  mutate(Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Percent) * 100)
+
+individual_summary_step3_5 <- consistent_images_top_nuclei %>%
+  left_join(max_percent_per_mag, by = "Magnification") %>%
+  mutate(Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Percent) * 100)
+
+#plot step 3: 3 images
+plot_step3_3 <- ggplot(individual_summary_step3_3, 
                      aes(x = Condition, y = Norm_Percent_Positive)) +
   geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
   geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
   facet_wrap(~Magnification, scales = "free_x") +
-  labs(title = "Step 4: Normalized Percent Red Positive (0–100 scale)",
+  labs(title = "Step 4: Normalized Percent Red Positive (0–100 scale) (3)",
        x = "Condition", y = "Normalized Percent Positive") +
   theme_bw() +
   scale_x_discrete(limits = condition_levels) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "top")
 
-plot_step4
+plot_step3_3
 
-#my thoughts as to why 10X is so low in Ind4: lower image intensity and harder to see overall
+#plot step 3: 5 images
+plot_step3_5 <- ggplot(individual_summary_step3_5, 
+                     aes(x = Condition, y = Norm_Percent_Positive)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 3: Normalized Percent Red Positive (0–100 scale) (5)",
+       x = "Condition", y = "Normalized Percent Positive") +
+  theme_bw() +
+  scale_x_discrete(limits = condition_levels) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+plot_step3_5
+
+#step 4: combined by individual
+
+#combine all 3 images into one point
+individual_summary_step4_3 <- individual_summary_step3_3 %>%
+  group_by(Magnification, Individual, Treatment, Timepoint, Condition) %>%
+  summarise(
+    Norm_Percent_Positive = mean(Norm_Percent_Positive, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+#combine all 5 images into one point
+individual_summary_step4_5 <- individual_summary_step3_5 %>%
+  group_by(Magnification, Individual, Treatment, Timepoint, Condition) %>%
+  summarise(
+    Norm_Percent_Positive = mean(Norm_Percent_Positive, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+#plot boxplots of consolidated individual (3 images) normalized
+plot_step4_3 <- ggplot(individual_summary_step4_3, 
+                     aes(x = Condition, y = Norm_Percent_Positive)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 4: Normalized Percent Positive by Individual (3)",
+       x = "Condition", y = "Mean Percent Red Positive") +
+  theme_bw() +
+  scale_x_discrete(limits = condition_levels) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+plot_step4_3
+
+#plot boxplots of consolidated individual (5 images) normalized 
+plot_step4_5 <- ggplot(individual_summary_step4_5, 
+                     aes(x = Condition, y = Norm_Percent_Positive)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 4: Normalized Percent Positive by Individual (5)",
+       x = "Condition", y = "Mean Percent Red Positive") +
+  theme_bw() +
+  scale_x_discrete(limits = condition_levels) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+plot_step4_5
 
 #step 5: statistical testing with t tests across conditions
+
+#3 images
+stats_t_table_IF_3 <- individual_summary_step4_3 %>%
+  filter(Treatment %in% c("DOX","DMSO")) %>%
+  group_by(Magnification, Timepoint) %>%
+  summarise(
+    t_test = list(t.test(Norm_Percent_Positive[Treatment=="DOX"],
+                         Norm_Percent_Positive[Treatment=="DMSO"])),
+    .groups = "drop"
+  ) %>%
+  rowwise() %>%
+  mutate(
+    t_stat = t_test$statistic,
+    df = t_test$parameter,
+    p_value = t_test$p.value,
+    signif = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01  ~ "**",
+      p_value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  ) %>%
+  dplyr::select(Magnification, Timepoint, t_stat, df, p_value, signif)
+
+print(stats_t_table_IF_3)
+
+#5 images
+stats_t_table_IF_5 <- individual_summary_step4_5 %>%
+  filter(Treatment %in% c("DOX","DMSO")) %>%
+  group_by(Magnification, Timepoint) %>%
+  summarise(
+    t_test = list(t.test(Norm_Percent_Positive[Treatment=="DOX"],
+                         Norm_Percent_Positive[Treatment=="DMSO"])),
+    .groups = "drop"
+  ) %>%
+  rowwise() %>%
+  mutate(
+    t_stat = t_test$statistic,
+    df = t_test$parameter,
+    p_value = t_test$p.value,
+    signif = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01  ~ "**",
+      p_value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  ) %>%
+  dplyr::select(Magnification, Timepoint, t_stat, df, p_value, signif)
+
+print(stats_t_table_IF_5)
+
+
 plot_individuals_boxplot_step5 <- function(df, mag_label, stats_table) {
   
   df_sub <- df %>% 
@@ -14728,14 +15262,761 @@ plot_individuals_boxplot_step5 <- function(df, mag_label, stats_table) {
 
 #run plots
 
-step5_boxplot_10x <- plot_individuals_boxplot_step5(individual_summary_step5, "10X", stats_t_table_IF)
-step5_boxplot_20x <- plot_individuals_boxplot_step5(individual_summary_step5, "20X", stats_t_table_IF)
+step5_boxplot_10x_3 <- plot_individuals_boxplot_step5(individual_summary_step4_3, "10X", stats_t_table_IF_3)
+step5_boxplot_10x_5 <- plot_individuals_boxplot_step5(individual_summary_step4_5, "10X", stats_t_table_IF_5)
+step5_boxplot_20x_3 <- plot_individuals_boxplot_step5(individual_summary_step4_3, "20X", stats_t_table_IF)
+step5_boxplot_20x_5 <- plot_individuals_boxplot_step5(individual_summary_step4_5, "20X", stats_t_table_IF)
 
 #print plots
-step5_boxplot_10x
-step5_boxplot_20x
+step5_boxplot_10x_3
+step5_boxplot_10x_5
+step5_boxplot_20x_3
+step5_boxplot_20x_5
 ```
 
+```{r Test Significance on Step 3}
+
+#3 images
+stats_t_table_IF_3_3 <- individual_summary_step3_3 %>%
+  filter(Treatment %in% c("DOX","DMSO")) %>%
+  group_by(Magnification, Timepoint) %>%
+  summarise(
+    t_test = list(t.test(Norm_Percent_Positive[Treatment=="DOX"],
+                         Norm_Percent_Positive[Treatment=="DMSO"])),
+    .groups = "drop"
+  ) %>%
+  rowwise() %>%
+  mutate(
+    t_stat = t_test$statistic,
+    df = t_test$parameter,
+    p_value = t_test$p.value,
+    signif = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01  ~ "**",
+      p_value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  ) %>%
+  dplyr::select(Magnification, Timepoint, t_stat, df, p_value, signif)
+
+print(stats_t_table_IF_3_3)
+
+#5 images
+stats_t_table_IF_3_5 <- individual_summary_step3_5 %>%
+  filter(Treatment %in% c("DOX","DMSO")) %>%
+  group_by(Magnification, Timepoint) %>%
+  summarise(
+    t_test = list(t.test(Norm_Percent_Positive[Treatment=="DOX"],
+                         Norm_Percent_Positive[Treatment=="DMSO"])),
+    .groups = "drop"
+  ) %>%
+  rowwise() %>%
+  mutate(
+    t_stat = t_test$statistic,
+    df = t_test$parameter,
+    p_value = t_test$p.value,
+    signif = case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01  ~ "**",
+      p_value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  ) %>%
+  dplyr::select(Magnification, Timepoint, t_stat, df, p_value, signif)
+
+print(stats_t_table_IF_3_5)
+
+
+plot_individuals_boxplot_step3 <- function(df, mag_label, stats_table) {
+  
+  df_sub <- df %>% 
+    filter(Magnification == mag_label) %>%
+    mutate(Condition = factor(Condition, levels = c("DOX24T","DMSO24T",
+                                                    "DOX24R","DMSO24R",
+                                                    "DOX144R","DMSO144R")))
+  
+  stats_sub <- stats_table %>% 
+    filter(Magnification == mag_label) %>%
+    mutate(
+      x_pos = case_when(
+        Timepoint == "24T"  ~ 1.5,
+        Timepoint == "24R"  ~ 3.5,
+        Timepoint == "144R" ~ 5.5
+      ),
+      y_pos = max(df_sub$Norm_Percent_Positive, na.rm = TRUE) * 1.05
+    )
+  
+  ggplot(df_sub, aes(x = Condition, y = Norm_Percent_Positive)) +
+    geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+    geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+    geom_text(data = stats_sub,
+              aes(x = x_pos, y = y_pos, label = signif),
+              inherit.aes = FALSE) +
+    labs(title = paste0("Normalized Percent Red Positive - ", mag_label),
+         x = "Condition", y = "Normalized Percent Positive (%)") +
+    theme_bw() +
+    scale_x_discrete(limits = condition_levels) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top")
+}
+
+#run plots
+
+step5_boxplot_10x_3_3 <- plot_individuals_boxplot_step3(individual_summary_step3_3, "10X", stats_t_table_IF_3_3)
+step5_boxplot_10x_3_5 <- plot_individuals_boxplot_step3(individual_summary_step3_5, "10X", stats_t_table_IF_3_5)
+step5_boxplot_20x_3_3 <- plot_individuals_boxplot_step3(individual_summary_step3_3, "20X", stats_t_table_IF_3_3)
+step5_boxplot_20x_3_5 <- plot_individuals_boxplot_step3(individual_summary_step3_5, "20X", stats_t_table_IF_3_5)
+
+#print plots
+step5_boxplot_10x_3_3
+step5_boxplot_10x_3_5
+step5_boxplot_20x_3_3
+step5_boxplot_20x_3_5
+```
+
+
+```{r Plot Step 4 Stats Image Level}
+# Function for Step 4 plots with Step 3 stats
+plot_step4_with_step3_stats <- function(df, mag_label, stats_table) {
+  
+  df_sub <- df %>% 
+    filter(Magnification == mag_label) %>%
+    mutate(Condition = factor(Condition, levels = c("DOX24T","DMSO24T",
+                                                    "DOX24R","DMSO24R",
+                                                    "DOX144R","DMSO144R")))
+  
+  stats_sub <- stats_table %>% 
+    filter(Magnification == mag_label) %>%
+    mutate(
+      x_pos = case_when(
+        Timepoint == "24T"  ~ 1.5,
+        Timepoint == "24R"  ~ 3.5,
+        Timepoint == "144R" ~ 5.5
+      ),
+      y_pos = max(df_sub$Norm_Percent_Positive, na.rm = TRUE) * 1.05
+    )
+  
+  ggplot(df_sub, aes(x = Condition, y = Norm_Percent_Positive)) +
+    geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+    geom_point(aes(color = Individual), alpha = 0.6, size = 3) +
+    geom_text(data = stats_sub,
+              aes(x = x_pos, y = y_pos, label = signif),
+              inherit.aes = FALSE) +
+    labs(title = paste0("Normalized Red Intensity per Area per Individual - ", mag_label),
+         x = "Condition", y = "Normalized Percent Positive (%)") +
+    theme_bw() +
+    scale_x_discrete(limits = condition_levels) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top")
+}
+
+# Example usage:
+plot_step4_with_step3_stats(individual_summary_step4_3, "10X", stats_t_table_IF_3_3)
+plot_step4_with_step3_stats(individual_summary_step4_5, "20X", stats_t_table_IF_3_5)
+
+```
+
+#swap 3 and 5 to do stats on image level
+
+#now do DOX/VEH
+```{r Step 6 DOX/VEH}
+
+# -----------------------------
+# Step 5: DOX/VEH ratio for plotting (Step 4 consolidated)
+# -----------------------------
+
+# 3 images
+DOX_VEH_ratio_3 <- individual_summary_step4_3 %>%
+  dplyr::select(Magnification, Timepoint, Individual, Treatment, Norm_Percent_Positive) %>%
+  pivot_wider(names_from = Treatment, values_from = Norm_Percent_Positive) %>%
+  mutate(
+    DOX = as.numeric(DOX),
+    DMSO = as.numeric(DMSO),
+    DOX_over_VEH = (DOX / DMSO) #fold change
+  )
+
+# 5 images
+DOX_VEH_ratio_5 <- individual_summary_step4_5 %>%
+  dplyr::select(Magnification, Timepoint, Individual, Treatment, Norm_Percent_Positive) %>%
+  pivot_wider(names_from = Treatment, values_from = Norm_Percent_Positive) %>%
+  mutate(
+    DOX = as.numeric(DOX),
+    DMSO = as.numeric(DMSO),
+    DOX_over_VEH = (DOX / DMSO) #fold change
+  )
+
+# -----------------------------
+# Step 6: Prepare Step 3 image-level data for t-tests
+# -----------------------------
+
+#3 images
+DOX_VEH_step3_3 <- individual_summary_step3_3 %>%
+  dplyr::select(Magnification, Timepoint, Individual, Treatment, Norm_Percent_Positive) %>%
+  pivot_wider(names_from = Treatment, values_from = Norm_Percent_Positive) %>%
+  mutate(
+    DOX = as.numeric(DOX),
+    DMSO = as.numeric(DMSO),
+    DOX_over_VEH = (DOX / DMSO)
+  )
+
+#5 images
+DOX_VEH_step3_5 <- individual_summary_step3_5 %>%
+  dplyr::select(Magnification, Timepoint, Individual, Treatment, Norm_Percent_Positive) %>%
+  pivot_wider(names_from = Treatment, values_from = Norm_Percent_Positive) %>%
+  mutate(
+    DOX = as.numeric(DOX),
+    DMSO = as.numeric(DMSO),
+    DOX_over_VEH = (DOX / DMSO) * 100
+  )
+
+# -----------------------------
+# Step 3: Pairwise t-tests across timepoints (image-level)
+# -----------------------------
+
+# Choose 3 or 5 images for t-tests
+DOX_VEH_step3 <- DOX_VEH_step3_3  # or DOX_VEH_step3_5
+
+timepoint_tests_image <- DOX_VEH_step3 %>%
+  group_by(Magnification) %>%
+  pairwise_t_test(
+    DOX_over_VEH ~ Timepoint,
+    p.adjust.method = "BH"
+  ) %>%
+  mutate(
+    y.position = max(DOX_VEH_step3$DOX_over_VEH, na.rm = TRUE) * 1.05,
+    label = case_when(
+      p.adj < 0.001 ~ "***",
+      p.adj < 0.01  ~ "**",
+      p.adj < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+
+# -----------------------------
+# Step 4: Plot DOX/VEH fold change with significance brackets
+# -----------------------------
+
+timepoint_levels <- c("24T", "24R", "144R")  # ensure usual order
+
+# Choose 3 or 5 images for plotting
+DOX_VEH_plot <- DOX_VEH_ratio_3  # or DOX_VEH_ratio_5
+
+ggplot(DOX_VEH_plot, aes(x = factor(Timepoint, levels = timepoint_levels), y = DOX_over_VEH)) +
+  geom_boxplot(fill = "lightblue", alpha = 0.6) +
+  geom_point(aes(color = Individual), size = 3, position = position_jitter(width = 0.1)) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  stat_pvalue_manual(
+    timepoint_tests_image,
+    label = "label",
+    x = "group1",
+    xend = "group2",
+    y.position = "y.position",
+    tip.length = 0.02,
+    bracket.size = 0.5
+  ) +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "red") +  # reference line at no change
+  labs(
+    title = "DOX / VEH Fold Change (%) - Pairwise Timepoint Comparisons",
+    x = "Timepoint",
+    y = "DOX / VEH Fold Change (%)"
+  ) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+
+
+```
+
+
+#IF Quant Swap Order
+```{r IF Workflow Swap 3 and 4}
+# =============================
+# Standardize ROI-level data
+# =============================
+ind_roi_all <- ind_roi_all %>%
+  dplyr::mutate(
+    Image = gsub("\\.zip$", "", ROI_File),
+    Image = gsub("_ROI.*", "", Image),
+    Image = trimws(Image)
+  ) %>%
+  dplyr::select(-ROI_File)
+
+# Add Condition column
+ind_roi_all <- ind_roi_all %>%
+  dplyr::mutate(
+    Condition = paste0(Treatment, Timepoint),
+    Condition = factor(Condition, levels = c("DOX24T","DMSO24T","DOX24R","DMSO24R","DOX144R","DMSO144R"))
+  )
+
+merged_image_summary <- merged_image_summary %>%
+  dplyr::mutate(
+    Condition = paste0(Treatment, Timepoint),
+    Condition = factor(Condition, levels = c("DOX24T","DMSO24T","DOX24R","DMSO24R","DOX144R","DMSO144R"))
+  )
+
+# =========================================
+# Step 1: All ROI points
+# =========================================
+plot_step1 <- ggplot(ind_roi_all,
+                     aes(x = Condition, y = Mean_Percent_Red_Positive, color = Individual)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(alpha = 0.6, size = 1.5, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 1: All ROI Points", x = "Condition", y = "Percent Red Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# =========================================
+# Step 1.5: ROI points summarized per image
+# =========================================
+roi_image_summary <- merged_image_summary %>%
+  dplyr::group_by(Image, Individual, Magnification, Condition, Treatment, Timepoint) %>%
+  dplyr::summarise(
+    Mean_Percent_Red_Positive = mean(Mean_Percent_Red_Positive, na.rm = TRUE),
+    Mean_Red_Positive_Pixels = mean(Mean_Red_Positive_Pixels, na.rm = TRUE),
+    Nuclei_Count = mean(Nuclei_Count, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+plot_step1_5 <- ggplot(roi_image_summary,
+                       aes(x = Condition, y = Mean_Percent_Red_Positive, color = Individual)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(alpha = 0.6, size = 2, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 1.5: ROI Points Summarized per Image",
+       x = "Condition", y = "Mean Percent Red Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# =========================================
+# Step 2: Top 5 nuclei images per condition
+# =========================================
+consistent_images <- roi_image_summary %>%
+  dplyr::group_by(Individual, Magnification, Condition) %>%
+  dplyr::slice_max(order_by = Nuclei_Count, n = 5, with_ties = FALSE) %>%
+  dplyr::ungroup()
+
+plot_step2 <- ggplot(consistent_images,
+                     aes(x = Condition, y = Mean_Percent_Red_Positive, color = Individual)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(alpha = 0.6, size = 2, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 2: Top 5 Nuclei Images per Condition",
+       x = "Condition", y = "Percent Red Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# =========================================
+# Step 3: Normalize by max intensity per magnification
+# =========================================
+# Find global max intensity per magnification
+global_max <- consistent_images %>%
+  dplyr::group_by(Magnification) %>%
+  dplyr::summarise(Max_Intensity = max(Mean_Red_Positive_Pixels, na.rm = TRUE),
+                   .groups = "drop")
+
+consistent_images_norm <- consistent_images %>%
+  dplyr::left_join(global_max, by = "Magnification") %>%
+  dplyr::mutate(Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Intensity) * 100)
+
+plot_step3 <- ggplot(consistent_images_norm,
+                     aes(x = Condition, y = Norm_Percent_Positive, color = Individual)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(alpha = 0.6, size = 2, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 3: Normalized Percent Red Positive per Image",
+       x = "Condition", y = "Normalized Percent Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# =========================================
+# Step 4: Mean per individual
+# =========================================
+individual_summary <- consistent_images_norm %>%
+  dplyr::group_by(Individual, Magnification, Condition, Treatment, Timepoint) %>%
+  dplyr::summarise(
+    Mean_Norm_Percent_Positive = mean(Norm_Percent_Positive, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+plot_step4 <- ggplot(individual_summary,
+                     aes(x = Condition, y = Mean_Norm_Percent_Positive, color = Individual)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(alpha = 0.6, size = 3, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 4: Mean Normalized Percent Positive per Individual",
+       x = "Condition", y = "Mean Normalized Percent Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# =========================================
+# Step 5: Statistical testing per condition
+# =========================================
+stats_t_table_IF <- individual_summary %>%
+  dplyr::group_by(Magnification, Timepoint) %>%
+  dplyr::summarise(
+    t_test = list(t.test(Mean_Norm_Percent_Positive ~ Treatment)),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    t_stat = sapply(t_test, function(x) x$statistic),
+    df     = sapply(t_test, function(x) x$parameter),
+    P_value = sapply(t_test, function(x) x$p.value),
+    signif = cut(P_value, breaks = c(-Inf, 0.001, 0.01, 0.05, Inf),
+                  labels = c("***","**","*","ns"))
+  )
+
+# Step 5 plot function
+plot_step5 <- function(df, stats_table, mag_label){
+  df_sub <- df %>% dplyr::filter(Magnification == mag_label)
+  stats_sub <- stats_table %>% dplyr::filter(Magnification == mag_label) %>%
+    dplyr::mutate(x_pos = case_when(Timepoint == "24T"  ~ 1.5,
+                                    Timepoint == "24R"  ~ 3.5,
+                                    Timepoint == "144R" ~ 5.5),
+                  y_pos = max(df_sub$Mean_Norm_Percent_Positive, na.rm = TRUE)*1.05)
+  
+  ggplot(df_sub, aes(x = Condition, y = Mean_Norm_Percent_Positive, color = Individual)) +
+    geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+    geom_point(alpha = 0.6, size = 3, position = position_identity()) +
+    geom_text(data = stats_sub, aes(x = x_pos, y = y_pos, label = signif),
+              inherit.aes = FALSE) +
+    labs(title = paste0("Step 5: Normalized Percent Positive with t-tests - ", mag_label),
+         x = "Condition", y = "Mean Normalized Percent Positive") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top")
+}
+
+plot_step5_10X <- plot_step5(individual_summary, stats_t_table_IF, "10X")
+plot_step5_20X <- plot_step5(individual_summary, stats_t_table_IF, "20X")
+
+# =========================================
+# Step 6: DOX/VEH ratio per individual
+# =========================================
+ratio_summary <- individual_summary %>%
+  dplyr::group_by(Individual, Magnification, Timepoint) %>%
+  dplyr::summarise(
+    DOX = Mean_Norm_Percent_Positive[Treatment=="DOX"],
+    VEH = Mean_Norm_Percent_Positive[Treatment=="DMSO"],
+    DOX_VEH_Ratio = DOX / VEH,
+    .groups = "drop"
+  )
+
+plot_step6 <- ggplot(ratio_summary,
+                     aes(x = Timepoint, y = DOX_VEH_Ratio, color = Individual)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+  geom_point(alpha = 0.6, size = 3, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  labs(title = "Step 6: DOX / VEH Ratio per Individual",
+       x = "Timepoint", y = "DOX / VEH") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# =========================================
+# Step 7: Statistical testing across timepoints
+# =========================================
+
+# Ensure Timepoint is factored correctly
+ratio_summary <- ratio_summary %>%
+  dplyr::mutate(Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")))
+
+# Define the comparisons
+timepoint_comparisons <- list(
+  c("24T", "24R"),
+  c("24R", "144R"),
+  c("24T", "144R")
+)
+
+# Compute t-tests and prepare stats table
+stats_step7 <- ratio_summary %>%
+  dplyr::group_by(Magnification) %>%
+  do({
+    df_sub <- .
+    results <- lapply(timepoint_comparisons, function(tp) {
+      group1 <- df_sub %>% dplyr::filter(Timepoint == tp[1]) %>% dplyr::pull(DOX_VEH_Ratio)
+      group2 <- df_sub %>% dplyr::filter(Timepoint == tp[2]) %>% dplyr::pull(DOX_VEH_Ratio)
+      if(length(group1) < 1 | length(group2) < 1) return(NULL) # skip if missing
+      test <- t.test(group1, group2)
+      data.frame(
+        Magnification = unique(df_sub$Magnification),
+        Comparison = paste(tp[1], "vs", tp[2]),
+        x_start = as.numeric(factor(tp[1], levels=c("24T","24R","144R"))),
+        x_end   = as.numeric(factor(tp[2], levels=c("24T","24R","144R"))),
+        y_pos   = max(df_sub$DOX_VEH_Ratio, na.rm = TRUE) * 1.05,
+        t_stat  = test$statistic,
+        df      = test$parameter,
+        P_value = test$p.value,
+        signif  = dplyr::case_when(
+          test$p.value < 0.001 ~ "***",
+          test$p.value < 0.01  ~ "**",
+          test$p.value < 0.05  ~ "*",
+          TRUE ~ "ns"
+        )
+      )
+    })
+    do.call(rbind, results)
+  }) %>%
+  dplyr::ungroup()
+
+# Plotting function for Step 7
+plot_step7_ratio <- function(df, stats_table, mag_label) {
+  df_sub <- df %>% dplyr::filter(Magnification == mag_label)
+  stats_sub <- stats_table %>% dplyr::filter(Magnification == mag_label)
+  
+  ggplot(df_sub, aes(x=Timepoint, y=DOX_VEH_Ratio)) +
+    geom_boxplot(alpha=0.6, fill="lightgray", outlier.shape = NA) +
+    geom_point(aes(color=Individual), alpha=0.6, size=3, position=position_identity()) +
+    # Draw lines for comparisons
+    geom_segment(data=stats_sub, 
+                 aes(x=x_start, xend=x_end, y=y_pos, yend=y_pos),
+                 inherit.aes=FALSE) +
+    # Add significance stars
+    geom_text(data=stats_sub, aes(x=(x_start+x_end)/2, y=y_pos*1.02, label=signif),
+              inherit.aes=FALSE, size=5) +
+    scale_x_discrete(limits = levels(df_sub$Timepoint)) +
+    labs(title=paste0("Step 7: DOX/VEH Ratio Comparisons - ", mag_label),
+         x="Timepoint", y="DOX / VEH Ratio") +
+    theme_bw() +
+    theme(axis.text.x=element_text(angle=45, hjust=1),
+          legend.position="top")
+}
+
+# Generate plots for 10X and 20X
+plot_step7_10X <- plot_step7_ratio(ratio_summary, stats_step7, "10X")
+plot_step7_20X <- plot_step7_ratio(ratio_summary, stats_step7, "20X")
+
+# Print stats table
+stats_step7
+```
+
+
+```{r IF Quant Updated}
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(purrr)
+
+# ---------------------------
+# Factor levels
+# ---------------------------
+condition_levels <- c("DOX24T","DMSO24T","DOX24R","DMSO24R","DOX144R","DMSO144R")
+timepoint_levels <- c("24T","24R","144R")
+
+# ---------------------------
+# Step 1: ROI-level percent red positive
+# ---------------------------
+plot_step1 <- ggplot(ind_roi_all, 
+                     aes(x = paste0(Treatment, Timepoint), y = Percent_Red_Positive)) +
+  geom_boxplot(alpha = 0.6, fill = "lightblue", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 1.5, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 1: ROI-Level Percent Red Positive",
+       x = "Condition", y = "Percent Red Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# ---------------------------
+# Step 1.5: Image-level percent red positive
+# ---------------------------
+plot_step1.5 <- ggplot(merged_image_summary, 
+                       aes(x = Condition, y = Mean_Percent_Red_Positive)) +
+  geom_boxplot(alpha = 0.6, fill = "lightblue", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 2, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 1.5: Image-Level Percent Red Positive",
+       x = "Condition", y = "Percent Red Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# ---------------------------
+# Step 2: select top 5 nuclei per condition
+# ---------------------------
+top5_images <- merged_image_summary %>%
+  dplyr::group_by(Individual, Magnification, Condition) %>%
+  dplyr::slice_max(order_by = Nuclei_Count, n = 5, with_ties = FALSE) %>%
+  dplyr::ungroup()
+
+plot_step2 <- ggplot(top5_images,
+                     aes(x = Condition, y = Mean_Percent_Red_Positive)) +
+  geom_boxplot(alpha = 0.6, fill = "lightgreen", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 2, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 2: Top 5 Nuclei Images per Condition",
+       x = "Condition", y = "Percent Red Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# ---------------------------
+# Step 3: normalize top 5 images per individual
+# ---------------------------
+global_max <- max(top5_images$Mean_Percent_Red_Positive, na.rm = TRUE)
+
+consistent_images_step3 <- consistent_images_top_nuclei %>%
+  dplyr::group_by(Magnification) %>%
+  dplyr::mutate(
+    Max_Global = max(Max_Intensity, na.rm = TRUE),
+    Norm_Percent_Positive = (Mean_Percent_Red_Positive / Max_Global) * 100
+  ) %>%
+  dplyr::ungroup()
+
+
+individual_summary_step3 <- individual_summary_step3 %>%
+  dplyr::mutate(
+    Condition = as.character(Condition),
+    Timepoint = substr(Condition, nchar(Condition)-2+1, nchar(Condition)),
+    Condition = factor(Condition, levels = condition_levels),
+    Timepoint = factor(Timepoint, levels = timepoint_levels)
+  )
+
+plot_step3 <- ggplot(individual_summary_step3,
+                     aes(x = Condition, y = Norm_Percent_Positive)) +
+  geom_boxplot(alpha = 0.6, fill = "lightcoral", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+  facet_wrap(~Magnification, scales = "free_x") +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 3: Normalized Percent Red Positive per Individual",
+       x = "Condition", y = "Normalized Percent Positive") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+# ---------------------------
+# Step 4: mean of normalized top 5 per individual
+# ---------------------------
+plot_step4 <- plot_step3 # same plot, already normalized per individual
+
+# ---------------------------
+# Step 5: t-tests DOX vs VEH at each timepoint per magnification
+# ---------------------------
+stats_t_table_step5 <- individual_summary_step3 %>%
+  dplyr::mutate(Timepoint = substr(Condition, nchar(Condition)-2+1, nchar(Condition))) %>%
+  dplyr::group_by(Magnification, Timepoint) %>%
+  dplyr::summarise(
+    t_test = list(t.test(Norm_Percent_Positive ~ substr(Condition,1,3), data = dplyr::cur_data())),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    p_value = sapply(t_test, function(x) x$p.value),
+    signif = dplyr::case_when(
+      p_value < 0.001 ~ "***",
+      p_value < 0.01  ~ "**",
+      p_value < 0.05  ~ "*",
+      TRUE            ~ "ns"
+    ),
+    x_pos = dplyr::case_when(
+      Timepoint == "24T" ~ 1.5,
+      Timepoint == "24R" ~ 3.5,
+      Timepoint == "144R" ~ 5.5
+    ),
+    y_pos = max(individual_summary_step3$Norm_Percent_Positive, na.rm = TRUE)*1.05
+  )
+
+plot_step5 <- function(df, mag_label, stats_table){
+  df_sub <- df %>% dplyr::filter(Magnification == mag_label)
+  stats_sub <- stats_table %>% dplyr::filter(Magnification == mag_label)
+  
+  ggplot(df_sub, aes(x = Condition, y = Norm_Percent_Positive)) +
+    geom_boxplot(alpha = 0.6, fill = "lightcoral", outlier.shape = NA) +
+    geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+    geom_text(data = stats_sub, aes(x = x_pos, y = y_pos, label = signif), inherit.aes = FALSE) +
+    facet_wrap(~Magnification, scales = "free_x") +
+    scale_x_discrete(limits = condition_levels) +
+    labs(title = paste0("Step 5: Normalized Percent Positive w/ t-tests - ", mag_label),
+         x = "Condition", y = "Normalized Percent Positive (%)") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top")
+}
+
+plot_step5_10X <- plot_step5(individual_summary_step3, "10X", stats_t_table_step5)
+plot_step5_20X <- plot_step5(individual_summary_step3, "20X", stats_t_table_step5)
+
+# ---------------------------
+# Step 6: DOX/VEH ratio per individual (%)
+# ---------------------------
+step6_ratio <- individual_summary_step3 %>%
+  tidyr::separate(Condition, into=c("Treatment","Timepoint"), sep="(?<=DOX|DMSO)") %>%
+  dplyr::group_by(Individual, Magnification, Timepoint) %>%
+  dplyr::summarise(
+    DOX = Norm_Percent_Positive[Treatment=="DOX"],
+    VEH = Norm_Percent_Positive[Treatment=="DMSO"],
+    DOX_VEH_Percent = (DOX/VEH)*100,
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(Timepoint = factor(Timepoint, levels = timepoint_levels))
+
+plot_step6 <- ggplot(step6_ratio,
+                     aes(x = Timepoint, y = DOX_VEH_Percent)) +
+  geom_boxplot(alpha = 0.6, fill="lightgoldenrod", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 3) +
+  facet_wrap(~Magnification, scales="free_x") +
+  labs(title = "Step 6: DOX/VEH Percent Positive per Individual",
+       x = "Timepoint", y = "DOX/VEH (%)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=45, hjust=1),
+        legend.position="top")
+
+# ---------------------------
+# Step 7: t-tests between timepoints for Step 6 ratio
+# ---------------------------
+comparisons <- list(c("24T","24R"), c("24R","144R"), c("24T","144R"))
+
+stats_step7 <- step6_ratio %>%
+  dplyr::group_by(Magnification) %>%
+  dplyr::summarise(
+    t_tests = list(sapply(comparisons, function(x){
+      t.test(DOX_VEH_Percent[Timepoint==x[1]],
+             DOX_VEH_Percent[Timepoint==x[2]])$p.value
+    })),
+    .groups="drop"
+  ) %>%
+  tidyr::unnest_wider(t_tests, names_sep="_") %>%
+  dplyr::mutate(signif = purrr::map_chr(c(t_tests_1,t_tests_2,t_tests_3), ~dplyr::case_when(
+    .x < 0.001 ~ "***",
+    .x < 0.01  ~ "**",
+    .x < 0.05  ~ "*",
+    TRUE       ~ "ns"
+  )))
+
+plot_step7 <- ggplot(step6_ratio,
+                     aes(x = Timepoint, y = DOX_VEH_Percent)) +
+  geom_boxplot(alpha = 0.6, fill="lightgoldenrod", outlier.shape = NA) +
+  geom_point(aes(color = Individual), alpha = 0.6, size = 3) +
+  facet_wrap(~Magnification, scales="free_x") +
+  labs(title = "Step 7: DOX/VEH Ratio with Timepoint t-tests",
+       x = "Timepoint", y = "DOX/VEH (%)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle=45, hjust=1),
+        legend.position="top")
+
+# ---------------------------
+# Print all plots to check
+# ---------------------------
+plot_step1
+plot_step1.5
+plot_step2
+plot_step3
+plot_step4
+plot_step5_10X
+plot_step5_20X
+plot_step6
+plot_step7
+
+```
 
 
 #Top2i Genes Comparisons
@@ -15335,6 +16616,221 @@ for(treat in names(comparison_DEGs)) {
               100*prop2, motif2_overlap, length(motif2_set),
               fisher_res$p_value))
 }
+
+
+```
+
+#Proportion Barplots Genes from Other Studies
+```{r Import Genes}
+#Import the genes that you'll be using for these barplots
+#one of them is the DOX cardiotox set (I've been calling DIC)
+
+#define gene sets by SYMBOL - convert to Entrez_ID shortly
+
+library(dplyr)
+library(ggplot2)
+library(tibble)
+library(org.Hs.eg.db)
+
+liu_set <- c("UGT1A9","PPP2R2B","SPINK6","HPGDS","SCMH1","CA12","ERBB2","HADHA","DUSP14","DGKH", "DHODH","MYLK3","TRAPPC4","ESRRG","CALY","MAPKBP1","DPEP1","ME3","PRSS1","SLC7A11","FNTA")
+
+length(liu_set)
+
+sapp_set <- c("EDC4","GALNT18","C1QTNF2","EIF1AD","PALMD","XRN2","TMEM189","MANEAL","C11orf49","ARL6IP4", "GUCY2C","GLIPR1L2","F10","MRS2","MYC","SLCO1A2","TFPT","MATR3","ENTHD2","CAB39L","EXOSC10","KDM3B","C11orf57","KIAA1033","CYP3A7","C5orf51","RRAS","BUD13","ZNHIT3","PRRG3","GGT6","FUNDC2","SLCO1B3","GLRX3","POU6F1","TEX36","PLEKHO1","TGFA","DUSP15","COX5B","IFT81","ZNF474","MSANTD4","DGCR8","OSBPL9","MPDU1","KCNJ14","INF2","TSSC1","STT3A","GRAMD4","GTDC1","CORO1B","CCDC61","ING1","SLC25A6","GH2","STEAP4","POM121","POLQ","DNAJC10","ARTN","CRYGB","NUCB2","SLC25A51","DGCR2","CCDC85C","TOMM40","TNNC2","SHD","CMPK2","ARHGAP32","CDC14A","OR8G5","ZNF559","ENPP3","HOXA10","TAGLN2","CABYR","BST2","NAT1","PDE1B","COL19A1","COL4A2","ATPAF2","HIRIP3","RNF13","CD163","SERPINC1","SMPDL3B","OR52N4","BCAN","H1F0","EPS8","TECPR1","NAA25","KIAA1161","PTPN13","C6orf165","IL18BP","LTB4R","SLC2A2","CYCS","KLHL30","LYPD3","ABCD1","PUS3","GKN2","FAM169B","MBD3L2","OR10P1","SDR9C7","ACTBL2","ZNF630","ATP13A3","VPS29","ARSG","TTC39C","HUNK","C14orf93","SLC1A3","NPY1R","ZNF883","DLGAP3","MKLN1","UNK","HES1","PAGE2B","DCAF17","NDFIP1","HAUS5","DSCR3","CBLL1","PITPNM1","SLC16A9","SNAP47","SLC10A6","C15orf56","CLPSL2","RASAL3","C19orf25","ITGAE","KRT38","ADAM19","TMEM53","PYURF","SREBF2","RPL17","ATXN7L1","IL15RA","LYRM5","MPV17","KRTAP3-1","TMEM170B","SLC35G2","PPP1R16A","SH3TC2","LGALS8","DDX28","HERPUD2","CAMTA2","DERL1","OR5D16","DDX17","COPZ2","KRT10", "KIAA1024","NINL","SMARCAD1")
+
+length(sapp_set)
+
+dic_set
+
+# --- Step 2: Convert SYMBOL to Entrez IDs ---
+convert_to_entrez <- function(symbols) {
+  mapped <- AnnotationDbi::select(org.Hs.eg.db,
+                                  keys = symbols,
+                                  keytype = "SYMBOL",
+                                  columns = "ENTREZID")
+  unique(na.omit(mapped$ENTREZID))
+}
+
+liu_ids  <- convert_to_entrez(liu_set)
+sapp_ids <- convert_to_entrez(sapp_set)
+# dic_ids  <- convert_to_entrez(dic_set)
+
+# --- Step 3: Define DE gene sets (replace with your Entrez IDs) ---
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
+DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
+
+DE_24T <- DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05]
+DE_24R <-  DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05]
+DE_144R <- DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
+
+# Background (all genes tested)
+all_genes <- rownames(filcpm_matrix)
+cat("Total background genes:", length(all_genes), "\n")
+
+
+# --- Step 4: Function to classify ---
+categorize_gene <- function(g) {
+  in24T <- g %in% DE_24T
+  in24R <- g %in% DE_24R
+  in144R <- g %in% DE_144R
+  
+  if (in24T && !in24R && !in144R) {
+    return("DE in 24T only")
+  } else if (in24T && in24R && !in144R) {
+    return("DE in 24T and 24R")
+  } else if (in24T && in24R && in144R) {
+    return("DE in all timepoints")
+  } else {
+    return("Not DE")
+  }
+}
+
+# --- Step 5: Build data frame ---
+studies <- list(
+  Liu   = liu_ids,
+  Sapp  = sapp_ids,
+  Fonoudi   = dic_set,
+  AllGenes = unique(c(liu_ids, sapp_ids, dic_set))
+)
+
+df <- lapply(names(studies), function(study) {
+  ids <- studies[[study]]
+  cats <- sapply(ids, categorize_gene)
+  data.frame(Study = study, Category = cats)
+}) %>% bind_rows()
+
+# --- Step 6: Summarize counts and proportions ---
+summary_table <- df %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop_last") %>%
+  mutate(Proportion = Count / sum(Count))
+
+# --- Step 6b: Print summary table in console ---
+summary_table %>%
+  arrange(Study, Category) %>%
+  mutate(Percent = round(Proportion*100, 1)) %>%
+  print(n = Inf)  # show all rows
+
+# --- Step 6b: Factor Study with AllGenes last ---
+study_levels <- c("Liu", "Sapp", "DIC", "AllGenes")
+summary_table <- summary_table %>%
+  mutate(
+    Study = factor(Study, levels = study_levels)
+  )
+
+# --- Step 6c: Rename categories for plot labels ---
+category_labels <- c(
+  "DE in 24T only"       = "DE in t0 only",
+  "DE in 24T and 24R"    = "DE in t0 + t24",
+  "DE in all timepoints" = "DE in t0 + t24 + t144",
+  "Not DE"               = "Not DE"
+)
+
+# --- Step 7: Plot with reordered bars and relabeled categories ---
+ggplot(summary_table, aes(x = Study, y = Proportion, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
+            position = position_stack(vjust = 0.5),
+            size = 3.5, color = "white") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c(
+      "DE in 24T only"       = "#1f77b4",
+      "DE in 24T and 24R"    = "#ff7f0e",
+      "DE in all timepoints" = "#2ca02c",
+      "Not DE"               = "#d62728"
+    ),
+    labels = category_labels
+  ) +
+  scale_x_discrete(labels = c("Liu", "Sapp", "Fonoudi", "All Genes")) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Proportion of Genes",
+    x = "",
+    fill = "Category"
+  )
+```
+
+
+```{r Proportion Barplots Other Studies CMF}
+#now define these same plots by motif membership
+
+final_genes_1_RUV
+
+final_genes_2_RUV
+
+# All genes
+all_genes <- unique(c(liu_ids, sapp_ids, dic_set))
+
+# --- Step 2: Function to categorize by motif membership ---
+categorize_motif <- function(g) {
+  if (g %in% final_genes_1_RUV) {
+    return("Recovered")
+  } else if (g %in% final_genes_2_RUV) {
+    return("Sustained")
+  } else {
+    return("Unassigned")
+  }
+}
+
+# --- Step 3: Build dataset for all studies ---
+studies <- list(
+  Liu   = liu_ids,
+  Sapp  = sapp_ids,
+  Fonoudi   = dic_set,
+  AllGenes = all_genes
+)
+
+df_motif <- lapply(names(studies), function(study) {
+  ids <- studies[[study]]
+  cats <- sapply(ids, categorize_motif)
+  data.frame(Study = study, Category = cats)
+}) %>% bind_rows()
+
+# --- Step 4: Summarize counts and proportions ---
+summary_motif <- df_motif %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop_last") %>%
+  mutate(Proportion = Count / sum(Count))
+
+# --- Step 4b: Print summary table in console ---
+summary_motif %>%
+  arrange(Study, Category) %>%
+  mutate(Percent = round(Proportion*100, 1)) %>%
+  print(n = Inf)
+
+# --- Step 5: Factor Study and Category for proper order ---
+study_levels <- c("Liu", "Sapp", "Fonoudi", "AllGenes")
+category_levels <- c("Recovered", "Sustained", "Unassigned")
+
+summary_motif <- summary_motif %>%
+  mutate(
+    Study = factor(Study, levels = study_levels),
+    Category = factor(Category, levels = category_levels)
+  )
+
+# --- Step 6: Plot ---
+ggplot(summary_motif, aes(x = Study, y = Proportion, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
+            position = position_stack(vjust = 0.5),
+            size = 3.5, color = "white") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c(
+    "Recovered"  = "#1f77b4",
+    "Sustained"  = "#ff7f0e",
+    "Unassigned" = "#d62728"
+  )) +
+  scale_x_discrete(labels = c("Liu", "Sapp", "Fonoudi", "All Genes")) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Proportion of Genes",
+    x = "",
+    fill = "Motif Category"
+  )
+
+
 
 
 ```
