@@ -6,7 +6,7 @@ site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
     toc: true
-    toc_depth: 4
+    toc_depth: 3
     toc_float: true
     theme: journal
     highlight: textmate
@@ -65,6 +65,8 @@ library(ggsignif)
 library(purrr)
 library(rstatix)
 library(ggrastr)
+library(tibble)
+
 ```
 
 
@@ -2956,11 +2958,11 @@ ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
   ) +
   scale_color_manual(values = c("#2c6cb0", "#5b8fd1", "#aed6f1")) +
   labs(
-    x = "log2FC (Timepoint X)",
-    y = "log2FC (Timepoint Y)",
+    x = "",
+    y = "",
     title = "Pairwise Scatterplots of log2FC with Spearman Correlation"
   ) +
-  theme_minimal(base_size = 14) +
+  theme_bw(base_size = 14) +
   theme(legend.position = "none")
 
 #make a rasterized version
@@ -2978,7 +2980,7 @@ ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
     hjust = -0.1, vjust = 1.5,
     size = 4
   ) +
-  scale_color_manual(values = c("#2c6cb0", "#5b8fd1", "#aed6f1")) +
+  scale_color_manual(values = c("#05136b", "#5b8fd1", "#aed6f1")) +
   labs(
     x = "log2FC (Timepoint X)",
     y = "log2FC (Timepoint Y)",
@@ -2986,8 +2988,6 @@ ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
   ) +
   theme_minimal(base_size = 14) +
   theme(legend.position = "none")
-
-
 
 ```
 
@@ -7651,6 +7651,82 @@ plot_dic_logFC <- ggplot() +
 
 plot_dic_logFC
 
+
+#####AIC Version#####
+#read in my DIC gene set
+
+
+aic_set
+
+#create a toptable with all of the genes for DIC
+filt_toptable_aic_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(AIC = case_when(
+    Entrez_ID %in% aic_set ~ "AIC",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(AIC)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("24T", "24R", "144R"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#calculate medians for ALL DIC genes across timepoints
+medians_aic_RUV <- filt_toptable_aic_RUV %>%
+  group_by(time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_aic <- paste0(
+  "AIC\nmedian logFC =\n",
+  paste0(medians_aic_RUV$time, "=", round(medians_aic_RUV$median_logFC, 2), collapse = "\n")
+)
+
+#sdd a column that labels positive/negative direction
+filt_toptable_aic_RUV <- filt_toptable_aic_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_aic_RUV <- medians_aic_RUV %>%
+  mutate(direction = "median")
+
+plot_aic_logFC <- ggplot() +
+  geom_line(data = filt_toptable_aic_RUV,
+            aes(x = time, 
+                y = logFC, 
+                group = Entrez_ID, 
+                color = direction),
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_aic_RUV,
+            aes(x = time, 
+                y = median_logFC, 
+                group = 1, 
+                color = direction),
+            linewidth = 2, 
+            linetype = 1) +
+  scale_color_manual(
+    breaks = c("up", "down", "median"), 
+    values = c("up" = "#5A8CA9", 
+               "down" = "#E07B91", 
+               "median" = "#3D6680"),
+    labels = c(
+      up = "Generally up-regulated",
+      down = "Generally down-regulated",
+      median = labs_logFC_aic
+    ),
+    name = NULL
+  ) +
+  labs(title = "logFC — AIC Genes (n = 38)",
+       y = "logFC", x = "Time") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_aic_logFC
+
 ```
 
 
@@ -7813,32 +7889,30 @@ labs_logFC_aic <- paste0(
 medians_aic_RUV <- medians_aic_RUV %>%
   mutate(direction = "median")
 
+
+
 plot_aic_logFC <- ggplot() +
   geom_line(data = filt_toptable_aic_RUV,
             aes(x = time, 
                 y = logFC, 
                 group = Entrez_ID,
             alpha = 0.4, 
-            linewidth = 0.9) +
+            linewidth = 0.9)) +
   geom_line(data = medians_aic_RUV,
             aes(x = time, 
                 y = median_logFC, 
                 group = 1,
             linewidth = 2, 
-            linetype = 1) +
+            linetype = "solid")) +
   scale_color_manual(
-    breaks = c("up", "down", "median"), 
-    values = c("up" = "#5A8CA9", 
-               "down" = "#E07B91", 
-               "median" = "#3D6680"),
+    breaks = c("median"), 
+    values = c("median" = "#3D6680"),
     labels = c(
       median = labs_logFC_aic
-    ),
-    name = NULL
-  ) +
+    )) +
   labs(title = "logFC — AIC Genes (n = 38)",
        y = "logFC", x = "Time") +
-  theme_minimal(base_size = 14) +
+  theme_bw(base_size = 14) +
   theme(legend.position = "right")
 
 plot_aic_logFC
@@ -11070,6 +11144,26 @@ clusterdata_dxr_fin_RUV_clust <- data.frame(
 piecolors_dxr_fin <- c("Motif 1" = "#089992", 
                        "Motif 2" = "#99599D")
 
+#make this into a barplot
+clusterdata_dxr_fin_RUV <- clusterdata_dxr_fin_RUV %>%
+  mutate(Prop = Value / sum(Value) * 100)
+
+clusterdata_dxr_fin_RUV <- clusterdata_dxr_fin_RUV %>%
+  mutate(Category = factor(Category, levels = c("Motif 2", "Motif 1"))) %>%
+  mutate(Prop = Value / sum(Value) * 100)
+
+# stacked bar with no axes
+ggplot(clusterdata_dxr_fin_RUV, aes(x = "", y = Value, fill = Category)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = paste0(Value, " (", round(Prop, 1), "%)")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  labs(title = "Distr of Gene Clusters Cormotif RUVs clustlike + p.post") +
+  scale_fill_manual(values = piecolors_dxr_fin) +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5))
+
 #make a piechart of these distributions
 clusterdata_dxr_fin_RUV %>% ggplot(aes(x = "", y = Value, fill = Category))+
   geom_bar(width = 1, stat = "identity")+
@@ -11530,9 +11624,9 @@ plot_motifs100_abslogFC
 
 #load in my gene lists from cormotif
 
-final_genes_1_RUV
+# final_genes_1_RUV
 
-final_genes_2_RUV
+# final_genes_2_RUV
 
 
 
@@ -11582,75 +11676,314 @@ plot_motif2_logFC <- ggplot() +
 plot_motif2_logFC
 
 ```
+
 #Top 100 Motif Genes by Clustlike
-```{r M1 vs M2 top100}
+```{r Recovered vs Sustained top100}
 motif.fit_RUV_logNC_cpm <- readRDS("data/new/RUV/motif.fit_RUVnormcounts_log2cpm_250630.RDS")
 
-row.names(motif.fit_RUV_logNC_cpm$bestmotif$clustlike) <- row.names(lognormcounts_CMF_cpm)
-cmf_logNC_cpm <- lognormcounts_CMF_cpm$bestmotif$clustlike %>% 
+clust_mat_100 <- motif.fit_RUV_logNC_cpm$bestmotif$clustlike
+
+row.names(clust_mat_100) <- row.names(lognormcounts_CMF_cpm)
+cmf_logNC_cpm <- clust_mat_100 %>% 
   as.data.frame() %>% 
-  rownames_to_column("Entrez_ID")
+  rownames_to_column("Entrez_ID") %>% 
+  mutate(Entrez_ID = as.character(Entrez_ID))
 
 cmf_sets <- list(
   Set1="V1",
   Set2="V2")
 
+#read in my toptables combined in a list of lists
+combined_toptables_dxr_RUV <- readRDS("data/new/RUV/combined_toptables_RUVs.RDS") %>% 
+  as.data.frame(.,) %>% 
+  mutate(Entrez_ID = as.character(Entrez_ID))
 
-Sets_cmf_cpmNC <- H3K27me3_toptable_list %>% 
-  mutate(cluster=case_when(genes %in% final_genes_1_RUV$. ~ "Set1",
-                           genes %in% final_genes_2_RUV$. ~ "Set2",
-                           TRUE ~ "not_assigned")) %>% 
-  left_join(., H3K27me3_clustlike,by=c("genes"="Peakid")) %>% 
-  dplyr::filter(cluster!="not_assigned")
-
-###This code uses the H3K27me3_clusters list and filters through Sets_H3K27me3 data frame by selecting
-Sets_H3K27me3_top <- map_dfr(names(H3K27me3_clusters), function(cl) {
-  col <- H3K27me3_clusters[[cl]]
-  Sets_H3K27me3 %>%
-    filter(cluster == cl) %>%
-    # group_by(group) %>% 
-    slice_max(order_by = .data[[col]], n = 100)
-}) %>%
-  ungroup()
-
-## now plot
-
-Sets_H3K27me3_top %>% 
-  mutate(group=factor(group, levels = c("H3K27me3_24T","H3K27me3_24R","H3K27me3_144R")),
-         cluster=factor(cluster, levels=c("Set1","Set2"))) %>% 
-  ggplot(., aes(x= group,y = logFC, group = interaction(cluster, genes), color=cluster))+
-  geom_point()+
-  geom_line(aes(alpha = 0.8))+
-  theme_bw()+
-  facet_wrap(~cluster)+
-  ggtitle("LFC across time for H3K27me3 top 100 by Set")+
-  theme(axis.text.x = element_text(angle=90) )
-
-# saveRDS(Sets_H3K27me3_top,"data/motif_lists/H3K27me3_toplistbymotif.RDS")
-
-###MY CODE###
-filt_toptable_motifgenes_RUV <- combined_toptables_dxr_RUV %>% 
-  mutate(motif = case_when(
-    Entrez_ID %in% final_genes_1_RUV ~ "M1",
-    Entrez_ID %in% final_genes_2_RUV ~ "M2",
-    TRUE ~ NA_character_
-  )) %>% 
-  dplyr::filter(!is.na(motif)) %>% 
-  dplyr::filter(!is.na(SYMBOL)) %>% 
-  mutate(time = factor(Time, 
+#make a dataframe and classify genes by motif, remove unassigned genes
+Sets_cmf_cpmNC <- combined_toptables_dxr_RUV %>% 
+  mutate(
+    motif = case_when(
+      Entrez_ID %in% final_genes_1_RUV ~ "M1",
+      Entrez_ID %in% final_genes_2_RUV ~ "M2",
+      TRUE ~ "not_assigned")) %>% 
+  left_join(., cmf_logNC_cpm, by=c("Entrez_ID")) %>% 
+  dplyr::filter(motif!="not_assigned") %>% 
+  mutate(Time = factor(Time, 
                        levels = c("24T", "24R", "144R"))) %>% 
   mutate(absFC = abs(logFC))
 
-#slice top 100 genes per motif by adj p value
-top_100_motifgenes <- filt_toptable_motifgenes_RUV %>%
-  filter(motif %in% c("M1", "M2")) %>%
-  group_by(motif, Entrez_ID) %>%
-  summarize(min_adjP = min(adj.P.Val), groups = "drop") %>% 
-  arrange(motif, min_adjP) %>%
-  group_by(motif) %>%
-  slice_head(n = 100)
+#compute the median across timepoints for all genes assigned to M1 or M2
+
+#make a function to slice the top 100 genes by cluster likelihood per motif
+# get_top100_cmf_cpmNC <- function(motif_name, clust_col) {
+#   Sets_cmf_cpmNC %>% 
+#     dplyr::filter(motif == motif_name) %>% 
+#     slice_max(order_by = .data[[clust_col]], n = 100)
+# }
+# 
+# #top 100 for each motif 
+# top100_rec <- get_top100_cmf_cpmNC("M1", "V1")
+# top100_sus <- get_top100_cmf_cpmNC("M2", "V2")
+
+top100_rec <- Sets_cmf_cpmNC %>% 
+  dplyr::filter(motif == "M1") %>% 
+  slice_max(order_by = V1, n = 100)
+
+
+
+#combine these together into one dataframe
+top100_all <- bind_rows(top100_M1, top100_M2)
+
+plot_df_cpmNC <- top_100_all %>% 
+  pivot_longer(
+    cols = c("24T", 
+             "24R",
+             "144R"),
+    names_to = "Time",
+    values_to = "logFC"
+  ) %>% 
+  mutate(
+    Time = factor(Time, levels = c("24T", "24R", "144R")),
+    absFC = abs(logFC)
+  )
+
+
+#calculate the median of all genes not just the top 100 per motif
+median_allgenes_cpmNC <- Sets_cmf_cpmNC %>% 
+  pivot_longer(
+    cols = c("24T", "24R", "144R"),
+    names_to = "Time",
+    values_to = "logFC"
+  ) %>% 
+  mutate(
+    Time = factor(Time, levels = c("24T", "24R", "144R")),
+    absFC = abs(logFC)
+  ) %>% 
+  group_by(motif, Time) %>% 
+  summarize(
+    median_logFC = median(logFC, na.rm = TRUE),
+    median_absFC = median(absFC, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+#now that I have the top 100 genes and the medians of all genes, let's plot them together
+
+mtf_cols <- c("M1" = "#C998D9", 
+              "M2" = "#7DD67D")
+
+#logFC first
+p_logFC <- ggplot(plot_df, aes(x = time, y = logFC, group = Entrez_ID, color = motif)) +
+  geom_line(alpha = 0.3) +
+  geom_line(
+    data = medians_allgenes_RUV,
+    aes(x = time, y = median_logFC, group = motif, color = motif),
+    linewidth = 1.2
+  ) +
+  scale_color_manual(values = motif_cols) +
+  facet_wrap(~motif, scales = "free_y") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Top 100 motif genes with median trajectory - logFC",
+       x = "Timepoint", y = "logFC")
+
+# absFC
+p_absFC <- ggplot(plot_df, aes(x = time, y = absFC, group = Entrez_ID, color = motif)) +
+  geom_line(alpha = 0.3) +
+  geom_line(
+    data = medians_allgenes_RUV,
+    aes(x = time, y = median_absFC, group = motif, color = motif),
+    linewidth = 1.2
+  ) +
+  scale_color_manual(values = motif_cols) +
+  facet_wrap(~motif, scales = "free_y") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Top 100 motif genes with median trajectory - absFC",
+       x = "Timepoint", y = "absFC")
+
+p_logFC
+p_absFC
+
+saveRDS(p_logFC, "data/new/RUV/logFC_lineplot_motifs.RDS")
+saveRDS(p_absFC, "data/new/RUV/abslogFC_lineplot_motifs.RDS")
+```
+
+
+#top100 motif genes clustlike
+```{r M1 vs M2 cleaned up version of above}
+#load in my clustlike matrix
+
+# 1. Load clustlike matrix
+motif.fit_RUV_logNC_cpm <- readRDS("data/new/RUV/motif.fit_RUVnormcounts_log2cpm_250630.RDS")
+clust_mat_100 <- motif.fit_RUV_logNC_cpm$bestmotif$clustlike
+
+# Ensure row names match gene IDs
+row.names(clust_mat_100) <- row.names(lognormcounts_CMF_cpm)
+cmf_logNC_cpm <- clust_mat_100 %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column("Entrez_ID") %>%
+  dplyr::mutate(Entrez_ID = as.character(Entrez_ID))
+
+# 2. Load combined toptables and classify genes by motif
+combined_toptables_dxr_RUV <- readRDS("data/new/RUV/combined_toptables_RUVs.RDS") %>%
+  as.data.frame() %>%
+  dplyr::mutate(Entrez_ID = as.character(Entrez_ID))
+
+Sets_cmf_cpmNC <- combined_toptables_dxr_RUV %>%
+  dplyr::mutate(
+    motif = dplyr::case_when(
+      Entrez_ID %in% final_genes_1_RUV ~ "M1",
+      Entrez_ID %in% final_genes_2_RUV ~ "M2",
+      TRUE ~ "not_assigned"
+    )
+  ) %>%
+  dplyr::filter(motif != "not_assigned") %>%
+  dplyr::left_join(., cmf_logNC_cpm, by = "Entrez_ID") %>%
+  dplyr::mutate(
+    Time = factor(Time, levels = c("24T", "24R", "144R")),
+    absFC = abs(logFC)
+  )
+
+# 3. Compute top 100 unique genes per motif by clustlike
+# Aggregate clustlike per gene first (one row per gene)
+gene_scores <- Sets_cmf_cpmNC %>%
+  dplyr::group_by(Entrez_ID, motif) %>%
+  dplyr::summarize(
+    score = ifelse(motif == "M1", max(V1, na.rm = TRUE), max(V2, na.rm = TRUE)),
+    .groups = "drop"
+  )
+
+top100_M1 <- gene_scores %>%
+  dplyr::filter(motif == "M1") %>%
+  dplyr::slice_max(order_by = score, n = 100)
+
+top100_M2 <- gene_scores %>%
+  dplyr::filter(motif == "M2") %>%
+  dplyr::slice_max(order_by = score, n = 100)
+
+# Combine top 100 for plotting
+top100_all <- dplyr::bind_rows(top100_M1, top100_M2)
+
+# 4. Pull timepoint rows for top 100 genes
+plot_df_cpmNC <- Sets_cmf_cpmNC %>%
+  dplyr::semi_join(top100_all, by = c("Entrez_ID", "motif")) %>%
+  dplyr::mutate(
+    absFC = abs(logFC)
+  )
+
+# 5. Compute median of all genes (not just top 100)
+median_allgenes_cpmNC <- Sets_cmf_cpmNC %>%
+  dplyr::group_by(motif, Time) %>%
+  dplyr::summarize(
+    median_logFC = median(logFC, na.rm = TRUE),
+    median_absFC = median(absFC, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# 6. Plotting
+motif_cols <- c("M1" = "#C998D9", "M2" = "#7DD67D")
+
+# logFC
+p_logFC <- ggplot(plot_df_cpmNC, aes(x = Time, y = logFC, group = Entrez_ID, color = motif)) +
+  geom_line(alpha = 0.3) +
+  geom_line(
+    data = median_allgenes_cpmNC,
+    aes(x = Time, y = median_logFC, group = motif, color = motif),
+    linewidth = 1.2
+  ) +
+  scale_color_manual(values = motif_cols) +
+  facet_wrap(~motif, scales = "free_y") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Top 100 motif genes with median trajectory - logFC", x = "Timepoint", y = "logFC")
+
+# absFC
+p_absFC <- ggplot(plot_df_cpmNC, aes(x = Time, y = absFC, group = Entrez_ID, color = motif)) +
+  geom_line(alpha = 0.3) +
+  geom_line(
+    data = median_allgenes_cpmNC,
+    aes(x = Time, y = median_absFC, group = motif, color = motif),
+    linewidth = 1.2
+  ) +
+  scale_color_manual(values = motif_cols) +
+  facet_wrap(~motif, scales = "free_y") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Top 100 motif genes with median trajectory - absFC", x = "Timepoint", y = "absFC")
+
+p_logFC
+p_absFC
+
+
+#modify the plots to be on the same thing now that I know they look correct - so no faceting
+
+# Combine top 100 genes and medians into one plot for logFC
+plot_motifs100_logFC <- ggplot() +
+  # Top 100 genes per motif
+  geom_line(data = plot_df_cpmNC,
+            aes(x = Time, y = logFC, group = Entrez_ID, color = motif),
+            alpha = 0.6, size = 1) +
+  # Median lines for M1
+  geom_line(data = median_allgenes_cpmNC %>% dplyr::filter(motif == "M1"),
+            aes(x = Time, y = median_logFC, group = motif),
+            color = "#7B3F9E", size = 2) +
+  # Median lines for M2
+  geom_line(data = median_allgenes_cpmNC %>% dplyr::filter(motif == "M2"),
+            aes(x = Time, y = median_logFC, group = motif),
+            color = "#2E8B57", size = 2) +
+  scale_color_manual(values = motif_cols) +
+  labs(title = "log2FC Top 100 Genes by Motif",
+       y = "log2FC", x = "Time", color = "Motif") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_motifs100_logFC
+
+# Combine top 100 genes and medians into one plot for absFC
+plot_motifs100_abslogFC <- ggplot() +
+  # Top 100 genes per motif
+  geom_line(data = plot_df_cpmNC,
+            aes(x = Time, y = absFC, group = Entrez_ID, color = motif),
+            alpha = 0.4, size = 0.9) +
+  # Median lines for M1
+  geom_line(data = median_allgenes_cpmNC %>% dplyr::filter(motif == "M1"),
+            aes(x = Time, y = median_absFC, group = motif),
+            color = "#7B3F9E", size = 2) +
+  # Median lines for M2
+  geom_line(data = median_allgenes_cpmNC %>% dplyr::filter(motif == "M2"),
+            aes(x = Time, y = median_absFC, group = motif),
+            color = "#2E8B57", size = 2) +
+  scale_color_manual(values = motif_cols) +
+  labs(title = "|logFC| Top 100 Genes by Motif",
+       y = "|logFC|", x = "Time", color = "Motif") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "right")
+
+plot_motifs100_abslogFC
+
+#simple summary table at the end to show the median logFCs
+median_summary_cpmNC <- median_allgenes_cpmNC %>%
+  dplyr::select(motif, Time, median_logFC, median_absFC) %>%
+  dplyr::arrange(motif, Time)
+
+# View table
+print(median_summary_cpmNC)
+
+#save the absFC plot as a pdf and a png for later
+cairo_pdf("data/new/RUV/CMF/abslogFC_lineplot_motifs_clustlike_EMP_250915.pdf", width = 8, height = 6)
+print(plot_motifs100_abslogFC)
+dev.off()
+
+cairo_pdf("data/new/RUV/CMF/logFC_lineplot_motifs_clustlike_EMP_250915.pdf", width = 8, height = 6)
+print(plot_motifs100_logFC)
+dev.off()
+
+#png file
+ggsave("data/new/RUV/logFC_lineplot_motifs_clustlike_EMP_250915.png", p_logFC, width = 8, height = 6, dpi = 300)
+ggsave("data/new/RUV/abslogFC_lineplot_motifs_clustlike_EMP_250915.png", p_absFC, width = 8, height = 6, dpi = 300)
+
 
 ```
+
 
 ###log2cpm Example Genes Cormotif RUVs log2cpm Norm Counts
 ```{r log2cpm Example Genes Cormotif log2cpm Norm Counts}
@@ -14693,26 +15026,6 @@ ggplot(flow_dxr_df, aes(x = Individual, y = Purity)) +
 ```
 
 
-#Immunofluorescence Assay for yH2AX expression
-
-```{r IF macros for quantification - Fiji}
-
-```
-
-##Read in ROI summary sheets from above macros in Fiji
-```{r Read in roi summary from IF macros}
-#read in Ind 2 = 87-1
-ind2_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/analyzed/All_ROIs_Combined_87-1_EMP_250825.csv")
-
-# saveRDS(ind2_roi, "data/new/IF_quant/All_ROIs_Combined_87-1_Ind2.RDS")
-
-#read in Ind 4 - 75-1
-ind4_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new/analyzed/All_ROIs_Combined_75-1_EMP_250825.csv")
-
-# saveRDS(ind4_roi, "data/new/IF_quant/All_ROIs_Combined_75-1_Ind4.RDS")
-
-```
-
 #Step 1 - Create Dataframes and Combine all ROIs by Image
 ```{r Create Summary Sheets}
 #create a group of this before running the actual function to combine them below
@@ -14796,13 +15109,14 @@ image_level_metadata <- image_level_metadata %>%
 #remove the nuclei_edit ones I tried since they're not included here
 
 #now integrate these together to get a master summary table
-#remove any 2nd only controls and any 40X images
+#remove any 2nd only controls and any 10X or 40X images
 
 merged_image_summary <- image_level_metadata %>% 
   dplyr::select(Individual, Treatment, Timepoint, Magnification, Image, Nuclei_Count) %>% 
   dplyr::left_join(roi_image_level_summary, by = c("Image", "Individual")) %>% 
   dplyr::filter(!grepl("40X", Magnification)) %>%
-  dplyr::filter(!grepl("^2nd", Image))
+  dplyr::filter(!grepl("^2nd", Image)) %>% 
+  dplyr::filter(!grepl("10X", Magnification)) #remove 10X now
 
 #prepare final merged image-level summary
 #add in condition so I can join later
@@ -15796,6 +16110,108 @@ plot_step7_20X <- plot_step7_ratio(ratio_summary, stats_step7, "20X")
 stats_step7
 ```
 
+#test IF quant
+```{r Step 6 and 7 Test}
+
+# =========================================
+# Step 1: Ensure Timepoint is factored correctly
+# =========================================
+individual_summary <- individual_summary %>%
+  mutate(Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")))
+
+# =========================================
+# Step 2: Compute DOX/VEH ratios per individual
+# =========================================
+ratio_summary <- individual_summary %>%
+  filter(Magnification == "20X") %>%
+  mutate(Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R"))) %>%
+  pivot_wider(names_from = Treatment, values_from = Mean_Norm_Percent_Positive) %>%
+  # Add a small offset to avoid division by zero
+  mutate(DOX_VEH_Ratio = DOX / (DMSO + 1e-6))  # tiny number added if DMSO=0
+
+# =========================================
+# Step 3: Define timepoint comparisons
+# =========================================
+timepoint_comparisons <- list(
+  c("24T", "24R"),
+  c("24R", "144R"),
+  c("24T", "144R")
+)
+
+# =========================================
+# Step 4: Compute t-tests per Magnification
+# =========================================
+stats_step7 <- ratio_summary %>%
+  group_by(Magnification) %>%
+  do({
+    df_sub <- .
+    results <- lapply(timepoint_comparisons, function(tp) {
+      group1 <- df_sub %>% filter(Timepoint == tp[1]) %>% pull(DOX_VEH_Ratio)
+      group2 <- df_sub %>% filter(Timepoint == tp[2]) %>% pull(DOX_VEH_Ratio)
+      if(length(group1) < 1 | length(group2) < 1) return(NULL)
+      
+      test <- t.test(group1, group2)
+      
+      data.frame(
+        Magnification = unique(df_sub$Magnification),
+        Comparison = paste(tp[1], "vs", tp[2]),
+        x_start = as.numeric(factor(tp[1], levels = c("24T","24R","144R"))),
+        x_end   = as.numeric(factor(tp[2], levels = c("24T","24R","144R"))),
+        y_pos   = max(df_sub$DOX_VEH_Ratio, na.rm = TRUE) * 1.05,
+        t_stat  = test$statistic,
+        df      = test$parameter,
+        P_value = test$p.value,
+        signif  = case_when(
+          test$p.value < 0.001 ~ "***",
+          test$p.value < 0.01  ~ "**",
+          test$p.value < 0.05  ~ "*",
+          TRUE ~ "ns"
+        )
+      )
+    })
+    do.call(rbind, results)
+  }) %>%
+  ungroup()
+
+# =========================================
+# Step 5: Function to plot by magnification
+# =========================================
+plot_step7_ratio <- function(df, stats_table, mag_label) {
+  df_sub <- df %>% filter(Magnification == mag_label)
+  stats_sub <- stats_table %>% filter(Magnification == mag_label)
+  
+  ggplot(df_sub, aes(x = Timepoint, y = DOX_VEH_Ratio)) +
+    geom_boxplot(alpha = 0.6, fill = "lightgray", outlier.shape = NA) +
+    geom_point(aes(color = Individual), alpha = 0.6, size = 3, position = position_identity()) +
+    # Lines for comparisons
+    geom_segment(data = stats_sub, 
+                 aes(x = x_start, xend = x_end, y = y_pos, yend = y_pos),
+                 inherit.aes = FALSE) +
+    geom_text(data = stats_sub, 
+              aes(x = (x_start + x_end)/2, y = y_pos*1.02, label = signif),
+              inherit.aes = FALSE, size = 5) +
+    scale_x_discrete(limits = levels(df_sub$Timepoint)) +
+    labs(title = paste0("DOX/VEH Ratio Comparisons - ", mag_label),
+         x = "Timepoint", y = "DOX / VEH Ratio") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top")
+}
+
+# =========================================
+# Step 6: Generate separate plots
+# =========================================
+plot_10X <- plot_step7_ratio(ratio_summary, stats_step7, "10X")
+plot_20X <- plot_step7_ratio(ratio_summary, stats_step7, "20X")
+
+# =========================================
+# Step 7: Print the stats table
+# =========================================
+stats_step7
+
+
+```
+
 
 ```{r IF Quant Updated}
 
@@ -16184,17 +16600,7 @@ DEGs_Top2i_24_list <- list(
 ```{r Proportion Barplots with Permutation Testing TOP2i Treatments}
 #this is the correct workflow with permutation testing
 
-# ================================================
-# Load libraries
-# ================================================
-library(dplyr)
-library(ggplot2)
-library(purrr)
-library(tibble)
-
-# ================================================
-# 1. Read in DEGs (your inputs)
-# ================================================
+#1. Read in DEGs
 DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
 DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
 DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
@@ -16213,9 +16619,7 @@ cat("Total D24T DE genes:", length(d24t_set), "\n")
 all_genes <- rownames(filcpm_matrix)
 cat("Total background genes:", length(all_genes), "\n")
 
-# ================================================
-# 2. Define treatment DEG sets
-# ================================================
+#2. Define treatment DEG sets
 comparison_DEGs <- list(
   DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
   DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
@@ -16225,9 +16629,7 @@ comparison_DEGs <- list(
   DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
 )
 
-# ================================================
-# 3. Build data for stacked proportion barplot
-# ================================================
+#3. Build data for stacked proportion barplot
 plot_df <- purrr::map_dfr(names(comparison_DEGs), function(name) {
   comp_DEGs <- unique(comparison_DEGs[[name]])
   
@@ -16249,16 +16651,14 @@ plot_df <- plot_df %>%
     Category = factor(Category, levels = c("Overlap", "Non-overlap"))
   )
 
-# Legend labels (with n counts)
+#Legend labels (with n counts)
 legend_labels <- plot_df %>%
   filter(Category == "Overlap") %>%
   mutate(Label = paste0(Category, " (n=", Count, ")")) %>%
-  select(Treatment, Label) %>%
+  dplyr::select(Treatment, Label) %>%
   deframe()
 
-# ================================================
-# 4. Permutation test for enrichment
-# ================================================
+#4. Permutation test for enrichment
 perm_test_overlap <- function(gene_set, d24t_genes, gene_universe, n_perm=10000) {
   observed <- length(intersect(d24t_genes, gene_set))
   
@@ -16281,7 +16681,7 @@ perm_results <- lapply(comparison_DEGs, perm_test_overlap,
                        gene_universe = all_genes,
                        n_perm = 10000)
 
-# Summary stats table
+#Summary stats table
 perm_summary_df <- map_dfr(names(perm_results), function(name) {
   res <- perm_results[[name]]
   tibble(
@@ -16300,32 +16700,28 @@ perm_summary_df <- map_dfr(names(perm_results), function(name) {
            TRUE ~ "ns"
          ))
 
-# Show summary stats table
+#Show summary stats table
 print(perm_summary_df)
 
-# ================================================
-# 5. Label positions
-# ================================================
-# Inside overlap bars: percentages
+#5. Label positions
+#Inside overlap bars: percentages
 overlap_labels <- plot_df %>%
   filter(Category == "Overlap") %>%
-  left_join(perm_summary_df %>% select(Treatment, Significant), by = "Treatment") %>%
+  left_join(perm_summary_df %>% dplyr::select(Treatment, Significant), by = "Treatment") %>%
   mutate(
     Label = paste0(round(Fraction*100, 1), "%"),
     y_pos = 0.5   # fixed position at 50% for all treatments
   )
 
-# Above bars: significance stars
+#Above bars: significance stars
 label_positions <- plot_df %>%
   group_by(Treatment) %>%
   summarise(y_pos = 1.0, .groups = "drop") %>%
-  left_join(perm_summary_df %>% select(Treatment, Significant), by = "Treatment")
+  left_join(perm_summary_df %>% dplyr::select(Treatment, Significant), by = "Treatment")
 
-# ================================================
-# 6. Final barplot
-# ================================================
+#6. Final barplot
 ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
-  geom_bar(stat = "identity", position = "stack") +
+  geom_bar(stat = "identity", position = "stack", width = 0.6) +
   
   # percentages inside overlap bars (fixed position)
   geom_text(
@@ -16363,6 +16759,74 @@ ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
     plot.title = element_text(size = 16, hjust = 0.5)
   )
 
+
+#now I want to make another version of this where I can split up the plots between SP and RM
+
+rm_treatments <- c("DOX_RM", "DNR_RM", "MTX_RM", "EPI_RM")
+sp_treatments <- c("DOX_SP", "CX_SP")
+
+
+##RM Plot
+plot_df_RM <- plot_df %>% dplyr::filter(Treatment %in% rm_treatments) %>% 
+  mutate(Treatment = factor(Treatment, levels = rm_treatments))
+
+overlap_labels_RM <- overlap_labels %>% dplyr::filter(Treatment %in% rm_treatments)
+label_positions_RM <- label_positions %>% dplyr::filter(Treatment %in% rm_treatments)
+
+p_RM <- ggplot(plot_df_RM, aes(x = Treatment, y = Fraction, fill = Category)) +
+  geom_bar(stat = "identity", position = "stack", width = 0.8) +
+  geom_text(
+    data = overlap_labels_RM,
+    aes(x = Treatment, y = y_pos, label = Label),
+    inherit.aes = FALSE,
+    color = "white", fontface = "bold", size = 4
+  ) +
+  geom_text(
+    data = label_positions_RM, 
+    aes(x = Treatment, y = y_pos, label = Significant),
+    inherit.aes = FALSE,
+    size = 4, fontface = "bold", color = "black"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 100), limits = c(0,1)) +
+  scale_fill_manual(values = c("Overlap" = "#E41A1C", "Non-overlap" = "#377EB8"),
+                    labels = legend_labels) +
+  labs(title = "RM Treatments", x = "Treatment", y = "Percentage", fill = "TOP2i DEGs") +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+##SP plot
+
+plot_df_SP <- plot_df %>% dplyr::filter(Treatment %in% sp_treatments) %>% 
+  mutate(Treatment = factor(Treatment, levels = c("DOX_SP", "CX_SP")))
+
+overlap_labels_SP <- overlap_labels %>% filter(Treatment %in% sp_treatments)
+label_positions_SP <- label_positions %>% filter(Treatment %in% sp_treatments)
+
+p_SP <- ggplot(plot_df_SP, aes(x = Treatment, y = Fraction, fill = Category)) +
+  geom_bar(stat = "identity", position = "stack", ) +
+  geom_text(
+    data = overlap_labels_SP,
+    aes(x = Treatment, y = y_pos, label = Label),
+    inherit.aes = FALSE,
+    color = "white", fontface = "bold", size = 4
+  ) +
+  geom_text(
+    data = label_positions_SP,
+    aes(x = Treatment, y = y_pos, label = Significant),
+    inherit.aes = FALSE,
+    size = 4, fontface = "bold", color = "black"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 100), limits = c(0, 1)) +
+  scale_fill_manual(values = c("Overlap" = "#e41a1c", "Non-overlap" = "#377eb8"),
+                    labels = legend_labels) +
+  labs(title = "SP Treatments", x = "Treatment", y = "Percentage", fill = "TOP2i DEGs") +
+  theme_minimal(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#show plots
+p_RM
+p_SP
 
 ```
 
@@ -16495,11 +16959,7 @@ print(stats_table_motif2)
 
 ```{r TOP2i in Sustained vs Recovered Motifs}
 
-library(tidyverse)
-
-# =======================
 # Inputs
-# =======================
 final_genes_1_RUV <- readRDS("data/new/RUV/CMF/final_genes_1_RUV.RDS")
 final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 
@@ -16517,9 +16977,7 @@ comparison_DEGs <- list(
   DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
 )
 
-# =======================
 # Fisher's exact test per treatment
-# =======================
 fisher_test_overlap <- function(motif1, motif2, degs) {
   a <- sum(motif1 %in% degs)
   b <- length(motif1) - a
@@ -16541,9 +16999,7 @@ fisher_test_overlap <- function(motif1, motif2, degs) {
   )
 }
 
-# =======================
 # Prepare summary table for plotting
-# =======================
 plot_summary <- map_dfr(names(comparison_DEGs), function(treat) {
   degs <- comparison_DEGs[[treat]]
   
@@ -16575,9 +17031,7 @@ label_positions <- plot_summary %>%
   filter(Category == "DEG") %>%
   mutate(y_pos = 1)
 
-# =======================
 # Plot
-# =======================
 ggplot(plot_summary, aes(x = Treatment, y = Fraction, fill = Category)) +
   geom_bar(stat = "identity", position = "stack") +
   geom_text(data = label_positions %>% filter(Significant != ""),
@@ -16617,8 +17071,90 @@ for(treat in names(comparison_DEGs)) {
               fisher_res$p_value))
 }
 
-
 ```
+
+#Forest Plot TOP2i Sustained vs Recovered
+```{r Forest Plots of TOP2i M1 vs M2}
+#use the workflow above to now plot forest plots of odds ratios for these comparisons
+#I am comparing sets of DEGs from other TOP2i against my motifs here
+#I want to use my fisher's exact test data
+
+#same inputs as before to preserve them
+final_genes_1_RUV <- readRDS("data/new/RUV/CMF/final_genes_1_RUV.RDS")
+final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
+
+motif1_set <- unique(na.omit(final_genes_1_RUV))
+motif2_set <- unique(na.omit(final_genes_2_RUV))
+
+all_tested_genes <- unique(c(motif1_set, motif2_set))
+
+#remove DOX and preserve order DNR EPI MTX CX
+comparison_DEGs_noDOX <- list(
+  DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
+  EPI_RM = as.character(EPI_RM_DEGs$Entrez_ID),
+  MTX_RM = as.character(MTX_RM_DEGs$Entrez_ID),
+  CX_SP  = as.character(CX_SP_DEGs$Entrez_ID)
+)
+
+treatment_order <- c("DNR_RM", "EPI_RM", "MTX_RM", "CX_SP")
+
+fisher_test_overlap <- function(motif1, motif2, degs) {
+  a <- sum(motif1 %in% degs)
+  b <- length(motif1) - a
+  c <- sum(motif2 %in% degs)
+  d <- length(motif2) - c
+  
+  contingency <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE)
+  fisher_res <- fisher.test(contingency)
+  
+  tibble(
+    OR = unname(fisher_res$estimate),
+    CI_low = fisher_res$conf.int[1],
+    CI_high = fisher_res$conf.int[2],
+    p_value = fisher_res$p.value,
+    Significant = case_when(
+      fisher_res$p.value < 0.001 ~ "***",
+      fisher_res$p.value < 0.01 ~ "**",
+      fisher_res$p.value < 0.05 ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+}
+
+
+#build a summary table for the results of fishers exact for the forest plots
+forest_summary <- map_dfr(names(comparison_DEGs_noDOX), function(treat) {
+  res <- fisher_test_overlap(motif2_set, motif1_set, comparison_DEGs_noDOX[[treat]])
+  res %>% mutate(Treatment = treat)
+}) %>% 
+  mutate(Treatment = factor(Treatment, levels = rev(treatment_order)), #define order
+         Group = ifelse(grepl("_RM$", Treatment), "RM", "SP"))
+
+#create my combined plot
+forest_TOP2i <- ggplot(forest_summary, 
+                       aes(y = Treatment, x = OR, 
+                           xmin = CI_low, xmax = CI_high, 
+                           color = Group)) + 
+  geom_point(size = 8) +
+  geom_errorbarh(height = 0.5, size = 2, color = "black") +
+  geom_text(aes(label = Significant), position = position_nudge(y = 0.1), 
+            color = "black", fontface = "bold", size = 5) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+  scale_x_log10(limits = c(0.1, 1000),
+                breaks = c(0.1, 1, 10, 100, 1000)) +
+  scale_color_manual(values = c("RM" = "#3592DE", "SP" = "#902DEF")) +
+  labs(
+    title = "Sustained vs Recovered TOP2i Odds Ratios",
+    x = "Odds Ratio (log scale)",
+    y = "TOP2i Treatment",
+    color = "Group"
+  ) +
+  theme_bw(base_size = 14)
+
+forest_TOP2i
+```
+
+
 
 #Proportion Barplots Genes from Other Studies
 ```{r Import Genes}
@@ -16713,7 +17249,7 @@ summary_table %>%
   print(n = Inf)  # show all rows
 
 # --- Step 6b: Factor Study with AllGenes last ---
-study_levels <- c("Liu", "Sapp", "DIC", "AllGenes")
+study_levels <- c("AllGenes", "DIC", "Liu", "Sapp")
 summary_table <- summary_table %>%
   mutate(
     Study = factor(Study, levels = study_levels)
@@ -16743,7 +17279,7 @@ ggplot(summary_table, aes(x = Study, y = Proportion, fill = Category)) +
     ),
     labels = category_labels
   ) +
-  scale_x_discrete(labels = c("Liu", "Sapp", "Fonoudi", "All Genes")) +
+  scale_x_discrete(labels = c("All", "Fonoudi", "Liu", "Sapp")) +
   theme_minimal(base_size = 14) +
   labs(
     y = "Proportion of Genes",
@@ -16770,11 +17306,11 @@ categorize_motif <- function(g) {
   } else if (g %in% final_genes_2_RUV) {
     return("Sustained")
   } else {
-    return("Unassigned")
+    return(NA)
   }
 }
 
-# --- Step 3: Build dataset for all studies ---
+#Step 3: Build dataset of all studies
 studies <- list(
   Liu   = liu_ids,
   Sapp  = sapp_ids,
@@ -16787,6 +17323,9 @@ df_motif <- lapply(names(studies), function(study) {
   cats <- sapply(ids, categorize_motif)
   data.frame(Study = study, Category = cats)
 }) %>% bind_rows()
+
+#remove unassigned/na genes
+df_motif <- df_motif %>% dplyr::filter(!is.na(Category))
 
 # --- Step 4: Summarize counts and proportions ---
 summary_motif <- df_motif %>%
@@ -16801,8 +17340,8 @@ summary_motif %>%
   print(n = Inf)
 
 # --- Step 5: Factor Study and Category for proper order ---
-study_levels <- c("Liu", "Sapp", "Fonoudi", "AllGenes")
-category_levels <- c("Recovered", "Sustained", "Unassigned")
+study_levels <- c("AllGenes", "Fonoudi", "Liu", "Sapp")
+category_levels <- c("Sustained", "Recovered")
 
 summary_motif <- summary_motif %>%
   mutate(
@@ -16811,7 +17350,10 @@ summary_motif <- summary_motif %>%
   )
 
 # --- Step 6: Plot ---
-ggplot(summary_motif, aes(x = Study, y = Proportion, fill = Category)) +
+ggplot(summary_motif, 
+       aes(x = Study, 
+           y = Proportion, 
+           fill = Category)) +
   geom_bar(stat = "identity") +
   geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
             position = position_stack(vjust = 0.5),
@@ -16819,10 +17361,9 @@ ggplot(summary_motif, aes(x = Study, y = Proportion, fill = Category)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values = c(
     "Recovered"  = "#1f77b4",
-    "Sustained"  = "#ff7f0e",
-    "Unassigned" = "#d62728"
-  )) +
-  scale_x_discrete(labels = c("Liu", "Sapp", "Fonoudi", "All Genes")) +
+    "Sustained"  = "#ff7f0e"
+    )) +
+  scale_x_discrete(labels = c("All", "Fonoudi", "Liu", "Sapp")) +
   theme_minimal(base_size = 14) +
   labs(
     y = "Proportion of Genes",
@@ -16830,6 +17371,11 @@ ggplot(summary_motif, aes(x = Study, y = Proportion, fill = Category)) +
     fill = "Motif Category"
   )
 
+
+#I am curious what the 5 genes are that are sustained in the Sapp/All Genes categories
+
+sustained_genes_subset <- df_motif %>% 
+  dplyr::filter(Category == "Sustained", Study %in% c("Sapp", "AllGenes"))
 
 
 
