@@ -3189,7 +3189,7 @@ ed75 <- ED(doxtox24_78_model, 50, interval = "delta")[1]
 ed78 <- ED(doxtox24_75_model, 50, interval = "delta")[1]
 ed17 <- ED(doxtox24_17_model, 50, interval = "delta")[1]
 
-avg_ld50 <- mean(c(ed78, ed75, ed17))
+median_ld50 <- median(c(ed78, ed75, ed17))
 
 # Plot first model, then overlay
 plot(doxtox24_78_model, type = "none", broken = TRUE,
@@ -3215,10 +3215,10 @@ abline(v = 0.5, col = "grey50", lty = 2, lwd = 2)
 # abline(v = ed75, col = "#499FBD", lty = 2, lwd = 2)
 # abline(v = ed17, col = "#254F5E", lty = 2, lwd = 2)
 
-# Average LD50 line in red
-abline(v = avg_ld50, col = "red", lty = 3, lwd = 2)
+#Median LD50 line in red
+abline(v = median_ld50, col = "red", lty = 3, lwd = 2)
 text(x = avg_ld50, y = 99,        # y=105 puts it just above top of plot
-     labels = paste0("Avg LD50 = ", round(avg_ld50, 2), " µM"),
+     labels = paste0("Median LD50 = ", round(avg_ld50, 2), " µM"),
      col = "red", pos = 4, cex = 0.8, font = 2)
 
 # Legend
