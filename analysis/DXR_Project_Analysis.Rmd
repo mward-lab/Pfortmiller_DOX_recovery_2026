@@ -468,6 +468,8 @@ colnames(filcpm_matrix) <- c("DOX_24T_Ind1",
 #export this as a csv
 #write.csv(filcpm_matrix, "data/new/filcpm_final_matrix.csv")
 
+
+
 ```
 ##QC Boxplots of Filtered vs Unfiltered Data
 ```{r QC Filtering Boxplots}
@@ -2233,7 +2235,7 @@ summary(results_summary1)
 # Up       4554   3485     194        93        93         93
 
 #compare this to my previous DEGs I found
-summary(results_summary)
+# summary(results_summary)
 #        V.D24T V.D24R V.D144R
 # Down     4723   3593     359
 # NotSig   5076   7151   13810
@@ -2812,7 +2814,7 @@ logFC_wide_RUV <- combined_toptables_dxr_RUV %>%
   dplyr::select(Entrez_ID, Time, logFC) %>%
   pivot_wider(names_from = Time, values_from = logFC) %>%
   drop_na() %>% 
-  column_to_rownames("Entrez_ID")
+  column_to_rownames("Entrez_ID") 
 
 logFCabs_wide_RUV <- combined_toptables_dxr_RUV %>% 
   mutate(absFC = abs(logFC)) %>% 
@@ -2916,9 +2918,9 @@ draw(heatmap_spearman_RUV_time_abs)
 ```{r logFC scatterplot}
 
 # Define the timepoints from your data
-timepoints <- c("24T", "24R", "144R")
+timepoints <- c("24", "24R", "144R")
 
-comparison_order <- c("24T vs 24R", "24R vs 144R", "24T vs 144R")
+comparison_order <- c("24 vs 24R", "24R vs 144R", "24 vs 144R")
 
 # Make all pairwise combinations
 pairs_df <- t(combn(timepoints, 2)) %>%
@@ -2934,60 +2936,105 @@ prepare_pair_data <- function(time_x, time_y, df) {
       x_val = .data[[time_x]],
       y_val = .data[[time_y]],
       comparison = paste0(time_x, " vs ", time_y),
-      rho_label = paste0("rho = ", round(rho, 2))
+      rho_label = paste0("rho = ", round(rho, 2)),
+      x_lab = paste0("log2FC", time_x),
+      y_lab = paste0("log2FC", time_y)
     )
 }
+
+comparison_colors <- c(
+  "24T vs 24R"  = "#05139b",
+  "24R vs 144R" = "#5b8fd1",
+  "24T vs 144R" = "#aed6f1"
+)
 
 # Build combined plotting dataset
 scatter_df <- map2_df(pairs_df$time_x, pairs_df$time_y,
                       ~prepare_pair_data(.x, .y, logFC_wide_RUV)) %>%
   mutate(comparison = factor(comparison, levels = comparison_order))
 
+facet_labels <- scatter_df %>%
+  distinct(comparison, x_lab, y_lab) %>%
+  mutate(label = paste0(comparison, "\n", x_lab, " | ", y_lab)) %>%
+  select(comparison, label) %>%
+  deframe()
 
-# Plot
-ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black") +
-  facet_wrap(~comparison, scales = "free") +
-  geom_text(
-    data = scatter_df %>% distinct(comparison, rho_label),
-    aes(x = -Inf, y = Inf, label = rho_label),
+#split data by comparison
+split_data <- split(scatter_df, scatter_df$comparison)
+
+make_scatter <- function(df_sub) {
+  comp <- df_sub$comparison[1] 
+  ggplot(df_sub, aes(x = x_val, y = y_val)) +
+    geom_point_rast(alpha = 0.5, raster.dpi = 300, color = comparison_colors[comp]) +
+    geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black") +
+    geom_text(
+      data = df_sub %>% distinct(comparison, rho_label),
+      aes(x = -Inf, y = Inf, label = rho_label),
     inherit.aes = FALSE,
     hjust = -0.1, vjust = 1.5,
     size = 4
   ) +
-  scale_color_manual(values = c("#2c6cb0", "#5b8fd1", "#aed6f1")) +
-  labs(
-    x = "",
-    y = "",
-    title = "Pairwise Scatterplots of log2FC with Spearman Correlation"
-  ) +
-  theme_bw(base_size = 14) +
-  theme(legend.position = "none")
+    coord_fixed(xlim = c(-9,9), ylim = c(-9,9), ratio = 1) +
+    labs(
+      x = unique(df_sub$x_lab),
+      y = unique(df_sub$y_lab)
+    ) +
+    theme_bw(base_size = 14) +
+    theme(
+      axis.line = element_line(linewidth = 1, color = "black"),
+      axis.ticks.length = unit(0.05, "in"),
+      axis.text = element_text(color = "black"),
+      panel.background = element_blank(),
+      panel.border = element_blank(),
+      legend.position = "none"
+    )
+}
 
-#make a rasterized version
+#my custom theme for these figures
+theme_custom <- function(base_size = 14) {
+  theme_bw(base_size = base_size) %+replace%
+    theme(
+      axis.line = element_line(linewidth = 1, color = "black"),
+      axis.ticks.length = unit(0.05, "in"),
+      axis.text = element_text(color = "black"),
+      panel.background = element_blank(),
+      panel.border = element_blank()
+    )
+}
+  
 
-# library(ggrastr)
+#make plot
+plot_list <- lapply(split_data, make_scatter)
+#wrap all three together to get the final plot
+scatterplot_fig2d <- wrap_plots(plot_list, ncol = length(plot_list))
 
-ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
-  geom_point_rast(alpha = 0.5, raster.dpi = 300) +   # rasterized points
-  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black") +
-  facet_wrap(~comparison, scales = "free") +
-  geom_text(
-    data = scatter_df %>% distinct(comparison, rho_label),
-    aes(x = -Inf, y = Inf, label = rho_label),
-    inherit.aes = FALSE,
-    hjust = -0.1, vjust = 1.5,
-    size = 4
-  ) +
-  scale_color_manual(values = c("#05136b", "#5b8fd1", "#aed6f1")) +
-  labs(
-    x = "log2FC (Timepoint X)",
-    y = "log2FC (Timepoint Y)",
-    title = "Pairwise Scatterplots of log2FC with Spearman Correlation"
-  ) +
-  theme_minimal(base_size = 14) +
-  theme(legend.position = "none")
+scatterplot_fig2d
+
+#save plot to a pdf and to a png
+ggsave("Fig2D_Scatterplot_fixedlims_EMP_250919.pdf", scatterplot_fig2d, width = 8, height = 6, device = cairo_pdf, path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
+ggsave("Fig2D_Scatterplot_fixedlims_EMP_250919.png", scatterplot_fig2d, width = 12, height = 4, dpi = 300, type = "cairo", path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
+
+#make a rasterized version (old)
+# ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
+#   geom_point_rast(alpha = 0.5, raster.dpi = 300) +   #rasterized points
+#   geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black") +
+#   facet_wrap(~comparison, scales = "fixed", labeller = labeller(comparison = facet_labels)) +
+#   coord_cartesian(xlim = c(-9, 9), ylim = c(-9, 9)) +
+#   geom_text(
+#     data = scatter_df %>% distinct(comparison, rho_label),
+#     aes(x = -Inf, y = Inf, label = rho_label),
+#     inherit.aes = FALSE,
+#     hjust = -0.1, vjust = 1.5,
+#     size = 4
+#   ) +
+#   scale_color_manual(values = c("#05136b", "#5b8fd1", "#aed6f1")) +
+#   labs(
+#     x = "",
+#     y = "",
+#     title = "Pairwise Scatterplots of log2FC Spearman Correlation"
+#   ) +
+#   theme_classic(base_size = 14) +
+#   theme(legend.position = "none")
 
 ```
 
@@ -5939,11 +5986,11 @@ col_annot_RUV <- HeatmapAnnotation(
 )
 
 # Draw heatmap
-Heatmap(logFC_mat_AIC_RUV,
+AIC_RUV_HM <- Heatmap(logFC_mat_AIC_RUV,
         name = "logFC",
         top_annotation = col_annot_RUV,
         cluster_columns = FALSE,
-        cluster_rows = FALSE,
+        cluster_rows = TRUE,
         show_row_names = TRUE,
         show_column_names = FALSE,
         cell_fun = function(j, i, x, y, width, height, fill) {
@@ -5952,6 +5999,47 @@ Heatmap(logFC_mat_AIC_RUV,
         column_title = "AIC Genes Expression (n=38)\nDOX Recovery (RUVs Corrected)",
         column_title_gp = gpar(fontsize = 14, fontface = "bold")
 )
+
+AIC_RUV_HM
+
+
+#plot another one sideways in case I need it for figures
+# Transpose the matrices
+logFC_mat_AIC_RUV_t <- t(logFC_mat_AIC_RUV)
+signif_mat_AIC_RUV_t <- t(signif_mat_AIC_RUV)
+
+# Row annotation instead of column annotation
+meta_AIC_R <- str_split_fixed(rownames(logFC_mat_AIC_RUV_t), "_", 2)
+row_annot_RUV <- rowAnnotation(
+  Drug = meta_AIC_R[, 1],
+  Time = meta_AIC_R[, 2],
+  col = list(
+    Drug = c("DOX" = "#499FBD"),
+    Time = c("24T" = "#238B45", 
+             "24R" = "#74C476", 
+             "144R" = "#C7E9C0")
+  ),
+  annotation_width = unit(c(2, 2, 2), "cm")
+)
+
+# Draw rotated heatmap
+AIC_RUV_HM_flip <- Heatmap(logFC_mat_AIC_RUV_t,
+        name = "logFC",
+        left_annotation = row_annot_RUV,   # moved annotation to the side
+        cluster_columns = TRUE,
+        cluster_rows = FALSE,
+        show_row_names = FALSE,
+        show_column_names = TRUE,
+        cell_fun = function(j, i, x, y, width, height, fill) {
+          grid.text(signif_mat_AIC_RUV_t[i, j], x, y, gp = gpar(fontsize = 9))
+        },
+        row_title = "Conditions",
+        column_title = "AIC Genes Expression (n=38)\nDOX Recovery (RUVs Corrected)",
+        column_title_gp = gpar(fontsize = 14, fontface = "bold")
+)
+
+AIC_RUV_HM_flip
+
 ```
 
 ##AIC Genes RUVs logFC Boxplots
@@ -6201,6 +6289,7 @@ Heatmap(logFC_mat_p53_RUV,
 
 Now, I want to convert the above heatmap to only have genes DE at 144R
 #p53 HM DEGs D144R
+#USE THIS ONE
 ```{r p53 target genes logFC heatmap D144R, fig.height=10, fig.width=6}
 
 # Load DEG files
@@ -6322,7 +6411,70 @@ Heatmap(logFC_mat_p53_RUV,
 
 
 ```
+#p53 USE THIS
+```{r p53 D144R hm}
+library(ComplexHeatmap)
+library(circlize)
+library(grid)
+library(dplyr)
+library(reshape2)
+library(stringr)
 
+# Filter significant genes for 144R
+sig_genes_144R <- all_data_p53_RUV %>% 
+  filter(Condition == "DOX_144R", adj.P.Val < 0.05) %>% 
+  pull(Gene) %>% 
+  unique()
+
+filt_p53_data_144R <- all_data_p53_RUV %>% 
+  filter(Gene %in% sig_genes_144R) %>% 
+  select(-X)
+
+# Create matrices
+logFC_mat53_RUV <- acast(filt_p53_data_144R, Gene ~ Condition, value.var = "logFC")
+signif_mat53_RUV <- acast(filt_p53_data_144R, Gene ~ Condition, value.var = "Signif")
+
+# Desired column order
+desired_order <- c("DOX_24T", "DOX_24R", "DOX_144R")
+logFC_mat_p53_RUV <- logFC_mat53_RUV[, desired_order]
+signif_mat_p53_RUV <- signif_mat53_RUV[, desired_order]
+
+# Column annotation
+meta_p53_RUV <- str_split_fixed(colnames(logFC_mat_p53_RUV), "_", 2)
+col_annot_p53_RUV <- HeatmapAnnotation(
+  Drug = meta_p53_RUV[, 1],
+  Time = meta_p53_RUV[, 2],
+  col = list(
+    Drug = c("DOX" = "#499FBD"),
+    Time = c("24T" = "#238B45", "24R" = "#74C476", "144R" = "#C7E9C0")
+  ),
+  annotation_height = unit(c(1, 1), "cm")
+)
+
+# Define red-white-blue color scale
+max_val <- max(abs(logFC_mat_p53_RUV), na.rm = TRUE)
+col_fun <- colorRamp2(c(-max_val, 0, max_val), c("blue", "white", "red"))
+
+# Draw heatmap
+Heatmap(logFC_mat_p53_RUV,
+        name = "logFC",
+        col = col_fun,
+        top_annotation = col_annot_p53_RUV,
+        cluster_columns = FALSE,
+        cluster_rows = TRUE,
+        show_row_names = TRUE,
+        show_column_names = FALSE,
+        layer_fun = function(j, i, x, y, width, height, fill) {
+          grid.text(signif_mat_p53_RUV[cbind(i, j)], x, y, gp = gpar(fontsize = 9))
+        },
+        column_title = "P53 Target Genes Expression\nDOX Recovery (RUVs Corrected)",
+        column_title_gp = gpar(fontsize = 14, fontface = "bold")
+)
+
+```
+
+
+#USE THIS ONE
 ```{r DDR target genes logFC heatmap D144R, fig.height=10, fig.width=6}
 
 # Load DEG files
@@ -6431,7 +6583,7 @@ Heatmap(logFC_mat_DDR_RUV,
         name = "logFC",
         top_annotation = col_annot,
         cluster_columns = FALSE,
-        cluster_rows = TRUE,
+        cluster_rows = FALSE,
         show_row_names = TRUE,
         show_column_names = FALSE,
         layer_fun = function(j, i, x, y, width, height, fill) {
@@ -11243,6 +11395,7 @@ final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 #save to CSV
 # write.csv(mapped_genes_sus, "data/new/RUV/CMF/Sustained_M2_genes_clustlike_ppost_RUV_EMP_250828.csv", row.names = FALSE)
 
+mapped_genes_sus <- read.csv("data/new/RUV/CMF/Sustained_M2_genes_clustlike_ppost_RUV_EMP_250828.csv")
 
 
 ```
@@ -14223,9 +14376,9 @@ for(gs_name in unique(comparison_results$Gene_Set)) {
     geom_text(aes(label = Significance, 
                   x = CI_High * 1.2), 
               vjust = 0.5, hjust = 0, size = 6) +
-    scale_x_log10() +
+    # scale_x_log10() +
     labs(
-      x = "Odds Ratio (Sustained vs Recovered, log scale)",
+      x = "Odds Ratio (Sustained vs Recovered)",
       y = NULL,
       title = paste0("Enrichment of ", gs_name, " in Sustained vs Recovered")
     ) +
@@ -14235,6 +14388,58 @@ for(gs_name in unique(comparison_results$Gene_Set)) {
   
   print(p)
 }
+
+#now make a version where DDR and p53 are on the same plot, then save as a pdf and png
+
+# Filter results for DDR and P53 only
+comparison_subset <- comparison_results %>%
+  filter(Gene_Set %in% c("DDR", "P53"))
+
+# ----------------------------
+# Forest plot for DDR + P53 together
+# ----------------------------
+p_subset <- ggplot(comparison_subset,
+                   aes(x = Odds_Ratio, 
+                       y = forcats::fct_rev(Gene_Set),
+                       xmin = CI_Low, xmax = CI_High)) +
+  geom_pointrange(size = 1) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "grey40") +
+  geom_text(aes(label = Significance,
+                x = CI_High * 1.2),
+            vjust = 0.5, hjust = 0, size = 6) +
+  # scale_x_log10(limits = c(0.1, 100)) +
+  xlim(c(0,30)) +
+  labs(
+    x = "Odds Ratio Sustained vs Recovered (log scale)",
+    y = "Gene Set",
+    title = "Enrichment of DDR and P53"
+  ) +
+  theme_minimal(base_size = 14)
+
+print(p_subset)
+
+#alter appearance to match others
+# DDR + P53 forest plot styled like forest_TOP2i
+p_subset <- ggplot(comparison_subset,
+                   aes(y = Gene_Set, x = Odds_Ratio,
+                       xmin = CI_Low, xmax = CI_High)) +
+  geom_point(size = 8, color = "#3592DE") +  # large points, single color
+  geom_errorbarh(height = 0.5, size = 2, color = "black") +  # thick horizontal bars
+  geom_text(aes(label = Significance),
+            position = position_nudge(y = 0.2),
+            color = "black", fontface = "bold", size = 5) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+  # scale_x_log10(limits = c(0.1, 100),
+  #               breaks = c(0.1, 1, 10, 100)) +
+  xlim(c(0,30)) +
+  labs(
+    title = "Enrichment of DDR and P53",
+    x = "Odds Ratio (log scale)",
+    y = NULL
+  ) +
+  theme_bw(base_size = 14)
+
+print(p_subset)
 
 
 ```
@@ -14366,8 +14571,7 @@ print(summary_table)
 
 ```{r log2cpm 1 gene in Sustained from AIC}
 #First, let's find out which gene from AIC is shared with Sustained motif
-
-intersect(aic_set, mapped_genes_sus)
+intersect(AIC_set, mapped_genes_sus)
 #29899 gene - GPSM2
 
 #plot a log2cpm boxplot of this gene as I have above
@@ -17135,17 +17339,18 @@ forest_TOP2i <- ggplot(forest_summary,
                        aes(y = Treatment, x = OR, 
                            xmin = CI_low, xmax = CI_high, 
                            color = Group)) + 
-  geom_point(size = 8) +
-  geom_errorbarh(height = 0.5, size = 2, color = "black") +
+  geom_point(size = 4) +
+  geom_errorbarh(height = 0.5, size = 0.5, color = "black") +
   geom_text(aes(label = Significant), position = position_nudge(y = 0.1), 
             color = "black", fontface = "bold", size = 5) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
-  scale_x_log10(limits = c(0.1, 1000),
-                breaks = c(0.1, 1, 10, 100, 1000)) +
+  # scale_x_log10(limits = c(0.1, 1000),
+  #               breaks = c(0.1, 1, 10, 100, 1000)) +
+  xlim(c(0,250)) +
   scale_color_manual(values = c("RM" = "#3592DE", "SP" = "#902DEF")) +
   labs(
     title = "Sustained vs Recovered TOP2i Odds Ratios",
-    x = "Odds Ratio (log scale)",
+    x = "Odds Ratio",
     y = "TOP2i Treatment",
     color = "Group"
   ) +
@@ -17372,12 +17577,319 @@ ggplot(summary_motif,
   )
 
 
-#I am curious what the 5 genes are that are sustained in the Sapp/All Genes categories
+```
 
-sustained_genes_subset <- df_motif %>% 
-  dplyr::filter(Category == "Sustained", Study %in% c("Sapp", "AllGenes"))
+##eQTLs Bar plots
+```{r eQTL DOX data eLife Knowles 2018}
+#now similarly to the above plots, I want to test these eQTLs against my motifs
+
+#first get the proportion of genes from each motif in these gene sets
+
+#then perform fisher's exact testing and make forest plots later
+
+#read in these datasets from the Knowles 2018 eLife paper
+
+# elife_33480_supp4_v2 <- read_delim("D:/DXR Project/eQTLs/elife-33480-supp4-v2.gz", 
+#     delim = "\t", escape_double = FALSE, 
+#     trim_ws = TRUE)
+# View(elife_33480_supp4_v2)
+# 
+# saveRDS(elife_33480_supp4_v2, "data/new/eQTLs/knowles_eqtls_supp4.RDS")
+
+knowles_eqtls_supp4 <- readRDS("data/new/eQTLs/knowles_eqtls_supp4.RDS")
+
+#now read in the second supplementary dataset
+# library(readr)
+# elife_33480_supp5_v2 <- read_delim("D:/DXR Project/eQTLs/elife-33480-supp5-v2.gz", 
+#     delim = "\t", escape_double = FALSE, 
+#     trim_ws = TRUE)
+# View(elife_33480_supp5_v2)
+
+# saveRDS(elife_33480_supp5_v2, "data/new/eQTLs/knowles_eqtls_supp5.RDS")
+
+knowles_eqtls_supp5 <- readRDS("data/new/eQTLs/knowles_eqtls_supp5.RDS")
+
+#now that I've read in both of these sets, convert ensembl id to entrez id so I can compare with my data directly
+
+#ensembl to entrezid
+
+convert_ids <- function(df, id_col = "gene") {
+  ids <- df[[id_col]]
+  
+  mapped <- AnnotationDbi::select(
+    org.Hs.eg.db,
+    keys = ids,
+    keytype = "ENSEMBL",
+    columns = c("ENTREZID", "SYMBOL")
+  )
+  
+  # Rename to make join explicit
+  colnames(mapped)[colnames(mapped) == "ENSEMBL"] <- id_col
+  colnames(mapped)[colnames(mapped) == "ENTREZID"] <- "Entrez_ID"
+  
+  df_out <- df %>%
+    left_join(mapped, by = id_col)
+  
+  return(df_out)
+}
+
+knowles_eqtls_supp4_annot <- convert_ids(knowles_eqtls_supp4, "gene")
+knowles_eqtls_supp5_annot <- convert_ids(knowles_eqtls_supp5, "gene")
+
+#now that I've converted these to have entrez_id, go ahead and make the barplots
+
+#first check that there are any genes that appear in final_genes_1_RUV or final_genes_2_RUV
+recovered_overlap <- intersect(all_genes_knowles, final_genes_1_RUV)
+sustained_overlap <- intersect(all_genes_knowles, final_genes_2_RUV)
+
+length(recovered_overlap)
+length(sustained_overlap)
+
+#there is some overlap with both of these motifs so go ahead with assigning genes
+
+# --- Step 1: Entrez IDs ---
+knowles4_ids <- unique(knowles_eqtls_supp4_annot$Entrez_ID[!is.na(knowles_eqtls_supp4_annot$Entrez_ID)])
+knowles5_ids <- unique(knowles_eqtls_supp5_annot$Entrez_ID[!is.na(knowles_eqtls_supp5_annot$Entrez_ID)])
+all_genes_knowles <- unique(c(knowles4_ids, knowles5_ids))
+
+# Motif sets in Entrez_ID
+recovered_entrez <- final_genes_1_RUV
+sustained_entrez <- final_genes_2_RUV
+
+# --- Step 2: Define studies ---
+studies_knowles <- list(
+  AllGenes_Knowles = all_genes_knowles,
+  `Marginal eQTLs` = knowles4_ids,
+  `Response eQTLs` = knowles5_ids
+)
+
+# --- Step 3: Categorize ---
+categorize_motif <- function(g) {
+  if (g %in% recovered_entrez) return("Recovered")
+  else if (g %in% sustained_entrez) return("Sustained")
+  else return(NA)
+}
+
+# --- Step 4: Build summary ---
+df_motif_knowles <- lapply(names(studies_knowles), function(study) {
+  ids <- studies_knowles[[study]]
+  cats <- sapply(ids, categorize_motif)
+  
+  # Count per category
+  df <- data.frame(Category = cats, stringsAsFactors = FALSE) %>%
+    filter(!is.na(Category)) %>%
+    group_by(Category) %>%
+    summarise(Count = n(), .groups = "drop") %>%
+    complete(Category = c("Recovered", "Sustained"), fill = list(Count = 0)) %>%
+    mutate(Study = study,
+           TotalGenes = length(ids))  # total genes in study for scaling
+  return(df)
+}) %>% bind_rows()
+
+# --- Step 5: Compute proportions scaled to 100% per study ---
+summary_motif_knowles <- df_motif_knowles %>%
+  mutate(Proportion = Count / TotalGenes)  # divide by total genes, not just motif genes
+
+# --- Step 6: Factor levels ---
+study_levels <- c("AllGenes_Knowles", "Marginal eQTLs", "Response eQTLs")
+category_levels <- c("Sustained", "Recovered")
+
+summary_motif_knowles <- summary_motif_knowles %>%
+  mutate(
+    Study = factor(Study, levels = study_levels),
+    Category = factor(Category, levels = category_levels)
+  )
+
+# --- Step 7: Plot with n on top ---
+ggplot(df_motif_knowles, aes(x = Study, y = Proportion, fill = Category)) +
+  geom_bar(stat = "identity") +
+  # Proportion labels inside the bars
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
+            position = position_stack(vjust = 0.5),
+            size = 3.5, color = "white") +
+  # n = total motif genes inside the bars (at top of each bar)
+  geom_text(data = df_motif_knowles %>% group_by(Study) %>% summarise(TotalMotifGenes = unique(TotalMotifGenes)),
+            aes(x = Study, y = 1, label = paste0("n = ", TotalMotifGenes)),
+            inherit.aes = FALSE, vjust = -0.2, size = 3.5, color = "black") +
+  # Significance connecting line above Marginal vs Response
+  geom_segment(aes(x = 2, xend = 3, y = 1.05, yend = 1.05), inherit.aes = FALSE, size = 0.7) +
+  geom_text(data = data.frame(Study = 2.5, y = 1.08, sig = sig_label),
+            aes(x = Study, y = y, label = sig),
+            inherit.aes = FALSE, size = 6) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  scale_fill_manual(values = c(
+    "Recovered" = "#1f77b4",
+    "Sustained" = "#ff7f0e"
+  )) +
+  scale_x_discrete(labels = c("All Knowles Genes", "Marginal eQTLs", "Response eQTLs")) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Proportion of Motif Genes (%)",
+    x = "",
+    fill = "Motif Category",
+    title = "Knowles et al.: Proportion of eQTL-associated Motif Genes"
+  )
 
 
+#fisher's exact test instead of chi square since I have small sample size
+# 2x2 contingency table
+cont_table_pair
+
+# Fisher's Exact Test
+fisher_res <- fisher.test(cont_table_pair)
+pval_fisher <- fisher_res$p.value
+
+# Determine significance
+sig_label <- if (pval_fisher < 0.001) "***" else if (pval_fisher < 0.01) "**" else if (pval_fisher < 0.05) "*" else "ns"
+
+sig_label
+
+
+#make a stats table
+# --- Step 1: Create a function to categorize by motif ---
+categorize_motif <- function(g) {
+  if (g %in% final_genes_1_RUV) "Recovered"
+  else if (g %in% final_genes_2_RUV) "Sustained"
+  else NA
+}
+
+# --- Step 2: Build data frames for each eQTL set ---
+df_marginal <- data.frame(
+  Gene = knowles4_ids,
+  Category = sapply(knowles4_ids, categorize_motif)
+) %>% filter(!is.na(Category)) %>%
+  group_by(Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Study = "Marginal eQTLs")
+
+df_response <- data.frame(
+  Gene = knowles5_ids,
+  Category = sapply(knowles5_ids, categorize_motif)
+) %>% filter(!is.na(Category)) %>%
+  group_by(Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Study = "Response eQTLs")
+
+# Combine all
+summary_table <- bind_rows(df_marginal, df_response)
+
+# --- Step 3: Add proportions ---
+summary_table <- summary_table %>%
+  group_by(Study) %>%
+  mutate(Proportion = Count / sum(Count)) %>%
+  ungroup()
+
+# --- Step 4: Build 2x2 table and Fisher's Exact Test ---
+cont_table <- matrix(c(
+  df_marginal$Count[df_marginal$Category == "Recovered"],
+  df_marginal$Count[df_marginal$Category == "Sustained"],
+  df_response$Count[df_response$Category == "Recovered"],
+  df_response$Count[df_response$Category == "Sustained"]
+), nrow = 2, byrow = TRUE)
+rownames(cont_table) <- c("Marginal", "Response")
+colnames(cont_table) <- c("Recovered", "Sustained")
+
+fisher_res <- fisher.test(cont_table)
+pval_fisher <- fisher_res$p.value
+odds_ratio <- fisher_res$estimate
+
+# --- Step 5: Add Fisher results to the table ---
+summary_table <- summary_table %>%
+  mutate(Fisher_pvalue = ifelse(Study %in% c("Marginal eQTLs", "Response eQTLs"), pval_fisher, NA),
+         Odds_Ratio = ifelse(Study %in% c("Marginal eQTLs", "Response eQTLs"), odds_ratio, NA))
+
+# --- Step 6: Print summary ---
+summary_table %>%
+  select(Study, Category, Count, Proportion, Fisher_pvalue, Odds_Ratio) %>%
+  arrange(Study, Category) %>%
+  print(n = Inf)
+
+
+```
+
+
+#Combine all studies and split by type
+```{r Combine all studies}
+
+
+# --- Step 1: Collect gene sets from all sources ---
+all_genes <- unique(c(liu_ids, sapp_ids, dic_set))
+
+# Add Knowles Supp4 + Supp5 gene sets
+knowles4_ids <- unique(knowles_eqtls_supp4_annot$HGNC[!is.na(knowles_eqtls_supp4_annot$HGNC)])
+knowles5_ids <- unique(knowles_eqtls_supp5_annot$HGNC[!is.na(knowles_eqtls_supp5_annot$HGNC)])
+
+# --- Step 2: Function to categorize by motif membership ---
+categorize_motif <- function(g) {
+  if (g %in% final_genes_1_RUV) {
+    return("Recovered")
+  } else if (g %in% final_genes_2_RUV) {
+    return("Sustained")
+  } else {
+    return(NA)
+  }
+}
+
+# --- Step 3: Build dataset of all studies ---
+studies <- list(
+  AllGenes = all_genes,
+  Fonoudi  = dic_set,
+  Liu      = liu_ids,
+  Sapp     = sapp_ids,
+  `Marginal eQTLs` = knowles4_ids,
+  `Response eQTLs` = knowles5_ids
+)
+
+df_motif <- lapply(names(studies), function(study) {
+  ids <- studies[[study]]
+  cats <- sapply(ids, categorize_motif)
+  data.frame(Study = study, Category = cats, stringsAsFactors = FALSE)
+}) %>% bind_rows()
+
+# Remove unassigned / NA genes
+df_motif <- df_motif %>% filter(!is.na(Category))
+
+# --- Step 4: Summarize counts and proportions ---
+summary_motif <- df_motif %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop_last") %>%
+  mutate(Proportion = Count / sum(Count))
+
+# Print summary table
+summary_motif %>%
+  arrange(Study, Category) %>%
+  mutate(Percent = round(Proportion*100, 1)) %>%
+  print(n = Inf)
+
+# --- Step 5: Factor Study and Category for proper order ---
+study_levels <- c("AllGenes", "Fonoudi", "Liu", "Sapp", "Marginal eQTLs", "Response eQTLs")
+category_levels <- c("Sustained", "Recovered")
+
+summary_motif <- summary_motif %>%
+  mutate(
+    Study = factor(Study, levels = study_levels),
+    Category = factor(Category, levels = category_levels)
+  )
+
+# --- Step 6: Plot ---
+ggplot(summary_motif, aes(x = Study, y = Proportion, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
+            position = position_stack(vjust = 0.5),
+            size = 3.5, color = "white") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c(
+    "Recovered"  = "#1f77b4",
+    "Sustained"  = "#ff7f0e"
+  )) +
+  scale_x_discrete(labels = c("All", "Fonoudi", "Liu", "Sapp", "Marginal eQTLs", "Response eQTLs")) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Proportion of Genes",
+    x = "",
+    fill = "Motif Category",
+    title = "Knowles et al.: Proportion of eQTL-associated Genes by Motif Category"
+  )
 
 ```
 
