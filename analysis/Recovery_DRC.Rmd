@@ -3287,3 +3287,129 @@ legend("center",
 
 ```
 
+
+```{r final plot with exports}
+# Define output folder and base filename
+out_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+base_name <- "viability_curve_scaled"
+
+# Full file paths
+png_path <- file.path(out_folder, paste0(base_name, ".png"))
+svg_path <- file.path(out_folder, paste0(base_name, ".svg"))
+pdf_path <- file.path(out_folder, paste0(base_name, ".pdf"))
+
+# New scaled dimensions (2x)
+plot_height <- 7.3212
+plot_width<- 3.8604
+
+# ---------------- PNG Export ----------------
+png(filename = png_path,
+    width = plot_width, height = plot_height,
+    units = "in", res = 300)
+
+# --- plotting code ---
+conc_labels <- c(0.01, 0.1, 0.5, 1, 10, 50, 100, 1000)
+pct_labels <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+
+doxtox24_78_model <- drm(response ~ Conc, data = dox24tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+doxtox24_75_model <- drm(response ~ Conc, data = dox24tox_75, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+doxtox24_17_model <- drm(response ~ Conc, data = dox24tox_17, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+
+ed75 <- ED(doxtox24_78_model, 50, interval = "delta")[1]
+ed78 <- ED(doxtox24_75_model, 50, interval = "delta")[1]
+ed17 <- ED(doxtox24_17_model, 50, interval = "delta")[1]
+
+median_ld50 <- median(c(ed78, ed75, ed17))
+
+plot(doxtox24_78_model, type = "none", broken = TRUE,
+     ylim = c(0,100), col = "#9ACCDE", lwd = 3,
+     ylab = "Percent Viability (%)", xlab = "Concentration (uM)",
+     main = "24hr Treatment", log = "x", axes = FALSE)
+plot(doxtox24_75_model, add = TRUE, col = "#499FBD", lwd = 3, type = "none")
+plot(doxtox24_17_model, add = TRUE, col = "#254F5E", lwd = 3, type = "none")
+
+axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+
+abline(v = 0.5, col = "grey50", lty = 2, lwd = 2)
+abline(v = median_ld50, col = "red", lty = 3, lwd = 2)
+text(x = median_ld50, y = 99,
+     labels = paste0("Median LD50 = ", round(median_ld50, 2), " µM"),
+     col = "red", pos = 4, cex = 1, font = 2)
+
+legend("bottomleft",
+       legend = c(
+         paste0("Ind3 (LD50 =", round(ed78, 2), " µM)"),
+         paste0("Ind4 (LD50 =", round(ed75, 2), " µM)"),
+         paste0("Ind5 (LD50 =", round(ed17, 2), " µM)")
+       ),
+       col = c("#9ACCDE", "#499FBD", "#254F5E"),
+       lwd = 3, lty = c(1,1,1), cex = 1,
+       title = "Individuals")
+
+dev.off()
+
+# ---------------- SVG Export ----------------
+svg(filename = svg_path,
+    width = plot_width, height = plot_height)
+
+# repeat plotting code with same adjustments
+plot(doxtox24_78_model, type = "none", broken = TRUE,
+     ylim = c(0,100), col = "#9ACCDE", lwd = 3,
+     ylab = "Percent Viability (%)", xlab = "Concentration (uM)",
+     main = "24hr Treatment", log = "x", axes = FALSE)
+plot(doxtox24_75_model, add = TRUE, col = "#499FBD", lwd = 3, type = "none")
+plot(doxtox24_17_model, add = TRUE, col = "#254F5E", lwd = 3, type = "none")
+axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+abline(v = 0.5, col = "grey50", lty = 2, lwd = 2)
+abline(v = median_ld50, col = "red", lty = 3, lwd = 2)
+text(x = median_ld50, y = 99,
+     labels = paste0("Median LD50 = ", round(median_ld50, 2), " µM"),
+     col = "red", pos = 4, cex = 1, font = 2)
+legend("bottomleft",
+       legend = c(
+         paste0("Ind3 (LD50 =", round(ed78, 2), " µM)"),
+         paste0("Ind4 (LD50 =", round(ed75, 2), " µM)"),
+         paste0("Ind5 (LD50 =", round(ed17, 2), " µM)")
+       ),
+       col = c("#9ACCDE", "#499FBD", "#254F5E"),
+       lwd = 3, lty = c(1,1,1), cex = 1,
+       title = "Individuals")
+
+dev.off()
+
+# ---------------- PDF Export ----------------
+pdf(file = pdf_path,
+    width = plot_width, height = plot_height)
+
+# repeat plotting code
+plot(doxtox24_78_model, type = "none", broken = TRUE,
+     ylim = c(0,100), col = "#9ACCDE", lwd = 3,
+     ylab = "Percent Viability (%)", xlab = "Concentration (uM)",
+     main = "24hr Treatment", log = "x", axes = FALSE)
+plot(doxtox24_75_model, add = TRUE, col = "#499FBD", lwd = 3, type = "none")
+plot(doxtox24_17_model, add = TRUE, col = "#254F5E", lwd = 3, type = "none")
+axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+abline(v = 0.5, col = "grey50", lty = 2, lwd = 2)
+abline(v = median_ld50, col = "red", lty = 3, lwd = 2)
+text(x = median_ld50, y = 99,
+     labels = paste0("Median LD50 = ", round(median_ld50, 2), " µM"),
+     col = "red", pos = 4, cex = 1, font = 2)
+legend("bottomleft",
+       legend = c(
+         paste0("Ind3 (LD50 =", round(ed78, 2), " µM)"),
+         paste0("Ind4 (LD50 =", round(ed75, 2), " µM)"),
+         paste0("Ind5 (LD50 =", round(ed17, 2), " µM)")
+       ),
+       col = c("#9ACCDE", "#499FBD", "#254F5E"),
+       lwd = 3, lty = c(1,1,1), cex = 1,
+       title = "Individuals")
+
+dev.off()
+
+
+
+```
+

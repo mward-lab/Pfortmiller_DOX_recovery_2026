@@ -66,7 +66,86 @@ library(purrr)
 library(rstatix)
 library(ggrastr)
 library(tibble)
+library(grid)
+```
 
+#Define custom plot theme
+```{r Custom plot theme}
+
+# Define the custom theme
+# plot_theme_custom <- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = "black"),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, "in"),
+# 
+#       #text and font
+#       axis.text = element_text(color = "black",
+#                                family = "Arial",
+#                                size = 8),
+#       axis.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 10),
+#       legend.text = element_text(color = "black",
+#                                  family = "Arial",
+#                                  size = 8),
+#       legend.title = element_text(color = "black",
+#                                   family = "Arial",
+#                                   size = 10),
+#       plot.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 12),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = "grey80", linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = "grey90", linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, "data/plot_theme_custom.RDS")
+
+theme_custom <- readRDS("data/plot_theme_custom.RDS")
+
+```
+
+#Define saving plots as pdfs
+```{r pdf saving function}
+
+save_plot <- function(plot, filename, 
+                      folder = ".", 
+                      width = 8, 
+                      height = 6, 
+                      units = "in", 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop("Please provide a filename (without extension) for the plot.")
+
+  date_str <- if (add_date) paste0("_", format(Sys.Date(), "%y%m%d")) else ""
+  pdf_file <- file.path(folder, paste0(filename, date_str, ".pdf"))
+  png_file <- file.path(folder, paste0(filename, date_str, ".png"))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = "transparent")
+  ggsave(filename = png_file, plot = plot, device = "png", width = width, height = height, units = units, dpi = dpi, bg = "transparent")
+  message("Saved plot as Cairo PDF: ", pdf_file)
+  message("Saved plot as PNG: ", png_file)
+}
+
+output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height
 ```
 
 
@@ -2981,7 +3060,8 @@ make_scatter <- function(df_sub) {
     ) +
     theme_bw(base_size = 14) +
     theme(
-      axis.line = element_line(linewidth = 1, color = "black"),
+      axis.line = element_line(linewidth = 1, 
+                               color = "black"),
       axis.ticks.length = unit(0.05, "in"),
       axis.text = element_text(color = "black"),
       panel.background = element_blank(),
@@ -12505,6 +12585,7 @@ motif1_mat_GOKEGG_RUV <- gost(query = motif1_genes_matrix_RUV,
                           measure_underrepresentation = FALSE,
                           evcodes = FALSE,
                           user_threshold = 0.05,
+                          significant = TRUE,
                           custom_bg = all_genes,
                           correction_method = c("fdr"),
                           sources = c("GO:BP", "KEGG"))
@@ -17170,7 +17251,7 @@ final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 motif1_set <- unique(na.omit(final_genes_1_RUV))
 motif2_set <- unique(na.omit(final_genes_2_RUV))
 
-all_tested_genes <- unique(c(motif1_set, motif2_set))
+all_tested_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
 
 comparison_DEGs <- list(
   DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
@@ -17290,7 +17371,7 @@ final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 motif1_set <- unique(na.omit(final_genes_1_RUV))
 motif2_set <- unique(na.omit(final_genes_2_RUV))
 
-all_tested_genes <- unique(c(motif1_set, motif2_set))
+all_tested_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
 
 #remove DOX and preserve order DNR EPI MTX CX
 comparison_DEGs_noDOX <- list(
@@ -17340,23 +17421,30 @@ forest_TOP2i <- ggplot(forest_summary,
                            xmin = CI_low, xmax = CI_high, 
                            color = Group)) + 
   geom_point(size = 4) +
-  geom_errorbarh(height = 0.5, size = 0.5, color = "black") +
+  geom_errorbarh(height = 0.2, linewidth = 0.5, color = "black") +
   geom_text(aes(label = Significant), position = position_nudge(y = 0.1), 
             color = "black", fontface = "bold", size = 5) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
-  # scale_x_log10(limits = c(0.1, 1000),
-  #               breaks = c(0.1, 1, 10, 100, 1000)) +
-  xlim(c(0,250)) +
-  scale_color_manual(values = c("RM" = "#3592DE", "SP" = "#902DEF")) +
+  scale_x_log10(limits = c(0.1, 1000),
+                breaks = c(0.1, 1, 10, 100, 1000)) +
+  # xlim(c(0,250)) +
+  scale_color_manual(values = c("_" = "grey", "_" = "grey")) + #remove the groups this way even though it's not the best method
   labs(
     title = "Sustained vs Recovered TOP2i Odds Ratios",
-    x = "Odds Ratio",
-    y = "TOP2i Treatment",
-    color = "Group"
+    x = "Odds Ratio (log scale)",
+    y = "TOP2i Treatment"
+    # color = "Group"
   ) +
   theme_bw(base_size = 14)
 
 forest_TOP2i
+
+#make a summary table
+
+forest_summary_TOP2i <- forest_summary
+
+View(forest_summary_TOP2i)
+
 ```
 
 
@@ -17368,33 +17456,38 @@ forest_TOP2i
 
 #define gene sets by SYMBOL - convert to Entrez_ID shortly
 
-library(dplyr)
-library(ggplot2)
-library(tibble)
-library(org.Hs.eg.db)
+# liu_set <- c("UGT1A9","PPP2R2B","SPINK6","HPGDS","SCMH1","CA12","ERBB2","HADHA","DUSP14","DGKH", "DHODH","MYLK3","TRAPPC4","ESRRG","CALY","MAPKBP1","DPEP1","ME3","PRSS1","SLC7A11","FNTA")
 
-liu_set <- c("UGT1A9","PPP2R2B","SPINK6","HPGDS","SCMH1","CA12","ERBB2","HADHA","DUSP14","DGKH", "DHODH","MYLK3","TRAPPC4","ESRRG","CALY","MAPKBP1","DPEP1","ME3","PRSS1","SLC7A11","FNTA")
+# length(liu_set)
 
-length(liu_set)
+# sapp_set <- c("EDC4","GALNT18","C1QTNF2","EIF1AD","PALMD","XRN2","TMEM189","MANEAL","C11orf49","ARL6IP4", "GUCY2C","GLIPR1L2","F10","MRS2","MYC","SLCO1A2","TFPT","MATR3","ENTHD2","CAB39L","EXOSC10","KDM3B","C11orf57","KIAA1033","CYP3A7","C5orf51","RRAS","BUD13","ZNHIT3","PRRG3","GGT6","FUNDC2","SLCO1B3","GLRX3","POU6F1","TEX36","PLEKHO1","TGFA","DUSP15","COX5B","IFT81","ZNF474","MSANTD4","DGCR8","OSBPL9","MPDU1","KCNJ14","INF2","TSSC1","STT3A","GRAMD4","GTDC1","CORO1B","CCDC61","ING1","SLC25A6","GH2","STEAP4","POM121","POLQ","DNAJC10","ARTN","CRYGB","NUCB2","SLC25A51","DGCR2","CCDC85C","TOMM40","TNNC2","SHD","CMPK2","ARHGAP32","CDC14A","OR8G5","ZNF559","ENPP3","HOXA10","TAGLN2","CABYR","BST2","NAT1","PDE1B","COL19A1","COL4A2","ATPAF2","HIRIP3","RNF13","CD163","SERPINC1","SMPDL3B","OR52N4","BCAN","H1F0","EPS8","TECPR1","NAA25","KIAA1161","PTPN13","C6orf165","IL18BP","LTB4R","SLC2A2","CYCS","KLHL30","LYPD3","ABCD1","PUS3","GKN2","FAM169B","MBD3L2","OR10P1","SDR9C7","ACTBL2","ZNF630","ATP13A3","VPS29","ARSG","TTC39C","HUNK","C14orf93","SLC1A3","NPY1R","ZNF883","DLGAP3","MKLN1","UNK","HES1","PAGE2B","DCAF17","NDFIP1","HAUS5","DSCR3","CBLL1","PITPNM1","SLC16A9","SNAP47","SLC10A6","C15orf56","CLPSL2","RASAL3","C19orf25","ITGAE","KRT38","ADAM19","TMEM53","PYURF","SREBF2","RPL17","ATXN7L1","IL15RA","LYRM5","MPV17","KRTAP3-1","TMEM170B","SLC35G2","PPP1R16A","SH3TC2","LGALS8","DDX28","HERPUD2","CAMTA2","DERL1","OR5D16","DDX17","COPZ2","KRT10", "KIAA1024","NINL","SMARCAD1")
+# 
+# length(sapp_set)
+# 
+# dic_set
 
-sapp_set <- c("EDC4","GALNT18","C1QTNF2","EIF1AD","PALMD","XRN2","TMEM189","MANEAL","C11orf49","ARL6IP4", "GUCY2C","GLIPR1L2","F10","MRS2","MYC","SLCO1A2","TFPT","MATR3","ENTHD2","CAB39L","EXOSC10","KDM3B","C11orf57","KIAA1033","CYP3A7","C5orf51","RRAS","BUD13","ZNHIT3","PRRG3","GGT6","FUNDC2","SLCO1B3","GLRX3","POU6F1","TEX36","PLEKHO1","TGFA","DUSP15","COX5B","IFT81","ZNF474","MSANTD4","DGCR8","OSBPL9","MPDU1","KCNJ14","INF2","TSSC1","STT3A","GRAMD4","GTDC1","CORO1B","CCDC61","ING1","SLC25A6","GH2","STEAP4","POM121","POLQ","DNAJC10","ARTN","CRYGB","NUCB2","SLC25A51","DGCR2","CCDC85C","TOMM40","TNNC2","SHD","CMPK2","ARHGAP32","CDC14A","OR8G5","ZNF559","ENPP3","HOXA10","TAGLN2","CABYR","BST2","NAT1","PDE1B","COL19A1","COL4A2","ATPAF2","HIRIP3","RNF13","CD163","SERPINC1","SMPDL3B","OR52N4","BCAN","H1F0","EPS8","TECPR1","NAA25","KIAA1161","PTPN13","C6orf165","IL18BP","LTB4R","SLC2A2","CYCS","KLHL30","LYPD3","ABCD1","PUS3","GKN2","FAM169B","MBD3L2","OR10P1","SDR9C7","ACTBL2","ZNF630","ATP13A3","VPS29","ARSG","TTC39C","HUNK","C14orf93","SLC1A3","NPY1R","ZNF883","DLGAP3","MKLN1","UNK","HES1","PAGE2B","DCAF17","NDFIP1","HAUS5","DSCR3","CBLL1","PITPNM1","SLC16A9","SNAP47","SLC10A6","C15orf56","CLPSL2","RASAL3","C19orf25","ITGAE","KRT38","ADAM19","TMEM53","PYURF","SREBF2","RPL17","ATXN7L1","IL15RA","LYRM5","MPV17","KRTAP3-1","TMEM170B","SLC35G2","PPP1R16A","SH3TC2","LGALS8","DDX28","HERPUD2","CAMTA2","DERL1","OR5D16","DDX17","COPZ2","KRT10", "KIAA1024","NINL","SMARCAD1")
+# # --- Step 2: Convert SYMBOL to Entrez IDs ---
+# convert_to_entrez <- function(symbols) {
+#   mapped <- AnnotationDbi::select(org.Hs.eg.db,
+#                                   keys = symbols,
+#                                   keytype = "SYMBOL",
+#                                   columns = "ENTREZID")
+#   unique(na.omit(mapped$ENTREZID))
+# }
+# 
+# liu_ids  <- convert_to_entrez(liu_set)
+# sapp_ids <- convert_to_entrez(sapp_set)
+# # dic_ids  <- convert_to_entrez(dic_set)
 
-length(sapp_set)
+# saveRDS(liu_ids, "data/new/RUV/liu_dataset_entrez.RDS")
+# saveRDS(sapp_ids, "data/new/RUV/sapp_dataset_entrez.RDS")
+# saveRDS(dic_set, "data/new/RUV/fonoudi_dataset_entrez.RDS")
 
-dic_set
-
-# --- Step 2: Convert SYMBOL to Entrez IDs ---
-convert_to_entrez <- function(symbols) {
-  mapped <- AnnotationDbi::select(org.Hs.eg.db,
-                                  keys = symbols,
-                                  keytype = "SYMBOL",
-                                  columns = "ENTREZID")
-  unique(na.omit(mapped$ENTREZID))
-}
-
-liu_ids  <- convert_to_entrez(liu_set)
-sapp_ids <- convert_to_entrez(sapp_set)
-# dic_ids  <- convert_to_entrez(dic_set)
+#read in the new processed gene sets after conversion to entrez ids
+liu_ids <- readRDS("data/new/RUV/liu_dataset_entrez.RDS")
+sapp_ids <- readRDS("data/new/RUV/sapp_dataset_entrez.RDS")
+fonoudi_ids <- readRDS("data/new/RUV/fonoudi_dataset_entrez.RDS")
+#fonoudi is also known as DIC but change that name to represent your other AIC gene set instead; AIC = DIC now
 
 # --- Step 3: Define DE gene sets (replace with your Entrez IDs) ---
 DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
@@ -17431,8 +17524,8 @@ categorize_gene <- function(g) {
 studies <- list(
   Liu   = liu_ids,
   Sapp  = sapp_ids,
-  Fonoudi   = dic_set,
-  AllGenes = unique(c(liu_ids, sapp_ids, dic_set))
+  Fonoudi   = fonoudi_ids,
+  AllGenes = all_genes
 )
 
 df <- lapply(names(studies), function(study) {
@@ -17454,7 +17547,7 @@ summary_table %>%
   print(n = Inf)  # show all rows
 
 # --- Step 6b: Factor Study with AllGenes last ---
-study_levels <- c("AllGenes", "DIC", "Liu", "Sapp")
+study_levels <- c("AllGenes", "Fonoudi", "Liu", "Sapp")
 summary_table <- summary_table %>%
   mutate(
     Study = factor(Study, levels = study_levels)
@@ -17502,7 +17595,7 @@ final_genes_1_RUV
 final_genes_2_RUV
 
 # All genes
-all_genes <- unique(c(liu_ids, sapp_ids, dic_set))
+all_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
 
 # --- Step 2: Function to categorize by motif membership ---
 categorize_motif <- function(g) {
@@ -17568,7 +17661,7 @@ ggplot(summary_motif,
     "Recovered"  = "#1f77b4",
     "Sustained"  = "#ff7f0e"
     )) +
-  scale_x_discrete(labels = c("All", "Fonoudi", "Liu", "Sapp")) +
+  scale_x_discrete(labels = c("Motif Genes", "Fonoudi et al.", "Liu et al.", "Sapp et al.")) +
   theme_minimal(base_size = 14) +
   labs(
     y = "Proportion of Genes",
@@ -17651,6 +17744,7 @@ length(sustained_overlap)
 knowles4_ids <- unique(knowles_eqtls_supp4_annot$Entrez_ID[!is.na(knowles_eqtls_supp4_annot$Entrez_ID)])
 knowles5_ids <- unique(knowles_eqtls_supp5_annot$Entrez_ID[!is.na(knowles_eqtls_supp5_annot$Entrez_ID)])
 all_genes_knowles <- unique(c(knowles4_ids, knowles5_ids))
+all_tested_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
 
 # Motif sets in Entrez_ID
 recovered_entrez <- final_genes_1_RUV
@@ -17658,9 +17752,9 @@ sustained_entrez <- final_genes_2_RUV
 
 # --- Step 2: Define studies ---
 studies_knowles <- list(
-  AllGenes_Knowles = all_genes_knowles,
-  `Marginal eQTLs` = knowles4_ids,
-  `Response eQTLs` = knowles5_ids
+  MotifGenes = all_tested_genes,
+  "Marginal eQTLs" = knowles4_ids,
+  "Response eQTLs" = knowles5_ids
 )
 
 # --- Step 3: Categorize ---
@@ -17691,7 +17785,7 @@ summary_motif_knowles <- df_motif_knowles %>%
   mutate(Proportion = Count / TotalGenes)  # divide by total genes, not just motif genes
 
 # --- Step 6: Factor levels ---
-study_levels <- c("AllGenes_Knowles", "Marginal eQTLs", "Response eQTLs")
+study_levels <- c("Motif Genes", "Marginal eQTLs", "Response eQTLs")
 category_levels <- c("Sustained", "Recovered")
 
 summary_motif_knowles <- summary_motif_knowles %>%
@@ -17708,8 +17802,8 @@ ggplot(df_motif_knowles, aes(x = Study, y = Proportion, fill = Category)) +
             position = position_stack(vjust = 0.5),
             size = 3.5, color = "white") +
   # n = total motif genes inside the bars (at top of each bar)
-  geom_text(data = df_motif_knowles %>% group_by(Study) %>% summarise(TotalMotifGenes = unique(TotalMotifGenes)),
-            aes(x = Study, y = 1, label = paste0("n = ", TotalMotifGenes)),
+  geom_text(data = df_motif_knowles %>% group_by(Study) %>% summarise(all_tested_genes = unique(all_tested_genes)),
+            aes(x = Study, y = 1, label = paste0("n = ", all_tested_genes)),
             inherit.aes = FALSE, vjust = -0.2, size = 3.5, color = "black") +
   # Significance connecting line above Marginal vs Response
   geom_segment(aes(x = 2, xend = 3, y = 1.05, yend = 1.05), inherit.aes = FALSE, size = 0.7) +
@@ -17807,13 +17901,165 @@ summary_table %>%
 
 ```
 
+#USE THIS ONE eQTLs
+```{r}
+
+# Knowles eQTLs vs Motif Genes
+
+# --- Step 1: Load data ---
+# knowles_eqtls_supp4 <- readRDS("data/new/eQTLs/knowles_eqtls_supp4.RDS")
+# knowles_eqtls_supp5 <- readRDS("data/new/eQTLs/knowles_eqtls_supp5.RDS")
+
+# --- Step 2: Helper to convert Ensembl -> Entrez ---
+# convert_ids <- function(df, id_col = "gene") {
+#   ids <- df[[id_col]]
+#   mapped <- AnnotationDbi::select(
+#     org.Hs.eg.db,
+#     keys = ids,
+#     keytype = "ENSEMBL",
+#     columns = c("ENTREZID", "SYMBOL")
+#   )
+#   colnames(mapped)[colnames(mapped) == "ENSEMBL"] <- id_col
+#   colnames(mapped)[colnames(mapped) == "ENTREZID"] <- "Entrez_ID"
+#   
+#   df_out <- df %>%
+#     left_join(mapped, by = id_col)
+#   return(df_out)
+# }
+
+# knowles_eqtls_supp4_annot <- convert_ids(knowles_eqtls_supp4, "gene")
+# knowles_eqtls_supp5_annot <- convert_ids(knowles_eqtls_supp5, "gene")
+
+
+# saveRDS(knowles_eqtls_supp4_annot, "data/new/eQTLs/knowles_eqtls_supp4_entrez.RDS")
+# saveRDS(knowles_eqtls_supp5_annot, "data/new/eQTLs/knowles_eqtls_supp5_entrez.RDS")
+
+#load entrez and hgnc converted dataframes
+
+knowles_eqtls_supp4_annot <- readRDS("data/new/eQTLs/knowles_eqtls_supp4_entrez.RDS")
+knowles_eqtls_supp5_annot <- readRDS("data/new/eQTLs/knowles_eqtls_supp5_entrez.RDS")
+
+# --- Step 3: Extract Entrez IDs ---
+knowles4_ids <- unique(knowles_eqtls_supp4_annot$Entrez_ID[!is.na(knowles_eqtls_supp4_annot$Entrez_ID)])
+knowles5_ids <- unique(knowles_eqtls_supp5_annot$Entrez_ID[!is.na(knowles_eqtls_supp5_annot$Entrez_ID)])
+all_genes_knowles <- unique(c(knowles4_ids, knowles5_ids))
+
+# --- Step 4: Motif gene sets (already in Entrez_ID) ---
+recovered_entrez <- final_genes_1_RUV
+sustained_entrez <- final_genes_2_RUV
+all_tested_genes <- unique(c(recovered_entrez, sustained_entrez))
+
+# --- Step 5: Categorization function ---
+categorize_motif <- function(g) {
+  if (g %in% recovered_entrez) return("Recovered")
+  else if (g %in% sustained_entrez) return("Sustained")
+  else return(NA)
+}
+
+# --- Step 6: Build summary per study ---
+studies_knowles <- list(
+  "Motif Genes"    = all_tested_genes,
+  "Marginal eQTLs" = knowles4_ids,
+  "Response eQTLs" = knowles5_ids
+)
+
+df_motif_knowles <- lapply(names(studies_knowles), function(study) {
+  ids <- studies_knowles[[study]]
+  cats <- sapply(ids, categorize_motif)
+  
+  data.frame(Category = cats, stringsAsFactors = FALSE) %>%
+    filter(!is.na(Category)) %>%
+    group_by(Category) %>%
+    summarise(Count = n(), .groups = "drop") %>%
+    complete(Category = c("Recovered", "Sustained"), fill = list(Count = 0)) %>%
+    mutate(Study = study,
+           TotalGenes = sum(Count),
+           Proportion = Count / sum(Count))
+}) %>% bind_rows()
+
+# --- Step 7: Factor ordering ---
+df_motif_knowles <- df_motif_knowles %>%
+  mutate(
+    Study = factor(Study, levels = c("Motif Genes", "Marginal eQTLs", "Response eQTLs")),
+    Category = factor(Category, levels = c("Sustained", "Recovered"))
+  )
+
+# --- Step 8: Fisher’s Exact Test (Marginal vs Response) ---
+df_marginal <- df_motif_knowles %>% filter(Study == "Marginal eQTLs") %>% select(Category, Count)
+df_response <- df_motif_knowles %>% filter(Study == "Response eQTLs") %>% select(Category, Count)
+
+cont_table <- matrix(c(
+  df_marginal$Count[df_marginal$Category == "Recovered"],
+  df_marginal$Count[df_marginal$Category == "Sustained"],
+  df_response$Count[df_response$Category == "Recovered"],
+  df_response$Count[df_response$Category == "Sustained"]
+), nrow = 2, byrow = TRUE)
+rownames(cont_table) <- c("Marginal", "Response")
+colnames(cont_table) <- c("Recovered", "Sustained")
+
+fisher_res <- fisher.test(cont_table)
+
+# Significance stars
+sig_label <- if (fisher_res$p.value < 0.001) {
+  "***"
+} else if (fisher_res$p.value < 0.01) {
+  "**"
+} else if (fisher_res$p.value < 0.05) {
+  "*"
+} else {
+  "ns"
+}
+
+# --- Step 9: Plot ---
+p <- ggplot(df_motif_knowles, aes(x = Study, y = Proportion, fill = Category)) +
+  geom_bar(stat = "identity") +
+  # % labels inside bars
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1, suffix = NULL)),
+            position = position_stack(vjust = 0.5), size = 3.5, color = "white") +
+  geom_text(data = df_motif_knowles %>% group_by(Study) %>% summarise(n = sum(Count)),
+            aes(x = Study, y = 1, label = paste0("n = ", n)),
+            inherit.aes = FALSE, vjust = -0.2, size = 3.5, color = "black") +
+  # Significance annotation above Marginal vs Response
+  geom_segment(aes(x = 2, xend = 3, y = 0.9, yend = 0.9),
+               inherit.aes = FALSE, size = 0.7) +
+  geom_text(aes(x = 2.5, y = 1.08, label = sig_label),
+            inherit.aes = FALSE, size = 6) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1.1)) +
+  scale_fill_manual(values = c("Recovered" = "#1f77b4", "Sustained" = "#ff7f0e")) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Proportion of Motif Genes (%)",
+    x = "",
+    fill = "Motif Category",
+    title = "Knowles et al.: Proportion of eQTL-associated Motif Genes"
+  )
+
+print(p)
+
+# --- Step 10: Output summary stats ---
+summary_stats <- data.frame(
+  Comparison = "Marginal vs Response eQTLs",
+  P_value = fisher_res$p.value,
+  Odds_Ratio = fisher_res$estimate,
+  CI_lower = fisher_res$conf.int[1],
+  CI_upper = fisher_res$conf.int[2]
+)
+
+print("===== Contingency Table =====")
+print(cont_table)
+print("===== Fisher’s Exact Test Results =====")
+print(summary_stats)
+
+
+```
+
 
 #Combine all studies and split by type
 ```{r Combine all studies}
 
 
 # --- Step 1: Collect gene sets from all sources ---
-all_genes <- unique(c(liu_ids, sapp_ids, dic_set))
+all_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
 
 # Add Knowles Supp4 + Supp5 gene sets
 knowles4_ids <- unique(knowles_eqtls_supp4_annot$HGNC[!is.na(knowles_eqtls_supp4_annot$HGNC)])
@@ -17890,6 +18136,483 @@ ggplot(summary_motif, aes(x = Study, y = Proportion, fill = Category)) +
     fill = "Motif Category",
     title = "Knowles et al.: Proportion of eQTL-associated Genes by Motif Category"
   )
+
+```
+
+#New Analysis 09/25/25
+##Motifs overlapping DEGs barplot
+```{r Barplot of CMF motifs on DEGs}
+
+#Import the CMF genes that you'll be using for these barplots
+final_genes_1_RUV <- readRDS("data/new/RUV/CMF/final_genes_1_RUV.RDS")
+final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
+
+
+#define DE gene sets
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
+DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
+
+DE_24T <- DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05]
+DE_24R <-  DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05]
+DE_144R <- DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
+
+# Background (all genes tested)
+all_genes <- rownames(filcpm_matrix)
+cat("Total background genes:", length(all_genes), "\n")
+#should be comparing to background of all expressed genes, 14319 total
+
+# --- Step 4: Function to classify ---
+categorize_gene <- function(g) {
+  in24T <- g %in% DE_24T
+  in24R <- g %in% DE_24R
+  in144R <- g %in% DE_144R
+  
+  if (in24T && !in24R && !in144R) {
+    return("DE in 24T only")
+  } else if (in24T && in24R && !in144R) {
+    return("DE in 24T and 24R")
+  } else if (in24T && in24R && in144R) {
+    return("DE in all timepoints")
+  } else {
+    return("Not DE")
+  }
+}
+
+# --- Step 5: Build data frame ---
+motif_gene_test <- list(
+  Sustained   = final_genes_2_RUV,
+  Recovered  = final_genes_1_RUV,
+  AllGenes = unique(all_genes, na.rm = TRUE)
+)
+
+df <- lapply(names(motif_gene_test), function(motif_study) {
+  ids <- motif_gene_test[[motif_study]]
+  cats <- sapply(ids, categorize_gene)
+  data.frame(Motif_study = motif_study, Category = cats)
+}) %>% bind_rows()
+
+# --- Step 6: Summarize counts and proportions ---
+summary_table_mtf <- df %>%
+  group_by(Motif_study, Category) %>%
+  summarise(Count = n(), .groups = "drop_last") %>%
+  mutate(Proportion = Count / sum(Count))
+
+# --- Step 6b: Print summary table in console ---
+summary_table_mtf %>%
+  arrange(Motif_study, Category)
+
+# --- Step 6b: Factor Study with AllGenes last ---
+mtf_levels <- c("AllGenes", "Sustained", "Recovered")
+summary_table_mtf <- summary_table_mtf %>%
+  mutate(
+    Study = factor(Motif_study, levels = mtf_levels),
+    Percent = round(Proportion*100, 1)
+  )  %>%  
+  print(n = Inf) 
+
+# --- Step 6c: Rename categories for plot labels ---
+category_labels <- c(
+  "DE in 24T only"       = "DE in t0 only",
+  "DE in 24T and 24R"    = "DE in t0 + t24",
+  "DE in all timepoints" = "DE in t0 + t24 + t144",
+  "Not DE"               = "Not DE"
+)
+
+# --- Step 7: Plot with reordered bars and relabeled categories ---
+mtf_deg_overlap_plot <- ggplot(summary_table_mtf, aes(x = Motif_study, y = Percent, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = Percent),
+            position = position_stack(vjust = 0.5),
+            size = 3.5, color = "white") +
+  scale_y_continuous(limits = c(0,100)) +
+  scale_fill_manual(
+    values = c(
+      "DE in 24T only"       = "#1f77b4",
+      "DE in 24T and 24R"    = "#ff7f0e",
+      "DE in all timepoints" = "#2ca02c",
+      "Not DE"               = "#d62728"
+    ),
+    labels = category_labels
+  ) +
+  scale_x_discrete() +
+  theme_custom()  +
+  labs(
+    y = "Percent of Genes (%)",
+    x = "",
+    fill = "Category"
+  )
+
+print(mtf_deg_overlap_plot)
+
+save_plot(
+  plot = mtf_deg_overlap_plot,
+  filename = "DEGs_vs_motifs_EMP",
+  folder = output_folder
+)
+
+```
+
+##Evaluate Sustained motif over time vs DEGs
+```{r Categories for Sustained Motif Genes}
+
+#read in the gene set that you'll use - sustained
+final_genes_2_RUV
+
+#read in toptables after RUV, need logFC 
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% 
+  dplyr::select(-(X))
+DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% 
+  dplyr::select(-(X))
+DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% 
+  dplyr::select(-(X))
+
+combined_toptables_dxr <- list(
+  "24T" = DOX_24T_R,
+  "24R" = DOX_24R_R,
+  "144R" = DOX_144R_R
+)
+
+#filter for significance based on adj p < 0.05 and mutate logFC into absolute logFC (absFC)
+all_DEGs_dxr <- lapply(combined_toptables_dxr, function(df) {
+  df %>% 
+    dplyr::filter(adj.P.Val < 0.05) %>% 
+    mutate(absFC = abs(logFC))
+})
+
+#background (all expressed genes)
+all_genes <- rownames(filcpm_matrix)
+cat("Total background genes:", length(all_genes), "\n")
+#should be comparing to background of all expressed genes, 14319 total
+
+#I have four categories I would like to classify my sustained gene set into to see if sustained is an appropriate name
+#are the genes changing over time? are they staying the same?
+#category 1: DEGs at t144
+#category 2: t144 > t0
+#category 3: t144 < t0
+#category 4: t144 = t0
+
+#now that I have the absolute logFC and the list of my significant DEGs, make a function
+
+#create a function to categorize my sustained genes
+categorize_sustained <- function(gene, all_DEGs_dxr) {
+  #pull tibbles
+  t24T  <- all_DEGs_dxr[["24T"]]
+  t144R <- all_DEGs_dxr[["144R"]]
+  
+  #pull absLogFC values if gene exists, else NA
+  absFC_24T  <- if (gene %in% t24T$Entrez_ID)  t24T %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+  absFC_144R <- if (gene %in% t144R$Entrez_ID) t144R %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+  
+  #assign categories based on comparison first
+  if (!is.na(absFC_24T) & !is.na(absFC_144R)) {
+    if (absFC_144R > absFC_24T) {
+      return("absFC t144 > t0")
+    } else if (absFC_144R < absFC_24T) {
+      return("absFC t144 < t0")
+    } else if (absFC_144R == absFC_24T) {
+      return("absFC t144 = t0")
+    }
+  }
+  if (gene %in% t144R$Entrez_ID) {
+    return("DEG at t144")
+  }
+  
+  return("Not DE")
+}
+
+#apply function to sustained motif 2 genes
+sustained_cats <- sapply(final_genes_2_RUV, categorize_sustained, all_DEGs_dxr = all_DEGs_dxr)
+
+#build dataframe for plotting
+df_sustained <- data.frame(
+  Study = "Sustained",
+  Entrez_ID = final_genes_2_RUV,
+  Category = sustained_cats,
+  stringsAsFactors = FALSE
+)
+
+#make another small dataframe including the logFC abslogFC etc
+#prepare each toptable manually
+t24T <- combined_toptables_dxr[["24T"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_24T = logFC,
+    adjP_24T  = adj.P.Val,
+    Sig_24T   = ifelse(adj.P.Val < 0.05, "yes", "no"),
+    absFC_24T = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_24T, adjP_24T, Sig_24T, absFC_24T)
+
+t24R <- combined_toptables_dxr[["24R"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_24R = logFC,
+    adjP_24R  = adj.P.Val,
+    Sig_24R   = ifelse(adj.P.Val < 0.05, "yes", "no"),
+    absFC_24R = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_24R, adjP_24R, Sig_24R, absFC_24R)
+
+t144R <- combined_toptables_dxr[["144R"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_144R = logFC,
+    adjP_144R  = adj.P.Val,
+    Sig_144R   = ifelse(adj.P.Val < 0.05, "yes", "no"),
+    absFC_144R = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_144R, adjP_144R, Sig_144R, absFC_144R)
+
+#change type to match
+df_sustained$Entrez_ID <- as.integer(df_sustained$Entrez_ID)
+t24T$Entrez_ID <- as.integer(t24T$Entrez_ID)
+t24R$Entrez_ID <- as.integer(t24R$Entrez_ID)
+t144R$Entrez_ID <- as.integer(t144R$Entrez_ID)
+
+
+# Join all timepoints to sustained genes
+df_sustained_full <- df_sustained %>%
+  left_join(t24T,   by = "Entrez_ID") %>%
+  left_join(t24R,   by = "Entrez_ID") %>%
+  left_join(t144R,  by = "Entrez_ID")
+
+# write.csv(df_sustained_full, "data/new/RUV/CMF/sustained_df_logfc_changes_EMP_250925.csv")
+
+######
+
+summary_sustained <- df_sustained %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count))
+
+#define colors and labels
+category_labels <- c(
+  "DEGs at 144R"       = "DEGs at t144",
+  "absFC t144 > t0"   = "absFC t144 > t0",
+  "absFC t144 < t0"   = "absFC t144 < t0",
+  "absFC t144 = t0"   = "absFC t144 = t0",
+  "Not DE"             = "Not DE"
+)
+
+category_colors <- c(
+  "DEG at t144"       = "#2ca02c",
+  "absFC t144 > t0"   = "#1f77b4",
+  "absFC t144 < t0"   = "#ff7f0e",
+  "absFC t144 = t0"   = "#d62728",
+  "Not DE"             = "#d3d3d3"
+)
+
+#plot proportion barplot
+ggplot(summary_sustained, aes(x = Study, y = Proportion, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = category_colors, labels = category_labels) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "Proportion of Sustained Genes",
+    x = "",
+    fill = "Category"
+  )
+
+#create summary table
+summary_table_sustained <- summary_sustained %>%
+  arrange(desc(Proportion)) %>%
+  mutate(
+    Percent = round(Proportion * 100, 1)
+  )
+
+#print full table
+print(summary_table_sustained, n = Inf)
+
+###########################################
+#now I want to edit this code to not plot the nonDE section
+
+categorize_sustained_4 <- function(gene, all_DEGs_dxr) {
+  #pull tibbles
+  t24T  <- all_DEGs_dxr[["24T"]]
+  t144R <- all_DEGs_dxr[["144R"]]
+  
+  #pull absLogFC values if gene exists, else NA
+  absFC_24T  <- if (gene %in% t24T$Entrez_ID)  t24T %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+  absFC_144R <- if (gene %in% t144R$Entrez_ID) t144R %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+  
+  #assign categories based on comparison first
+  if (!is.na(absFC_24T) & !is.na(absFC_144R)) {
+    if (absFC_144R > absFC_24T) {
+      return("absFC t144 > t0")
+    } else if (absFC_144R < absFC_24T) {
+      return("absFC t144 < t0")
+    } else if (absFC_144R == absFC_24T) {
+      return("absFC t144 = t0")
+    }
+  }
+  if (gene %in% t144R$Entrez_ID) {
+    return("DEG at t144")
+  }
+  return(NA)
+}
+
+#build dataframe for plotting from sustained genes function
+df_sustained_4 <- data.frame(
+  Study = "Sustained",
+  Entrez_ID = final_genes_2_RUV,
+  Category = sapply(final_genes_2_RUV, categorize_sustained_4, all_DEGs_dxr = all_DEGs_dxr)
+)
+
+df_sustained_4 <- df_sustained_4 %>% 
+  dplyr::filter(!is.na(Category))
+
+summary_sustained_4 <- df_sustained_4 %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count),
+         Percent = Count/sum(Count) * 100)
+
+#define colors and labels
+category_labels_4 <- c(
+  "DEGs at 144R"       = "DEGs at t144",
+  "absFC t144 > t0"   = "absFC t144 > t0",
+  "absFC t144 < t0"   = "absFC t144 < t0",
+  "absFC t144 = t0"   = "absFC t144 = t0"
+)
+
+category_colors_4 <- c(
+  "DEG at t144"       = "#2ca02c",
+  "absFC t144 > t0"   = "#1f77b4",
+  "absFC t144 < t0"   = "#ff7f0e",
+  "absFC t144 = t0"   = "#d62728"
+)
+
+#barplot for DE categories only
+plot_summary_sustained_4 <- ggplot(summary_sustained_4, aes(x = Study, y = Percent, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  scale_y_continuous(limits = c(0,100)) +
+  scale_fill_manual(values = category_colors_4,
+                    labels = category_labels_4) +
+  theme_custom() +
+  labs(
+    y = "Percent of Sustained Genes (%)",
+    x = "",
+    fill = "Category"
+  )
+
+print(plot_summary_sustained_4)
+
+save_plot(
+  plot = plot_summary_sustained_4,
+  filename = "Sustained_Proportion_Barplot_DEGs_EMP",
+  folder = output_folder
+)
+```
+
+###Go Analysis t144 > t0 genes
+```{r GO Analysis increasing abslogFC Previous}
+#Of the previous data, I am interested in the genes from our sustained motif that are increasingly different over time 
+#this would be the 136 genes where t144 > t0
+
+#I changed this one from filtering for sig DEGs to all
+# df_sustained_full_all <- df_sustained_full
+# saveRDS(df_sustained_full_all, "data/new/RUV/CMF/sustained_proportions_dataframe.RDS")
+
+df_sustained_full_all <- readRDS("data/new/RUV/CMF/sustained_proportions_dataframe.RDS")
+
+inc_sus_genes <- df_sustained_full_all %>% 
+  dplyr::filter(Category == "absFC t144 > t0")
+  
+inc_sus_gene_list <- inc_sus_genes$Entrez_ID
+
+#background
+# all_genes
+
+length(inc_sus_gene_list)
+#136 genes in this set
+#now 296 t144 > t0 when not filt degs
+
+incsus_GOKEGG_RUV <- gost(query = inc_sus_gene_list,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = FALSE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+incsus_GOKEGG_genes_RUV <- gostplot(incsus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+incsus_GOKEGG_genes_RUV
+
+table_incsus_GOKEGG_genes_RUV <- incsus_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_incsus_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+ # write.csv(table_incsus_GOKEGG_genes_RUV, "data/new/RUV/CMF/table_incsus_GOKEGG_genes_RUV.csv")
+
+#GO:BP
+table_incsus_genes_GOBP_RUV <- table_incsus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+incsus_table_genes_GOBP_plot <- ggplot(table_incsus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, log_val), col= log_val)) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("t144 > t0 Sustained Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(incsus_table_genes_GOBP_plot)
+
+save_plot(
+  plot = incsus_table_genes_GOBP_plot,
+  filename = "Sustained_t144vt0_GOBP_logval_all_EMP",
+  folder = output_folder
+)
+
+#KEGG
+table_incsus_genes_KEGG_RUV <- table_incsus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+incsus_table_genes_KEGG_plot <- ggplot(table_incsus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, log_val), col= log_val)) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("t144 > t0 Sustained Enriched KEGG Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(incsus_table_genes_KEGG_plot)
+
+save_plot(
+  plot = incsus_table_genes_KEGG_plot,
+  filename = "Sustained_t144vt0_KEGG_logval_all_EMP",
+  folder = output_folder
+)
+
+```
+
+##Venn Diagram for Figure 6D
+```{r Venn Diagram }
 
 ```
 
