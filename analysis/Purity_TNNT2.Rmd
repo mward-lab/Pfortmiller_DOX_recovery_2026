@@ -1,0 +1,110 @@
+---
+title: "iPSC-CM Purity"
+author: "Emma M Pfortmiller"
+date: "2025-11-06"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: journal
+    highlight: textmate
+editor_options: 
+  chunk_output_type: console
+---
+
+editor_options: 
+  chunk_output_type: inline
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+```
+
+#Flow Cytometry Barplot
+```{r Flow Cytometry Data Barplot and Boxplots, fig.width=3, fig.height=3}
+#Individuals for Flow Cytometry
+#1 = 84-1
+#2 = 87-1
+#3 = 78-1
+#4 = 75-1
+#5 = 17-3
+#6 = 90-1
+#6R = 90-1R
+
+ind_col <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90",
+  "7" = "#C61E4E"
+)
+
+flow_dxr <- read_csv("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/Flow/Recovery_flow_purity.csv",
+                     show_col_types = FALSE)
+# View(flow_dxr)
+
+flow <- flow_dxr %>% column_to_rownames("Line")
+
+
+#make a barplot
+
+flow_dxr_df <- as.data.frame(flow_dxr)
+
+# Compute mean value
+# avg_vals_dxr <- mean(flow_dxr_df$Purity)
+
+#compute median value
+# medi_vals_dxr <- median(flow_dxr_df$Purity)
+
+# Plot
+flow_plot_tnnt2 <- ggplot(flow_dxr_df, aes(x = Ind, y = Purity)) +
+  geom_bar(stat = "identity", 
+           fill = ind_col,
+           width = 0.3 / (0.3 + 0.02)) +
+  # geom_hline(yintercept = medi_vals_dxr, 
+  #            linetype = "dashed", 
+  #            color = "black", 
+  #            linewidth = 0.7) +
+  # annotate("text", x = 5, cex = 3,
+  #          y = medi_vals_dxr + 2,
+  #          label = paste0(round(medi_vals_dxr, 1), "%"),
+  #          color = "black",
+  #          hjust = -0.6) +
+  scale_y_continuous(limits = c(0, 100), 
+                     expand = c(0, 0)) +
+  scale_x_discrete(expand = expansion(mult = c(0.02, 0.02)))+
+  labs(title = "iPSC-CM Purity",
+       y = "TNNT2 Expression (%)", 
+       x = "Individual") +
+  theme_custom() +
+  theme(plot.title = element_text(size = 10),
+        axis.title = element_text(size = 9, color = "black"),
+        axis.text.y = element_text(size =7, color = "black"),
+        axis.text.x = element_text(size =7, color = "black"),
+        strip.text.y = element_text(color = "white"))
+
+
+save_plot(
+  plot = flow_plot_tnnt2,
+  filename = "FlowCytometry_TNNT2_withrep_EMP",
+  folder = output_folder,
+  width = 2.8,
+  height = 5.25
+)
+
+```

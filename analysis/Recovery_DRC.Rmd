@@ -3301,6 +3301,7 @@ pdf_path <- file.path(out_folder, paste0(base_name, ".pdf"))
 # New scaled dimensions (2x)
 plot_height <- 7.3212
 plot_width<- 3.8604
+plot_width <- 5.7906
 
 # ---------------- PNG Export ----------------
 png(filename = png_path,
