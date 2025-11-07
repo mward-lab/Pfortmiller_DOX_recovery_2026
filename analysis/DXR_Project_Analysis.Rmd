@@ -18976,11 +18976,11 @@ recSus_genes <- readRDS("data/new/RUV/CMF/Recovering_Sustained_M2_Set_genes.RDS"
 #check overlap of proSus and recSus genes with all included sets
 all_cat_genes <- unique(unlist(gene_cats))
 recSus_overlap <- recSus_genes[recSus_genes %in% all_cat_genes]
-length(recSus_overlap) #37 genes overlapping
+length(recSus_overlap) #42 genes overlapping
 recSus_overlap
-
 #gene ids:
 #57822, 5453, 1263, 55283, 8407, 118738, 355, 10346, 272, 220001, 3014, 1111, 441631, 1017, 55332, 54331, 5228, 2242, 56963, 2232, 129607, 6382, 26154, 83959, 55959, 30811, 11200, 3976, 4071, 2261, 1310, 27445, 4897, 8794, 8797, 9134, 81704
+#check the genes to make sure that t0 > t144
 
 proSus_overlap <- proSus_genes[proSus_genes %in% all_cat_genes]
 length(proSus_overlap) #27 genes overlapping
@@ -19020,31 +19020,59 @@ sets_for_overlap <- list(
 deg_wide <- combined_toptables_dxr_RUV %>%
   mutate(
     Timepoint = case_when(
-      Time == "24T" ~ "t0",
-      Time == "24R" ~ "t24",
+      Time == "24T"  ~ "t0",
+      Time == "24R"  ~ "t24",
       Time == "144R" ~ "t144",
       TRUE ~ NA_character_
-    )) %>% 
-  dplyr::select(Entrez_ID, SYMBOL, Timepoint, adj.P.Val) %>%
+    ),
+    absFC = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, SYMBOL, Timepoint, logFC, absFC, adj.P.Val) %>%
+  filter(!is.na(SYMBOL)) %>%
   pivot_wider(
     names_from = Timepoint,
-    values_from = adj.P.Val,
-    names_prefix = "adj.P.Val_"
+    values_from = c(logFC, absFC, adj.P.Val),
+    names_sep = "_"
+  ) %>%
+  mutate(
+    DEG_t0   = adj.P.Val_t0   < 0.05,
+    DEG_t24  = adj.P.Val_t24  < 0.05,
+    DEG_t144 = adj.P.Val_t144 < 0.05
   )
 
-deg_wide <- deg_wide %>%
-  mutate(
-    DEG_t0 = adj.P.Val_t0 < 0.05,
-    DEG_t24 = adj.P.Val_t24 < 0.05,
-    DEG_t144 = adj.P.Val_t24 < 0.05
-    )
-
+recSus_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% recSus_overlap$Entrez_ID)
 
 proSus_degs <- deg_wide %>% 
   dplyr::filter(Entrez_ID %in% proSus_overlap$Entrez_ID)
 
-recSus_degs <- deg_wide %>% 
-  dplyr::filter(Entrez_ID %in% recSus_overlap$Entrez_ID)
+#check whether the assumptions are stil the same that the absFC is t0 < t144
+#recSus
+recSus_pattern <- recSus_degs %>%
+  mutate(correct_pattern = absFC_t0 > absFC_t144)
+
+#proSus
+proSus_pattern <- proSus_degs %>%
+  mutate(correct_pattern = absFC_t0 < absFC_t144)
+
+recSus_summary <- recSus_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+proSus_summary <- proSus_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+recSus_summary #37 genes follow the pattern
+proSus_summary #27 genes follow the pattern
+
+
 
 #since there are fewer genes here, I believe that there are multiples of the same genes within different categories
 gene_category_counts <- cat_genes_df %>%
@@ -19354,6 +19382,11 @@ all_DEGs_dxr <- lapply(combined_toptables_dxr, function(df) {
     mutate(absFC = abs(logFC))
 })
 
+all_genes_dxr <- lapply(combined_toptables_dxr, function(df) {
+  df %>% 
+    mutate(absFC = abs(logFC))
+})
+
 #background (all expressed genes)
 all_genes <- rownames(filcpm_matrix)
 cat("Total background genes:", length(all_genes), "\n")
@@ -19375,8 +19408,12 @@ categorize_sustained <- function(gene, all_DEGs_dxr) {
   t144 <- all_DEGs_dxr[["t144"]]
   
   #pull absLogFC values if gene exists, else NA
-  absFC_t0  <- if (gene %in% t0$Entrez_ID)  t0 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
-  absFC_t144 <- if (gene %in% t144$Entrez_ID) t144 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+  absFC_t0  <- if (gene %in% t0$Entrez_ID)  t0 %>%
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t144 <- if (gene %in% t144$Entrez_ID) t144 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
   
   #assign categories based on comparison first
   if (!is.na(absFC_t0) & !is.na(absFC_t144)) {
@@ -19439,17 +19476,17 @@ t144 <- combined_toptables_dxr[["t144"]] %>%
   dplyr::select(Entrez_ID, logFC_t144, adjP_t144, Sig_t144, absFC_t144)
 
 #change type to match
-df_sustainedt144$Entrez_ID <- as.integer(df_sustained$Entrez_ID)
-t24T$Entrez_ID <- as.integer(t24T$Entrez_ID)
-t24R$Entrez_ID <- as.integer(t24R$Entrez_ID)
-t144R$Entrez_ID <- as.integer(t144R$Entrez_ID)
+df_sustained$Entrez_ID <- as.integer(df_sustained$Entrez_ID)
+t0$Entrez_ID <- as.integer(t0$Entrez_ID)
+t24$Entrez_ID <- as.integer(t24$Entrez_ID)
+t144$Entrez_ID <- as.integer(t144$Entrez_ID)
 
 
 # Join all timepoints to sustained genes
 df_sustained_full <- df_sustained %>%
-  left_join(t24T,   by = "Entrez_ID") %>%
-  left_join(t24R,   by = "Entrez_ID") %>%
-  left_join(t144R,  by = "Entrez_ID")
+  left_join(t0,   by = "Entrez_ID") %>%
+  left_join(t24,   by = "Entrez_ID") %>%
+  left_join(t144,  by = "Entrez_ID")
 
 # write.csv(df_sustained_full, "data/new/RUV/CMF/sustained_df_logfc_changes_EMP_250925.csv")
 
@@ -19462,19 +19499,19 @@ summary_sustained <- df_sustained %>%
 
 #define colors and labels
 category_labels <- c(
-  "DEGs at 144R"       = "DEGs at t144",
-  "absFC t144 > t0"   = "absFC t144 > t0",
-  "absFC t144 < t0"   = "absFC t144 < t0",
+  "DEGs at t144"       = "DE at t144",
+  "absFC t0 < t144"   = "absFC t0 < t144",
+  "absFC t0 > t144"   = "absFC t0 > t144",
   "absFC t144 = t0"   = "absFC t144 = t0",
-  "Not DE"             = "Not DE"
+  "Not DE"             = "nonDE"
 )
 
 category_colors <- c(
-  "DEG at t144"       = "#2ca02c",
-  "absFC t144 > t0"   = "#1f77b4",
-  "absFC t144 < t0"   = "#ff7f0e",
+  "DE at t144"       = "#2ca02c",
+  "absFC t0 < t144"   = "#1f77b4",
+  "absFC t0 > t144"   = "#ff7f0e",
   "absFC t144 = t0"   = "#d62728",
-  "Not DE"             = "#d3d3d3"
+  "nonDE"             = "#d3d3d3"
 )
 
 #plot proportion barplot
@@ -19507,21 +19544,21 @@ print(summary_table_sustained, n = Inf)
 
 categorize_sustained_4 <- function(gene, all_DEGs_dxr) {
   #pull tibbles
-  t24T  <- all_DEGs_dxr[["24T"]]
-  t144R <- all_DEGs_dxr[["144R"]]
+  t0  <- all_DEGs_dxr[["24T"]]
+  t144 <- all_DEGs_dxr[["144R"]]
   
   #pull absLogFC values if gene exists, else NA
-  absFC_24T  <- if (gene %in% t24T$Entrez_ID)  t24T %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
-  absFC_144R <- if (gene %in% t144R$Entrez_ID) t144R %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+  absFC_24T  <- if (gene %in% t0$Entrez_ID)  t0 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+  absFC_144R <- if (gene %in% t144$Entrez_ID) t144 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
   
   #assign categories based on comparison first
   if (!is.na(absFC_24T) & !is.na(absFC_144R)) {
     if (absFC_144R > absFC_24T) {
-      return("absFC t144 > t0")
+      return("absFC t0 < t144")
     } else if (absFC_144R < absFC_24T) {
-      return("absFC t144 < t0")
+      return("absFC t0 > t144")
     } else if (absFC_144R == absFC_24T) {
-      return("absFC t144 = t0")
+      return("absFC t0 = t144")
     }
   }
   if (gene %in% t144R$Entrez_ID) {
@@ -19586,30 +19623,160 @@ save_plot(
 )
 ```
 
-###Go Analysis t144 > t0 genes
+#Sustained Groups Updated Code
+```{r Barplots for Sustained Groups}
+
+#combine my toptables together
+combined_toptables_dxr <- list(
+  "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
+  "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
+  "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
+)
+
+all_DEGs_dxr <- lapply(combined_toptables_dxr, function(df) {
+  df %>%
+    # dplyr::filter(adj.P.Val < 0.05) %>%
+    mutate(absFC = abs(logFC))
+})
+
+#make a function to categorize these genes
+categorize_sustained_fixed <- function(gene, all_DEGs_dxr) {
+  # pull DEGs at t0 and t144
+  t0   <- all_DEGs_dxr[["t0"]]
+  t144 <- all_DEGs_dxr[["t144"]]
+  
+  # absFC values if present
+  absFC_t0   <- if (gene %in% t0$Entrez_ID)   t0 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t144 <- if (gene %in% t144$Entrez_ID) t144 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  
+  # assign categories based on absFC patterns
+  if (!is.na(absFC_t0) & !is.na(absFC_t144)) {
+    if (absFC_t0 < absFC_t144) {
+      return("recSus")
+    } else if (absFC_t0 > absFC_t144) {
+      return("proSus")
+    } else if (absFC_t0 == absFC_t144) {
+      return("absFC_t0 = absFC_t144")
+    }
+  }
+  if (gene %in% t144$Entrez_ID) {
+    return("DEG_t144_only")
+  }
+  return(NA_character_)
+}
+
+#make into a dataframe
+df_sustained <- data.frame(
+  Study = "Sustained",
+  Entrez_ID = final_genes_2_RUV,
+  Category = sapply(final_genes_2_RUV, categorize_sustained_fixed, all_DEGs_dxr = all_DEGs_dxr),
+  stringsAsFactors = FALSE
+) %>%
+  dplyr::filter(!is.na(Category))
+
+#divide these out by timepoint
+t0 <- combined_toptables_dxr[["t0"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t0  = logFC,
+    adjP_t0   = adj.P.Val,
+    Sig_t0    = ifelse(adj.P.Val < 0.05, "yes", "no"),
+    absFC_t0  = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t0, absFC_t0, adjP_t0, Sig_t0)
+
+t144 <- combined_toptables_dxr[["t144"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t144 = logFC,
+    adjP_t144  = adj.P.Val,
+    Sig_t144   = ifelse(adj.P.Val < 0.05, "yes", "no"),
+    absFC_t144 = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t144, absFC_t144, adjP_t144, Sig_t144)
+
+# make sure Entrez_ID types match
+df_sustained$Entrez_ID <- as.integer(df_sustained$Entrez_ID)
+t0$Entrez_ID <- as.integer(t0$Entrez_ID)
+t144$Entrez_ID <- as.integer(t144$Entrez_ID)
+
+# join for full data frame
+df_sustained_full <- df_sustained %>%
+  left_join(t0,   by = "Entrez_ID") %>%
+  left_join(t144, by = "Entrez_ID")
+
+# ---- Summarize ----
+
+summary_sustained <- df_sustained %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count),
+         Percent = round(Proportion * 100, 1))
+
+# ---- Plot ----
+
+category_colors <- c(
+  "recSus" = "#1f77b4",  
+  "proSus" = "#ff7f0e",  
+  "absFC_t0 = absFC_t144"          = "#d62728",  
+  "DEG_t144_only"                  = "#2ca02c"   
+)
+
+plot_sustained_summary <- ggplot(summary_sustained, aes(x = Study, y = Percent, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(Percent, 1), "%\n(n = ", Count, ")")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  scale_y_continuous(limits = c(0, 102)) +
+  scale_fill_manual(values = category_colors) +
+  theme_custom() +
+  labs(
+    y = "Percent of Sustained Genes (%)",
+    x = "",
+    fill = "Category"
+  )
+
+print(plot_sustained_summary)
+
+save_plot(
+  plot = plot_sustained_summary,
+  filename = "Sustained_Proportion_Barplot_DEGs_EMP",
+  folder = output_folder
+)
+
+```
+
+
+###Go Analysis t0 < t144 genes proSus
 ```{r GO Analysis increasing abslogFC Previous}
 #Of the previous data, I am interested in the genes from our sustained motif that are increasingly different over time 
-#this would be the 205 genes where t144 > t0
+#this would be the 205 genes where t0 < t144 - named proSus
 
 #I changed this one from filtering for sig DEGs to all
 # df_sustained_full_all <- df_sustained_full
 # saveRDS(df_sustained_full_all, "data/new/RUV/CMF/sustained_proportions_dataframe.RDS")
 
-df_sustained_full_all <- readRDS("data/new/RUV/CMF/sustained_proportions_dataframe.RDS")
+# saveRDS(df_sustained_full, "data/new/RUV/CMF/Sustained_groups_dataframe.RDS")
 
-inc_sus_genes <- df_sustained_full_all %>% 
-  dplyr::filter(Category == "absFC t144 > t0")
+df_sustained_full_all <- readRDS("data/new/RUV/CMF/Sustained_groups_dataframe.RDS")
+
+proSus_genes <- df_sustained_full_all %>% 
+  dplyr::filter(Category == "proSus")
   
-inc_sus_gene_list <- inc_sus_genes$Entrez_ID
+proSus_gene_list <- proSus_genes$Entrez_ID
+length(proSus_gene_list) #205 genes
 
 #background
 # all_genes
 
-length(inc_sus_gene_list)
-#136 genes in this set
-#now 296 t144 > t0 when not filt degs
+length(proSus_gene_list)
+#now 205 not filt for DEGs
 
-incsus_GOKEGG_RUV <- gost(query = inc_sus_gene_list,
+proSus_GOKEGG_RUV <- gost(query = proSus_gene_list,
                           organism = "hsapiens",
                           ordered_query = FALSE,
                           measure_underrepresentation = FALSE,
@@ -19620,13 +19787,13 @@ incsus_GOKEGG_RUV <- gost(query = inc_sus_gene_list,
                           correction_method = c("fdr"),
                           sources = c("GO:BP", "KEGG"))
 
-incsus_GOKEGG_genes_RUV <- gostplot(incsus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
-incsus_GOKEGG_genes_RUV
+proSus_GOKEGG_genes_RUV <- gostplot(proSus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+proSus_GOKEGG_genes_RUV
 
-table_incsus_GOKEGG_genes_RUV <- incsus_GOKEGG_RUV$result %>% 
+table_proSus_GOKEGG_genes_RUV <- proSus_GOKEGG_RUV$result %>% 
   dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
 
-table_incsus_GOKEGG_genes_RUV %>% 
+table_proSus_GOKEGG_genes_RUV %>% 
   mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
   kableExtra::kable(.,) %>% 
   kableExtra::kable_paper("striped", full_width = FALSE) %>% 
@@ -19636,71 +19803,94 @@ table_incsus_GOKEGG_genes_RUV %>%
  # write.csv(table_incsus_GOKEGG_genes_RUV, "data/new/RUV/CMF/table_incsus_GOKEGG_genes_RUV.csv")
 
 #GO:BP
-table_incsus_genes_GOBP_RUV <- table_incsus_GOKEGG_genes_RUV %>% 
+table_proSus_genes_GOBP_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
   dplyr::filter(source=="GO:BP") %>% 
   dplyr::select(p_value, term_name, intersection_size) %>% 
   dplyr::slice_min(., n=10, order_by=p_value) %>% 
   mutate(log_val = -log10(p_value))
 
-incsus_table_genes_GOBP_plot <- ggplot(table_incsus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+proSus_table_genes_GOBP_plot <- ggplot(table_proSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
   geom_point(aes(size = intersection_size)) +
-  ggtitle("t144 > t0 Sustained Enriched GO:BP Terms")+
+  ggtitle("t0 < t144 (proSus) Enriched GO:BP Terms")+
   xlab(expression("-log"[10]~"p-value"))+
   guides(size= guide_legend(title = "# of \n intersected \n terms"))+
   ylab("GO:BP term")+
   scale_y_discrete(labels = scales::label_wrap(30))+
   theme_custom()
 
-print(incsus_table_genes_GOBP_plot)
+print(proSus_table_genes_GOBP_plot)
 
 save_plot(
-  plot = incsus_table_genes_GOBP_plot,
-  filename = "Sustained_t144_more_t0_GOBP_logval_all_EMP",
+  plot = proSus_table_genes_GOBP_plot,
+  filename = "Sustained_proSus_GOBP_logval_all_EMP",
   folder = output_folder
 )
 
 #KEGG
-table_incsus_genes_KEGG_RUV <- table_incsus_GOKEGG_genes_RUV %>% 
+table_proSus_genes_KEGG_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
   dplyr::filter(source=="KEGG") %>% 
   dplyr::select(p_value, term_name, intersection_size) %>% 
   dplyr::slice_min(., n=10, order_by=p_value) %>% 
   mutate(log_val = -log10(p_value))
 
-incsus_table_genes_KEGG_plot <- ggplot(table_incsus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+proSus_table_genes_KEGG_plot <- ggplot(table_proSus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
   geom_point(aes(size = intersection_size)) +
-  ggtitle("t144 > t0 Sustained Enriched KEGG Terms")+
+  ggtitle("t0 < t144 (proSus) Enriched KEGG Terms")+
   xlab(expression("-log"[10]~"p-value"))+
   guides(size= guide_legend(title = "# of \n intersected \n terms"))+
   ylab("KEGG term")+
   scale_y_discrete(labels = scales::label_wrap(30))+
   theme_custom()
 
-print(incsus_table_genes_KEGG_plot)
+print(proSus_table_genes_KEGG_plot)
 
 save_plot(
-  plot = incsus_table_genes_KEGG_plot,
-  filename = "Sustained_t144_more_t0_KEGG_logval_all_EMP",
+  plot = proSus_table_genes_KEGG_plot,
+  filename = "Sustained_proSus_KEGG_logval_all_EMP",
   folder = output_folder
 )
 
 ```
 
-```{r Go Analysis t144 < t0 genes}
+```{r Go Analysis t0 > t144 genes recSus}
 #I changed this one from filtering for sig DEGs to all
 # df_sustained_full_all <- df_sustained_full
 # saveRDS(df_sustained_full_all, "data/new/RUV/CMF/sustained_proportions_dataframe.RDS")
 
 df_sustained_full_all <- readRDS("data/new/RUV/CMF/sustained_proportions_dataframe.RDS")
 
-dec_sus_genes <- df_sustained_full_all %>% 
-  dplyr::filter(Category == "absFC t144 < t0")
+df_sustained_full_all <- df_sustained_full_all %>%
+  mutate(
+    absFC_t0   = as.numeric(absFC_t0),
+    absFC_t144 = as.numeric(absFC_t144)
+  )
+
+sus_check <- df_sustained_full_all %>%
+  mutate(
+    Category_check = case_when(
+      absFC_t0 < absFC_t144 ~ "proSus",  #inc over time
+      absFC_t0 > absFC_t144 ~ "recSus",  #dec over time
+      absFC_t0 == absFC_t144 ~ "equal",
+      TRUE ~ "missing"
+    )
+  )
+
+table(sus_check$Category_check, useNA = "ifany")
+
+sus_check %>%
+  group_by(Category, Category_check) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  arrange(desc(Count))
+
+recSus_genes <- df_sustained_full_all %>% 
+  dplyr::filter(Category == "recSus")
   
-dec_sus_gene_list <- dec_sus_genes$Entrez_ID
+recSus_gene_list <- dec_sus_genes$Entrez_ID
 
 #background
 # all_genes
 
-length(dec_sus_gene_list)
+length(recSus_gene_list)
 #205 genes in this set
 
 decsus_GOKEGG_RUV <- gost(query = dec_sus_gene_list,
@@ -19963,10 +20153,6 @@ save_plot(
 
 ```
 
-```{r Venn Diagrams of }
-
-```
-
 
 ```{r Forest Plot of odds ratios Sus Groups}
 
@@ -20102,32 +20288,277 @@ recSus_overlap_sustained <- intersect(recSus_genes, final_genes_2_RUV)
 
 ```
 
-```{r log2cpm examples of overlap genes}
+```{r Venn Diagram recSus proSus Recovered CT genes}
 
-#proSus genes examples with overlap from CT set
-proSus_CT_overlap <- intersect(inc_sus_gene_list, cardiotox_set)
-proSus_CT_overlap
-length(proSus_CT_overlap)  #should be 1
+#combine all of my genes together into one unique set
+#I'll later also add in the GWAS genes that I find from the HF GWAs
 
-recSus_CT_overlap <- intersect(dec_sus_gene_list, cardiotox_set)
-recSus_CT_overlap
-length(recSus_CT_overlap)  #should be 4
+CardTox_genes <- unique(unlist(all_cat_genes))
 
-recSus_genes[recSus_genes %in% recSus_CT_overlap]
-proSus_genes[proSus_genes %in% proSus_CT_overlap]
+proSus_set <- unique(proSus_overlap$Entrez_ID)
+recSus_set <- unique(recSus_overlap$Entrez_ID)
 
-#now check to see if these genes overlap properly to other sets too
-SusOver_test_recSus <- recSus_genes[final_genes_2_RUV %in% recSus_genes] 
-SusOver_test_proSus <- proSus_genes[final_genes_2_RUV %in% proSus_genes] 
+# 3. Combine into a list for plotting
+venn_list_ct <- list(
+  CT = CardTox_genes,
+  proSus = proSus_set,
+  recSus = recSus_set,
+  Recovered = final_genes_1_RUV
+)
 
-#sanity check against Recovered motif group
-recSus_genes[recSus_genes %in% final_genes_1_RUV]
-proSus_genes
+venn_ct_all <- ggVennDiagram(
+  venn_list_ct,
+  category.names = c("CT", 
+                     "proSus", 
+                     "recSus", 
+                     "Recovered")) + 
+  ggtitle("DOX Cardiotoxicity Genes \n Sustained Categories vs Recovered")+
+  # coord_fixed(ratio = 0.8, xlim = c(0, 1050)) +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient() +
+  theme_custom()
 
-gene_cats_subset <- gene_cats[c("Fonoudi et al.", "Sapp et al.", "Liu et al.")]
-map(gene_cats_subset, ~ intersect(recSus_CT_overlap, .x))   #overlap by category
-map(gene_cats_subset, ~ intersect(proSus_CT_overlap, .x))   #overlap by category
+print(venn_ct_all)
 
+```
+
+#HF GWAS
+```{r Read in HF GWAS data}
+#I pulled data from the GWAS catalog for HF from the HERMES study 2020
+
+
+hf_gwas_data <- read_delim("D:/DXR Project/HF_GWAS/"C:\Users\emmap\RDirectory\Recovery_RNAseq\Recovery_5FU\data\new\HF_GWAS\pub\databases\gwas\summary_statistics\GCST009001-GCST010000\GCST009541\ShahS_31919418_HeartFailure.gz"", 
+    delim = "\t", escape_double = FALSE, 
+    trim_ws = TRUE)
+View(elife_33480_supp4_v2)
+
+saveRDS(elife_33480_supp4_v2, "data/new/eQTLs/knowles_eqtls_supp4.RDS")
+
+
+```
+
+#Updated Analysis 11/07/25
+```{r Redefine the proSus gene set}
+#after looking at the log2cpm genes, we see that the patterns are not fully as expected when plotting t24 along with t0 and t144
+#redefine this set to be t0 > t24 > t144
+
+#combine my toptables together
+#combine my toptables together
+combined_toptables_dxr <- list(
+  "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
+  "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
+  "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
+)
+
+all_DEGs_dxr <- lapply(combined_toptables_dxr, function(df) {
+  df %>%
+    # dplyr::filter(adj.P.Val < 0.05) %>%
+    mutate(absFC = abs(logFC))
+})
+
+#make a function to categorize these genes
+categorize_sustained_pro <- function(gene, all_DEGs_dxr) {
+  # pull DEGs at t0 and t144
+  t0   <- all_DEGs_dxr[["t0"]]
+  t24  <- all_DEGs_dxr[["t24"]]
+  t144 <- all_DEGs_dxr[["t144"]]
+  
+  # absFC values if present
+  absFC_t0   <- if (gene %in% t0$Entrez_ID)   
+    t0 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t24  <- if (gene %in% t24$Entrez_ID) 
+    t24 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t144 <- if (gene %in% t144$Entrez_ID) 
+    t144 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  
+  #assign categories based on absFC patterns
+  if (!is.na(absFC_t0) & !is.na(absFC_t24) & !is.na(absFC_t144)) {
+    if (absFC_t0 > absFC_t24 & absFC_t0 > absFC_t144) {
+      return("proSus")
+    } 
+    }
+  return(NA_character_)
+}
+
+#make into a dataframe
+proSus_df <- data.frame(
+  Study = "Sustained",
+  Entrez_ID = final_genes_2_RUV,
+  Category = sapply(final_genes_2_RUV, 
+                    categorize_sustained_pro, 
+                    all_DEGs_dxr = all_DEGs_dxr),
+  stringsAsFactors = FALSE
+) %>%
+  dplyr::filter(!is.na(Category))
+
+#divide these out by timepoint
+t0_proSus <- combined_toptables_dxr[["t0"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t0  = logFC,
+    adjP_t0   = adj.P.Val,
+    Sig_t0    = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t0  = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t0, absFC_t0, adjP_t0, Sig_t0)
+
+t24_proSus <- combined_toptables_dxr[["t24"]] %>% 
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>% 
+  mutate(
+    logFC_t24 = logFC,
+    adjP_t24 = adj.P.Val,
+    Sig_t24 = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t24 = abs(logFC)
+  ) %>% 
+  dplyr::select(Entrez_ID, logFC_t24, absFC_t24, adjP_t24, Sig_t24)
+
+t144_proSus <- combined_toptables_dxr[["t144"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t144 = logFC,
+    adjP_t144  = adj.P.Val,
+    Sig_t144   = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t144 = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t144, absFC_t144, adjP_t144, Sig_t144)
+
+# make sure Entrez_ID types match
+proSus_df$Entrez_ID <- as.integer(proSus_df$Entrez_ID)
+t0_proSus$Entrez_ID <- as.integer(t0_proSus$Entrez_ID)
+t24_proSus$Entrez_ID <- as.integer(t24_proSus$Entrez_ID)
+t144_proSus$Entrez_ID <- as.integer(t144_proSus$Entrez_ID)
+
+# join for full data frame
+df_sustained_pro <- proSus_df %>%
+  left_join(t0_proSus,   by = "Entrez_ID") %>%
+  left_join(t24_proSus,  by = "Entrez_ID") %>% 
+  left_join(t144_proSus, by = "Entrez_ID")
+
+proSus_summary <- df_sustained_pro %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count),
+         Percent = round(Proportion * 100, 1))
+
+
+category_colors <- c(
+  "proSus" = "#1f77b4"  
+  # "proSus" = "#ff7f0e",  
+  # "absFC_t0 = absFC_t144"          = "#d62728",  
+  # "DEG_t144_only"                  = "#2ca02c"   
+)
+
+plot_proSus_summary <- ggplot(proSus_summary, aes(x = Study, y = Percent, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  scale_y_continuous(limits = c(0, 102)) +
+  scale_fill_manual(values = category_colors) +
+  theme_custom() +
+  labs(
+    y = "Percentage of Sustained Genes (%)",
+    x = "",
+    fill = "Category"
+  )
+
+print(plot_proSus_summary)
+
+# save_plot(
+#   plot = plot_proSus_summary,
+#   filename = "Sustained_Proportion_Barplot_proSus_newdef_DEGs_EMP",
+#   folder = output_folder
+# )
+
+
+```
+
+```{r GO KEGG proSus New}
+
+proSus_gene_list <- proSus_df$Entrez_ID
+length(proSus_gene_list) #147 genes after changing the definition
+
+#background
+all_genes
+
+proSus_GOKEGG_RUV <- gost(query = proSus_gene_list,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = FALSE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+proSus_GOKEGG_genes_RUV <- gostplot(proSus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+proSus_GOKEGG_genes_RUV
+
+table_proSus_GOKEGG_genes_RUV <- proSus_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_proSus_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+
+#GO:BP
+table_proSus_genes_GOBP_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proSus_table_genes_GOBP_plot <- ggplot(table_proSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("proSus Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(proSus_table_genes_GOBP_plot)
+
+save_plot(
+  plot = proSus_table_genes_GOBP_plot,
+  filename = "Sustained_proSus_GOBP_logval_all_EMP",
+  folder = output_folder
+)
+
+#KEGG
+table_proSus_genes_KEGG_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proSus_table_genes_KEGG_plot <- ggplot(table_proSus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("proSus Enriched KEGG Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(proSus_table_genes_KEGG_plot)
+
+save_plot(
+  plot = proSus_table_genes_KEGG_plot,
+  filename = "Sustained_proSus_KEGG_logval_all_EMP",
+  folder = output_folder
+)
 
 ```
 
