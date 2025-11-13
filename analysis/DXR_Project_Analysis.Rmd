@@ -19382,20 +19382,20 @@ DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>%
 DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% 
   dplyr::select(-(X))
 
-combined_toptables_dxr <- list(
+combined_toptables_dxr_RUV <- list(
   "t0" = DOX_24T_R,
   "t24" = DOX_24R_R,
   "t144" = DOX_144R_R
 )
 
 #filter for significance based on adj p < 0.05 and mutate logFC into absolute logFC (absFC)
-all_DEGs_dxr <- lapply(combined_toptables_dxr, function(df) {
+all_DEGs_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
   df %>% 
     dplyr::filter(adj.P.Val < 0.05) %>% 
     mutate(absFC = abs(logFC))
 })
 
-all_genes_dxr <- lapply(combined_toptables_dxr, function(df) {
+all_genes_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
   df %>% 
     mutate(absFC = abs(logFC))
 })
@@ -19458,7 +19458,7 @@ df_sustained <- data.frame(
 
 #make another small dataframe including the logFC abslogFC etc
 #prepare each toptable manually
-t0 <- combined_toptables_dxr[["t0"]] %>%
+t0 <- combined_toptables_dxr_RUV[["t0"]] %>%
   dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
   mutate(
     logFC_t0 = logFC,
@@ -19468,7 +19468,7 @@ t0 <- combined_toptables_dxr[["t0"]] %>%
   ) %>%
   dplyr::select(Entrez_ID, logFC_t0, adjP_t0, Sig_t0, absFC_t0)
 
-t24 <- combined_toptables_dxr[["t24"]] %>%
+t24 <- combined_toptables_dxr_RUV[["t24"]] %>%
   dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
   mutate(
     logFC_t24 = logFC,
@@ -19478,7 +19478,7 @@ t24 <- combined_toptables_dxr[["t24"]] %>%
   ) %>%
   dplyr::select(Entrez_ID, logFC_t24, adjP_t24, Sig_t24, absFC_t24)
 
-t144 <- combined_toptables_dxr[["t144"]] %>%
+t144 <- combined_toptables_dxr_RUV[["t144"]] %>%
   dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
   mutate(
     logFC_t144 = logFC,
@@ -19640,26 +19640,30 @@ save_plot(
 ```{r Barplots for Sustained Groups}
 
 #combine my toptables together
-combined_toptables_dxr <- list(
+combined_toptables_dxr_RUV <- list(
   "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
   "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
   "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
 )
 
-all_DEGs_dxr <- lapply(combined_toptables_dxr, function(df) {
+all_DEGs_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
   df %>%
     # dplyr::filter(adj.P.Val < 0.05) %>%
     mutate(absFC = abs(logFC))
 })
 
 #make a function to categorize these genes
-categorize_sustained_fixed <- function(gene, all_DEGs_dxr) {
+categorize_sustained_final <- function(gene, all_DEGs_dxr) {
   # pull DEGs at t0 and t144
   t0   <- all_DEGs_dxr[["t0"]]
+  t24  <- all_DEGs_dxr[["t24"]]
   t144 <- all_DEGs_dxr[["t144"]]
   
   # absFC values if present
   absFC_t0   <- if (gene %in% t0$Entrez_ID)   t0 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t24   <- if (gene %in% t24$Entrez_ID)   t24 %>% 
     filter(Entrez_ID == gene) %>% 
     pull(absFC) else NA_real_
   absFC_t144 <- if (gene %in% t144$Entrez_ID) t144 %>% 
@@ -19760,6 +19764,7 @@ save_plot(
   filename = "Sustained_Proportion_Barplot_DEGs_EMP",
   folder = output_folder
 )
+
 
 ```
 
@@ -19875,16 +19880,15 @@ df_sustained_full_all <- readRDS("data/new/RUV/CMF/sustained_proportions_datafra
 df_sustained_full_all <- df_sustained_full_all %>%
   mutate(
     absFC_t0   = as.numeric(absFC_t0),
+    absFC_t24 = as.numeric(absFC_t24),
     absFC_t144 = as.numeric(absFC_t144)
   )
 
 sus_check <- df_sustained_full_all %>%
   mutate(
     Category_check = case_when(
-      absFC_t0 < absFC_t144 ~ "proSus",  #inc over time
-      absFC_t0 > absFC_t144 ~ "recSus",  #dec over time
-      absFC_t0 == absFC_t144 ~ "equal",
-      TRUE ~ "missing"
+      absFC_t0 < absFC_t144 & absFC_t24 < absFC_144 ~ "proSus",
+      TRUE ~ "notproSus"
     )
   )
 
@@ -20336,29 +20340,61 @@ print(venn_ct_all)
 
 #HF GWAS data
 ```{r Read in HF GWAS data}
-#I pulled data from the GWAS catalog for HF from the HERMES study 2020
+#I pulled data from the GWAS catalog for HF associations #https://www.ebi.ac.uk/gwas/efotraits/EFO_0003144
 
 
-hf_gwas_data <- read_delim("D:/DXR Project/HF_GWAS/"C:\Users\emmap\RDirectory\Recovery_RNAseq\Recovery_5FU\data\new\HF_GWAS\pub\databases\gwas\summary_statistics\GCST009001-GCST010000\GCST009541\ShahS_31919418_HeartFailure.gz"", 
-    delim = "\t", escape_double = FALSE, 
-    trim_ws = TRUE)
-View(elife_33480_supp4_v2)
+# hf_gwas_all <- read_delim("D:/DXR Project/GWAS/gwas-association-downloaded_2025-11-13-EFO_0003144-withChildTraits.tsv", 
+#     delim = "\t", escape_double = FALSE, 
+#     trim_ws = TRUE)
+# View(hf_gwas_all)
 
-saveRDS(elife_33480_supp4_v2, "data/new/eQTLs/knowles_eqtls_supp4.RDS")
 
+# saveRDS(hf_gwas_all, "data/new/GWAS/hf_gwas_associations_EFO_0003144.RDS")
+
+#extract mapped genes and ensure each are unique
+# hf_gwas_mapped <- subset(hf_gwas_all, !is.na(MAPPED_GENE) & MAPPED_GENE != "")
+#830 mapped genes, now make sure that they're unique
+# hf_gwas_genes <- unique(hf_gwas_mapped$MAPPED_GENE)
+#494 genes left after filtering for unique gene symbols
+#now translate this into Entrez_ID for ease of analysis
+
+#convert to Entrez_ID
+# gene_conversion <- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = hf_gwas_genes,
+#   keytype = "SYMBOL",
+#   columns = c("ENTREZID")
+# )
+
+# Remove duplicates or missing IDs
+# hf_gwas_genes <- gene_conversion %>%
+#   filter(!is.na(ENTREZID)) %>%
+#   distinct(SYMBOL, .keep_all = TRUE)
+
+#change the colname to Entrez_ID
+# colnames(hf_gwas_genes)[colnames(hf_gwas_genes) == "ENTREZID"] <- "Entrez_ID"
+
+
+# saveRDS(hf_gwas_genes, "data/new/GWAS/hf_gwas_genes_symbolentrez_mapped.RDS")
+
+#read in the final list of genes (both SYMBOL and Entrez_ID)
+hf_gwas_genes <- readRDS("data/new/GWAS/hf_gwas_genes_symbolentrez_mapped.RDS")
+#make a version with just the entrez id to combine with other gene sets
+#change the colname to Entrez_ID
+hf_gwas_genes_list <- hf_gwas_genes$Entrez_ID
 
 ```
 
 #Updated Analysis 11/07/25
 ```{r Redefine the proSus gene set}
 #after looking at the log2cpm genes, we see that the patterns are not fully as expected when plotting t24 along with t0 and t144
-#redefine this set to be t0 > t24 > t144
+#redefine this set to be t0 < t24 < t144
 
 #make this set the first set of genes where t0 < t24 & t0 < t144
 
 #combine my toptables together
 #combine my toptables together
-combined_toptables_dxr <- list(
+combined_toptables_dxr_RUV <- list(
   "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
   "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
   "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
@@ -21096,176 +21132,8 @@ print(venn_proSus_compare)
 
 ```
 
-
-```{r GO KEGG proSus New Set1}
-
-proSus_gene_list <- proSus_df$Entrez_ID
-length(proSus_gene_list) #264 genes after changing the definition
-
-#background
-all_genes
-
-proSus_GOKEGG_RUV <- gost(query = proSus_gene_list,
-                          organism = "hsapiens",
-                          ordered_query = FALSE,
-                          measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
-                          user_threshold = 0.05,
-                          significant = TRUE,
-                          custom_bg = all_genes,
-                          correction_method = c("fdr"),
-                          sources = c("GO:BP", "KEGG"))
-
-proSus_GOKEGG_genes_RUV <- gostplot(proSus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
-proSus_GOKEGG_genes_RUV
-
-table_proSus_GOKEGG_genes_RUV <- proSus_GOKEGG_RUV$result %>% 
-  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
-
-table_proSus_GOKEGG_genes_RUV %>% 
-  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
-  kableExtra::kable(.,) %>% 
-  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
-  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
-  kableExtra::scroll_box(width = "100%", height = "400px")
-
-
-#GO:BP
-table_proSus_genes_GOBP_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
-  dplyr::filter(source=="GO:BP") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-proSus_table_genes_GOBP_plot <- ggplot(table_proSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("proSus Enriched GO:BP Terms")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
-  ylab("GO:BP term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_custom()
-
-print(proSus_table_genes_GOBP_plot)
-
-# save_plot(
-#   plot = proSus_table_genes_GOBP_plot,
-#   filename = "Sustained_proSus_GOBP_logval_all_EMP",
-#   folder = output_folder
-# )
-
-#KEGG
-table_proSus_genes_KEGG_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
-  dplyr::filter(source=="KEGG") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-proSus_table_genes_KEGG_plot <- ggplot(table_proSus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("proSus Enriched KEGG Terms")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
-  ylab("KEGG term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_custom()
-
-print(proSus_table_genes_KEGG_plot)
-#there are 0 KEGG terms associated with these genes
-
-# save_plot(
-#   plot = proSus_table_genes_KEGG_plot,
-#   filename = "Sustained_proSus_KEGG_logval_all_EMP",
-#   folder = output_folder
-# )
-
-```
-
-#GO KEGG Set2 proSus
-```{r GO KEGG terms proSus Set 2 163 genes}
-proSus2_gene_list <- proSus_df2$Entrez_ID
-length(proSus2_gene_list) #163 genes after changing the definition
-
-#background
-all_genes
-
-proSus2_GOKEGG_RUV <- gost(query = proSus2_gene_list,
-                          organism = "hsapiens",
-                          ordered_query = FALSE,
-                          measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
-                          user_threshold = 0.05,
-                          significant = TRUE,
-                          custom_bg = all_genes,
-                          correction_method = c("fdr"),
-                          sources = c("GO:BP", "KEGG"))
-
-proSus2_GOKEGG_genes_RUV <- gostplot(proSus2_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
-proSus2_GOKEGG_genes_RUV
-
-table_proSus2_GOKEGG_genes_RUV <- proSus2_GOKEGG_RUV$result %>% 
-  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
-
-table_proSus2_GOKEGG_genes_RUV %>% 
-  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
-  kableExtra::kable(.,) %>% 
-  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
-  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
-  kableExtra::scroll_box(width = "100%", height = "400px")
-
-
-#GO:BP
-table_proSus2_genes_GOBP_RUV <- table_proSus2_GOKEGG_genes_RUV %>% 
-  dplyr::filter(source=="GO:BP") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-proSus2_table_genes_GOBP_plot <- ggplot(table_proSus2_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("proSus Set2 Enriched GO:BP Terms")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
-  ylab("GO:BP term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_custom()
-
-print(proSus2_table_genes_GOBP_plot)
-
-# save_plot(
-#   plot = proSus2_table_genes_GOBP_plot,
-#   filename = "Sustained_proSus_Set2_GOBP_logval_all_EMP",
-#   folder = output_folder
-# )
-
-#KEGG
-table_proSus2_genes_KEGG_RUV <- table_proSus2_GOKEGG_genes_RUV %>% 
-  dplyr::filter(source=="KEGG") %>% 
-  dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
-  mutate(log_val = -log10(p_value))
-
-proSus2_table_genes_KEGG_plot <- ggplot(table_proSus2_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
-  geom_point(aes(size = intersection_size)) +
-  ggtitle("proSus Set2 Enriched KEGG Terms")+
-  xlab(expression("-log"[10]~"p-value"))+
-  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
-  ylab("KEGG term")+
-  scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_custom()
-
-print(proSus2_table_genes_KEGG_plot)
-#there are 0 KEGG terms associated with these genes
-
-# save_plot(
-#   plot = proSus2_table_genes_KEGG_plot,
-#   filename = "Sustained_proSus_set2_KEGG_logval_all_EMP",
-#   folder = output_folder
-# )
-
-```
-
 #Updated Analysis 11/10/25
+#PROSUS FIN
 ```{r New proSus set definitions}
 #I am going to finalize my definitions of proSus
 #proSus = Sustained genes that are t0 < t24 & t24 < t144
@@ -21274,15 +21142,14 @@ print(proSus2_table_genes_KEGG_plot)
 #total of 501 Sustained genes, make a gene set of this new definition
 
 #combine my toptables together
-#combine my toptables together
-combined_toptables_dxr <- list(
+combined_toptables_dxr_RUV <- list(
   "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
   "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
   "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
 )
 
 #don't filter for DEGs, not applicable here
-all_genes_dxr <- lapply(combined_toptables_dxr, function(df) {
+all_genes_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
   df %>%
     # dplyr::filter(adj.P.Val < 0.05) %>%
     mutate(absFC = abs(logFC))
@@ -21336,7 +21203,7 @@ proSus_fin_df <- data.frame(
   dplyr::filter(!is.na(Category))
 
 #divide these out by timepoint
-t0_proSus <- combined_toptables_dxr[["t0"]] %>%
+t0_proSus <- combined_toptables_dxr_RUV[["t0"]] %>%
   dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
   mutate(
     logFC_t0  = logFC,
@@ -21346,7 +21213,7 @@ t0_proSus <- combined_toptables_dxr[["t0"]] %>%
   ) %>%
   dplyr::select(Entrez_ID, logFC_t0, absFC_t0, adjP_t0, Sig_t0)
 
-t24_proSus <- combined_toptables_dxr[["t24"]] %>% 
+t24_proSus <- combined_toptables_dxr_RUV[["t24"]] %>% 
   dplyr::select(Entrez_ID, logFC, adj.P.Val) %>% 
   mutate(
     logFC_t24 = logFC,
@@ -21356,7 +21223,7 @@ t24_proSus <- combined_toptables_dxr[["t24"]] %>%
   ) %>% 
   dplyr::select(Entrez_ID, logFC_t24, absFC_t24, adjP_t24, Sig_t24)
 
-t144_proSus <- combined_toptables_dxr[["t144"]] %>%
+t144_proSus <- combined_toptables_dxr_RUV[["t144"]] %>%
   dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
   mutate(
     logFC_t144 = logFC,
@@ -21381,8 +21248,11 @@ df_sustained_proSus <- proSus_fin_df %>%
 #save this new dataframe for later analysis
 # saveRDS(df_sustained_proSus, "data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
 
+####this is the dataframe you want from now on####
+proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
 
 ```
+
 
 #barchart of Sustained genes
 ```{r Make a barplot of all sustained genes}
@@ -21391,7 +21261,7 @@ df_sustained_proSus <- proSus_fin_df %>%
 #163 proSus genes
 #rest = notproSus (338 genes)
 
-proSus_fin_summary <- df_sustained_proSus %>%
+proSus_fin_summary <- proSus_df %>%
   group_by(Study, Category) %>%
   summarise(Count = n(), .groups = "drop") %>%
   mutate(Proportion = Count / sum(Count),
@@ -21431,7 +21301,7 @@ print(plot_proSus_fin_summary)
 #make gene set
 ```{r create a df with my proSus and notproSus gene sets}
 
-#read in my sustained all df (501 genes)
+#read in my final dataframe with all of the info for proSus and notproSus genes
 proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
 
 #ensure numeric absFC values
@@ -21934,167 +21804,13 @@ for (p in c(proSus_plots, notproSus_plots)) print(p)
 
 #Pull out genes from GO/KEGG analysis in certain categories
 ```{r GO KEGG example genes from terms}
-#I have several terms that I am interested in exploring further, since I have enrichment of DNA damage genes in proSus and notproSus but no p53 enrichment, that is all in notproSus
+#I have several terms that I am interested in exploring further, since I have enrichment of DNA damage genes in proSus and notproSus but no p53 enrichment - that is all in notproSus
 
-
-```
-
-
-```{r logFC line plots proSus vs notproSus}
-
-#read in my gene sets
-proSus_gene_list
-notproSus_gene_list
-
-#create a toptable with all of the genes for proSus
-filt_toptable_proSus_RUV <- combined_toptables_dxr_RUV %>%
-  mutate(proSus = case_when(
-    Entrez_ID %in% proSus_gene_list ~ "proSus",
-    TRUE ~ NA_character_
-  )) %>% 
-  dplyr::filter(!is.na(SYMBOL)) %>% 
-  dplyr::filter(!is.na(proSus)) %>% 
-  mutate(time = factor(Time, 
-                       levels = c("t0", "t24", "t144"))) %>% 
-  mutate(absFC = abs(logFC))
-
-#calculate medians for ALL DIC genes across timepoints
-medians_proSus_RUV <- filt_toptable_proSus_RUV %>%
-  group_by(time) %>%
-  summarise(
-    median_logFC = median(logFC),
-    median_abslogFC = median(absFC),
-    .groups = "drop"
-  )
-
-#label with median values
-labs_logFC_proSus <- paste0(
-  "proSus\nmedian logFC =\n",
-  paste0(medians_proSus_RUV$time, "=", round(medians_proSus_RUV$median_logFC, 2), collapse = "\n")
-)
-
-#sdd a column that labels positive/negative direction
-filt_toptable_proSus_RUV <- filt_toptable_proSus_RUV %>%
-  mutate(direction = ifelse(logFC >= 0, "up", "down"))
-
-#label direction
-medians_proSus_RUV <- medians_proSus_RUV %>%
-  mutate(direction = "median")
-
-plot_proSus_logFC <- ggplot() +
-  geom_line(data = filt_toptable_proSus_RUV,
-            aes(x = time, 
-                y = logFC, 
-                group = Entrez_ID),
-            alpha = 0.4, 
-            linewidth = 0.9) +
-  geom_line(data = medians_proSus_RUV,
-            aes(x = time, 
-                y = median_logFC, 
-                group = 1),
-            linewidth = 2, 
-            linetype = 1) +
-  scale_color_manual(
-    breaks = c("up", "down", "median"),
-    values = c("up" = "pink",
-               "down" = "pink",
-               "median" = "#348393"),
-    labels = c(
-      up = "genes",
-      down = "",
-      median = labs_logFC_proSus
-    ),
-    name = NULL
-  ) +
-  labs(title = "logFC — proSus Genes (n = 163)",
-       y = "logFC", x = "Time") +
-  theme_custom() +
-  theme(legend.position = "right")
-
-plot_proSus_logFC
-
-save_plot(plot_proSus_logFC, 
-          filename = "proSus_lineplot_logFC_EMP_251112",
-          folder = output_folder)
-
-#now do the same for the notproSus genes
-#create a toptable with all of the genes for proSus
-filt_toptable_notproSus_RUV <- combined_toptables_dxr_RUV %>%
-  mutate(notproSus = case_when(
-    Entrez_ID %in% notproSus_gene_list ~ "notproSus",
-    TRUE ~ NA_character_
-  )) %>% 
-  dplyr::filter(!is.na(SYMBOL)) %>% 
-  dplyr::filter(!is.na(notproSus)) %>% 
-  mutate(time = factor(Time, 
-                       levels = c("t0", "t24", "t144"))) %>% 
-  mutate(absFC = abs(logFC))
-
-#calculate medians for ALL DIC genes across timepoints
-medians_notproSus_RUV <- filt_toptable_notproSus_RUV %>%
-  group_by(time) %>%
-  summarise(
-    median_logFC = median(logFC),
-    median_abslogFC = median(absFC),
-    .groups = "drop"
-  )
-
-#label with median values
-labs_logFC_notproSus <- paste0(
-  "notproSus\nmedian logFC =\n",
-  paste0(medians_notproSus_RUV$time, "=", round(medians_notproSus_RUV$median_logFC, 2), collapse = "\n")
-)
-
-#sdd a column that labels positive/negative direction
-filt_toptable_notproSus_RUV <- filt_toptable_notproSus_RUV %>%
-  mutate(direction = ifelse(logFC >= 0, "up", "down"))
-
-#label direction
-medians_notproSus_RUV <- medians_notproSus_RUV %>%
-  mutate(direction = "median")
-
-plot_notproSus_logFC <- ggplot() +
-  geom_line(data = filt_toptable_notproSus_RUV,
-            aes(x = time, 
-                y = logFC, 
-                group = Entrez_ID, 
-                color = direction),
-            alpha = 0.4, 
-            linewidth = 0.9) +
-  geom_line(data = medians_notproSus_RUV,
-            aes(x = time, 
-                y = median_logFC, 
-                group = 1, 
-                color = direction),
-            linewidth = 2, 
-            linetype = 1) +
-  scale_color_manual(
-    breaks = c("up", "down", "median"), 
-    values = c("up" = "pink",
-               "down" = "pink", 
-               "median" = "#348393"),
-    labels = c(
-      up = "genes",
-      down = "",
-      median = labs_logFC_notproSus
-    ),
-    name = NULL
-  ) +
-  labs(title = "logFC — notproSus Genes (n = 338)",
-       y = "logFC", x = "Time") +
-  theme_custom() +
-  theme(legend.position = "right")
-
-plot_notproSus_logFC
-
-save_plot(plot_notproSus_logFC, 
-          filename = "notproSus_lineplot_logFC_EMP_251112",
-          folder = output_folder)
 
 ```
 
 #logFC line plots proSus vs notproSus
-```{r}
+```{r logFC line plots proSus vs notproSus genes}
 
 proSus_gene_list
 notproSus_gene_list
@@ -22349,7 +22065,10 @@ print(plot_notproSus_absFC)
 #sustained group
 final_genes_2_RUV
 #notSus group
-notSus_genes <- setdiff(all_genes, final_genes_2_RUV)
+
+# notSus_genes <- setdiff(all_genes, final_genes_2_RUV)
+# saveRDS(notSus_genes, "data/new/RUV/CMF/notSus_genes_list_entrez.RDS")
+notSus_genes <- readRDS("data/new/RUV/CMF/notSus_genes_list_entrez.RDS")
 length(notSus_genes)
 #total of 13818 expressed genes not in the Sustained group
 
@@ -22365,17 +22084,20 @@ fonoudi_ids <- readRDS("data/new/RUV/fonoudi_dataset_entrez.RDS") #prev DIC
 DIC_rm_genes <- readRDS("data/new/RUV/AIC_genes_entrezid.RDS") #now DIC
 p53_target_genes <- readRDS("data/new/RUV/p53_target_genes_symbolentrez.RDS")
 DNA_damage_genes <- readRDS("data/new/RUV/DDR_genes_entrezid.RDS")
+hf_gwas_genes <- readRDS("data/new/GWAS/hf_gwas_genes_symbolentrez_mapped.RDS")
+hf_gwas_genes_list <- hf_gwas_genes$Entrez_ID
 
 #list of gene categories
 gene_cats <- list( 
   "DNA Damage Response Genes" = unique(na.omit(DNA_damage_genes)),
-  "DOX Cardiotoxicity Genes" = unique(na.omit(AIC_genes)),
+  "DOX Cardiotoxicity Genes" = unique(na.omit(DIC_rm_genes)),
   "p53 Target Genes" = unique(na.omit(p53_target_genes)),
   "Fonoudi et al." = fonoudi_ids,
   "Liu et al." = liu_ids,
   "Sapp et al." = sapp_ids,
   "Marginal eQTLs" = m_eqtls_ids,
-  "Response eQTLs" = r_eqtls_ids
+  "Response eQTLs" = r_eqtls_ids,
+  "HF GWAS" = hf_gwas_genes_list
 )
 
 #make a function to run through fisher's exact testing to find odds ratios
@@ -22519,7 +22241,8 @@ forest_summary_ordered <- comparisons %>%
                                       "Liu et al.", 
                                       "Sapp et al.", 
                                       "Marginal eQTLs", 
-                                      "Response eQTLs"))) %>%
+                                      "Response eQTLs",
+                                      "HF GWAS"))) %>%
   arrange(Comparison, Category) %>%
   mutate(
     OR = round(OR, 3),
@@ -22608,6 +22331,15 @@ for (i in seq_along(linear_plots)) {
     folder = output_folder
   )
 }
+
+```
+
+#Identify proSus genes directionality
+```{r proSus genes up vs down regulation}
+#I want to take my set of proSus genes that I identified and stratify by response direction
+
+proSus_gene_list
+proSus_genes_df
 
 
 ```
