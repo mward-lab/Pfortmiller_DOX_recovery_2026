@@ -161,15 +161,9 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 #load in libraries needed
 #these counts files are from featureCounts, all saved as RDS objects
 
-# ####Individual 1 - 84-1####
-# Counts_84_DOX_24 <- readRDS("data/counts/Counts_84_DOX_24.RDS")
-# Counts_84_DMSO_24 <- readRDS("data/counts/Counts_84_DMSO_24.RDS")
-# Counts_84_DOX_24rec <- readRDS("data/counts/Counts_84_DOX_24rec.RDS")
-# Counts_84_DMSO_24rec <- readRDS("data/counts/Counts_84_DMSO_24rec.RDS")
-# Counts_84_DOX_144rec <- readRDS("data/counts/Counts_84_DOX_144rec.RDS")
-# Counts_84_DMSO_144rec <- readRDS("data/counts/Counts_84_DMSO_144rec.RDS")
-# 
-# ####Individual 2 - 87-1####
+#prev Ind1 84-1 is now Ind4
+
+# ####Individual 1 - 87-1####
 # Counts_87_DOX_24 <- readRDS("data/counts/Counts_87_DOX_24.RDS")
 # Counts_87_DMSO_24 <- readRDS("data/counts/Counts_87_DMSO_24.RDS")
 # Counts_87_DOX_24rec <- readRDS("data/counts/Counts_87_DOX_24rec.RDS")
@@ -177,7 +171,7 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 # Counts_87_DOX_144rec <- readRDS("data/counts/Counts_87_DOX_144rec.RDS")
 # Counts_87_DMSO_144rec <- readRDS("data/counts/Counts_87_DMSO_144rec.RDS")
 # 
-# ####Individual 3 - 78-1####
+# ####Individual 2 - 78-1####
 # Counts_78_DOX_24 <- readRDS("data/counts/Counts_78_DOX_24.RDS")
 # Counts_78_DMSO_24 <- readRDS("data/counts/Counts_78_DMSO_24.RDS")
 # Counts_78_DOX_24rec <- readRDS("data/counts/Counts_78_DOX_24rec.RDS")
@@ -185,13 +179,21 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 # Counts_78_DOX_144rec <- readRDS("data/counts/Counts_78_DOX_144rec.RDS")
 # Counts_78_DMSO_144rec <- readRDS("data/counts/Counts_78_DMSO_144rec.RDS")
 # 
-# ####Individual 4 - 75-1####
+# ####Individual 3 - 75-1####
 # Counts_75_DOX_24 <- readRDS("data/counts/Counts_75_DOX_24.RDS")
 # Counts_75_DMSO_24 <- readRDS("data/counts/Counts_75_DMSO_24.RDS")
 # Counts_75_DOX_24rec <- readRDS("data/counts/Counts_75_DOX_24rec.RDS")
 # Counts_75_DMSO_24rec <- readRDS("data/counts/Counts_75_DMSO_24rec.RDS")
 # Counts_75_DOX_144rec <- readRDS("data/counts/Counts_75_DOX_144rec.RDS")
 # Counts_75_DMSO_144rec <- readRDS("data/counts/Counts_75_DMSO_144rec.RDS")
+#
+# ####Individual 4 - 84-1####
+# Counts_84_DOX_24 <- readRDS("data/counts/Counts_84_DOX_24.RDS")
+# Counts_84_DMSO_24 <- readRDS("data/counts/Counts_84_DMSO_24.RDS")
+# Counts_84_DOX_24rec <- readRDS("data/counts/Counts_84_DOX_24rec.RDS")
+# Counts_84_DMSO_24rec <- readRDS("data/counts/Counts_84_DMSO_24rec.RDS")
+# Counts_84_DOX_144rec <- readRDS("data/counts/Counts_84_DOX_144rec.RDS")
+# Counts_84_DMSO_144rec <- readRDS("data/counts/Counts_84_DMSO_144rec.RDS")
 # 
 # ####Individual 5 - 17-3####
 # Counts_17_DOX_24 <- readRDS("data/counts/Counts_17_DOX_24.RDS")
@@ -221,15 +223,10 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 
 ##Create my Dataframe from Counts Files
 ```{r Put Counts Together Into Dataframe}
+#change 84-1 to Ind4 now
 # counts_raw_df <-
 #    data.frame(
-#      Counts_84_DOX_24,
-#      Counts_84_DMSO_24$MCW_EMP_JT_R29_R1.bam,
-#      Counts_84_DOX_24rec$MCW_EMP_JT_R30_R1.bam,
-#      Counts_84_DMSO_24rec$MCW_EMP_JT_R32_R1.bam,
-#      Counts_84_DOX_144rec$MCW_EMP_JT_R33_R1.bam,
-#      Counts_84_DMSO_144rec$MCW_EMP_JT_R35_R1.bam,
-#      Counts_87_DOX_24$MCW_EMP_JT_R36_R1.bam,
+#      Counts_87_DOX_24,
 #      Counts_87_DMSO_24$MCW_EMP_JT_R38_R1.bam,
 #      Counts_87_DOX_24rec$MCW_EMP_JT_R39_R1.bam,
 #      Counts_87_DMSO_24rec$MCW_EMP_JT_R41_R1.bam,
@@ -247,6 +244,12 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 #      Counts_75_DMSO_24rec$MCW_EMP_JT_R59_R1.bam,
 #      Counts_75_DOX_144rec$MCW_EMP_JT_R60_R1.bam,
 #      Counts_75_DMSO_144rec$MCW_EMP_JT_R62_R1.bam,
+#      Counts_84_DOX_24$MCW_EMP_JT_R27_R1.bam,
+#      Counts_84_DMSO_24$MCW_EMP_JT_R29_R1.bam,
+#      Counts_84_DOX_24rec$MCW_EMP_JT_R30_R1.bam,
+#      Counts_84_DMSO_24rec$MCW_EMP_JT_R32_R1.bam,
+#      Counts_84_DOX_144rec$MCW_EMP_JT_R33_R1.bam,
+#      Counts_84_DMSO_144rec$MCW_EMP_JT_R35_R1.bam,
 #      Counts_17_DOX_24$MCW_EMP_JT_R63_R1.bam,
 #      Counts_17_DMSO_24$MCW_EMP_JT_R65_R1.bam,
 #      Counts_17_DOX_24rec$MCW_EMP_JT_R66_R1.bam,
@@ -268,7 +271,7 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 #    )
 
 #now save this as a matrix
-# counts_raw_matrix <- counts_raw_df %>% column_to_rownames(var = "X") %>% as.matrix()
+counts_raw_matrix <- counts_raw_df %>% column_to_rownames(var = "X") %>% as.matrix()
 
 counts_raw_matrix <- readRDS("data/new/counts_raw_matrix.RDS")
 
@@ -276,10 +279,10 @@ dim(counts_raw_matrix)
 #28395 is my initial amount of genes prior to filtering
 
 #write this to a csv so I can save it for later
-#write.csv(counts_raw_matrix, "C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/counts_raw_matrix_EMP_250514.csv")
+# write.csv(counts_raw_matrix, "C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/counts_raw_matrix_EMP_251112.csv")
 
 #I also want to save this as an R object so I don't have to run the counts every time
-#saveRDS(counts_raw_matrix, "data/new/counts_raw_matrix.RDS")
+# saveRDS(counts_raw_matrix, "data/new/counts_raw_matrix.RDS")
 
 ```
 ###Include colors and factors for analysis
@@ -336,25 +339,25 @@ txtime_col <- list(
 ##already filtered to only include DOX + DMSO samples
 
 #I want to change these to reflect the final order of samples
-# fC_DOXCounts <- fC_DOXCounts %>% 
+# fC_DOXCounts <- fC_DOXCounts %>%
 #   mutate(
 #     Ind = case_when(
-#       Line == "84-1" ~ "1",
-#       Line == "87-1" ~ "2",
-#       Line == "78-1" ~ "3",
-#       Line == "75-1" ~ "4",
+#       Line == "87-1" ~ "1",
+#       Line == "78-1" ~ "2",
+#       Line == "75-1" ~ "3",
+#       Line == "84-1" ~ "4",
 #       Line == "17-3" ~ "5",
 #       Line == "90-1" ~ "6",
 #       Line == "90-1REP" ~ "6R",
 #       TRUE ~ NA_character_
 #     ),
-#     Tx = ifelse(Treatment == "DMSO", "VEH", "DOX"),
-#     Timepoint = case_when(
-#       Time == "24" ~ "t0",
-#       Time == "24rec" ~ "t24",
-#       Time == "144rec" ~ "t144",
-#       TRUE ~ NA_character_
-#                        ),
+#   Tx = ifelse(Treatment == "DMSO", "VEH", "DOX"),
+#   Timepoint = case_when(
+#     Time == "24" ~ "t0",
+#     Time == "24rec" ~ "t24",
+#     Time == "144rec" ~ "t144",
+#     TRUE ~ NA_character_
+#                      ),
 #     Condition = paste0(Tx, "_", Timepoint, "_", Ind)
 #   )
 
@@ -582,10 +585,10 @@ hist(filcpm_matrix,
      col = 2)
 
 #change the column names to match my samples - make sure that they are in the right order
-#Individual 1 = 84-1 (M)
-#Individual 2 = 87-1 (F)
-#Individual 3 = 78-1 (F)
-#Individual 4 = 75-1 (F)
+#Individual 1 = 87-1 (F)
+#Individual 2 = 78-1 (F)
+#Individual 3 = 75-1 (F)
+#Individual 4 = 84-1 (M)
 #Individual 5 = 17-3 (M)
 #Individual 6 = 90-1 (M)
 #Individual 6REP = 90-1REP (M)
@@ -642,8 +645,7 @@ colnames(filcpm_matrix) <- c("DOX_24T_Ind1",
                                 "DMSO_144R_Ind6REP")
 
 #export this as a csv
-#write.csv(filcpm_matrix, "data/new/filcpm_final_matrix.csv")
-
+# write.csv(filcpm_matrix, "data/new/filcpm_final_matrix.csv")
 
 
 ```
@@ -675,35 +677,32 @@ I ran this initially and then moved the column into my final matrix
 My final matrix is called filcpm_final_matrix.csv saved under data
 #Put together my Data for Filtered Gene List
 ```{r Put Together My Data for Filtered Gene List}
-##I did this earlier so don't run again, I put the list into the filcpm_final_matrix.csv
-# # ----------------- Load Required Libraries -----------------
-# library(dplyr)
-# library(readr)
-# library(org.Hs.eg.db)
-# library(AnnotationDbi)
-# # ----------------- Load Data -----------------
-# sample_data <- read_csv("data/filcpm_final_matrix.csv", show_col_types = FALSE)
-# # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
-# # Check column names
+##I did this earlier so don't run again, I put the list into the filcpm_final_matrix.csv (also already changed 84-1 to 4)
+
+#load in my data
+# sample_data <- read.csv("data/new/filcpm_final_matrix.csv")
+#ensure Entrez_ID is present and in character Format 
+# Check column names
 # print(colnames(sample_data))
 # # Rename if needed (adjust if the column name is not exactly 'Entrez_ID')
-# # sample_data <- sample_data %>% rename(Entrez_ID = `actual_column_name`)
+# sample_data <- sample_data %>% dplyr::rename(Entrez_ID = "X")
 # # Convert Entrez_ID to character
 # sample_data <- sample_data %>%
 #   mutate(Entrez_ID = as.character(Entrez_ID))
-# # ----------------- Map Entrez_ID to Gene Symbol -----------------
+# ----------------- Map Entrez_ID to Gene Symbol -----------------
 # gene_symbols <- AnnotationDbi::select(
 #   org.Hs.eg.db,
 #   keys = sample_data$Entrez_ID,
 #   columns = c("SYMBOL"),
 #   keytype = "ENTREZID"
 # )
-# # ----------------- Join Back to Main Data -----------------
+# ----------------- Join Back to Main Data -----------------
 # sample_annotated <- left_join(sample_data, gene_symbols, by = c("Entrez_ID" = "ENTREZID"))
-# # ----------------- Save Annotated Output -----------------
-# #write_csv(sample_annotated, "data/Sample_annotated.csv")
+# ----------------- Save Annotated Output -----------------
+# write_csv(sample_annotated, "data/Sample_annotated.csv")
 
 #Since I ran this before, Sample_annotated.csv columns of EntrezID and Symbol have been copied into my final matrix - so disregard this file except for record-keeping
+
 ```
 
 Now that I have my final matrix, I would like to check some key genes
@@ -715,8 +714,9 @@ We have triple checked this dataset to ensure that columns are in order
 boxplot1 <- read.csv("data/new/filcpm_final_matrix.csv") %>% 
   as.data.frame()
 
+
 #save boxplot1 as an object filcpm_matrix_genes
-#saveRDS(boxplot1, "data/new/filcpm_matrix_genes.RDS")
+# saveRDS(boxplot1, "data/new/filcpm_matrix_genes.RDS")
 
 #Define gene list(s)
 initial_test_genes <- c("CDKN1A", "MDM2", "BAX", "RARG", "TP53", "TOP2B", "TOP2A")  
@@ -789,6 +789,7 @@ for (gene in initial_test_genes) {
 
 ```
 
+
 Now I've confirmed with some boxplots that my genes are present and (mostly) behaving as they should
 - Sayan's CDKN1A and MDM2 are initially high at 24hr in DOX 0.5
 - My CDKN1A and MDM2 are similar to DMSO at 24hr DOX 0.5
@@ -804,7 +805,9 @@ prcomp_res_unfilt <- prcomp(t(counts_cpm_unfilt %>% as.matrix()), center =  TRUE
 prcomp_res_filt <- prcomp(t(filcpm_matrix %>% as.matrix()), center =  TRUE)
 
 #read in my metadata annotations
-Metadata <- read.csv("data/new/Metadata.csv")
+Metadata <- read.csv("data/Metadata_update.csv")
+#84-1 is now Ind4
+
 
 #add in labels for individual numbers
 ind_num <- c("1", "1", "1", "1", "1", "1", 
@@ -887,7 +890,7 @@ autoplot(prcomp_res_filt,
          x = 1,
          y = 2) +
   theme_custom() +
-  scale_color_manual(values = cond_col) +
+  # scale_color_manual(values = txtime_col) +
   geom_text_repel(aes(label = ind_num),       # use aes() here
                   nudge_y = 0.05,            # small nudge instead of vjust
                   max.overlaps = 50,
@@ -2111,9 +2114,28 @@ autoplot(prcomp_res_1_cpm,
 #       ordered = TRUE
 #     )
 #   )
+#also change Ind 1 to Ind4 to keep all F and all M together
+line_to_ind <- c(
+  "87-1"  = "Ind1",   #originally Ind2
+  "78-1"  = "Ind2",   #originally Ind3
+  "75-1"  = "Ind3",   #originally Ind4
+  "84-1"  = "Ind4",   #renamed from Ind1 to Ind4
+  "17-3"  = "Ind5",   #unchanged
+  "90-1"  = "Ind6",   #unchanged
+  "90-1REP" = "Ind6R"   #unchanged
+)
+
+# Update Ind column in Metadata
+# Metadata$Old_Ind <- Metadata$Ind
+
+# Metadata$Ind <- line_to_ind[Metadata$Line]
+# Metadata$Ind <- gsub("Ind", "", Metadata$Ind)
+
+#update sample names columns in csv
 
 # saveRDS(Metadata, "data/Metadata_update.RDS")
-Metadata <- readRDS("data/Metadata_update.RDS")
+# write.csv(Metadata, "data/Metadata_update.csv")
+Metadata <- read.csv("data/Metadata_update.csv")
 
 ####RUVs k=1-3
 #check to make sure that the column names are correct
@@ -2193,26 +2215,26 @@ Treatment <- as.character(Metadata$Treatment)
 # Define color palettes for annotations
 annot_col_cor = list(Treatment = c("DOX" = "#499FBD", 
                                "VEH" = "#BBBBBC"),
-                     Individual = c("1" = "#003F5C", 
-                                     "2" = "#45AE91", 
-                                     "3" = "#58209D", 
-                                     "4" = "#8B3E9B", 
-                                     "5" = "#FF6361", 
-                                     "6" = "#BC4169", 
-                                     "6R" = "#FF2362"),
+                     Individual = c("1" = "#FF9F64", 
+                                     "2" = "#78EBDA", 
+                                     "3" = "#ADCD77", 
+                                     "4" = "#E6CC50", 
+                                     "5" = "#A68AC0", 
+                                     "6" = "#F16F90", 
+                                     "6R" = "#C61E4E"),
                      Timepoint = c("t0" = "#238B45",
                                     "t24" = "#74C476", 
                                     "t144" = "#C7E9C0"))
 
 tx_colors <- c("DOX" = "#499FBD",
                  "VEH" = "#BBBBBC")
-ind_colors <- c("1" = "red",
-                "2" = "orange",
-                "3" = "yellow",
-                "4" = "green",
-                "5" = "blue",
-                "6" = "violet",
-                "6R" = "purple")
+ind_colors <- c("1" = "#FF9F64",
+                "2" = "#78EBDA",
+                "3" = "#ADCD77",
+                "4" = "#E6CC50",
+                "5" = "#A68AC0",
+                "6" = "#F16F90",
+                "6R" = "#C61E4E")
 time_colors <- c("t0" = "#238B45",
                  "t24" = "#74C476",
                  "t144" = "#C7E9C0")
@@ -12183,15 +12205,6 @@ plot_motifs100_abslogFC
 ```
 #line plot Motifs
 ```{r Top 100 genes by Motif}
-#Now I want to make this more simple and order these by probability of motif membership rather than find the logFC and adj P
-
-#load in my gene lists from cormotif
-
-# final_genes_1_RUV
-
-# final_genes_2_RUV
-
-
 
 
 ```
@@ -14589,7 +14602,7 @@ motifs <- list(
 gene_sets <- list(
   DDR = ddr_set,
   P53 = p53_set,
-  DIC = dic_set
+  DIC = AIC_set
 )
 
 all_genes <- unique(unlist(motifs))  # universe of tested genes
@@ -14729,8 +14742,8 @@ motifs <- list(
 gene_sets <- list(
   DDR = ddr_set,
   P53 = p53_set,
-  AIC = aic_set,
-  DIC = dic_set
+  DIC = AIC_set,
+  Fonoudi = fonoudi_ids
 )
 
 all_genes <- unique(unlist(motifs))  # universe of tested genes
@@ -14919,8 +14932,8 @@ motif2_genes <- final_genes_2_RUV  # Sustained
 gene_sets <- list(
   DDR = ddr_set,
   P53 = p53_set,
-  DIC = dic_set,
-  AIC = aic_set
+  DIC = AIC_set,
+  Fonoudi = fonoudi_ids
 )
 
 #function to test enrichment between motifs
@@ -17907,7 +17920,7 @@ forest_TOP2i
 
 forest_summary_TOP2i <- forest_summary
 
-View(forest_summary_TOP2i)
+# View(forest_summary_TOP2i)
 
 ```
 
@@ -18965,8 +18978,8 @@ final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS") # Sustain
 proSus_genes <- readRDS("data/new/RUV/CMF/Progressing_Sustained_M2_Set_genes.RDS")
 recSus_genes <- readRDS("data/new/RUV/CMF/Recovering_Sustained_M2_Set_genes.RDS")
 
-
-
+#exchange proSus for the new set
+proSus_genes_1 
 
 ```
 
@@ -19223,18 +19236,18 @@ recSus_plots <- generate_overlap_plots_cormotif(recSus_overlap, boxplot_new, "re
 #preview all plots
 for (p in c(proSus_plots, recSus_plots)) print(p)
 
-#save all of these plots with unique names
-for (plot_name in names(proSus_plots)) {
-  save_plot(proSus_plots[[plot_name]], 
-            filename = paste0("ExGene_", plot_name, "_EMP"), 
-            folder = output_folder)
-}
-
-for (plot_name in names(recSus_plots)) {
-  save_plot(recSus_plots[[plot_name]], 
-            filename = paste0("ExGene_", plot_name, "_EMP"), 
-            folder = output_folder)
-}
+# #save all of these plots with unique names
+# for (plot_name in names(proSus_plots)) {
+#   save_plot(proSus_plots[[plot_name]], 
+#             filename = paste0("ExGene_", plot_name, "_EMP"), 
+#             folder = output_folder)
+# }
+# 
+# for (plot_name in names(recSus_plots)) {
+#   save_plot(recSus_plots[[plot_name]], 
+#             filename = paste0("ExGene_", plot_name, "_EMP"), 
+#             folder = output_folder)
+# }
 
 ```
 
@@ -20231,8 +20244,7 @@ forest_summary
 ```
 
 
-```{r Proportional Venn Inc Dec Sus}
-
+```{r Proportional Venn Inc (proSus) Dec (recSus) Sustained}
 
 # Create your gene list for the Euler diagram
 venn_gene_list <- list(
@@ -20293,14 +20305,14 @@ recSus_overlap_sustained <- intersect(recSus_genes, final_genes_2_RUV)
 #combine all of my genes together into one unique set
 #I'll later also add in the GWAS genes that I find from the HF GWAs
 
-CardTox_genes <- unique(unlist(all_cat_genes))
-
-proSus_set <- unique(proSus_overlap$Entrez_ID)
-recSus_set <- unique(recSus_overlap$Entrez_ID)
+# CardTox_genes <- unique(unlist(all_cat_genes))
+CT_genes <- unique(c(fonoudi_ids, sapp_ids, liu_ids)) #201 genes total
+proSus_set <- unique(proSus_overlap$Entrez_ID) #27 genes
+recSus_set <- unique(recSus_overlap$Entrez_ID) #37 genes
 
 # 3. Combine into a list for plotting
 venn_list_ct <- list(
-  CT = CardTox_genes,
+  CT = CT_genes,
   proSus = proSus_set,
   recSus = recSus_set,
   Recovered = final_genes_1_RUV
@@ -20322,7 +20334,7 @@ print(venn_ct_all)
 
 ```
 
-#HF GWAS
+#HF GWAS data
 ```{r Read in HF GWAS data}
 #I pulled data from the GWAS catalog for HF from the HERMES study 2020
 
@@ -20341,6 +20353,8 @@ saveRDS(elife_33480_supp4_v2, "data/new/eQTLs/knowles_eqtls_supp4.RDS")
 ```{r Redefine the proSus gene set}
 #after looking at the log2cpm genes, we see that the patterns are not fully as expected when plotting t24 along with t0 and t144
 #redefine this set to be t0 > t24 > t144
+
+#make this set the first set of genes where t0 < t24 & t0 < t144
 
 #combine my toptables together
 #combine my toptables together
@@ -20379,12 +20393,14 @@ categorize_sustained_pro <- function(gene, all_DEGs_dxr) {
   
   #assign categories based on absFC patterns
   if (!is.na(absFC_t0) & !is.na(absFC_t24) & !is.na(absFC_t144)) {
-    if (absFC_t0 > absFC_t24 & absFC_t0 > absFC_t144) {
+    if (absFC_t0 < absFC_t24 & absFC_t0 < absFC_t144) {
       return("proSus")
     } 
     }
   return(NA_character_)
 }
+
+#proSus = increasing over time t0 < t144 & t0 < t24
 
 #make into a dataframe
 proSus_df <- data.frame(
@@ -20472,17 +20488,619 @@ print(plot_proSus_summary)
 
 # save_plot(
 #   plot = plot_proSus_summary,
-#   filename = "Sustained_Proportion_Barplot_proSus_newdef_DEGs_EMP",
+#   filename = "Sustained_Proportion_Barplot_proSus_set1_DEGs_EMP",
 #   folder = output_folder
 # )
 
 
 ```
 
-```{r GO KEGG proSus New}
+#proSus Set 2 t0 < t24 & t0 < t144 & t24 < t144
+```{r Set 2 proSus defined}
+
+categorize_sustained_pro <- function(gene, all_DEGs_dxr) {
+  # pull DEGs at t0 and t144
+  t0   <- all_DEGs_dxr[["t0"]]
+  t24  <- all_DEGs_dxr[["t24"]]
+  t144 <- all_DEGs_dxr[["t144"]]
+  
+  # absFC values if present
+  absFC_t0   <- if (gene %in% t0$Entrez_ID)   
+    t0 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t24  <- if (gene %in% t24$Entrez_ID) 
+    t24 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t144 <- if (gene %in% t144$Entrez_ID) 
+    t144 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  
+  #assign categories based on absFC patterns
+  if (!is.na(absFC_t0) & !is.na(absFC_t24) & !is.na(absFC_t144)) {
+    if (absFC_t0 < absFC_t24 & absFC_t0 < absFC_t144 & absFC_t24 < absFC_t144) {
+      return("proSus")
+    } 
+    }
+  return(NA_character_)
+}
+
+#make into a dataframe
+proSus_df2 <- data.frame(
+  Study = "Sustained",
+  Entrez_ID = final_genes_2_RUV,
+  Category = sapply(final_genes_2_RUV, 
+                    categorize_sustained_pro, 
+                    all_DEGs_dxr = all_DEGs_dxr),
+  stringsAsFactors = FALSE
+) %>%
+  dplyr::filter(!is.na(Category))
+
+#divide these out by timepoint
+t0_proSus2 <- combined_toptables_dxr[["t0"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t0  = logFC,
+    adjP_t0   = adj.P.Val,
+    Sig_t0    = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t0  = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t0, absFC_t0, adjP_t0, Sig_t0)
+
+t24_proSus2 <- combined_toptables_dxr[["t24"]] %>% 
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>% 
+  mutate(
+    logFC_t24 = logFC,
+    adjP_t24 = adj.P.Val,
+    Sig_t24 = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t24 = abs(logFC)
+  ) %>% 
+  dplyr::select(Entrez_ID, logFC_t24, absFC_t24, adjP_t24, Sig_t24)
+
+t144_proSus2 <- combined_toptables_dxr[["t144"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t144 = logFC,
+    adjP_t144  = adj.P.Val,
+    Sig_t144   = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t144 = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t144, absFC_t144, adjP_t144, Sig_t144)
+
+# make sure Entrez_ID types match
+proSus_df2$Entrez_ID <- as.integer(proSus_df2$Entrez_ID)
+t0_proSus2$Entrez_ID <- as.integer(t0_proSus2$Entrez_ID)
+t24_proSus2$Entrez_ID <- as.integer(t24_proSus2$Entrez_ID)
+t144_proSus2$Entrez_ID <- as.integer(t144_proSus2$Entrez_ID)
+
+# join for full data frame
+df_sustained_pro2 <- proSus_df2 %>%
+  left_join(t0_proSus2,   by = "Entrez_ID") %>%
+  left_join(t24_proSus2,  by = "Entrez_ID") %>% 
+  left_join(t144_proSus2, by = "Entrez_ID")
+
+proSus_summary2 <- df_sustained_pro2 %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count),
+         Percent = round(Proportion * 100, 1))
+
+proSus_summary2 <- df_sustained_pro2 %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count),
+         Percent = round(Proportion * 100, 1))
+
+
+category_colors2 <- c(
+  "proSus" = "#1f77b4"  
+  # "proSus" = "#ff7f0e",  
+  # "absFC_t0 = absFC_t144"          = "#d62728",  
+  # "DEG_t144_only"                  = "#2ca02c"   
+)
+
+plot_proSus_summary2 <- ggplot(proSus_summary2, aes(x = Study, y = Percent, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  scale_y_continuous(limits = c(0, 102)) +
+  scale_fill_manual(values = category_colors) +
+  theme_custom() +
+  labs(
+    y = "Percentage of Sustained Genes (%)",
+    x = "",
+    fill = "Category"
+  )
+
+print(plot_proSus_summary2)
+
+#number of genes in this definition: 
+
+# save_plot(
+#   plot = plot_proSus_summary2,
+#   filename = "Sustained_Proportion_Barplot_proSus_set2_DEGs_EMP",
+#   folder = output_folder
+# )
+
+
+```
+
+
+#Venn Diagram proSus New Set 1 
+```{r Make a venn diagram 4-way with new proSus}
+#new proSus set = proSus_gene_list
+proSus_gene_list <- proSus_df$Entrez_ID
+proSus_gene_list2 <- proSus_df2$Entrez_ID
+CT_genes <- unique(c(fonoudi_ids, sapp_ids, liu_ids))
+
+proSus_new1 <- deg_wide %>%
+  filter(
+    Entrez_ID %in% final_genes_2_RUV,
+    absFC_t0 < absFC_t24, 
+    absFC_t0 < absFC_t144) %>%
+  pull(Entrez_ID) %>%
+  unique()
+
+proSus_new2 <- deg_wide %>%
+  filter(
+    Entrez_ID %in% final_genes_2_RUV,
+    absFC_t0 < absFC_t24, 
+    absFC_t0 < absFC_t144, 
+    absFC_t24 < absFC_t144) %>%
+  pull(Entrez_ID) %>%
+  unique()
+
+length(proSus_new1) #264 genes
+length(proSus_new2) #163 genes
+
+#bring in my gene set
+recSus_set <- unique(recSus_overlap$Entrez_ID)
+#recovered set cluster
+final_genes_1_RUV
+
+#create a venn diagram list for 4 way venn
+venn_list_ct1 <- list(
+  CT = as.character(CT_genes),
+  proSus = as.character(proSus_new1),
+  recSus = as.character(recSus_set),
+  Recovered = as.character(final_genes_1_RUV)
+)
+
+#create a venn diagram list for proSus 2 (stricter definition)
+venn_list_ct2 <- list(
+  CT = as.character(CT_genes),
+  proSus_new = as.character(proSus_new2),
+  recSus = as.character(recSus_set),
+  Recovered = as.character(final_genes_1_RUV)
+)
+
+# 5. Make the 4-way Venn diagram
+venn_ct1 <- ggVennDiagram(
+  venn_list_ct1,
+  category.names = c("CT", "proSus (set1 = 264)", "recSus", "Recovered")
+) +
+  ggtitle("DOX Cardiotoxicity Genes\n New proSus vs recSus vs Recovered vs CT") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = "#F9F9F9", high = "#4B9CD3") +
+  theme_custom()
+
+# 6. Print
+print(venn_ct1)
+
+
+
+venn_ct2 <- ggVennDiagram(
+  venn_list_ct2,
+  category.names = c("CT", "proSus (set2 = 163)", "recSus", "Rec")
+) +
+  ggtitle("DOX Cardiotoxicity Genes\n New proSus vs recSus vs Recovered vs CT") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = "#F9F9F9", high = "#4B9CD3") +
+  theme_custom()
+
+print(venn_ct2)
+
+
+
+
+```
+
+#log2cpm example genes
+```{r log2cpm genes Set 1 proSus}
+
+#check overlap of proSus and recSus genes with all included sets
+all_cat_genes <- unique(unlist(gene_cats))
+CT_genes
+recSus_overlap <- recSus_genes[recSus_genes %in% all_cat_genes]
+length(recSus_overlap) #42 genes overlapping
+recSus_overlap
+#gene ids:
+#57822, 5453, 1263, 55283, 8407, 118738, 355, 10346, 272, 220001, 3014, 1111, 441631, 1017, 55332, 54331, 5228, 2242, 56963, 2232, 129607, 6382, 26154, 83959, 55959, 30811, 11200, 3976, 4071, 2261, 1310, 27445, 4897, 8794, 8797, 9134, 81704
+#check the genes to make sure that t0 > t144
+
+proSus_overlap <- proSus_genes[proSus_genes %in% all_cat_genes]
+length(proSus_overlap) #27 genes overlapping
+proSus_overlap
+#gene ids:
+#84958, 29899, 983, 64787, 5888, 9133, 9235, 1006, 672, 9518, 55355, 1869, 2177, 993, 10721, 55214, 1363, 79682, 891, 1719, 995, 3161, 1026, 55166, 51435, 10592, 60401
+
+#make a dataframe to assess which source these different genes overlapped in
+
+cat_genes_df <- map_dfr(names(gene_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(all_cat_genes, gene_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(cat_genes_df)
+#1499 genes overall from all categories
+
+#filter overlaps for proSus
+proSus_overlap <- cat_genes_df %>%
+  filter(Entrez_ID %in% proSus_genes)
+#33 genes overlap
+
+#filter overlaps for recSus
+recSus_overlap <- cat_genes_df %>%
+  filter(Entrez_ID %in% recSus_genes)
+#42 genes overlap
+
+#also sanity check that these genes are DEGs that overlap with proSus recSus
+sets_for_overlap <- list(
+  proSus = proSus_overlap$Entrez_ID,
+  recSus = recSus_overlap$Entrez_ID,
+  geneSets = unique(unlist(gene_cats))
+)
+
+deg_wide <- combined_toptables_dxr_RUV %>%
+  mutate(
+    Timepoint = case_when(
+      Time == "24T"  ~ "t0",
+      Time == "24R"  ~ "t24",
+      Time == "144R" ~ "t144",
+      TRUE ~ NA_character_
+    ),
+    absFC = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, SYMBOL, Timepoint, logFC, absFC, adj.P.Val) %>%
+  filter(!is.na(SYMBOL)) %>%
+  pivot_wider(
+    names_from = Timepoint,
+    values_from = c(logFC, absFC, adj.P.Val),
+    names_sep = "_"
+  ) %>%
+  mutate(
+    DEG_t0   = adj.P.Val_t0   < 0.05,
+    DEG_t24  = adj.P.Val_t24  < 0.05,
+    DEG_t144 = adj.P.Val_t144 < 0.05
+  )
+
+recSus_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% recSus_overlap$Entrez_ID)
+
+proSus_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% proSus_overlap$Entrez_ID)
+
+#check whether the assumptions are stil the same that the absFC is t0 < t144
+#recSus
+recSus_pattern <- recSus_degs %>%
+  mutate(correct_pattern = absFC_t0 > absFC_t144)
+
+#proSus
+proSus_pattern <- proSus_degs %>%
+  mutate(correct_pattern = absFC_t0 < absFC_t144)
+
+recSus_summary <- recSus_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+proSus_summary <- proSus_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+recSus_summary #37 genes follow the pattern
+proSus_summary #27 genes follow the pattern
+
+
+
+#since there are fewer genes here, I believe that there are multiples of the same genes within different categories
+gene_category_counts <- cat_genes_df %>%
+  group_by(Entrez_ID) %>%
+  summarise(n_categories = n_distinct(Category),
+            categories = paste(unique(Category), collapse = ", "),
+            .groups = "drop") %>%
+  arrange(desc(n_categories))
+
+#pull genes that are in more than one category
+shared_genes <- gene_category_counts %>%
+  filter(n_categories > 1)
+
+#view the genes that are shared across categories for curiosity
+shared_genes
+#160 genes are shared across at least two categories 
+#(predominantly the eQTLs and reQTLs with 103 shared genes)
+
+
+#find gene symbols
+proSus_overlap <- proSus_overlap %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+recSus_overlap <- recSus_overlap %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+#now plot these example genes for each
+
+#first change colnames pf my expression dataframe to match factors
+boxplot_new <- boxplot1
+
+expr_cols <- setdiff(colnames(boxplot_new), c("Entrez_ID", "SYMBOL"))
+
+rename_cond <- function(colnames_vec) {
+  colnames_vec <- gsub("DMSO", "VEH", colnames_vec)       # DMSO -> VEH
+  colnames_vec <- gsub("_24T_", "_t0_", colnames_vec)     # 24T -> t0
+  colnames_vec <- gsub("_24R_", "_t24_", colnames_vec)    # 24R -> t24
+  colnames_vec <- gsub("_144R_", "_t144_", colnames_vec)  # 144R -> t144
+  colnames_vec <- gsub("Ind6REP", "6R", colnames_vec)     # Ind6REP -> 6R
+  colnames_vec <- gsub("Ind", "", colnames_vec)           
+  return(colnames_vec)
+}
+
+new_expr_cols <- rename_cond(expr_cols)
+colnames(boxplot_new)[match(expr_cols, colnames(boxplot_new))] <- new_expr_cols
+
+#process the cpm data
+process_cpm_data_cormotif <- function(gene_id, expr_df) {
+  gene_data <- expr_df %>% filter(Entrez_ID == gene_id)
+  
+  long_data <- gene_data %>%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = "Sample",
+      values_to = "log2CPM"
+    ) %>%
+    mutate(
+      Treatment = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("VEH", Sample) ~ "VEH",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("t0", Sample) ~ "t0",
+        grepl("t24", Sample) ~ "t24",
+        grepl("t144", Sample) ~ "t144",
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl("1$", Sample) ~ "1",
+        grepl("2$", Sample) ~ "2",
+        grepl("3$", Sample) ~ "3",
+        grepl("4$", Sample) ~ "4",
+        grepl("5$", Sample) ~ "5",
+        grepl("6$", Sample) ~ "6",
+        grepl("6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = "_")
+    )
+  
+  # Set factor levels for plotting order
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c("DOX_t0", "VEH_t0", 
+               "DOX_t24", "VEH_t24", 
+               "DOX_t144", "VEH_t144")
+  )
+  
+  return(long_data)
+}
+
+# Function to generate plots for a set of genes
+generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_label) {
+  plots <- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data <- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol <- unique(gene_data$SYMBOL)
+    gene_categories <- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories <- paste(unique(gene_categories), collapse = ", ")
+    
+    p <- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     " (", comparison_label, " in ", gene_categories, ") ")) +
+      labs(x = "Condition", y = "log2cpm") +
+      theme_custom()
+    
+    # Use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name <- paste0(gene_symbol, "_", gene_id, "_", comparison_label)
+    plots[[plot_name]] <- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for both
+proSus_plots <- generate_overlap_plots_cormotif(proSus_overlap, boxplot_new, "proSus")
+recSus_plots <- generate_overlap_plots_cormotif(recSus_overlap, boxplot_new, "recSus")
+
+#preview all plots
+for (p in c(proSus_plots, recSus_plots)) print(p)
+
+#save all of these plots with unique names
+for (plot_name in names(proSus_plots)) {
+  save_plot(proSus_plots[[plot_name]], 
+            filename = paste0("ExGene_", plot_name, "_EMP"), 
+            folder = output_folder)
+}
+
+for (plot_name in names(recSus_plots)) {
+  save_plot(recSus_plots[[plot_name]], 
+            filename = paste0("ExGene_", plot_name, "_EMP"), 
+            folder = output_folder)
+}
+
+```
+
+```{r log2cpm example genes proSus sets}
+
+#ensure your new proSus definitions exist
+#set 1 = t0 < t24 & t0 < t144
+#set 2 = t0 < t24 & t0 < t144 & t24 < t144
+
+#read in the previous sets that I defined
+# proSus_new1 <- deg_wide %>%
+#   filter(
+#     Entrez_ID %in% final_genes_2_RUV,
+#     absFC_t0 < absFC_t24, 
+#     absFC_t0 < absFC_t144) %>%
+#   pull(Entrez_ID) %>%
+#   unique()
+# 
+# proSus_new2 <- deg_wide %>%
+#   filter(
+#     Entrez_ID %in% final_genes_2_RUV,
+#     absFC_t0 < absFC_t24, 
+#     absFC_t0 < absFC_t144, 
+#     absFC_t24 < absFC_t144) %>%
+#   pull(Entrez_ID) %>%
+#   unique()
+
+length(proSus_new1) #264 genes
+length(proSus_new2) #163 genes
+
+#modify these for log2cpm expression data
+proSus_new1_expr <- boxplot_new %>%
+  filter(Entrez_ID %in% proSus_new1)
+
+proSus_new2_expr <- boxplot_new %>%
+  filter(Entrez_ID %in% proSus_new2)
+
+recSus_expr <- boxplot_new %>%
+  filter(Entrez_ID %in% recSus_genes)
+
+#convert Entrez_ID to numeric
+proSus_df1$Entrez_ID <- as.numeric(proSus_df1$Entrez_ID)
+proSus_df2$Entrez_ID <- as.numeric(proSus_df2$Entrez_ID)
+
+#intersect with all annotated categories
+proSus_overlap_df1 <- cat_genes_df %>%
+  filter(Entrez_ID %in% proSus_new1_expr)
+
+proSus_overlap_df2 <- cat_genes_df %>%
+  filter(Entrez_ID %in% proSus_df2$Entrez_ID)
+
+proSus_degs_df1 <- deg_wide %>% 
+  filter(Entrez_ID %in% proSus_overlap_df1$Entrez_ID)
+
+proSus_degs_df2 <- deg_wide %>% 
+  filter(Entrez_ID %in% proSus_overlap_df2$Entrez_ID)
+
+#check pattern: t0 < t144 and t0 < t24 vs set2 stricter
+proSus_df1_pattern <- proSus_degs_df1 %>%
+  mutate(correct_pattern = absFC_t0 < absFC_t144 & absFC_t0 < absFC_t24)
+
+proSus_df2_pattern <- proSus_degs_df2 %>%
+  mutate(correct_pattern = absFC_t0 < absFC_t144 & absFC_t0 < absFC_t24 & absFC_t24 < absFC_t144)
+
+# Summaries
+proSus_df1_summary <- proSus_df1_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+proSus_df2_summary <- proSus_df2_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+proSus_df1_summary
+proSus_df2_summary
+
+#now plot these
+proSus_df1_plots <- generate_overlap_plots_cormotif(proSus_df1_pattern, boxplot_new, "proSus_df1")
+
+proSus_df2_plots <- generate_overlap_plots_cormotif(proSus_df2_pattern, boxplot_new, "proSus_df2")
+
+
+for (plot_name in names(proSus_df1_plots)) {
+  save_plot(proSus_df1_plots[[plot_name]], 
+            filename = paste0("ExGene_", plot_name, "_proSus_df1_EMP"), 
+            folder = output_folder)
+}
+
+for (plot_name in names(proSus_df2_plots)) {
+  save_plot(proSus_df2_plots[[plot_name]], 
+            filename = paste0("ExGene_", plot_name, "_proSus_df2_EMP"), 
+            folder = output_folder)
+}
+
+venn_list_proSus <- list(
+  proSus_df1 = as.character(proSus_overlap_df1$Entrez_ID),
+  proSus_df2 = as.character(proSus_overlap_df2$Entrez_ID),
+  recSus = as.character(recSus_overlap$Entrez_ID),
+  Recovered = as.character(final_genes_1_RUV),
+  CT = as.character(CT_genes)
+)
+
+venn_proSus_compare <- ggVennDiagram(
+  venn_list_proSus,
+  category.names = c("proSus_df1", "proSus_df2", "recSus", "Recovered", "CT")
+) +
+  ggtitle("DOX Cardiotoxicity Genes\nComparing new proSus definitions vs recSus & CT") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = "#F9F9F9", high = "#4B9CD3") +
+  theme_custom()
+
+print(venn_proSus_compare)
+
+
+
+```
+
+
+```{r GO KEGG proSus New Set1}
 
 proSus_gene_list <- proSus_df$Entrez_ID
-length(proSus_gene_list) #147 genes after changing the definition
+length(proSus_gene_list) #264 genes after changing the definition
 
 #background
 all_genes
@@ -20530,11 +21148,399 @@ proSus_table_genes_GOBP_plot <- ggplot(table_proSus_genes_GOBP_RUV, aes(x = log_
 
 print(proSus_table_genes_GOBP_plot)
 
-save_plot(
-  plot = proSus_table_genes_GOBP_plot,
-  filename = "Sustained_proSus_GOBP_logval_all_EMP",
-  folder = output_folder
+# save_plot(
+#   plot = proSus_table_genes_GOBP_plot,
+#   filename = "Sustained_proSus_GOBP_logval_all_EMP",
+#   folder = output_folder
+# )
+
+#KEGG
+table_proSus_genes_KEGG_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proSus_table_genes_KEGG_plot <- ggplot(table_proSus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("proSus Enriched KEGG Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(proSus_table_genes_KEGG_plot)
+#there are 0 KEGG terms associated with these genes
+
+# save_plot(
+#   plot = proSus_table_genes_KEGG_plot,
+#   filename = "Sustained_proSus_KEGG_logval_all_EMP",
+#   folder = output_folder
+# )
+
+```
+
+#GO KEGG Set2 proSus
+```{r GO KEGG terms proSus Set 2 163 genes}
+proSus2_gene_list <- proSus_df2$Entrez_ID
+length(proSus2_gene_list) #163 genes after changing the definition
+
+#background
+all_genes
+
+proSus2_GOKEGG_RUV <- gost(query = proSus2_gene_list,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = FALSE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+proSus2_GOKEGG_genes_RUV <- gostplot(proSus2_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+proSus2_GOKEGG_genes_RUV
+
+table_proSus2_GOKEGG_genes_RUV <- proSus2_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_proSus2_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+
+#GO:BP
+table_proSus2_genes_GOBP_RUV <- table_proSus2_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proSus2_table_genes_GOBP_plot <- ggplot(table_proSus2_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("proSus Set2 Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(proSus2_table_genes_GOBP_plot)
+
+# save_plot(
+#   plot = proSus2_table_genes_GOBP_plot,
+#   filename = "Sustained_proSus_Set2_GOBP_logval_all_EMP",
+#   folder = output_folder
+# )
+
+#KEGG
+table_proSus2_genes_KEGG_RUV <- table_proSus2_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proSus2_table_genes_KEGG_plot <- ggplot(table_proSus2_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("proSus Set2 Enriched KEGG Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(proSus2_table_genes_KEGG_plot)
+#there are 0 KEGG terms associated with these genes
+
+# save_plot(
+#   plot = proSus2_table_genes_KEGG_plot,
+#   filename = "Sustained_proSus_set2_KEGG_logval_all_EMP",
+#   folder = output_folder
+# )
+
+```
+
+#Updated Analysis 11/10/25
+```{r New proSus set definitions}
+#I am going to finalize my definitions of proSus
+#proSus = Sustained genes that are t0 < t24 & t24 < t144
+#not_proSus = all other Sustained genes - proSus genes
+
+#total of 501 Sustained genes, make a gene set of this new definition
+
+#combine my toptables together
+#combine my toptables together
+combined_toptables_dxr <- list(
+  "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
+  "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
+  "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
 )
+
+#don't filter for DEGs, not applicable here
+all_genes_dxr <- lapply(combined_toptables_dxr, function(df) {
+  df %>%
+    # dplyr::filter(adj.P.Val < 0.05) %>%
+    mutate(absFC = abs(logFC))
+})
+
+#make a function to categorize these genes
+categorize_sustained_proSus <- function(gene, all_genes_dxr) {
+  #pull genes at t0 t24 t144
+  t0   <- all_genes_dxr[["t0"]]
+  t24  <- all_genes_dxr[["t24"]]
+  t144 <- all_genes_dxr[["t144"]]
+  
+  # absFC values if present
+  absFC_t0   <- if (gene %in% t0$Entrez_ID)   
+    t0 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t24  <- if (gene %in% t24$Entrez_ID) 
+    t24 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  absFC_t144 <- if (gene %in% t144$Entrez_ID) 
+    t144 %>% 
+    filter(Entrez_ID == gene) %>% 
+    pull(absFC) else NA_real_
+  
+  #assign categories based on absFC patterns
+  if (!is.na(absFC_t0) & !is.na(absFC_t24) & !is.na(absFC_t144)) {
+    if (absFC_t0 < absFC_t24 & absFC_t24 < absFC_t144) {
+      return("proSus")
+    } else {
+      return("notproSus")
+    }
+  } else {
+    return(NA_character_)
+  }
+}
+
+#proSus = increasing over time t0 < t144 & t24 < t144
+#notproSus = all other genes
+
+#make into a dataframe
+proSus_fin_df <- data.frame(
+  Study = "Sustained",
+  Entrez_ID = final_genes_2_RUV,
+  Category = sapply(final_genes_2_RUV, 
+                    categorize_sustained_proSus, 
+                    all_genes_dxr = all_genes_dxr),
+  stringsAsFactors = FALSE
+) %>%
+  dplyr::filter(!is.na(Category))
+
+#divide these out by timepoint
+t0_proSus <- combined_toptables_dxr[["t0"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t0  = logFC,
+    adjP_t0   = adj.P.Val,
+    Sig_t0    = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t0  = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t0, absFC_t0, adjP_t0, Sig_t0)
+
+t24_proSus <- combined_toptables_dxr[["t24"]] %>% 
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>% 
+  mutate(
+    logFC_t24 = logFC,
+    adjP_t24 = adj.P.Val,
+    Sig_t24 = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t24 = abs(logFC)
+  ) %>% 
+  dplyr::select(Entrez_ID, logFC_t24, absFC_t24, adjP_t24, Sig_t24)
+
+t144_proSus <- combined_toptables_dxr[["t144"]] %>%
+  dplyr::select(Entrez_ID, logFC, adj.P.Val) %>%
+  mutate(
+    logFC_t144 = logFC,
+    adjP_t144  = adj.P.Val,
+    Sig_t144   = ifelse(adj.P.Val < 0.05, "DE", "nonDE"),
+    absFC_t144 = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, logFC_t144, absFC_t144, adjP_t144, Sig_t144)
+
+# make sure Entrez_ID types match
+proSus_fin_df$Entrez_ID <- as.integer(proSus_fin_df$Entrez_ID)
+t0_proSus$Entrez_ID <- as.integer(t0_proSus$Entrez_ID)
+t24_proSus$Entrez_ID <- as.integer(t24_proSus$Entrez_ID)
+t144_proSus$Entrez_ID <- as.integer(t144_proSus$Entrez_ID)
+
+# join for full data frame
+df_sustained_proSus <- proSus_fin_df %>%
+  left_join(t0_proSus,   by = "Entrez_ID") %>%
+  left_join(t24_proSus,  by = "Entrez_ID") %>% 
+  left_join(t144_proSus, by = "Entrez_ID")
+
+#save this new dataframe for later analysis
+# saveRDS(df_sustained_proSus, "data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
+
+
+```
+
+#barchart of Sustained genes
+```{r Make a barplot of all sustained genes}
+#now that I've found the 163 genes fitting my definition for proSus, let's pull out the genes that do not fit that description from the Sustained group
+#501 sustained genes total
+#163 proSus genes
+#rest = notproSus (338 genes)
+
+proSus_fin_summary <- df_sustained_proSus %>%
+  group_by(Study, Category) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count),
+         Percent = round(Proportion * 100, 1))
+
+category_colors <- c(
+  "proSus" = "#1f77b4",  
+  "notproSus" = "#ff7f9e"  
+)
+
+plot_proSus_fin_summary <- ggplot(proSus_fin_summary, aes(x = Study, y = Percent, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  scale_y_continuous(limits = c(0, 102)) +
+  scale_fill_manual(values = category_colors) +
+  theme_custom() +
+  labs(
+    y = "Percentage of Sustained Genes (%)",
+    x = "",
+    fill = "Category"
+  )
+
+print(plot_proSus_fin_summary)
+#163 genes total
+
+# save_plot(
+#   plot = plot_proSus_fin_summary,
+#   filename = "Sustained_Proportion_Barplot_proSus_finalset_DEGs_EMP",
+#   folder = output_folder
+# )
+
+
+```
+
+#make gene set
+```{r create a df with my proSus and notproSus gene sets}
+
+#read in my sustained all df (501 genes)
+proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
+
+#ensure numeric absFC values
+proSus_df_all <- proSus_df %>%
+  mutate(
+    absFC_t0   = as.numeric(absFC_t0),
+    absFC_t24  = as.numeric(absFC_t24),
+    absFC_t144 = as.numeric(absFC_t144)
+  )
+
+proSus_df_all <- proSus_df_all %>%
+  mutate(
+    Category_final = case_when(
+      absFC_t0 < absFC_t24 & absFC_t24 < absFC_t144 ~ "proSus",
+      !is.na(absFC_t0) & !is.na(absFC_t24) & !is.na(absFC_t144) ~ "notproSus",
+      TRUE ~ NA_character_  #keep genes missing any FC as NA
+    )
+  )
+
+#check the counts to make sure all is accurate
+table(proSus_df_all$Category_final, useNA = "ifany")
+#338 notproSus and 163 proSus - good
+
+#make my final proSus gene list
+proSus_gene_list <- proSus_df_all %>%
+  filter(Category_final == "proSus") %>%
+  pull(Entrez_ID) %>%
+  unique()
+
+#make my final notproSus gene list
+notproSus_gene_list <- proSus_df_all %>% 
+  filter(Category_final == "notproSus") %>% 
+  pull(Entrez_ID) %>% 
+  unique()
+
+length(proSus_gene_list)
+length(notproSus_gene_list)
+
+#save these as objects for easy access
+# saveRDS(proSus_gene_list, "data/new/RUV/CMF/proSus_gene_list.RDS")
+# saveRDS(notproSus_gene_list, "data/new/RUV/CMF/notproSus_gene_list.RDS")
+
+ 
+```
+
+
+#GO/KEGG proSus genes
+```{r GO analysis of proSus gene set}
+#Of the previous data, I am interested in the genes from our sustained motif that are increasingly different over time 
+#(progressing Sustained or proSus) 
+#this would be the 163 genes where t0 < t144 & t24 < t144 - named proSus
+
+#read in my sustained dataframe from above
+proSus_gene_list <- readRDS("data/new/RUV/CMF/proSus_gene_list.RDS")
+notproSus_gene_list <- readRDS("data/new/RUV/CMF/notproSus_gene_list.RDS")
+
+#background
+# all_genes
+
+length(proSus_gene_list)
+#163 - don't filter for DEGs
+
+proSus_GOKEGG_RUV <- gost(query = proSus_gene_list,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = FALSE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+proSus_GOKEGG_genes_RUV <- gostplot(proSus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+proSus_GOKEGG_genes_RUV
+
+table_proSus_GOKEGG_genes_RUV <- proSus_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_proSus_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_proSus_genes_GOBP_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proSus_table_genes_GOBP_plot <- ggplot(table_proSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("proSus Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(proSus_table_genes_GOBP_plot)
+
+# save_plot(
+#   plot = proSus_table_genes_GOBP_plot,
+#   filename = "Sustained_proSus_GOBP_logval_all_EMP",
+#   folder = output_folder
+# )
 
 #KEGG
 table_proSus_genes_KEGG_RUV <- table_proSus_GOKEGG_genes_RUV %>% 
@@ -20554,11 +21560,1055 @@ proSus_table_genes_KEGG_plot <- ggplot(table_proSus_genes_KEGG_RUV, aes(x = log_
 
 print(proSus_table_genes_KEGG_plot)
 
-save_plot(
-  plot = proSus_table_genes_KEGG_plot,
-  filename = "Sustained_proSus_KEGG_logval_all_EMP",
-  folder = output_folder
+# save_plot(
+#   plot = proSus_table_genes_KEGG_plot,
+#   filename = "Sustained_proSus_KEGG_logval_all_EMP",
+#   folder = output_folder
+# )
+
+
+#now do the same for notproSus genes
+
+notproSus_GOKEGG_RUV <- gost(query = notproSus_gene_list,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = FALSE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+notproSus_GOKEGG_genes_RUV <- gostplot(notproSus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+notproSus_GOKEGG_genes_RUV
+
+table_notproSus_GOKEGG_genes_RUV <- notproSus_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_notproSus_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_notproSus_genes_GOBP_RUV <- table_notproSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+notproSus_table_genes_GOBP_plot <- ggplot(table_notproSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("notproSus Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(notproSus_table_genes_GOBP_plot)
+
+# save_plot(
+#   plot = notproSus_table_genes_GOBP_plot,
+#   filename = "Sustained_notproSus_GOBP_logval_all_EMP",
+#   folder = output_folder
+# )
+
+#KEGG
+table_notproSus_genes_KEGG_RUV <- table_notproSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+notproSus_table_genes_KEGG_plot <- ggplot(table_notproSus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("notproSus Enriched KEGG Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(notproSus_table_genes_KEGG_plot)
+
+# save_plot(
+#   plot = notproSus_table_genes_KEGG_plot,
+#   filename = "Sustained_notproSus_KEGG_logval_all_EMP",
+#   folder = output_folder
+# )
+
+```
+
+#proSus vs notproSus venn diagrams
+```{r Venn Diagram proSus notproSus CT Recovered}
+#now compare the overlap of these genes with my CT genes from other studies
+
+CT_genes 
+proSus_gene_list
+notproSus_gene_list
+final_genes_1_RUV
+
+venn_proSus_list <- list(
+  CT = as.character(CT_genes),
+  Recovered = as.character(final_genes_1_RUV),
+  proSus = as.character(proSus_gene_list),
+  notproSus = as.character(notproSus_gene_list)
 )
+
+
+venn_proSus <- ggVennDiagram(
+  venn_proSus_list,
+  category.names = c("CT \n (n = 201)", 
+                     "Recovered \n (n = 7602)", 
+                     "proSus \n (n = 163)", 
+                     "notproSus \n (n = 338)")
+) +
+  ggtitle("DOX Cardiotoxicity Genes\n proSus vs notproSus vs Recovered vs CT") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = "#F9F9F9", high = "#4B9CD3") +
+  theme_custom()
+
+
+print(venn_proSus)
+
+```
+
+#log2cpm example gene
+```{r Example genes log2cpm for proSus}
+#proSus_gene_list
+#CT_genes
+
+#there are 5 total genes to investigate based on the Venn diagram of overlap with CT genes
+#1 overlap with proSus
+#4 overlap with notproSus
+
+intersect(proSus_gene_list, CT_genes)
+proSus_overlap <- proSus_gene_list[proSus_gene_list %in% CT_genes]
+#these give the same results
+#10721 Entrez_ID = 
+
+intersect(notproSus_gene_list, CT_genes)
+notproSus_overlap <- notproSus_gene_list[notproSus_gene_list %in% CT_genes]
+#these give the same results
+#8407, 129607, 30811, 1310 Entrez_ID =
+#8407 = 
+#129607 = 
+
+CT_cats <- list( 
+  "Fonoudi et al." = fonoudi_ids,
+  "Liu et al." = liu_ids,
+  "Sapp et al." = sapp_ids
+)
+
+ddr_p53_dic_cats <- list( 
+  "DNA Damage Response Genes" = unique(na.omit(DNA_damage_genes)),
+  "p53 Target Genes" = unique(na.omit(p53_target_genes)),
+  "DOX Cardiotoxicity Genes" = unique(na.omit(AIC_genes))
+)
+
+#pull the gene symbol so I can plot log2cpm data
+ct_genes_df <- map_dfr(names(CT_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(CT_genes, CT_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(ct_genes_df)
+#202 genes overall from all categories
+
+#filter overlaps for proSus
+proSus_overlap <- ct_genes_df %>%
+  filter(Entrez_ID %in% proSus_gene_list)
+#1 gene - from Sapp et al
+
+#filter overlaps for recSus
+notproSus_overlap <- ct_genes_df %>%
+  filter(Entrez_ID %in% notproSus_gene_list)
+#4 genes - from Sapp et al
+
+#also sanity check that these genes are DEGs that overlap with proSus recSus
+set_for_overlap <- list(
+  proSus = proSus_overlap$Entrez_ID,
+  notproSus = notproSus_overlap$Entrez_ID,
+  geneSets = unique(unlist(CT_genes))
+)
+
+deg_wide <- combined_toptables_dxr_RUV %>%
+  mutate(
+    Timepoint = case_when(
+      Time == "24T"  ~ "t0",
+      Time == "24R"  ~ "t24",
+      Time == "144R" ~ "t144",
+      TRUE ~ NA_character_
+    ),
+    absFC = abs(logFC)
+  ) %>%
+  dplyr::select(Entrez_ID, SYMBOL, Timepoint, logFC, absFC, adj.P.Val) %>%
+  filter(!is.na(SYMBOL)) %>%
+  pivot_wider(
+    names_from = Timepoint,
+    values_from = c(logFC, absFC, adj.P.Val),
+    names_sep = "_"
+  ) %>%
+  mutate(
+    DEG_t0   = adj.P.Val_t0   < 0.05,
+    DEG_t24  = adj.P.Val_t24  < 0.05,
+    DEG_t144 = adj.P.Val_t144 < 0.05
+  )
+
+proSus_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% proSus_overlap$Entrez_ID)
+
+notproSus_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% notproSus_overlap$Entrez_ID)
+
+#check whether the assumptions are stil the same that the absFC is t0 < t144
+
+#proSus
+proSus_pattern <- proSus_degs %>%
+  mutate(correct_pattern = absFC_t0 < absFC_t24 & absFC_t24 < absFC_t144)
+
+proSus_summary <- proSus_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+proSus_summary 
+
+#find gene symbols
+proSus_overlap <- proSus_overlap %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+notproSus_overlap <- notproSus_overlap %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+#now plot these example genes for each
+
+#first change colnames pf my expression dataframe to match factors
+# boxplot_new <- boxplot1
+
+# expr_cols <- setdiff(colnames(boxplot_new), c("Entrez_ID", "SYMBOL"))
+# 
+# rename_cond <- function(colnames_vec) {
+#   colnames_vec <- gsub("DMSO", "VEH", colnames_vec)       # DMSO -> VEH
+#   colnames_vec <- gsub("_24T_", "_t0_", colnames_vec)     # 24T -> t0
+#   colnames_vec <- gsub("_24R_", "_t24_", colnames_vec)    # 24R -> t24
+#   colnames_vec <- gsub("_144R_", "_t144_", colnames_vec)  # 144R -> t144
+#   colnames_vec <- gsub("Ind6REP", "6R", colnames_vec)     # Ind6REP -> 6R
+#   colnames_vec <- gsub("Ind", "", colnames_vec)
+#   return(colnames_vec)
+# }
+# 
+# new_expr_cols <- rename_cond(expr_cols)
+# colnames(boxplot_new)[match(expr_cols, colnames(boxplot_new))] <- new_expr_cols
+
+# saveRDS(boxplot_new, "data/new/RUV/CMF/log2cpm_boxplotdata_updated.RDS")
+
+boxplot_new <- readRDS("data/new/RUV/CMF/log2cpm_boxplotdata_updated.RDS")
+
+#process the cpm data
+process_cpm_data_cormotif <- function(gene_id, expr_df) {
+  gene_data <- expr_df %>% filter(Entrez_ID == gene_id)
+  
+  long_data <- gene_data %>%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = "Sample",
+      values_to = "log2CPM"
+    ) %>%
+    mutate(
+      Treatment = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("VEH", Sample) ~ "VEH",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("t0", Sample) ~ "t0",
+        grepl("t24", Sample) ~ "t24",
+        grepl("t144", Sample) ~ "t144",
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl("1$", Sample) ~ "1",
+        grepl("2$", Sample) ~ "2",
+        grepl("3$", Sample) ~ "3",
+        grepl("4$", Sample) ~ "4",
+        grepl("5$", Sample) ~ "5",
+        grepl("6$", Sample) ~ "6",
+        grepl("6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = "_")
+    )
+  
+  # Set factor levels for plotting order
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c("DOX_t0", "VEH_t0", 
+               "DOX_t24", "VEH_t24", 
+               "DOX_t144", "VEH_t144")
+  )
+  
+  return(long_data)
+}
+
+# Function to generate plots for a set of genes
+generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_label) {
+  plots <- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data <- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol <- unique(gene_data$SYMBOL)
+    gene_categories <- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories <- paste(unique(gene_categories), collapse = ", ")
+    
+    p <- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     " (", comparison_label, " in ", gene_categories, ") ")) +
+      labs(x = "Condition", y = "log2cpm") +
+      theme_custom()
+    
+    # Use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name <- paste0(gene_symbol, "_", gene_id, "_", comparison_label)
+    plots[[plot_name]] <- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for both
+proSus_plots <- generate_overlap_plots_cormotif(proSus_overlap, boxplot_new, "proSus")
+notproSus_plots <- generate_overlap_plots_cormotif(notproSus_overlap, boxplot_new, "notproSus")
+
+#preview all plots
+for (p in c(proSus_plots, notproSus_plots)) print(p)
+
+#save all of these plots with unique names
+# for (plot_name in names(proSus_plots)) {
+#   save_plot(proSus_plots[[plot_name]],
+#             filename = paste0("ExGene_proSus_", plot_name, "_EMP"),
+#             folder = output_folder)
+# }
+# 
+# for (plot_name in names(notproSus_plots)) {
+#   save_plot(notproSus_plots[[plot_name]],
+#             filename = paste0("ExGene_notproSus_", plot_name, "_EMP"),
+#             folder = output_folder)
+# }
+
+
+```
+
+#Pull out genes from GO/KEGG analysis in certain categories
+```{r GO KEGG example genes from terms}
+#I have several terms that I am interested in exploring further, since I have enrichment of DNA damage genes in proSus and notproSus but no p53 enrichment, that is all in notproSus
+
+
+```
+
+
+```{r logFC line plots proSus vs notproSus}
+
+#read in my gene sets
+proSus_gene_list
+notproSus_gene_list
+
+#create a toptable with all of the genes for proSus
+filt_toptable_proSus_RUV <- combined_toptables_dxr_RUV %>%
+  mutate(proSus = case_when(
+    Entrez_ID %in% proSus_gene_list ~ "proSus",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(proSus)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("t0", "t24", "t144"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#calculate medians for ALL DIC genes across timepoints
+medians_proSus_RUV <- filt_toptable_proSus_RUV %>%
+  group_by(time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_proSus <- paste0(
+  "proSus\nmedian logFC =\n",
+  paste0(medians_proSus_RUV$time, "=", round(medians_proSus_RUV$median_logFC, 2), collapse = "\n")
+)
+
+#sdd a column that labels positive/negative direction
+filt_toptable_proSus_RUV <- filt_toptable_proSus_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_proSus_RUV <- medians_proSus_RUV %>%
+  mutate(direction = "median")
+
+plot_proSus_logFC <- ggplot() +
+  geom_line(data = filt_toptable_proSus_RUV,
+            aes(x = time, 
+                y = logFC, 
+                group = Entrez_ID),
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_proSus_RUV,
+            aes(x = time, 
+                y = median_logFC, 
+                group = 1),
+            linewidth = 2, 
+            linetype = 1) +
+  scale_color_manual(
+    breaks = c("up", "down", "median"),
+    values = c("up" = "pink",
+               "down" = "pink",
+               "median" = "#348393"),
+    labels = c(
+      up = "genes",
+      down = "",
+      median = labs_logFC_proSus
+    ),
+    name = NULL
+  ) +
+  labs(title = "logFC — proSus Genes (n = 163)",
+       y = "logFC", x = "Time") +
+  theme_custom() +
+  theme(legend.position = "right")
+
+plot_proSus_logFC
+
+save_plot(plot_proSus_logFC, 
+          filename = "proSus_lineplot_logFC_EMP_251112",
+          folder = output_folder)
+
+#now do the same for the notproSus genes
+#create a toptable with all of the genes for proSus
+filt_toptable_notproSus_RUV <- combined_toptables_dxr_RUV %>%
+  mutate(notproSus = case_when(
+    Entrez_ID %in% notproSus_gene_list ~ "notproSus",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(notproSus)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("t0", "t24", "t144"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#calculate medians for ALL DIC genes across timepoints
+medians_notproSus_RUV <- filt_toptable_notproSus_RUV %>%
+  group_by(time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_notproSus <- paste0(
+  "notproSus\nmedian logFC =\n",
+  paste0(medians_notproSus_RUV$time, "=", round(medians_notproSus_RUV$median_logFC, 2), collapse = "\n")
+)
+
+#sdd a column that labels positive/negative direction
+filt_toptable_notproSus_RUV <- filt_toptable_notproSus_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_notproSus_RUV <- medians_notproSus_RUV %>%
+  mutate(direction = "median")
+
+plot_notproSus_logFC <- ggplot() +
+  geom_line(data = filt_toptable_notproSus_RUV,
+            aes(x = time, 
+                y = logFC, 
+                group = Entrez_ID, 
+                color = direction),
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_notproSus_RUV,
+            aes(x = time, 
+                y = median_logFC, 
+                group = 1, 
+                color = direction),
+            linewidth = 2, 
+            linetype = 1) +
+  scale_color_manual(
+    breaks = c("up", "down", "median"), 
+    values = c("up" = "pink",
+               "down" = "pink", 
+               "median" = "#348393"),
+    labels = c(
+      up = "genes",
+      down = "",
+      median = labs_logFC_notproSus
+    ),
+    name = NULL
+  ) +
+  labs(title = "logFC — notproSus Genes (n = 338)",
+       y = "logFC", x = "Time") +
+  theme_custom() +
+  theme(legend.position = "right")
+
+plot_notproSus_logFC
+
+save_plot(plot_notproSus_logFC, 
+          filename = "notproSus_lineplot_logFC_EMP_251112",
+          folder = output_folder)
+
+```
+
+#logFC line plots proSus vs notproSus
+```{r}
+
+proSus_gene_list
+notproSus_gene_list
+
+#simplify the line plot
+proSus_df_all
+
+#create a toptable with all of the genes for proSus
+filt_toptable_proSus_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(proSus = case_when(
+    Entrez_ID %in% proSus_gene_list ~ "proSus",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(proSus)) %>% 
+  mutate(Time = factor(Time, 
+                       levels = c("24T",
+                                  "24R",
+                                  "144R"))) %>% 
+  mutate(absFC = abs(logFC))
+#this should contain 163 unique genes across timepoints
+
+#calculate medians for ALL proSus genes across timepoints
+medians_proSus_RUV <- filt_toptable_proSus_RUV %>%
+  group_by(Time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_proSus <- paste0(
+  "proSus\nmedian logFC =\n",
+  paste0(medians_proSus_RUV$Time, "=", round(medians_proSus_RUV$median_logFC, 2), collapse = "\n")
+)
+
+labs_absFC_proSus <- paste0(
+  "proSus\nmedian abslogFC =\n",
+  paste0(medians_proSus_RUV$Time, "=", round(medians_proSus_RUV$median_abslogFC, 2), collapse = "\n")
+)
+
+
+# #sdd a column that labels positive/negative direction
+filt_toptable_proSus_RUV <- filt_toptable_proSus_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_proSus_RUV <- medians_proSus_RUV %>%
+  mutate(direction = "median")
+
+
+#make a logFC version
+plot_proSus_logFC <- ggplot() +
+  geom_line(data = filt_toptable_proSus_RUV,
+            aes(x = Time, 
+                y = logFC, 
+                group = Entrez_ID),
+            color = "orchid",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_proSus_RUV,
+            aes(x = Time, 
+                y = median_logFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#3D6680"),
+    labels = c(
+      median = labs_logFC_proSus),
+    name = NULL
+    ) +
+  labs(title = "logFC — proSus Genes (n = 163)",
+       y = "logFC", x = "Timepoint") +
+  theme_custom() +
+  theme(legend.position = "right")
+
+#now an absFC version
+plot_proSus_absFC <- ggplot() +
+  geom_line(data = filt_toptable_proSus_RUV,
+            aes(x = Time, 
+                y = absFC, 
+                group = Entrez_ID),
+            color = "orchid",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_proSus_RUV,
+            aes(x = Time, 
+                y = median_abslogFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#3D6680"),
+    labels = c(
+      median = labs_absFC_proSus),
+    name = NULL
+    ) +
+  labs(title = "abs logFC — proSus Genes (n = 163)",
+       y = "absFC", x = "Timepoint") +
+  theme_custom() +
+  theme(legend.position = "right")
+
+print(plot_proSus_logFC)
+print(plot_proSus_absFC)
+
+#find how many genes are up and how many are down
+proSus_directionality <- filt_toptable_proSus_RUV %>%
+  group_by(Time, direction) %>%
+  summarise(n = n(), .groups = "drop")
+
+#now make it so that it only counts those that are increasingly negative or increasingly positive across time
+
+filt_toptable_notproSus_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(notproSus = case_when(
+    Entrez_ID %in% notproSus_gene_list ~ "notproSus",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(notproSus)) %>% 
+  mutate(Time = factor(Time, 
+                       levels = c("24T",
+                                  "24R",
+                                  "144R"))) %>% 
+  mutate(absFC = abs(logFC))
+#this should contain 163 unique genes across timepoints
+
+#calculate medians for ALL proSus genes across timepoints
+medians_notproSus_RUV <- filt_toptable_notproSus_RUV %>%
+  group_by(Time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_notproSus <- paste0(
+  "notproSus\nmedian logFC =\n",
+  paste0(medians_notproSus_RUV$Time, "=", round(medians_notproSus_RUV$median_logFC, 2), collapse = "\n")
+)
+
+labs_absFC_notproSus <- paste0(
+  "notproSus\nmedian absFC =\n",
+  paste0(medians_notproSus_RUV$Time, "=", round(medians_notproSus_RUV$median_abslogFC, 2), collapse = "\n")
+)
+
+# #sdd a column that labels positive/negative direction
+filt_toptable_notproSus_RUV <- filt_toptable_notproSus_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_notproSus_RUV <- medians_notproSus_RUV %>%
+  mutate(direction = "median")
+
+
+#logFC version
+plot_notproSus_logFC <- ggplot() +
+  geom_line(data = filt_toptable_notproSus_RUV,
+            aes(x = Time, 
+                y = logFC, 
+                group = Entrez_ID),
+            color = "orchid",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_notproSus_RUV,
+            aes(x = Time, 
+                y = median_logFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#3D6680"),
+    labels = c(
+      median = labs_logFC_notproSus),
+    name = NULL
+    ) +
+  labs(title = "logFC — notproSus Genes (n = 338)",
+       y = "logFC", x = "Timepoint") +
+  theme_custom() +
+  theme(legend.position = "right")
+
+
+#absFC version
+plot_notproSus_absFC <- ggplot() +
+  geom_line(data = filt_toptable_notproSus_RUV,
+            aes(x = Time, 
+                y = absFC, 
+                group = Entrez_ID),
+            color = "orchid",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_notproSus_RUV,
+            aes(x = Time, 
+                y = median_abslogFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#3D6680"),
+    labels = c(
+      median = labs_absFC_notproSus),
+    name = NULL
+    ) +
+  labs(title = "abslogFC — notproSus Genes (n = 338)",
+       y = "absFC", x = "Timepoint") +
+  theme_custom() +
+  theme(legend.position = "right")
+
+
+print(plot_notproSus_logFC)
+print(plot_notproSus_absFC)
+
+# save_plot(
+#   plot = plot_proSus_logFC,
+#   filename = "Lineplot_proSus_logFC_EMP_251112",
+#   folder = output_folder
+# )
+# save_plot(
+#   plot = plot_proSus_absFC,
+#   filename = "Lineplot_proSus_absFC_EMP_251112",
+#   folder = output_folder
+# )
+# save_plot(
+#   plot = plot_notproSus_logFC,
+#   filename = "Lineplot_notproSus_logFC_EMP_251112",
+#   folder = output_folder
+# )
+# save_plot(
+#   plot = plot_notproSus_absFC,
+#   filename = "Lineplot_notproSus_absFC_EMP_251112",
+#   folder = output_folder
+# )
+
+```
+
+#Updated Forest Plots
+```{r Updated Forest Plots Sustained vs notSus}
+#I want to have two gene sets - one is the 501 Sustained genes
+#the other is every other gene - not my recovered set
+#I want to test for enrichment of different gene sets within my Sustained group against the notSus group
+
+#sustained group
+final_genes_2_RUV
+#notSus group
+notSus_genes <- setdiff(all_genes, final_genes_2_RUV)
+length(notSus_genes)
+#total of 13818 expressed genes not in the Sustained group
+
+#collect gene sets from all sources
+m_eqtls_ids <- readRDS("data/new/eQTLs/knowles_ids_supp4.RDS")
+r_eqtls_ids <- readRDS("data/new/eQTLs/knowles_ids_supp5.RDS")
+all_eqtls <- unique(c(m_eqtls_ids, r_eqtls_ids))
+all_genes <- unique(filcpm_matrix)
+all_mtf_genes <- unique(c(final_genes_1_RUV, final_genes_2_RUV))
+liu_ids <- readRDS("data/new/RUV/liu_dataset_entrez.RDS")
+sapp_ids <- readRDS("data/new/RUV/sapp_dataset_entrez.RDS")
+fonoudi_ids <- readRDS("data/new/RUV/fonoudi_dataset_entrez.RDS") #prev DIC
+DIC_rm_genes <- readRDS("data/new/RUV/AIC_genes_entrezid.RDS") #now DIC
+p53_target_genes <- readRDS("data/new/RUV/p53_target_genes_symbolentrez.RDS")
+DNA_damage_genes <- readRDS("data/new/RUV/DDR_genes_entrezid.RDS")
+
+#list of gene categories
+gene_cats <- list( 
+  "DNA Damage Response Genes" = unique(na.omit(DNA_damage_genes)),
+  "DOX Cardiotoxicity Genes" = unique(na.omit(AIC_genes)),
+  "p53 Target Genes" = unique(na.omit(p53_target_genes)),
+  "Fonoudi et al." = fonoudi_ids,
+  "Liu et al." = liu_ids,
+  "Sapp et al." = sapp_ids,
+  "Marginal eQTLs" = m_eqtls_ids,
+  "Response eQTLs" = r_eqtls_ids
+)
+
+#make a function to run through fisher's exact testing to find odds ratios
+#comparing each sustained group to recovered for all
+fisher_test_enrich_new <- function(gene_cats, test_genes, ref_genes) {
+  a <- sum(test_genes %in% gene_cats)
+  b <- length(test_genes) - a
+  c <- sum(ref_genes %in% gene_cats)
+  d <- length(ref_genes) - c
+  
+  mat <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE,
+                dimnames = list(Group = c("Test", "Reference"),
+                                Category = c("InSet", "NotInSet")))
+  
+  ft <- fisher.test(mat)
+  
+  tibble(
+    OR = unname(ft$estimate),
+    CI_low = ft$conf.int[1],
+    CI_high = ft$conf.int[2],
+    p_value = ft$p.value,
+    Significant = case_when(
+      ft$p.value < 0.001 ~ "***",
+      ft$p.value < 0.01  ~ "**",
+      ft$p.value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+}
+
+
+#function to compare the gene sets to one another
+compare_sets <- function(test_genes, ref_genes, label) {
+  summary_df <- map_dfr(names(gene_cats), function(cat_name) {
+    res <- fisher_test_enrich_new(gene_cats[[cat_name]], 
+                                  test_genes, ref_genes)
+    res %>% mutate(Category = cat_name)
+  })
+  
+  summary_df$Category <- factor(summary_df$Category, 
+                                levels = rev(names(gene_cats)))
+  summary_df$Comparison <- label
+  return(summary_df)
+}
+
+#make all comparisons
+comparisons <- bind_rows(
+  compare_sets(final_genes_2_RUV, 
+               notSus_genes, 
+               "Sustained vs notSustained"),
+  compare_sets(proSus_gene_list,
+               final_genes_1_RUV, 
+               "proSus vs Recovered"),
+  compare_sets(notproSus_gene_list, 
+               final_genes_1_RUV,
+               "notproSus vs Recovered")
+)
+
+comparisons <- comparisons %>%
+  mutate(
+    OR_plot = ifelse(OR == 0, 1e-3, OR),
+    CI_low_plot = ifelse(CI_low == 0, 1e-3, CI_low),
+    CI_high_plot = ifelse(CI_high == 0, 1e-3, CI_high)
+  )
+
+#order factors for plotting
+comparisons$Category <- factor(comparisons$Category, levels = rev(names(gene_cats)))
+
+comparisons$Comparison <- factor(
+  comparisons$Comparison,
+  levels = c("Sustained vs notSustained", 
+             "proSus vs Recovered", 
+             "notproSus vs Recovered")
+)
+
+#generate six forest plots: 3x log scale, 3x standard scale
+
+make_forest_plot <- function(df, log_scale = TRUE) {
+  
+  #add a small epsilon to avoid plotting issues
+  epsilon <- 0.001
+  df_plots <- df %>%
+    mutate(
+      OR_plot = ifelse(OR == 0, epsilon, OR),
+      CI_low_plot = ifelse(CI_low == 0, epsilon, CI_low),
+      CI_high_plot = CI_high
+    )
+  
+  #then make the plots for linear and log
+  p <- ggplot(df_plots, 
+              aes(y = Category, x = OR_plot, 
+                  xmin = CI_low_plot, xmax = CI_high_plot)) +
+    geom_point(size = 3.5) +
+    geom_errorbarh(height = 0.5,
+                   linewidth = 0.5, 
+                   linetype = "solid", 
+                   color = "black") +
+    geom_text(aes(label = Significant), 
+              position = position_nudge(y = 0.3),
+              color = "black", 
+              size = 4) +
+    geom_vline(xintercept = 1, 
+               linetype = "dashed", 
+               color = "red") +
+    labs(x = ifelse(log_scale, "Odds Ratio (log scale)", "Odds Ratio"),
+         y = "",
+         title = unique(df_plots$Comparison)) +
+    theme_custom() 
+
+  # Apply consistent scale with limits covering all CIs
+  if (log_scale) {
+    p <- p + scale_x_log10(limits = c(0.001, 
+                                      max(df$CI_high_plot, 
+                                               na.rm = TRUE) * 2))
+  } else {
+    p <- p + scale_x_continuous(limits = c(-2, 40))
+  }
+
+  return(p)
+}
+
+#optional breaks to put in scale_x_log10 
+##limits = c(0.01, 100), breaks = c(0.01, 0.1, 1, 10, 100)
+#breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000)
+
+#plot all forest plots
+plots <- comparisons %>%
+  group_split(Comparison) %>%
+  map(~list(
+    log = make_forest_plot(.x, log_scale = TRUE),
+    linear = make_forest_plot(.x, log_scale = FALSE)
+  ))
+
+#create and view summary table
+forest_summary_ordered <- comparisons %>%
+  mutate(Category = factor(Category, 
+                           levels = c("DNA Damage Response Genes", 
+                                      "DOX Cardiotoxicity Genes", 
+                                      "p53 Target Genes", 
+                                      "Fonoudi et al.", 
+                                      "Liu et al.", 
+                                      "Sapp et al.", 
+                                      "Marginal eQTLs", 
+                                      "Response eQTLs"))) %>%
+  arrange(Comparison, Category) %>%
+  mutate(
+    OR = round(OR, 3),
+    CI_low = round(CI_low, 3),
+    CI_high = round(CI_high, 3),
+    p_value = signif(p_value, 3)
+  )
+
+#print the summary for all stats
+print(forest_summary_ordered)
+
+#label my comparisons for plots
+comparison_labels <- c("Sus_notSus", "proSus_Rec", "notproSus_Rec")
+
+for (i in seq_along(plots)) {
+  comp_name <- comparison_labels[i]
+
+  # log-scale plot
+  save_plot(
+    plot = plots[[i]]$log,
+    filename = paste0("ForestPlot_", comp_name, "_log"),
+    folder = output_folder
+  )
+}
+
+# # linear-scale plot
+# save_plot(
+#   plot = plots[[i]]$linear,
+#   filename = paste0("ForestPlot_", comp_name, "_linear_old"),
+#   folder = output_folder
+# )
+# }
+
+
+#now make the linear plots more polished
+make_linear_forest_plot <- function(df) {
+  
+  #add a small epsilon to avoid plotting issues
+  epsilon <- 0.001
+  df_plot <- df %>%
+    mutate(
+      OR_plot = ifelse(OR == 0, epsilon, OR),
+      CI_low_plot = ifelse(CI_low == 0, epsilon, CI_low),
+      CI_high_plot = CI_high
+    )
+  
+  # Find maximum x limit to show all CIs
+  # x_max <- max(df_plot$CI_high_plot, na.rm = TRUE) * 1.2
+  # x_min <- 0 # start from 0 so small ORs are visible
+  
+  p <- ggplot(df_plot, aes(y = Category, x = OR_plot,
+                           xmin = CI_low_plot, 
+                           xmax = CI_high_plot)) +
+    geom_point(size = 3.5) +
+    geom_errorbarh(height = 0.5, linewidth = 0.5, color = "black") +
+    geom_text(aes(label = Significant), 
+              position = position_nudge(y = 0.3), size = 4) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+    labs(x = "Odds Ratio (linear scale)", y = "Gene Set",
+         title = unique(df$Comparison)) +
+    theme_custom() +
+    coord_cartesian(xlim = c(-2, 40))
+  
+  return(p)
+}
+
+
+comparisons$Comparison <- factor(
+  comparisons$Comparison,
+  levels = c("Sustained vs notSustained", 
+             "proSus vs Recovered", 
+             "notproSus vs Recovered")
+)
+
+linear_plots <- comparisons %>%
+  group_split(Comparison) %>%
+  map(~ make_linear_forest_plot(.x))
+
+for (i in seq_along(linear_plots)) {
+  comp_name <- comparison_labels[i]
+
+  # linear-scale plot
+  save_plot(
+    plot = linear_plots[[i]],
+    filename = paste0("ForestPlot_", comp_name, "_linear_EMP"),
+    folder = output_folder
+  )
+}
+
 
 ```
 
