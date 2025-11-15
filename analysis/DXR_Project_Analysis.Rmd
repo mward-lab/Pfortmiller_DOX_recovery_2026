@@ -23080,7 +23080,7 @@ generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_labe
       scale_fill_manual(values = txtime_col) +
       scale_color_manual(values = ind_col) +
       ggtitle(paste0(gene_symbol,
-                     " (", comparison_label, " in ", gene_categories, ") ")) +
+                     " (", comparison_label, " - ", gene_categories, ") ")) +
       labs(x = "Condition", y = "log2cpm") +
       theme_custom()
     
