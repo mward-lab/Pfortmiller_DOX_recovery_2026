@@ -12405,10 +12405,19 @@ cmf_logNC_cpm <- clust_mat_100 %>%
   tibble::rownames_to_column("Entrez_ID") %>%
   dplyr::mutate(Entrez_ID = as.character(Entrez_ID))
 
-# 2. Load combined toptables and classify genes by motif
-combined_toptables_dxr_RUV <- readRDS("data/new/RUV/combined_toptables_RUVs.RDS") %>%
-  as.data.frame() %>%
-  dplyr::mutate(Entrez_ID = as.character(Entrez_ID))
+#Load combined toptables and classify genes
+# combined_toptables_dxr_RUV <- dplyr::bind_rows(combined_toptables_dxr_RUV) %>%
+#   mutate(
+#     Entrez_ID = as.character(Entrez_ID),
+#     Time = case_when(
+#       Time == "24T"  ~ "t0",
+#       Time == "24R"  ~ "t24",
+#       Time == "144R" ~ "t144",
+#       TRUE ~ NA_character_
+#     )
+#   )
+
+combined_toptables_dxr_RUV <- readRDS("data/new/RUV/Combined_toptables_timepoint_dataframe.RDS")
 
 Sets_cmf_cpmNC <- combined_toptables_dxr_RUV %>%
   dplyr::mutate(
@@ -19389,11 +19398,11 @@ combined_toptables_dxr_RUV <- list(
 )
 
 #filter for significance based on adj p < 0.05 and mutate logFC into absolute logFC (absFC)
-all_DEGs_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
-  df %>% 
-    dplyr::filter(adj.P.Val < 0.05) %>% 
-    mutate(absFC = abs(logFC))
-})
+# all_DEGs_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
+#   df %>% 
+#     dplyr::filter(adj.P.Val < 0.05) %>% 
+#     mutate(absFC = abs(logFC))
+# })
 
 all_genes_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
   df %>% 
@@ -19401,8 +19410,10 @@ all_genes_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
 })
 
 #background (all expressed genes)
-all_genes <- rownames(filcpm_matrix)
+# all_genes <- rownames(filcpm_matrix)
+all_genes <- readRDS("data/new/RUV/all_expressed_genes_list.RDS")
 cat("Total background genes:", length(all_genes), "\n")
+# saveRDS(all_genes, "data/new/RUV/all_expressed_genes_list.RDS")
 #should be comparing to background of all expressed genes, 14319 total
 
 #I have four categories I would like to classify my sustained gene set into to see if sustained is an appropriate name
@@ -19415,10 +19426,10 @@ cat("Total background genes:", length(all_genes), "\n")
 #now that I have the absolute logFC and the list of my significant DEGs, make a function
 
 #create a function to categorize my sustained genes
-categorize_sustained <- function(gene, all_DEGs_dxr) {
+categorize_sustained <- function(gene, all_genes_dxr) {
   #pull tibbles
-  t0  <- all_DEGs_dxr[["t0"]]
-  t144 <- all_DEGs_dxr[["t144"]]
+  t0  <- all_genes_dxr[["t0"]]
+  t144 <- all_genes_dxr[["t144"]]
   
   #pull absLogFC values if gene exists, else NA
   absFC_t0  <- if (gene %in% t0$Entrez_ID)  t0 %>%
@@ -19446,7 +19457,7 @@ categorize_sustained <- function(gene, all_DEGs_dxr) {
 }
 
 #apply function to sustained motif 2 genes
-sustained_cats <- sapply(final_genes_2_RUV, categorize_sustained, all_DEGs_dxr = all_DEGs_dxr)
+sustained_cats <- sapply(final_genes_2_RUV, categorize_sustained, all_genes_dxr = all_genes_dxr)
 
 #build dataframe for plotting
 df_sustained <- data.frame(
@@ -19553,92 +19564,91 @@ summary_table_sustained <- summary_sustained %>%
 print(summary_table_sustained, n = Inf)
 
 ###########################################
-#now I want to edit this code to not plot the nonDE section
-
-categorize_sustained_4 <- function(gene, all_DEGs_dxr) {
-  #pull tibbles
-  t0  <- all_DEGs_dxr[["24T"]]
-  t144 <- all_DEGs_dxr[["144R"]]
-  
-  #pull absLogFC values if gene exists, else NA
-  absFC_24T  <- if (gene %in% t0$Entrez_ID)  t0 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
-  absFC_144R <- if (gene %in% t144$Entrez_ID) t144 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
-  
-  #assign categories based on comparison first
-  if (!is.na(absFC_24T) & !is.na(absFC_144R)) {
-    if (absFC_144R > absFC_24T) {
-      return("absFC t0 < t144")
-    } else if (absFC_144R < absFC_24T) {
-      return("absFC t0 > t144")
-    } else if (absFC_144R == absFC_24T) {
-      return("absFC t0 = t144")
-    }
-  }
-  if (gene %in% t144R$Entrez_ID) {
-    return("DEG at t144")
-  }
-  return(NA)
-}
-
-#build dataframe for plotting from sustained genes function
-df_sustained_4 <- data.frame(
-  Study = "Sustained",
-  Entrez_ID = final_genes_2_RUV,
-  Category = sapply(final_genes_2_RUV, categorize_sustained_4, all_DEGs_dxr = all_DEGs_dxr)
-)
-
-df_sustained_4 <- df_sustained_4 %>% 
-  dplyr::filter(!is.na(Category))
-
-summary_sustained_4 <- df_sustained_4 %>%
-  group_by(Study, Category) %>%
-  summarise(Count = n(), .groups = "drop") %>%
-  mutate(Proportion = Count / sum(Count),
-         Percent = Count/sum(Count) * 100)
-
-#define colors and labels
-category_labels_4 <- c(
-  "DEGs at 144R"       = "DEGs at t144",
-  "absFC t144 > t0"   = "absFC t144 > t0",
-  "absFC t144 < t0"   = "absFC t144 < t0",
-  "absFC t144 = t0"   = "absFC t144 = t0"
-)
-
-category_colors_4 <- c(
-  "DEG at t144"       = "#2ca02c",
-  "absFC t144 > t0"   = "#1f77b4",
-  "absFC t144 < t0"   = "#ff7f0e",
-  "absFC t144 = t0"   = "#d62728"
-)
-
-#barplot for DE categories only
-plot_summary_sustained_4 <- ggplot(summary_sustained_4, aes(x = Study, y = Percent, fill = Category)) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
-            position = position_stack(vjust = 0.5),
-            size = 4, color = "white") +
-  scale_y_continuous(limits = c(0,100)) +
-  scale_fill_manual(values = category_colors_4,
-                    labels = category_labels_4) +
-  theme_custom() +
-  labs(
-    y = "Percent of Sustained Genes (%)",
-    x = "",
-    fill = "Category"
-  )
-
-print(plot_summary_sustained_4)
-
-save_plot(
-  plot = plot_summary_sustained_4,
-  filename = "Sustained_Proportion_Barplot_DEGs_EMP",
-  folder = output_folder
-)
+# #now I want to edit this code to not plot the nonDE section
+# 
+# categorize_sustained_4 <- function(gene, all_genes_dxr) {
+#   #pull tibbles
+#   t0  <- all_genes_dxr[["24T"]]
+#   t144 <- all_genes_dxr[["144R"]]
+#   
+#   #pull absLogFC values if gene exists, else NA
+#   absFC_24T  <- if (gene %in% t0$Entrez_ID)  t0 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+#   absFC_144R <- if (gene %in% t144$Entrez_ID) t144 %>% filter(Entrez_ID == gene) %>% pull(absFC) else NA_real_
+#   
+#   #assign categories based on comparison first
+#   if (!is.na(absFC_24T) & !is.na(absFC_144R)) {
+#     if (absFC_144R > absFC_24T) {
+#       return("absFC t0 < t144")
+#     } else if (absFC_144R < absFC_24T) {
+#       return("absFC t0 > t144")
+#     } else if (absFC_144R == absFC_24T) {
+#       return("absFC t0 = t144")
+#     }
+#   }
+#   if (gene %in% t144R$Entrez_ID) {
+#     return("DEG at t144")
+#   }
+#   return(NA)
+# }
+# 
+# #build dataframe for plotting from sustained genes function
+# df_sustained_4 <- data.frame(
+#   Study = "Sustained",
+#   Entrez_ID = final_genes_2_RUV,
+#   Category = sapply(final_genes_2_RUV, categorize_sustained_4, all_DEGs_dxr = all_DEGs_dxr)
+# )
+# 
+# df_sustained_4 <- df_sustained_4 %>% 
+#   dplyr::filter(!is.na(Category))
+# 
+# summary_sustained_4 <- df_sustained_4 %>%
+#   group_by(Study, Category) %>%
+#   summarise(Count = n(), .groups = "drop") %>%
+#   mutate(Proportion = Count / sum(Count),
+#          Percent = Count/sum(Count) * 100)
+# 
+# #define colors and labels
+# category_labels_4 <- c(
+#   "DEGs at 144R"       = "DEGs at t144",
+#   "absFC t144 > t0"   = "absFC t144 > t0",
+#   "absFC t144 < t0"   = "absFC t144 < t0",
+#   "absFC t144 = t0"   = "absFC t144 = t0"
+# )
+# 
+# category_colors_4 <- c(
+#   "DEG at t144"       = "#2ca02c",
+#   "absFC t144 > t0"   = "#1f77b4",
+#   "absFC t144 < t0"   = "#ff7f0e",
+#   "absFC t144 = t0"   = "#d62728"
+# )
+# 
+# #barplot for DE categories only
+# plot_summary_sustained_4 <- ggplot(summary_sustained_4, aes(x = Study, y = Percent, fill = Category)) +
+#   geom_bar(stat = "identity") +
+#   geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
+#             position = position_stack(vjust = 0.5),
+#             size = 4, color = "white") +
+#   scale_y_continuous(limits = c(0,100)) +
+#   scale_fill_manual(values = category_colors_4,
+#                     labels = category_labels_4) +
+#   theme_custom() +
+#   labs(
+#     y = "Percent of Sustained Genes (%)",
+#     x = "",
+#     fill = "Category"
+#   )
+# 
+# print(plot_summary_sustained_4)
+# 
+# save_plot(
+#   plot = plot_summary_sustained_4,
+#   filename = "Sustained_Proportion_Barplot_DEGs_EMP",
+#   folder = output_folder
+# )
 ```
 
 #Sustained Groups Updated Code
 ```{r Barplots for Sustained Groups}
-
 #combine my toptables together
 combined_toptables_dxr_RUV <- list(
   "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
@@ -19646,18 +19656,18 @@ combined_toptables_dxr_RUV <- list(
   "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
 )
 
-all_DEGs_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
+all_genes_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
   df %>%
     # dplyr::filter(adj.P.Val < 0.05) %>%
     mutate(absFC = abs(logFC))
 })
 
 #make a function to categorize these genes
-categorize_sustained_final <- function(gene, all_DEGs_dxr) {
+categorize_sustained_final <- function(gene, all_genes_dxr) {
   # pull DEGs at t0 and t144
-  t0   <- all_DEGs_dxr[["t0"]]
-  t24  <- all_DEGs_dxr[["t24"]]
-  t144 <- all_DEGs_dxr[["t144"]]
+  t0   <- all_genes_dxr[["t0"]]
+  t24  <- all_genes_dxr[["t24"]]
+  t144 <- all_genes_dxr[["t144"]]
   
   # absFC values if present
   absFC_t0   <- if (gene %in% t0$Entrez_ID)   t0 %>% 
@@ -19764,7 +19774,6 @@ save_plot(
   filename = "Sustained_Proportion_Barplot_DEGs_EMP",
   folder = output_folder
 )
-
 
 ```
 
@@ -21142,16 +21151,15 @@ print(venn_proSus_compare)
 #total of 501 Sustained genes, make a gene set of this new definition
 
 #combine my toptables together
-combined_toptables_dxr_RUV <- list(
+combined_toptables_RUV_dxr <- list(
   "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
   "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
   "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
 )
 
 #don't filter for DEGs, not applicable here
-all_genes_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
+all_genes_dxr <- lapply(combined_toptables_RUV_dxr, function(df) {
   df %>%
-    # dplyr::filter(adj.P.Val < 0.05) %>%
     mutate(absFC = abs(logFC))
 })
 
@@ -21249,8 +21257,46 @@ df_sustained_proSus <- proSus_fin_df %>%
 # saveRDS(df_sustained_proSus, "data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
 
 ####this is the dataframe you want from now on####
-proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
+# proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
 
+#now convert to have SYMBOL in the dataframe
+# proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
+# proSus_df <- as.data.frame(proSus_df) 
+# proSus_df$Entrez_ID <- as.character(proSus_df$Entrez_ID)
+
+#I used the absFC to determine whether they were proSus
+#ie absFC t0 < t24 & t24 < t144 = proSus
+#all others are notproSus (of the 501 Sustained genes)
+
+#add in HGNC symbols
+#now convert these to have a symbol column
+
+# symbol_map <- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = as.character(proSus_df$Entrez_ID),
+#   columns = c("SYMBOL"),
+#   keytype = "ENTREZID"
+# )
+
+#remove any duplicates if any
+# symbol_map <- symbol_map[!duplicated(symbol_map$ENTREZID), ]
+
+#merge into your df
+# proSus_df <- proSus_df %>%
+  # left_join(symbol_map, by = c("Entrez_ID" = "ENTREZID"))
+
+#reorder columns so Entrez_ID and SYMBOL are together
+# proSus_df <- proSus_df %>%
+#   dplyr::select(
+#     colnames(proSus_df)[1:2],  
+#     SYMBOL,                    
+#     everything()               
+#   )
+
+#save a final version of this dataframe
+# saveRDS(proSus_df, "data/new/RUV/CMF/Sustained_proSus_dataframe_symbolentrez.RDS")
+
+proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe_symbolentrez.RDS")
 ```
 
 
@@ -21302,7 +21348,7 @@ print(plot_proSus_fin_summary)
 ```{r create a df with my proSus and notproSus gene sets}
 
 #read in my final dataframe with all of the info for proSus and notproSus genes
-proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe.RDS")
+proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe_symbolentrez.RDS")
 
 #ensure numeric absFC values
 proSus_df_all <- proSus_df %>%
@@ -22334,13 +22380,730 @@ for (i in seq_along(linear_plots)) {
 
 ```
 
-#Identify proSus genes directionality
-```{r proSus genes up vs down regulation}
-#I want to take my set of proSus genes that I identified and stratify by response direction
+#HF GWAS Venn Diagram
+```{r Venn Diagram HF GWAS genes proSus}
 
 proSus_gene_list
-proSus_genes_df
+notproSus_gene_list
+final_genes_1_RUV
+hf_gwas_genes <- readRDS("data/new/GWAS/hf_gwas_genes_symbolentrez_mapped.RDS")
+hf_gwas_genes_list <- hf_gwas_genes$Entrez_ID
 
+venn_proSus_list_HF <- list(
+  HF = as.character(hf_gwas_genes_list),
+  Recovered = as.character(final_genes_1_RUV),
+  proSus = as.character(proSus_gene_list),
+  notproSus = as.character(notproSus_gene_list)
+)
+
+
+venn_proSus_HF <- ggVennDiagram(
+  venn_proSus_list_HF,
+  category.names = c("HF GWAS\n (n = 299)", 
+                     "Recovered \n (n = 7602)", 
+                     "proSus \n (n = 163)", 
+                     "notproSus \n (n = 338)")
+) +
+  ggtitle("HF GWAS Genes\n proSus vs notproSus vs Recovered vs HF GWAS") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = "#F9F9F9", high = "#4B9CD3") +
+  theme_custom()
+
+
+print(venn_proSus_HF)
+
+save_plot(
+  plot = venn_proSus_HF,
+  filename = "Venn_HF_proSus_EMP",
+  folder = output_folder,
+  height = 6,
+  width = 8
+)
+
+```
+
+#HF GWAS log2cpm overlapping genes
+```{r Overlap log2cpm Genes notproSus}
+
+#there are 4 total genes to investigate based on the Venn diagram of overlap with HF GWAS Genes
+#4 overlap with notproSus
+
+notproSus_overlap <- notproSus_gene_list[notproSus_gene_list %in% hf_gwas_genes_list]
+#Entrez_IDs - 11113, 26154, 10293, 1026
+
+HF_cats <- list( 
+  "HF GWAS" = hf_gwas_genes_list
+)
+
+hf_gwas_cats <- list( 
+  "HF GWAS Genes" = unique(na.omit(hf_gwas_genes_list))
+)
+
+#pull the gene symbol so I can plot log2cpm data
+hf_genes_df <- map_dfr(names(HF_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(hf_gwas_genes_list, HF_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(hf_genes_df)
+
+
+#filter overlaps for notproSus
+notproSus_overlap_hf <- hf_genes_df %>%
+  filter(Entrez_ID %in% notproSus_gene_list)
+#4 genes
+
+# saveRDS(deg_wide, "data/new/RUV/CMF/DEGs_overlap_wide_dataframe.RDS")
+#read in my dataframe for plotting log2cpm genes
+deg_wide <- readRDS("data/new/RUV/CMF/DEGs_overlap_wide_dataframe.RDS")
+
+notproSus_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% notproSus_overlap_hf$Entrez_ID)
+
+#check whether the assumptions are stil the same that the absFC is t0 < t144
+
+#find gene symbols
+
+notproSus_overlap_hf <- notproSus_overlap_hf %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+#now plot these example genes for each
+boxplot_new <- readRDS("data/new/RUV/CMF/log2cpm_boxplotdata_updated.RDS")
+
+#process the cpm data
+process_cpm_data_cormotif <- function(gene_id, expr_df) {
+  gene_data <- expr_df %>% filter(Entrez_ID == gene_id)
+  
+  long_data <- gene_data %>%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = "Sample",
+      values_to = "log2CPM"
+    ) %>%
+    mutate(
+      Treatment = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("VEH", Sample) ~ "VEH",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("t0", Sample) ~ "t0",
+        grepl("t24", Sample) ~ "t24",
+        grepl("t144", Sample) ~ "t144",
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl("1$", Sample) ~ "1",
+        grepl("2$", Sample) ~ "2",
+        grepl("3$", Sample) ~ "3",
+        grepl("4$", Sample) ~ "4",
+        grepl("5$", Sample) ~ "5",
+        grepl("6$", Sample) ~ "6",
+        grepl("6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = "_")
+    )
+  
+  # Set factor levels for plotting order
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c("DOX_t0", "VEH_t0", 
+               "DOX_t24", "VEH_t24", 
+               "DOX_t144", "VEH_t144")
+  )
+  
+  return(long_data)
+}
+
+# Function to generate plots for a set of genes
+generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_label) {
+  plots <- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data <- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol <- unique(gene_data$SYMBOL)
+    gene_categories <- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories <- paste(unique(gene_categories), collapse = ", ")
+    
+    p <- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     " (", comparison_label, " in ", gene_categories, ") ")) +
+      labs(x = "Condition", y = "log2cpm") +
+      theme_custom()
+    
+    # Use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name <- paste0(gene_symbol, "_", gene_id, "_", comparison_label)
+    plots[[plot_name]] <- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for notproSus overlap genes
+notproSus_plots_hf <- generate_overlap_plots_cormotif(notproSus_overlap_hf, boxplot_new, "notproSus")
+
+#preview all plots
+for (p in c(notproSus_plots_hf)) print(p)
+
+#save all of these plots with unique names
+for (plot_name in names(notproSus_plots_hf)) {
+  save_plot(notproSus_plots_hf[[plot_name]],
+            filename = paste0("ExGene_HF_notproSus_", plot_name, "_EMP"),
+            folder = output_folder)
+}
+
+
+```
+
+
+#HF GWAS Forest Plot
+```{r Forest plot for HF GWAS proSus}
+#make an updated forest plot with HF GWAS data
+
+hf_gwas_genes <- readRDS("data/new/GWAS/hf_gwas_genes_symbolentrez_mapped.RDS")
+hf_gwas_genes_list <- hf_gwas_genes$Entrez_ID
+
+#list of gene categories
+gene_cats <- list(
+  "HF GWAS" = hf_gwas_genes_list
+)
+
+#make a function to run through fisher's exact testing to find odds ratios
+#comparing each sustained group to recovered for all
+fisher_test_enrich_new <- function(gene_cats, test_genes, ref_genes) {
+  a <- sum(test_genes %in% gene_cats)
+  b <- length(test_genes) - a
+  c <- sum(ref_genes %in% gene_cats)
+  d <- length(ref_genes) - c
+  
+  mat <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE,
+                dimnames = list(Group = c("Test", "Reference"),
+                                Category = c("InSet", "NotInSet")))
+  
+  ft <- fisher.test(mat)
+  
+  tibble(
+    OR = unname(ft$estimate),
+    CI_low = ft$conf.int[1],
+    CI_high = ft$conf.int[2],
+    p_value = ft$p.value,
+    Significant = case_when(
+      ft$p.value < 0.001 ~ "***",
+      ft$p.value < 0.01  ~ "**",
+      ft$p.value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+}
+
+
+#function to compare the gene sets to one another
+compare_sets <- function(test_genes, ref_genes, label) {
+  summary_df <- map_dfr(names(gene_cats), function(cat_name) {
+    res <- fisher_test_enrich_new(gene_cats[[cat_name]], 
+                                  test_genes, ref_genes)
+    res %>% mutate(Category = cat_name)
+  })
+  
+  summary_df$Category <- factor(summary_df$Category, 
+                                levels = rev(names(gene_cats)))
+  summary_df$Comparison <- label
+  return(summary_df)
+}
+
+#make all comparisons
+comparisons <- bind_rows(
+  compare_sets(final_genes_2_RUV, 
+               final_genes_1_RUV, 
+               "Sustained vs Recovered"),
+  compare_sets(proSus_gene_list,
+               final_genes_1_RUV, 
+               "proSus vs Recovered"),
+  compare_sets(notproSus_gene_list, 
+               final_genes_1_RUV,
+               "notproSus vs Recovered")
+)
+
+comparisons <- comparisons %>%
+  mutate(
+    OR_plot = ifelse(OR == 0, 1e-3, OR),
+    CI_low_plot = ifelse(CI_low == 0, 1e-3, CI_low),
+    CI_high_plot = ifelse(CI_high == 0, 1e-3, CI_high)
+  )
+
+#order factors for plotting
+comparisons$Category <- factor(comparisons$Category, levels = rev(names(gene_cats)))
+
+comparisons$Comparison <- factor(
+  comparisons$Comparison,
+  levels = c("Sustained vs Recovered", 
+             "proSus vs Recovered", 
+             "notproSus vs Recovered")
+)
+
+#generate forest plot: log scale, linear scale
+
+make_forest_plot <- function(df, log_scale = TRUE) {
+  
+  #add a small epsilon to avoid plotting issues
+  epsilon <- 0.001
+  df_plots <- df %>%
+    mutate(
+      OR_plot = ifelse(OR == 0, epsilon, OR),
+      CI_low_plot = ifelse(CI_low == 0, epsilon, CI_low),
+      CI_high_plot = CI_high
+    )
+  
+  #then make the plots for linear and log
+  p <- ggplot(df_plots, 
+              aes(y = Category, x = OR_plot, 
+                  xmin = CI_low_plot, xmax = CI_high_plot)) +
+    geom_point(size = 3.5) +
+    geom_errorbarh(height = 0.1,
+                   linewidth = 0.5, 
+                   linetype = "solid", 
+                   color = "black") +
+    geom_text(aes(label = Significant), 
+              position = position_nudge(y = 0.1),
+              color = "black", 
+              size = 4) +
+    geom_vline(xintercept = 1, 
+               linetype = "dashed", 
+               color = "red") +
+    labs(x = ifelse(log_scale, "Odds Ratio (log scale)", "Odds Ratio"),
+         y = "",
+         title = unique(df_plots$Comparison)) +
+    theme_custom() 
+
+  # Apply consistent scale with limits covering all CIs
+  if (log_scale) {
+    p <- p + scale_x_log10(limits = c(0.001, 
+                                      max(df$CI_high_plot, 
+                                               na.rm = TRUE) * 1.5))
+  } else {
+    p <- p + scale_x_continuous(limits = c(-2, 40))
+  }
+
+  return(p)
+}
+
+#optional breaks to put in scale_x_log10 
+##limits = c(0.01, 100), breaks = c(0.01, 0.1, 1, 10, 100)
+#breaks = c(0.01, 0.1, 1, 10, 100, 1000, 10000)
+
+#plot all forest plots
+plots <- comparisons %>%
+  group_split(Comparison) %>%
+  map(~list(
+    log = make_forest_plot(.x, log_scale = TRUE),
+    linear = make_forest_plot(.x, log_scale = FALSE)
+  ))
+
+#create and view summary table
+forest_summary_ordered_hf <- comparisons %>%
+  mutate(Category = factor(Category, 
+                           levels = c("HF GWAS"
+                                      ))) %>%
+  arrange(Comparison, Category) %>%
+  mutate(
+    OR = round(OR, 3),
+    CI_low = round(CI_low, 3),
+    CI_high = round(CI_high, 3),
+    p_value = signif(p_value, 3)
+  )
+
+#print the summary for all stats
+print(forest_summary_ordered_hf)
+
+#label my comparisons for plots
+comparison_labels <- c("Sus_Rec", "proSus_Rec", "notproSus_Rec")
+
+for (i in seq_along(plots)) {
+  comp_name <- comparison_labels[i]
+
+  # log-scale plot
+  save_plot(
+    plot = plots[[i]]$log,
+    filename = paste0("ForestPlot_HFGWAS_", comp_name, "_log_EMP"),
+    folder = output_folder
+  )
+}
+
+
+#now make the linear plots more polished
+make_linear_forest_plot <- function(df) {
+  
+  #add a small epsilon to avoid plotting issues
+  epsilon <- 0.001
+  df_plot <- df %>%
+    mutate(
+      OR_plot = ifelse(OR == 0, epsilon, OR),
+      CI_low_plot = ifelse(CI_low == 0, epsilon, CI_low),
+      CI_high_plot = CI_high
+    )
+  
+  # Find maximum x limit to show all CIs
+  # x_max <- max(df_plot$CI_high_plot, na.rm = TRUE) * 1.2
+  # x_min <- 0 # start from 0 so small ORs are visible
+  
+  p <- ggplot(df_plot, aes(y = Category, x = OR_plot,
+                           xmin = CI_low_plot, 
+                           xmax = CI_high_plot)) +
+    geom_point(size = 3.5) +
+    geom_errorbarh(height = 0.1, linewidth = 0.5, color = "black") +
+    geom_text(aes(label = Significant), 
+              position = position_nudge(y = 0.1), size = 4) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+    labs(x = "Odds Ratio (linear scale)", y = "Gene Set",
+         title = unique(df$Comparison)) +
+    theme_custom() +
+    coord_cartesian(xlim = c(-2, 40))
+  
+  return(p)
+}
+
+
+comparisons$Comparison <- factor(
+  comparisons$Comparison,
+  levels = c("Sustained vs Recovered", 
+             "proSus vs Recovered", 
+             "notproSus vs Recovered")
+)
+
+linear_plots <- comparisons %>%
+  group_split(Comparison) %>%
+  map(~ make_linear_forest_plot(.x))
+
+for (i in seq_along(linear_plots)) {
+  comp_name <- comparison_labels[i]
+
+  # linear-scale plot
+  save_plot(
+    plot = linear_plots[[i]],
+    filename = paste0("ForestPlot_HFGWAS_", comp_name, "_linear_EMP"),
+    folder = output_folder
+  )
+}
+
+```
+
+
+#Identify proSus genes directionality
+```{r proSus genes up vs down regulation}
+#I want to take my set of proSus genes and stratify by response direction
+proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe_symbolentrez.RDS")
+
+#pull the proSus genes from the df
+proSus_only_df <- proSus_df %>% 
+  filter(
+    Category == "proSus"
+  )
+
+
+#now find direction
+proSus_only_df <- proSus_only_df %>%
+  mutate(Direction = case_when(
+    !is.na(logFC_t0) & !is.na(logFC_t24) & !is.na(logFC_t144) &
+      logFC_t0 < logFC_t24 & logFC_t24 < logFC_t144 ~ "Upregulated",
+
+    !is.na(logFC_t0) & !is.na(logFC_t24) & !is.na(logFC_t144) &
+      logFC_t0 > logFC_t24 & logFC_t24 > logFC_t144 ~ "Downregulated",
+
+    TRUE ~ "Mixed"
+  ))
+
+table(proSus_only_df$Direction)
+
+
+proSus_up_genes <- proSus_only_df %>%
+  dplyr::filter(Direction == "Upregulated") %>%
+  dplyr::pull(Entrez_ID, SYMBOL)
+#9 upregulated genes by logFC
+#2 of these are DEGs in all timepoints - ACHE & CPE
+
+proSus_down_genes <- proSus_only_df %>%
+  dplyr::filter(Direction == "Downregulated") %>%
+  dplyr::pull(Entrez_ID, SYMBOL)
+#154 genes downregulated by logFC
+
+#plot these genes on a line plot as well as pulling out the log2cpm genes
+
+
+```
+
+##line plots proSus up vs down
+```{r LogFC absFC line plots up vs down reg}
+
+proSus_up_genes
+proSus_down_genes
+
+# saveRDS(proSus_only_df, "data/new/RUV/CMF/proSus_genes_only_dataframe.RDS")
+proSus_only_df <- readRDS("data/new/RUV/CMF/proSus_genes_only_dataframe.RDS")
+
+proSus_only_long <- proSus_only_df %>%
+  pivot_longer(
+    cols = starts_with("logFC_"),
+    names_to = "Time",
+    values_to = "logFC"
+  ) %>%
+  mutate(
+    Time = factor(Time,
+                  levels = c("logFC_t0", "logFC_t24", "logFC_t144"),
+                  labels = c("t0", "t24", "t144"))
+  )
+
+
+medians_logFC <- proSus_only_long %>%
+  group_by(Direction, Time) %>%
+  summarise(median_logFC = median(logFC, na.rm = TRUE), .groups = "drop")
+
+labs_logFC_proSus <- paste0(
+  "proSus\nmedian logFC =\n",
+  paste0(medians_logFC$Time, "=", round(medians_logFC$median_logFC, 2), collapse = "\n")
+)
+
+#plot upregulated genes
+plot_proSus_up <- ggplot() +
+    geom_line(
+    data = proSus_only_long %>% filter(Direction == "Upregulated"),
+    aes(x = Time, y = logFC, group = Entrez_ID),
+    color = "#7EC8E3",
+    alpha = 0.5,
+    linewidth = 0.9
+  ) +
+  geom_line(
+    data = medians_logFC %>% filter(Direction == "Upregulated"),
+    aes(x = Time, y = median_logFC, group = 1),
+    color = "#3D6680",
+    linewidth = 2
+  ) +
+  geom_text(
+    data = medians_logFC %>% filter(Direction == "Upregulated"),
+    aes(x = Time, y = median_logFC,
+        label = round(median_logFC, 2)),
+    vjust = -0.7,
+    size = 3
+  ) +
+  labs(
+    title = "proSus upregulated genes (n = 9)",
+    x = "Timepoint",
+    y = "logFC"
+  ) +
+  theme_custom()
+
+#now plot downregulated genes
+plot_proSus_down <- ggplot() +
+    geom_line(
+    data = proSus_only_long %>% filter(Direction == "Downregulated"),
+    aes(x = Time, y = logFC, group = Entrez_ID),
+    color = "#7EC8E3",
+    alpha = 0.5,
+    linewidth = 0.9
+  ) +
+  geom_line(
+    data = medians_logFC %>% filter(Direction == "Downregulated"),
+    aes(x = Time, y = median_logFC, group = 1),
+    color = "#3D6680",
+    linewidth = 2
+  ) +
+  geom_text(
+    data = medians_logFC %>% filter(Direction == "Downregulated"),
+    aes(x = Time, y = median_logFC,
+        label = round(median_logFC, 2)),
+    vjust = -0.7,
+    size = 3
+  ) +
+  labs(
+    title = "proSus downregulated genes (n = 154)",
+    x = "Timepoint",
+    y = "logFC"
+  ) +
+  theme_custom()
+
+print(plot_proSus_up)
+print(plot_proSus_down)
+
+# save_plot(
+#   plot_proSus_up,
+#   filename = "LinePlot_proSus_upreg_EMP",
+#   folder = output_folder
+# )
+# 
+# save_plot(
+#   plot_proSus_down,
+#   filename = "LinePlot_proSus_downreg_EMP",
+#   folder = output_folder
+# )
+
+
+```
+
+
+#plot log2cpm of 9 upregulated genes
+```{r Upregulated genes proSus log2cpm examples}
+
+#there are 9 total genes to investigate that are upregulated in proSus
+
+proSus_up_genes
+
+dir_cats <- list( 
+  "Upregulated" = proSus_up_genes
+)
+
+proSus_up_cats <- list( 
+  "Upregulated" = unique(na.omit(proSus_up_genes))
+)
+
+#pull the gene symbol so I can plot log2cpm data
+proSus_up_genes_df <- map_dfr(names(up_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(proSus_up_genes, up_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(proSus_up_genes_df)
+
+
+#filter overlaps for notproSus
+proSus_upreg <- proSus_up_genes_df %>%
+  filter(Entrez_ID %in% proSus_gene_list)
+#9 genes
+
+# saveRDS(deg_wide, "data/new/RUV/CMF/DEGs_overlap_wide_dataframe.RDS")
+#read in my dataframe for plotting log2cpm genes
+deg_wide <- readRDS("data/new/RUV/CMF/DEGs_overlap_wide_dataframe.RDS")
+
+proSus_up_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% proSus_upreg$Entrez_ID)
+
+proSus_upreg <- proSus_upreg %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+#now plot these example genes for each
+boxplot_new <- readRDS("data/new/RUV/CMF/log2cpm_boxplotdata_updated.RDS")
+
+#process the cpm data
+process_cpm_data_cormotif <- function(gene_id, expr_df) {
+  gene_data <- expr_df %>% filter(Entrez_ID == gene_id)
+  
+  long_data <- gene_data %>%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = "Sample",
+      values_to = "log2CPM"
+    ) %>%
+    mutate(
+      Treatment = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("VEH", Sample) ~ "VEH",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("t0", Sample) ~ "t0",
+        grepl("t24", Sample) ~ "t24",
+        grepl("t144", Sample) ~ "t144",
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl("1$", Sample) ~ "1",
+        grepl("2$", Sample) ~ "2",
+        grepl("3$", Sample) ~ "3",
+        grepl("4$", Sample) ~ "4",
+        grepl("5$", Sample) ~ "5",
+        grepl("6$", Sample) ~ "6",
+        grepl("6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = "_")
+    )
+  
+  # Set factor levels for plotting order
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c("DOX_t0", "VEH_t0", 
+               "DOX_t24", "VEH_t24", 
+               "DOX_t144", "VEH_t144")
+  )
+  
+  return(long_data)
+}
+
+# Function to generate plots for a set of genes
+generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_label) {
+  plots <- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data <- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol <- unique(gene_data$SYMBOL)
+    gene_categories <- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories <- paste(unique(gene_categories), collapse = ", ")
+    
+    p <- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     " (", comparison_label, " in ", gene_categories, ") ")) +
+      labs(x = "Condition", y = "log2cpm") +
+      theme_custom()
+    
+    # Use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name <- paste0(gene_symbol, "_", gene_id, "_", comparison_label)
+    plots[[plot_name]] <- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for notproSus overlap genes
+proSus_up_plots <- generate_overlap_plots_cormotif(proSus_upreg, boxplot_new, "proSus")
+
+#preview all plots
+for (p in c(proSus_up_plots)) print(p)
+
+#save all of these plots with unique names
+for (plot_name in names(proSus_up_plots)) {
+  save_plot(proSus_up_plots[[plot_name]],
+            filename = paste0("ExGene_proSus_Upreg_", plot_name, "_EMP"),
+            folder = output_folder)
+}
 
 ```
 
