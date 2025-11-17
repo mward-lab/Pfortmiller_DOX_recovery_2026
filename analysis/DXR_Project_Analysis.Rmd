@@ -23107,3 +23107,166 @@ for (plot_name in names(proSus_up_plots)) {
 
 ```
 
+```{r GO Analysis proSus upreg and downreg genes}
+#I want to look at biological pathways potentially involved in my proSus upregulated and proSus downregulated genes that I identified
+
+#start with proSus_up
+proSus_up_genes <- readRDS("data/new/RUV/CMF/proSus_upregulated_gene_list.RDS")
+proSus_down_genes <- readRDS("data/new/RUV/CMF/proSus_downregulated_gene_list.RDS")
+
+#background
+# all_genes - all expressed genes
+
+length(proSus_up_genes)
+#9 genes
+
+up_proSus_GOKEGG_RUV <- gost(query = proSus_up_genes,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = FALSE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+up_proSus_GOKEGG_genes_RUV <- gostplot(up_proSus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+up_proSus_GOKEGG_genes_RUV
+
+table_up_proSus_GOKEGG_genes_RUV <- up_proSus_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_up_proSus_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_up_proSus_genes_GOBP_RUV <- table_up_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+up_proSus_table_genes_GOBP_plot <- ggplot(table_up_proSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("Upregulated proSus Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(up_proSus_table_genes_GOBP_plot)
+
+save_plot(
+  plot = up_proSus_table_genes_GOBP_plot,
+  filename = "Sustained_upreg_proSus_GOBP_logval_all_EMP",
+  folder = output_folder
+)
+
+#KEGG
+table_up_proSus_genes_KEGG_RUV <- table_up_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+up_proSus_table_genes_KEGG_plot <- ggplot(table_up_proSus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("Upregulated proSus Enriched KEGG Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(up_proSus_table_genes_KEGG_plot)
+
+save_plot(
+  plot = up_proSus_table_genes_KEGG_plot,
+  filename = "Sustained_upreg_proSus_KEGG_logval_all_EMP",
+  folder = output_folder
+)
+#no results for up proSus (likely due to small # of genes)
+
+#now do the same for down proSus genes
+
+down_proSus_GOKEGG_RUV <- gost(query = proSus_down_genes,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = FALSE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+down_proSus_GOKEGG_genes_RUV <- gostplot(down_proSus_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+down_proSus_GOKEGG_genes_RUV
+
+table_down_proSus_GOKEGG_genes_RUV <- down_proSus_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_down_proSus_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_down_proSus_genes_GOBP_RUV <- table_down_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+down_proSus_table_genes_GOBP_plot <- ggplot(table_down_proSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("Downregulated proSus Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(down_proSus_table_genes_GOBP_plot)
+
+save_plot(
+  plot = down_proSus_table_genes_GOBP_plot,
+  filename = "Sustained_downreg_proSus_GOBP_logval_all_EMP",
+  folder = output_folder
+)
+
+#KEGG
+table_down_proSus_genes_KEGG_RUV <- table_down_proSus_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+down_proSus_table_genes_KEGG_plot <- ggplot(table_down_proSus_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("Downregulated proSus Enriched KEGG Terms")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(size= guide_legend(title = "# of \n intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+print(down_proSus_table_genes_KEGG_plot)
+
+save_plot(
+  plot = down_proSus_table_genes_KEGG_plot,
+  filename = "Sustained_downreg_proSus_KEGG_logval_all_EMP",
+  folder = output_folder
+)
+
+
+```
+
