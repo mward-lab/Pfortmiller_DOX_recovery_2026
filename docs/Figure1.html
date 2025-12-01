@@ -1,0 +1,2910 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Emma M Pfortmiller" />
+
+<meta name="date" content="2025-12-01" />
+
+<title>Figure 1</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DXR_RNAseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">About</a>
+</li>
+<li>
+  <a href="Recovery_DRC.html">Dose-Response</a>
+</li>
+<li>
+  <a href="DXR_Project_Analysis.html">Differential Analysis</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/emmapfort/DXR_Project">
+    <span class="fab fa-github"></span>
+     
+    Source Code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 1</h1>
+<h4 class="author">Emma M Pfortmiller</h4>
+<h4 class="date">2025-12-01</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-12-01
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>Recovery_5FU/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20250217code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20250217)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20250217code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20250217)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466ctargetblank1fd9c3ca">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/emmapfort/DXR_Project/tree/1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466c" target="_blank">1fd9c3c</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466ctargetblank1fd9c3ca"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/emmapfort/DXR_Project/tree/1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466c" target="_blank">1fd9c3c</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    code/Flow_Purity_Stressor_Boxplots_EMP_250226.R
+    Ignored:    data/CDKN1A_geneplot_Dox.RDS
+    Ignored:    data/Cormotif_dox.RDS
+    Ignored:    data/Cormotif_prob_gene_list.RDS
+    Ignored:    data/Cormotif_prob_gene_list_doxonly.RDS
+    Ignored:    data/DMSO_TNN13_plot.RDS
+    Ignored:    data/DOX_TNN13_plot.RDS
+    Ignored:    data/DOXgeneplots.RDS
+    Ignored:    data/ExpressionMatrix_EMP.csv
+    Ignored:    data/Ind1_DOX_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_list.csv
+    Ignored:    data/Ind6REP_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_set.csv
+    Ignored:    data/Ind6_Spearman_plot.RDS
+    Ignored:    data/MDM2_geneplot_Dox.RDS
+    Ignored:    data/Master_summary_75-1_EMP_250811_final.csv
+    Ignored:    data/Master_summary_87-1_EMP_250811_final.csv
+    Ignored:    data/Metadata.csv
+    Ignored:    data/Metadata_2_norep_update.RDS
+    Ignored:    data/Metadata_update.csv
+    Ignored:    data/QC/
+    Ignored:    data/Recovery_flow_purity.csv
+    Ignored:    data/SIRT1_geneplot_Dox.RDS
+    Ignored:    data/Sample_annotated.csv
+    Ignored:    data/SpearmanHeatmapMatrix_EMP
+    Ignored:    data/VennDiagram_DEGs.csv.2025-05-19_13-04-29.204911.log
+    Ignored:    data/VolcanoPlot_D144R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24T_original_EMP_250623.png
+    Ignored:    data/annot_dox.RDS
+    Ignored:    data/annot_list_hm.csv
+    Ignored:    data/cormotifARclust_pp.RDS
+    Ignored:    data/cormotif_dxr_1.RDS
+    Ignored:    data/cormotif_dxr_2.RDS
+    Ignored:    data/counts/
+    Ignored:    data/counts_DE_df_dox.RDS
+    Ignored:    data/counts_DE_raw_data.RDS
+    Ignored:    data/counts_raw_filt.RDS
+    Ignored:    data/counts_raw_matrix.RDS
+    Ignored:    data/counts_raw_matrix_EMP_250514.csv
+    Ignored:    data/d24_Spearman_plot.RDS
+    Ignored:    data/dge_calc_dxr.RDS
+    Ignored:    data/dge_calc_matrix.RDS
+    Ignored:    data/ensembl_backup_dox.RDS
+    Ignored:    data/fC_AllCounts.RDS
+    Ignored:    data/fC_DOXCounts.RDS
+    Ignored:    data/featureCounts_Concat_Matrix_DOXSamples_EMP_250430.csv
+    Ignored:    data/featureCounts_DOXdata_updatedind.RDS
+    Ignored:    data/filcpm_colnames_matrix.csv
+    Ignored:    data/filcpm_matrix.csv
+    Ignored:    data/filt_gene_list_dox.RDS
+    Ignored:    data/filter_gene_list_final.RDS
+    Ignored:    data/final_data/
+    Ignored:    data/gene_clustlike_motif.RDS
+    Ignored:    data/gene_postprob_motif.RDS
+    Ignored:    data/genedf_dxr.RDS
+    Ignored:    data/genematrix_dox.RDS
+    Ignored:    data/genematrix_dxr.RDS
+    Ignored:    data/heartgenes.csv
+    Ignored:    data/heartgenes_dox.csv
+    Ignored:    data/heatmap_group_Anat.RDS
+    Ignored:    data/image_intensity_stats_all_conditions.csv
+    Ignored:    data/image_level_stats_all_conditions.csv
+    Ignored:    data/image_level_summary_yH2AX_quant.csv
+    Ignored:    data/ind_num_dox.RDS
+    Ignored:    data/ind_num_dxr.RDS
+    Ignored:    data/initial_cormotif.RDS
+    Ignored:    data/initial_cormotif_dox.RDS
+    Ignored:    data/low_nuclei_samples.csv
+    Ignored:    data/low_veh_samples.csv
+    Ignored:    data/new/
+    Ignored:    data/new_cormotif_dox.RDS
+    Ignored:    data/perc_mean_all_10X.png
+    Ignored:    data/perc_mean_all_20X.png
+    Ignored:    data/perc_mean_all_40X.png
+    Ignored:    data/perc_mean_consistent_10X.png
+    Ignored:    data/perc_mean_consistent_20X.png
+    Ignored:    data/perc_mean_consistent_40X.png
+    Ignored:    data/perc_median_all_10X.png
+    Ignored:    data/perc_median_all_20X.png
+    Ignored:    data/perc_median_all_40X.png
+    Ignored:    data/perc_median_consistent_10X.png
+    Ignored:    data/perc_median_consistent_20X.png
+    Ignored:    data/perc_median_consistent_40X.png
+    Ignored:    data/plot_leg_d.RDS
+    Ignored:    data/plot_leg_d_horizontal.RDS
+    Ignored:    data/plot_leg_d_vertical.RDS
+    Ignored:    data/plot_theme_custom.RDS
+    Ignored:    data/process_gene_data_funct.RDS
+    Ignored:    data/raw_mean_all_10X.png
+    Ignored:    data/raw_mean_all_20X.png
+    Ignored:    data/raw_mean_all_40X.png
+    Ignored:    data/raw_mean_consistent_10X.png
+    Ignored:    data/raw_mean_consistent_20X.png
+    Ignored:    data/raw_mean_consistent_40X.png
+    Ignored:    data/raw_median_all_10X.png
+    Ignored:    data/raw_median_all_20X.png
+    Ignored:    data/raw_median_all_40X.png
+    Ignored:    data/raw_median_consistent_10X.png
+    Ignored:    data/raw_median_consistent_20X.png
+    Ignored:    data/raw_median_consistent_40X.png
+    Ignored:    data/ruv/
+    Ignored:    data/summary_all_IF_ROI.RDS
+    Ignored:    data/tableED_GOBP.RDS
+    Ignored:    data/tableESR_GOBP_postprob.RDS
+    Ignored:    data/tableLD_GOBP.RDS
+    Ignored:    data/tableLR_GOBP_postprob.RDS
+    Ignored:    data/tableNR_GOBP.RDS
+    Ignored:    data/tableNR_GOBP_postprob.RDS
+    Ignored:    data/table_incsus_genes_GOBP_RUV.RDS
+    Ignored:    data/table_motif1_GOBP_d.RDS
+    Ignored:    data/table_motif1_genes_GOBP.RDS
+    Ignored:    data/table_motif2_GOBP_d.RDS
+    Ignored:    data/table_motif3_genes_GOBP.RDS
+    Ignored:    data/top.table_V.D144r_dox.RDS
+    Ignored:    data/top.table_V.D24_dox.RDS
+    Ignored:    data/top.table_V.D24r_dox.RDS
+    Ignored:    data/yH2AX_75-1_EMP_250811.csv
+    Ignored:    data/yH2AX_87-1_EMP_250811.csv
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_Quant_10X_EMP_250817.png
+    Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
+    Ignored:    data/yh2ax_all_df_EMP_250812.csv
+
+Untracked files:
+    Untracked:  Annotated_Toptables_t0_EMP_251125.csv
+    Untracked:  Annotated_Toptables_t144_EMP_251125.csv
+    Untracked:  Annotated_Toptables_t24_EMP_251125.csv
+    Untracked:  fig2a_pca_6x8_EMP_new_251121.pdf
+
+Unstaged changes:
+    Modified:   analysis/DXR_Project_Analysis.Rmd
+    Modified:   analysis/Recovery_DRC.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/Figure1.Rmd</code>) and HTML
+(<code>docs/Figure1.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466c/analysis/Figure1.Rmd" target="_blank">1fd9c3c</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Finalized Figure 1 Analysis Page
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/1f39f4965559d72d6fdefef43f4f691e9705eb32/analysis/Figure1.Rmd" target="_blank">1f39f49</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Fig1 Updated
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+</style>
+<p>Libraries</p>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(readr)
+library(drc)
+library(scales)
+library(RImageJROI) #to read in ROI from ImageJ/Fiji
+library(stringr)
+library(purrr)
+library(rstatix)
+library(ggpubr)</code></pre>
+<p>Define custom plot theme</p>
+<pre class="r"><code># # Define the custom theme
+# plot_theme_custom &lt;- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = &quot;black&quot;),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, &quot;in&quot;),
+# 
+#       #text and font
+#       axis.text = element_text(color = &quot;black&quot;,
+#                                family = &quot;Arial&quot;,
+#                                size = 7),
+#       axis.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 9),
+#       legend.text = element_text(color = &quot;black&quot;,
+#                                  family = &quot;Arial&quot;,
+#                                  size = 7),
+#       legend.title = element_text(color = &quot;black&quot;,
+#                                   family = &quot;Arial&quot;,
+#                                   size = 9),
+#       plot.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = &quot;grey80&quot;, linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = &quot;grey90&quot;, linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
+
+theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
+<p>Define saving plots as pdfs and pngs</p>
+<pre class="r"><code>save_plot &lt;- function(plot, filename, 
+                      folder = &quot;.&quot;, 
+                      width = 8, 
+                      height = 6, 
+                      units = &quot;in&quot;, 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop(&quot;Please provide a filename (without extension) for the plot.&quot;)
+
+  date_str &lt;- if (add_date) paste0(&quot;_&quot;, format(Sys.Date(), &quot;%y%m%d&quot;)) else &quot;&quot;
+  pdf_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.pdf&quot;))
+  png_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.png&quot;))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = &quot;transparent&quot;)
+  ggsave(filename = png_file, plot = plot, device = &quot;png&quot;, width = width, height = height, units = units, dpi = dpi, bg = &quot;transparent&quot;)
+  message(&quot;Saved plot as Cairo PDF: &quot;, pdf_file)
+  message(&quot;Saved plot as PNG: &quot;, png_file)
+}
+
+output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height</code></pre>
+<p>Figure 1A - Experimental Schematic (no code)</p>
+<p>Figure 1B - Flow Cytometry Barplot</p>
+<pre class="r"><code>#Individuals for Flow Cytometry
+#1 = 87-1 (F)
+#2 = 78-1 (F)
+#3 = 75-1 (F)
+#4 = 84-1 (M)
+#5 = 17-3 (M)
+#6 = 90-1 (M)
+#6R = 90-1R (M)
+
+ind_col &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;,
+  &quot;7&quot; = &quot;#C61E4E&quot;
+)
+
+#read in csv with flow cytometry information
+flow_dxr &lt;- read_csv(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/Flow/Recovery_flow_purity.csv&quot;,
+                     show_col_types = FALSE)
+
+View(flow_dxr)
+
+flow &lt;- flow_dxr %&gt;% column_to_rownames(&quot;Line&quot;)
+
+#make a barplot
+
+flow_dxr_df &lt;- as.data.frame(flow_dxr)
+
+#Plot
+flow_plot_tnnt2 &lt;- ggplot(flow_dxr_df, aes(x = Ind, y = Purity)) +
+  geom_bar(stat = &quot;identity&quot;, 
+           fill = ind_col,
+           width = 0.3 / (0.3 + 0.02)) +
+  scale_y_continuous(limits = c(0, 100), 
+                     expand = c(0, 0)) +
+  scale_x_discrete(expand = expansion(mult = c(0.02, 0.02)))+
+  labs(title = &quot;iPSC-CM Purity&quot;,
+       y = &quot;TNNT2 Expression (%)&quot;, 
+       x = &quot;Individual&quot;) +
+  theme_custom() +
+  theme(strip.text.y = element_text(color = &quot;white&quot;))
+
+print(flow_plot_tnnt2)</code></pre>
+<p><img src="figure/Figure1.Rmd/Flow%20Cytometry%20Barplot-1.png" width="576" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># save_plot(
+#   plot = flow_plot_tnnt2,
+#   filename = &quot;FlowCytometry_TNNT2_withrep_EMP&quot;,
+#   folder = output_folder,
+#   width = 2.8,
+#   height = 5.25
+# )</code></pre>
+<p>Figure 1C - Dose Response Curves</p>
+<pre class="r"><code>AllData &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx&quot;,
+     sheet = &quot;Fin_Sheet_Analysis&quot;)
+# View(AllData)
+
+Ind2_78_data &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx&quot;,
+     sheet = &quot;Fin_78_Sheet&quot;)
+# View(Ind2_78_data)
+
+#this is now Individual 2 after reordering individuals earlier - 78-1 F
+
+Ind3_75_data &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx&quot;,
+     sheet = &quot;Fin_75_Sheet&quot;)
+# View(Ind3_75_data)
+
+#this is now Ind3 since I reordered individuals - 75-1 F
+
+Ind5_17_data &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx&quot;,
+     sheet = &quot;Fin_17_Sheet&quot;)
+# View(Ind5_17_data)
+
+#this is still ind 5 according to my RNAseq - 17-3 M</code></pre>
+<p>Now that I’ve imported my data, let’s go ahead and filter the data to
+reflect time and treatment groups.</p>
+<p>Analysis of Raw Data</p>
+<pre class="r"><code>#####DOX Samples#####
+#dox 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;RFLU by Concentration DOX - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In ~ dox24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 78-1 Raw Data&quot;
+)
+
+boxplot(dox24hr78$Ind2_78_Fin ~ dox24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 78-1 Raw Data&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;RFLU by Concentration DOX - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In ~ dox24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 75-1 Raw Data&quot;
+)
+
+boxplot(dox24hr75$Ind1_75_Fin ~ dox24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 75-1 Raw Data&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;RFLU by Concentration DOX - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In ~ dox24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 17-3 Raw Data&quot;
+)
+
+boxplot(dox24hr17$Ind3_17_Fin ~ dox24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 17-3 Raw Data&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;RFLU by Concentration DMSO - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In ~ dmso24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 78-1&quot;
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin ~ dmso24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 78-1&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;RFLU by Concentration DMSO - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In ~ dmso24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 75-1&quot;
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin ~ dmso24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 75-1&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;RFLU by Concentration DMSO - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In ~ dmso24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 17-3&quot;
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin ~ dmso24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 17-3&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now that I’ve taken a look at the raw data, let’s look at the
+analyzed data step by step</p>
+<p>The following steps were taken in analysis:</p>
+<ol style="list-style-type: decimal">
+<li><p>Import raw fluorescence values (RFLU) from platereader, baseline
+0hr and final timepoints</p></li>
+<li><p>Subtract background wells (prestoblue only wells) by
+plate</p></li>
+<li><p>Subtract average of empty wells (galactose only, with 50k
+cells/well) by plate</p></li>
+<li><p>Divide all values by matched vehicle average (ie DOX 0.01 / DMSO
+0.01)</p></li>
+<li><p>Divide initial 0hr value from final timepoint (24, 48, 72)
+value</p></li>
+</ol>
+<pre class="r"><code>#####DOX Samples#####
+#dox 78-1 no BG 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In_noBG ~ dox24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 78-1 no BG&quot;
+)
+
+boxplot(dox24hr78$Ind2_78_Fin_noBG ~ dox24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 78-1 no BG&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In_noBG ~ dox24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 75-1 no BG&quot;
+)
+
+boxplot(dox24hr75$Ind1_75_Fin_noBG ~ dox24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 75-1 no BG&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In_noBG ~ dox24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 17-3 no BG&quot;
+)
+
+boxplot(dox24hr17$Ind3_17_Fin_noBG ~ dox24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 17-3 no BG&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In_noBG ~ dmso24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 78-1 no BG&quot;
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin_noBG ~ dmso24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 78-1 no BG&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 75-1 no BG 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In_noBG ~ dmso24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 75-1 no BG&quot;
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin_noBG ~ dmso24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 75-1 no BG&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 17-3 no BG 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In_noBG ~ dmso24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 17-3 no BG&quot;
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin_noBG ~ dmso24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = &quot;Cell Viability (RFLU)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 17-3 no BG&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now let’s plot the next step: subtracting the empty wells</p>
+<pre class="r"><code>#####DOX Samples#####
+#dox 78-1 Empty Wells 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG Empty - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In_noBG_Low ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 78-1 no BG Empty&quot;
+)
+
+boxplot(dox24hr78$Ind2_78_Fin_noBG_Low ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 78-1 no BG&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG Empty - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In_noBG_Low ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 75-1 no BG Empty&quot;
+)
+
+boxplot(dox24hr75$Ind1_75_Fin_noBG_Low ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 75-1 no BG Empty&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG Empty - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In_noBG_Low ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 17-3 no BG Empty&quot;
+)
+
+boxplot(dox24hr17$Ind3_17_Fin_noBG_Low ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 17-3 no BG Empty&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG Empty - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In_noBG_Low ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 78-1 no BG Empty&quot;
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin_noBG_Low ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 78-1 no BG Empty&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 75-1 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG Empty - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In_noBG_Low ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 75-1 no BG Empty&quot;
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin_noBG_Low ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 75-1 no BG Empty&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 17-3 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG Empty - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In_noBG_Low ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 17-3 no BG Empty&quot;
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 17-3 no BG Empty&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now let’s plot the third step: dividing the matched vehicle
+values</p>
+<pre class="r"><code>#####DOX Samples#####
+#dox 78-1 Veh 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG Empty Veh - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In_noBG_Low_Veh ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 78-1 no BG Empty Veh&quot;
+)
+
+boxplot(dox24hr78$Ind2_78_Fin_noBG_Low_Veh ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 78-1 no BG Veh&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG Empty Veh - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In_noBG_Low_Veh ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 75-1 no BG Empty Veh&quot;
+)
+
+boxplot(dox24hr75$Ind1_75_Fin_noBG_Low_Veh ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 75-1 no BG Empty Veh&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOX no BG Empty Veh - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In_noBG_Low_Veh ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 0hr 17-3 no BG Empty Veh&quot;
+)
+
+boxplot(dox24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DOXORUBICIN 24hr 17-3 no BG Empty Veh&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG Empty Veh - 78-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In_noBG_Low_Veh ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 78-1 no BG Empty Veh&quot;
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin_noBG_Low_Veh ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 78-1 no BG Empty Veh&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 75-1 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG Empty Veh - 75-1 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In_noBG_Low_Veh ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 75-1 no BG Empty Veh&quot;
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin_noBG_Low_Veh ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 75-1 no BG Empty Veh&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#DMSO 17-3 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO no BG Empty Veh - 17-3 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In_noBG_Low_Veh ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 0hr 17-3 no BG Empty Veh&quot;
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;DMSO VEHICLE 24hr 17-3 no BG Empty Veh&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now for the final step, dividing the final timepoint by the initial
+baseline reading at 0hr</p>
+<pre class="r"><code>#####DOX Samples#####
+#dox All 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DOXORUBICIN - 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_Div ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;78-1 Div&quot;
+)
+
+boxplot(dox24hr75$Ind1_75_Div ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;75-1 Div&quot;
+)
+
+boxplot(dox24hr17$Ind3_17_Div ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;17-3 Div&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Final%20Data%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#####DMSO samples#####
+#DMSO All 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,&quot;DMSO VEHICLE - 24hr&quot;,cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_Div ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;78-1 Div&quot;
+)
+
+boxplot(dmso24hr75$Ind1_75_Div ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;75-1 Div&quot;
+)
+
+boxplot(dmso24hr17$Ind3_17_Div ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = &quot;Cell Viability (%)&quot;, 
+        xlab = &quot;Concentration (uM)&quot;, 
+        main = &quot;17-3 Div&quot;
+)</code></pre>
+<p><img src="figure/Figure1.Rmd/Boxplots%20Final%20Data%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Fit Models for DRC</p>
+<pre class="r"><code>#these sheets are not numbered properly by individual because they&#39;re in order of experiments
+dox24tox_75 &lt;- dox24hr75 %&gt;% mutate(response = Ind1_75_Div*100)
+summary(dox24tox_75$response)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+  0.2582   9.4402  70.8116  60.2731  88.1141 143.8750 </code></pre>
+<pre class="r"><code>dox24tox_78 &lt;- dox24hr78 %&gt;% mutate(response = Ind2_78_Div*100)
+summary(dox24tox_78$response)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  2.304  14.760  68.363  61.596  94.656 136.295 </code></pre>
+<pre class="r"><code>dox24tox_17 &lt;- dox24hr17 %&gt;% mutate(response = Ind3_17_Div*100)
+summary(dox24tox_17$response)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-12.545   3.773  68.230  51.372  79.390 127.911 </code></pre>
+<pre class="r"><code>#Fit Models
+doxtox24_78_model &lt;- drm(response ~ Conc, data = dox24tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+
+doxtox24_75_model &lt;- drm(response ~ Conc, data = dox24tox_75, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+
+doxtox24_17_model &lt;- drm(response ~ Conc, data = dox24tox_17, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+
+#Add in labels
+conc_labels &lt;- c(0.01, 0.1, 0.5, 1, 10, 50, 100, 1000)
+pct_labels &lt;- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+
+#extract LD50
+ed75 &lt;- ED(doxtox24_78_model, 50, interval = &quot;delta&quot;)[1]</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error   Lower   Upper
+e:1:50  16.1179     4.4686  7.0366 25.1993</code></pre>
+<pre class="r"><code>ed78 &lt;- ED(doxtox24_75_model, 50, interval = &quot;delta&quot;)[1]</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error   Lower   Upper
+e:1:50  10.0892     2.3992  5.2134 14.9649</code></pre>
+<pre class="r"><code>ed17 &lt;- ED(doxtox24_17_model, 50, interval = &quot;delta&quot;)[1]</code></pre>
+<pre><code>
+Estimated effective doses
+
+       Estimate Std. Error   Lower   Upper
+e:1:50   9.7850     1.7753  6.1771 13.3928</code></pre>
+<pre class="r"><code>#find the median ld50 for plotting
+median_ld50 &lt;- median(c(ed78, ed75, ed17))</code></pre>
+<p>Plot DRC</p>
+<pre class="r"><code># Define output folder and base filename
+# output_folder
+# base_name &lt;- &quot;viability_curve_scaled&quot;
+
+# Full file paths
+# png_path &lt;- file.path(output_folder, paste0(base_name, &quot;.png&quot;))
+# svg_path &lt;- file.path(output_folder, paste0(base_name, &quot;.svg&quot;))
+# pdf_path &lt;- file.path(output_folder, paste0(base_name, &quot;.pdf&quot;))
+
+# New scaled dimensions (2x)
+# plot_height &lt;- 7.3212
+# plot_width&lt;- 3.8604
+# plot_width &lt;- 5.7906
+
+#export as a png
+# png(filename = png_path,
+#     width = plot_width, height = plot_height,
+#     units = &quot;in&quot;, res = 300)
+
+#plot code as above in finalized version
+plot(doxtox24_78_model, type = &quot;none&quot;, broken = TRUE,
+     ylim = c(0,100), col = &quot;#9ACCDE&quot;, lwd = 3,
+     ylab = &quot;Percent Viability (%)&quot;, xlab = &quot;Concentration (uM)&quot;,
+     main = &quot;24hr Treatment&quot;, log = &quot;x&quot;, axes = FALSE)
+plot(doxtox24_75_model, add = TRUE, col = &quot;#499FBD&quot;, lwd = 3, type = &quot;none&quot;)
+plot(doxtox24_17_model, add = TRUE, col = &quot;#254F5E&quot;, lwd = 3, type = &quot;none&quot;)
+
+axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+
+abline(v = 0.5, col = &quot;grey50&quot;, lty = 2, lwd = 2)
+abline(v = median_ld50, col = &quot;red&quot;, lty = 3, lwd = 2)
+text(x = median_ld50, y = 99,
+     labels = paste0(&quot;Median LD50&quot;),
+     col = &quot;red&quot;, pos = 4, cex = 1, font = 2)
+
+legend(&quot;bottomleft&quot;,
+       legend = c(
+         paste0(&quot;Ind3 (LD50 = &quot;, round(ed78, 2), &quot; µM)&quot;),
+         paste0(&quot;Ind4 (LD50 = &quot;, round(ed75, 2), &quot; µM)&quot;),
+         paste0(&quot;Ind5 (LD50 = &quot;, round(ed17, 2), &quot; µM)&quot;)
+       ),
+       col = c(&quot;#9ACCDE&quot;, &quot;#499FBD&quot;, &quot;#254F5E&quot;),
+       lwd = 3, lty = c(1,1,1), cex = 1,
+       title = &quot;Individuals&quot;)</code></pre>
+<p><img src="figure/Figure1.Rmd/Final%20plot%20with%20exports-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># dev.off()
+
+#export as svg
+# svg(filename = svg_path,
+#     width = plot_width, height = plot_height)
+
+#repeat plotting code with same adjustments
+# plot(doxtox24_78_model, type = &quot;none&quot;, broken = TRUE,
+#      ylim = c(0,100), col = &quot;#9ACCDE&quot;, lwd = 3,
+#      ylab = &quot;Percent Viability (%)&quot;, xlab = &quot;Concentration (uM)&quot;,
+#      main = &quot;24hr Treatment&quot;, log = &quot;x&quot;, axes = FALSE)
+# plot(doxtox24_75_model, add = TRUE, col = &quot;#499FBD&quot;, lwd = 3, type = &quot;none&quot;)
+# plot(doxtox24_17_model, add = TRUE, col = &quot;#254F5E&quot;, lwd = 3, type = &quot;none&quot;)
+# axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+# axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+# abline(v = 0.5, col = &quot;grey50&quot;, lty = 2, lwd = 2)
+# abline(v = median_ld50, col = &quot;red&quot;, lty = 3, lwd = 2)
+# text(x = median_ld50, y = 99,
+#      labels = paste0(&quot;Median LD50&quot;),
+#      col = &quot;red&quot;, pos = 4, cex = 1, font = 2)
+# legend(&quot;bottomleft&quot;,
+#        legend = c(
+#          paste0(&quot;Ind3 (LD50 = &quot;, round(ed78, 2), &quot; µM)&quot;),
+#          paste0(&quot;Ind4 (LD50 = &quot;, round(ed75, 2), &quot; µM)&quot;),
+#          paste0(&quot;Ind5 (LD50 = &quot;, round(ed17, 2), &quot; µM)&quot;)
+#        ),
+#        col = c(&quot;#9ACCDE&quot;, &quot;#499FBD&quot;, &quot;#254F5E&quot;),
+#        lwd = 3, lty = c(1,1,1), cex = 1,
+#        title = &quot;Individuals&quot;)
+
+# dev.off()
+
+#export as pdf
+# pdf(file = pdf_path,
+#     width = plot_width, height = plot_height)
+
+#repeat plotting code again to print
+# plot(doxtox24_78_model, type = &quot;none&quot;, broken = TRUE,
+#      ylim = c(0,100), col = &quot;#9ACCDE&quot;, lwd = 3,
+#      ylab = &quot;Percent Viability (%)&quot;, xlab = &quot;Concentration (uM)&quot;,
+#      main = &quot;24hr Treatment&quot;, log = &quot;x&quot;, axes = FALSE)
+# plot(doxtox24_75_model, add = TRUE, col = &quot;#499FBD&quot;, lwd = 3, type = &quot;none&quot;)
+# plot(doxtox24_17_model, add = TRUE, col = &quot;#254F5E&quot;, lwd = 3, type = &quot;none&quot;)
+# axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+# axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+# abline(v = 0.5, col = &quot;grey50&quot;, lty = 2, lwd = 2)
+# abline(v = median_ld50, col = &quot;red&quot;, lty = 3, lwd = 2)
+# text(x = median_ld50, y = 99,
+#      labels = paste0(&quot;Median LD50&quot;),
+#      col = &quot;red&quot;, pos = 4, cex = 1, font = 2)
+# legend(&quot;bottomleft&quot;,
+#        legend = c(
+#          paste0(&quot;Ind3 (LD50 = &quot;, round(ed78, 2), &quot; µM)&quot;),
+#          paste0(&quot;Ind4 (LD50 = &quot;, round(ed75, 2), &quot; µM)&quot;),
+#          paste0(&quot;Ind5 (LD50 = &quot;, round(ed17, 2), &quot; µM)&quot;)
+#        ),
+#        col = c(&quot;#9ACCDE&quot;, &quot;#499FBD&quot;, &quot;#254F5E&quot;),
+#        lwd = 3, lty = c(1,1,1), cex = 1,
+#        title = &quot;Individuals&quot;)
+
+# dev.off()
+
+#saved code for saving the plots for posterity!</code></pre>
+<p>Figure 1D - yH2AX Quantification (Immunofluorescence Staining)</p>
+<p>Fiji/ImageJ Macros</p>
+<pre class="r"><code>#these are the macros that I made for ImageJ/Fiji and are included for reference only
+#they will not run in R
+
+#DAPI ROI generator macro to split DAPI channel and map nuclei
+# // === STEP 1: Define folders ===
+# folder = &quot;D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\rgb quant\\&quot;;
+# saveRoiFolder = &quot;D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\outline new\\&quot;;
+# saveRedFolder = &quot;D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\TxRed new\\&quot;;
+# 
+# list = getFileList(folder);
+# 
+# for (i = 0; i &lt; list.length; i++) {
+#     if (endsWith(list[i], &quot;.tif&quot;)) {
+#         print(&quot;----------------------------------------------------&quot;);
+#         print(&quot;Processing file: &quot; + list[i]);
+# 
+#         // Open composite image
+#         open(folder + list[i]);
+#         originalTitle = getTitle();
+#         baseName = replace(list[i], &quot;.tif&quot;, &quot;&quot;);
+# 
+#         // === STEP 2: Duplicate and close original ===
+#         newTitle = baseName + &quot;_proc&quot;;
+#         run(&quot;Duplicate...&quot;, &quot;title=&quot; + newTitle);
+#         dupTitle = getTitle(); 
+#         print(&quot;Created duplicate: &quot; + dupTitle);
+# 
+#         selectImage(originalTitle);
+#         close();
+#         print(&quot;Closed original composite: &quot; + originalTitle);
+# 
+#         // === STEP 3: Split channels of duplicate ===
+#         selectImage(dupTitle);
+#         run(&quot;Split Channels&quot;);
+#         print(&quot;Split channels from: &quot; + dupTitle);
+# 
+#         // === STEP 4: Save the red channel ===
+#         redTitle = newTitle + &quot; (red)&quot;;
+#         if (isOpen(redTitle)) {
+#             selectWindow(redTitle);
+#             saveAs(&quot;Tiff&quot;, saveRedFolder + baseName + &quot;_TxRed.tif&quot;);
+#             print(&quot;Saved and closed red channel: &quot; + redTitle);
+#             close();
+#         } else {
+#             print(&quot;WARNING: Red channel not found for &quot; + baseName);
+#         }
+# 
+#         // === STEP 5: Close green channel ===
+#         greenTitle = newTitle + &quot; (green)&quot;;
+#         if (isOpen(greenTitle)) {
+#             selectWindow(greenTitle);
+#             close();
+#             print(&quot;Closed green channel: &quot; + greenTitle);
+#         } else {
+#             print(&quot;Green channel not found for &quot; + baseName);
+#         }
+# 
+#         // === STEP 6: Process DAPI (blue) channel ===
+#         dapiTitle = newTitle + &quot; (blue)&quot;;
+#         if (isOpen(dapiTitle)) {
+#             selectWindow(dapiTitle);
+#             rename(baseName + &quot;_DAPI_proc&quot;);
+#             print(&quot;Processing DAPI channel: &quot; + baseName);
+# 
+#             run(&quot;8-bit&quot;);
+#             run(&quot;Enhance Contrast...&quot;, &quot;saturated=0.3 normalize&quot;);  // normalize intensity
+#             setAutoThreshold(&quot;Otsu&quot;);
+#             getThreshold(lower, upper);
+#             minThreshold = 10;
+#             if (lower &lt; minThreshold) lower = minThreshold;
+#             setThreshold(lower, 255);
+#             //convert and segment nuclei
+#             setOption(&quot;BlackBackground&quot;, false);
+#             run(&quot;Convert to Mask&quot;);
+#             run(&quot;Watershed&quot;);
+# 
+#             run(&quot;Analyze Particles...&quot;, 
+#                 &quot;size=21-Infinity circularity=0.30-1.00 show=[Count Masks] display exclude summarize add&quot;);
+#                 
+#             // === If no ROIs detected, allow manual threshold adjustment ===
+#     if (roiManager(&quot;count&quot;) == 0) {
+#         print(&quot;⚠️ No ROIs found for: &quot; + baseName + &quot; — manual adjustment required.&quot;);
+#         selectWindow(baseName + &quot;_DAPI_proc&quot;);
+#         run(&quot;Threshold...&quot;);
+#         waitForUser(&quot;Adjust the threshold manually until nuclei are visible, then click OK.&quot;);
+#         run(&quot;Convert to Mask&quot;);
+#         run(&quot;Watershed&quot;);
+# 
+#         // Re-run particle analysis
+#         run(&quot;Analyze Particles...&quot;, 
+#             &quot;size=21-Infinity circularity=0.30-1.00 show=[Count Masks] display exclude summarize add&quot;);
+#     }
+# 
+#             // Save ROIs
+#             if (roiManager(&quot;count&quot;) &gt; 0) {
+#                 saveName = baseName + &quot;_DAPI.zip&quot;;
+#                 roiManager(&quot;Save&quot;, saveRoiFolder + saveName);
+#                 print(&quot;Saved ROI zip: &quot; + saveName);
+#             } else {
+#                 print(&quot;No ROIs found for: &quot; + baseName);
+#             }
+# 
+#             // Cleanup DAPI
+#             close();
+#             maskTitle = &quot;Count Masks of &quot; + baseName + &quot;_DAPI_proc&quot;;
+#             if (isOpen(maskTitle)) {
+#                 selectWindow(maskTitle);
+#                 close();
+#                 print(&quot;Closed mask window: &quot; + maskTitle);
+#             }
+#             roiManager(&quot;Deselect&quot;);
+#             roiManager(&quot;Reset&quot;);
+#         } else {
+#             print(&quot;DAPI channel not found for &quot; + baseName);
+#         }
+# 
+#         // === STEP 7: Close duplicate container window if still open ===
+#         if (isOpen(dupTitle)) {
+#             selectWindow(dupTitle);
+#             close();
+#             print(&quot;Closed duplicate window: &quot; + dupTitle);
+#         }
+# 
+#         print(&quot;Finished processing file: &quot; + baseName);
+#     }
+# }
+
+#each time I ran this I just changed the cell line name in the top
+
+#Red Positivity Macro for identifying red pixels within ROIs and accounting for area
+# // ==== USER SETTINGS ====
+# roiFolder  = &quot;D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\outline new\\&quot;;   
+# redImageFolder = &quot;D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\TxRed new\\&quot;
+# outputFolder = &quot;D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\outline new\\analyzed\\&quot;;
+# imageExt  = &quot;.tif&quot;;                                       
+# thresholdLow = 20;
+# thresholdHigh = 250;
+# // ========================
+# 
+# // Clear results table for combined per-ROI data
+# run(&quot;Clear Results&quot;);
+# 
+# // Initialize arrays for summary
+# roiAreas = newArray();
+# maxInts = newArray();
+# meanInts = newArray();
+# medianInts = newArray();
+# percentReds = newArray();
+# nROIsWithRed = 0;
+# 
+# // Get list of ROI ZIP files
+# roiFiles = getFileList(roiFolder);
+# 
+# for (f = 0; f &lt; roiFiles.length; f++) {
+#     roiFile = roiFiles[f];
+#     if (!endsWith(roiFile, &quot;_DAPI.zip&quot;)) continue;
+# 
+#     // Build corresponding red image filename
+#     base = replace(roiFile, &quot;_DAPI.zip&quot;, &quot;&quot;);
+#     redImageName = base + &quot;_TxRed.tif&quot;;
+#     redImagePath = redImageFolder + redImageName;
+# 
+#     print(&quot;Trying to open red image: &quot; + redImagePath);
+# 
+#     if (!File.exists(redImagePath)) {
+#         print(&quot;Red image not found for &quot; + roiFile + &quot;, skipping.&quot;);
+#         continue;
+#     }
+# 
+#     roiZipPath = roiFolder + roiFile;
+# 
+#     // Open red image
+#     open(redImagePath);
+#     redTitle = getTitle();
+#     selectWindow(redTitle);
+# 
+#     // Load ROIs
+#     roiManager(&quot;Reset&quot;);
+#     roiManager(&quot;Open&quot;, roiZipPath);
+# 
+#     nROIs = roiManager(&quot;Count&quot;);
+#     for (r = 0; r &lt; nROIs; r++) {
+#         roiManager(&quot;Select&quot;, r);
+#         selectWindow(redTitle);
+# 
+#         // Declare measurement variables
+#         areaInt = 0;
+#         meanInt = 0;
+#         minInt = 0;
+#         maxInt = 0;
+#         stdInt = 0;
+#         histogram = newArray(256);
+# 
+#         getStatistics(areaInt, meanInt, minInt, maxInt, stdInt, histogram);
+# 
+#         // Count red-positive pixels
+#         redCount = 0;
+#         for (p = thresholdLow; p &lt;= thresholdHigh; p++) redCount += histogram[p];
+#         if (redCount == 0) continue; // skip ROIs with no red
+# 
+#         percentRed = (redCount / areaInt) * 100;
+#         medianIntVal = getMedianFromHistogram(histogram, areaInt);
+# 
+#         // Save per-ROI results
+#         row = nResults;
+#         setResult(&quot;ROI_File&quot;, row, roiFile);
+#         setResult(&quot;ROI_Area&quot;, row, areaInt);
+#         setResult(&quot;Max_Intensity&quot;, row, maxInt);
+#         setResult(&quot;Mean_Intensity&quot;, row, meanInt);
+#         setResult(&quot;Median_Intensity&quot;, row, medianIntVal);
+#         setResult(&quot;Red_Positive_Pixels&quot;, row, redCount);
+#         setResult(&quot;Percent_Red_Positive&quot;, row, percentRed);
+#         updateResults();
+# 
+#         // Store for summary
+#         roiAreas = arrayAdd(roiAreas, areaInt);
+#         maxInts = arrayAdd(maxInts, maxInt);
+#         meanInts = arrayAdd(meanInts, meanInt);
+#         medianInts = arrayAdd(medianInts, medianIntVal);
+#         percentReds = arrayAdd(percentReds, percentRed);
+#         nROIsWithRed++;
+#     }
+# 
+#     close(redTitle);
+# }
+# 
+# // Save combined per-ROI CSV
+# saveAs(&quot;Results&quot;, outputFolder + &quot;All_ROIs_Combined.csv&quot;);
+# print(&quot;Combined per-ROI results saved.&quot;);
+# 
+# // Build summary table
+# run(&quot;Clear Results&quot;);
+# 
+# totalNuclearArea = sumArray(roiAreas);
+# 
+# setResult(&quot;Experiment&quot;, 0, roiFolder);
+# setResult(&quot;N_Nuclei_With_Red&quot;, 0, nROIsWithRed);
+# setResult(&quot;Mean_ROI_Area&quot;, 0, mean(roiAreas));
+# setResult(&quot;SD_ROI_Area&quot;, 0, sd(roiAreas));
+# setResult(&quot;Mean_Max_Intensity&quot;, 0, mean(maxInts));
+# setResult(&quot;SD_Max_Intensity&quot;, 0, sd(maxInts));
+# setResult(&quot;Mean_Mean_Intensity&quot;, 0, mean(meanInts));
+# setResult(&quot;SD_Mean_Intensity&quot;, 0, sd(meanInts));
+# setResult(&quot;Mean_Median_Intensity&quot;, 0, mean(medianInts));
+# setResult(&quot;SD_Median_Intensity&quot;, 0, sd(medianInts));
+# setResult(&quot;Mean_Percent_Red_Positive&quot;, 0, mean(percentReds));
+# setResult(&quot;SD_Percent_Red_Positive&quot;, 0, sd(percentReds));
+# setResult(&quot;Total_Nuclear_Area&quot;, 0, totalNuclearArea);
+# updateResults();
+# 
+# // Save summary CSV
+# saveAs(&quot;Results&quot;, outputFolder + &quot;Experiment_Summary.csv&quot;);
+# print(&quot;Summary saved.&quot;);
+# 
+# // ==========================
+# // Helper functions
+# function getMedianFromHistogram(hist, totalPixels) {
+#     sum = 0;
+#     for (i = 0; i &lt; lengthOf(hist); i++) {
+#         sum += hist[i];
+#         if (sum &gt;= totalPixels / 2) return i;
+#     }
+#     return NaN;
+# }
+# 
+# function arrayAdd(arr, value) {
+#     if (lengthOf(arr) == 0) {
+#         newArr = newArray(value);
+#     } else {
+#         newArr = newArray();
+#         for (i = 0; i &lt; lengthOf(arr); i++) newArr[i] = arr[i];
+#         newArr[lengthOf(newArr)] = value;
+#     }
+#     return newArr;
+# }
+# 
+# function mean(arr) {
+#     if (lengthOf(arr) == 0) return NaN;
+#     s = 0;
+#     for (i = 0; i &lt; lengthOf(arr); i++) s += arr[i];
+#     return s / lengthOf(arr);
+# }
+# 
+# function sd(arr) {
+#     if (lengthOf(arr) &lt;= 1) return NaN;
+#     m = mean(arr);
+#     s = 0;
+#     for (i = 0; i &lt; lengthOf(arr); i++) s += (arr[i] - m) * (arr[i] - m);
+#     return sqrt(s / (lengthOf(arr) - 1));
+# }
+# 
+# function sumArray(arr) {
+#     s = 0;
+#     for (i = 0; i &lt; lengthOf(arr); i++) s += arr[i];
+#     return s;
+# }
+
+#these two macros gave the desired output of a csv file with all of the parameters I needed</code></pre>
+<p>Read in ROI Summaries</p>
+<pre class="r"><code>#read in the data from the macros that I ran for each individual
+#I am going to focus on 20X magnification images, remove any non-20X samples 
+#ensure that you label each with respective individual number for ease later on
+
+####Ind 1 - 87-1####
+# ind1_roi &lt;- read.csv(&quot;D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/analyzed/All_ROIs_Combined_87-1_EMP_250825.csv&quot;) %&gt;%
+#   mutate(Individual = &quot;Ind1&quot;,
+#          Line = &quot;87-1&quot;,
+#          Magnification = case_when(
+#            grepl(&quot;20X&quot;, ROI_File, ignore.case = TRUE) ~ &quot;20X&quot;,
+#            grepl(&quot;10X&quot;, ROI_File, ignore.case = TRUE) ~ &quot;10X&quot;,
+#            grepl(&quot;40X&quot;, ROI_File, ignore.case = TRUE) ~ &quot;40X&quot;,
+#            TRUE ~ &quot;Other&quot;
+#          )) %&gt;%
+#   dplyr::select(-&quot;X&quot;)
+
+# saveRDS(ind1_roi, &quot;data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS&quot;)
+
+####Ind 3 - 75-1####
+# ind3_roi &lt;- read.csv(&quot;D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new/analyzed/All_ROIs_Combined_75-1_EMP_250825.csv&quot;) %&gt;%
+#     mutate(Individual = &quot;Ind3&quot;,
+#            Line = &quot;75-1&quot;,
+#          Magnification = case_when(
+#            grepl(&quot;20X&quot;, ROI_File, ignore.case = TRUE) ~ &quot;20X&quot;,
+#            grepl(&quot;10X&quot;, ROI_File, ignore.case = TRUE) ~ &quot;10X&quot;,
+#            grepl(&quot;40X&quot;, ROI_File, ignore.case = TRUE) ~ &quot;40X&quot;,
+#            TRUE ~ &quot;Other&quot;
+#          )) %&gt;%
+#   dplyr::select(-&quot;X&quot;)
+
+# saveRDS(ind3_roi, &quot;data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS&quot;)
+
+####Ind 4 - 84-1####
+# ind4_roi &lt;- read.csv(&quot;D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/outline new/analyzed/All_ROIs_Combined_84-1_EMP_250916.csv&quot;) %&gt;%
+#   mutate(Individual = &quot;Ind4&quot;) %&gt;%
+#   mutate(Line = &quot;84-1&quot;) %&gt;% 
+#   mutate(Magnification = &quot;20X&quot;) #specify since all were 20X so not in labels
+
+# saveRDS(ind4_roi, &quot;data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS&quot;)
+
+#keep all of this for posterity and read them in for plots
+ind1_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS&quot;)
+
+ind3_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS&quot;)
+
+ind4_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS&quot;)</code></pre>
+<p>Create Dataframes</p>
+<pre class="r"><code>#I want to combine all of these csv files into one dataframe
+
+#ensure that I am removing secondary only controls and any other magnifications (ie 10X and 40X images)
+
+# ind_roi_all &lt;- bind_rows(ind1_roi, ind3_roi, ind4_roi) %&gt;%
+#   mutate(
+#     Treatment = case_when(
+#       grepl(&quot;DOX&quot;, ROI_File) ~ &quot;DOX&quot;,
+#       grepl(&quot;DMSO&quot;, ROI_File) ~ &quot;VEH&quot;,
+#       TRUE ~ &quot;Other&quot;
+#     ),
+#     Timepoint = case_when(
+#       grepl(&quot;24T&quot;, ROI_File) ~ &quot;24T&quot;,
+#       grepl(&quot;24R&quot;, ROI_File) ~ &quot;24R&quot;,
+#       grepl(&quot;144R&quot;, ROI_File) ~ &quot;144R&quot;,
+#       TRUE ~ &quot;Other&quot;
+#     ),
+#     Condition = paste0(Treatment, &quot;_&quot;, Timepoint)
+#   ) %&gt;%
+#   dplyr::filter(Treatment != &quot;Other&quot;) %&gt;%
+#   dplyr::filter(Magnification == &quot;20X&quot;) %&gt;%
+#   dplyr::filter(!grepl(&quot;^2nd&quot;, ROI_File, ignore.case = TRUE)) %&gt;%
+#   dplyr::select(-&quot;X&quot;)
+
+# saveRDS(ind_roi_all, &quot;data/new/IF_quant/individual_rois_all.RDS&quot;)
+
+#now I have successfully made sure this only contains 20X and has all of the three individuals</code></pre>
+<p>IF Quantification yH2AX Step 1 - ROI Level</p>
+<pre class="r"><code>#make sure to normalize by area to get positive red for the next step
+# ind_roi_all &lt;- ind_roi_all %&gt;%
+#   mutate(
+#     Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100
+#   )
+
+#saved this one in RDS
+
+ind_roi_all &lt;- readRDS(&quot;data/new/IF_quant/individual_rois_all.RDS&quot;) 
+
+ind_cols_if &lt;- c(&quot;Ind1&quot; = &quot;#FFA364&quot;,
+              &quot;Ind3&quot; = &quot;#A4D177&quot;,
+              &quot;Ind4&quot; = &quot;#EAD050&quot;)
+
+#previous timepoint names prior to tx+0 (24T), tx+24 (24R), tx+144 (144R)
+condition_levels &lt;- c(&quot;DOX_24T&quot;, &quot;VEH_24T&quot;, 
+                      &quot;DOX_24R&quot;, &quot;VEH_24R&quot;, 
+                      &quot;DOX_144R&quot;, &quot;VEH_144R&quot;)
+
+#add in colors for boxplots
+txtime_col_old &lt;- list(
+  &quot;DOX_24T&quot; = &quot;#263CA5&quot;,
+  &quot;VEH_24T&quot; = &quot;#444343&quot;,
+  &quot;DOX_24R&quot; = &quot;#5B8FD1&quot;,
+  &quot;VEH_24R&quot; = &quot;#757575&quot;,
+  &quot;DOX_144R&quot; = &quot;#89C5E5&quot;,
+  &quot;VEH_144R&quot; = &quot;#AAAAAA&quot;
+)
+
+plot_step1 &lt;- ind_roi_all %&gt;% 
+  mutate(Condition = factor(Condition, levels = c(condition_levels))) %&gt;% 
+  ggplot(aes(x = Condition, y = Percent_Red_Positive_Area)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual),
+             size = 1.5,
+             alpha = 0.6, #for visibility of all of these points
+             position = position_identity()) +
+  scale_color_manual(values = ind_cols_if) +
+  scale_fill_manual(values = txtime_col_old) +
+  labs(title = &quot;Step 1: ROI Level % Red Positive&quot;,
+       x = &quot;Condition&quot;,
+       y = &quot;Percent Red Positive Pixels&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;bottom&quot;)
+
+plot_step1</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/Figure1.Rmd/Step%201%20-%20ROI%20Level%20All%20Individuals-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Step 2 - Collapse to Image Level Summaries</p>
+<p>Read in Dataframe of Image Level Summary</p>
+<pre class="r"><code>#now that I&#39;ve created the image level summary table for all individuals above, read it in so I don&#39;t have to create it multiple times
+
+roi_image_level_summary &lt;- readRDS(&quot;data/new/IF_quant/roi_image_level_summary_all.RDS&quot;)</code></pre>
+<p>Make a Metadata Table</p>
+<p>Combine metadata with summary sheet</p>
+<p>IF Quantification Step 2 - Image Level</p>
+<pre class="r"><code>#now I&#39;ll plot the outcome of the second step where I collapsed by image and merged the metadata with the measurements
+
+plot_step2 &lt;- ggplot(merged_image_summary, 
+         aes(x = Condition,
+             y = Mean_Red_Positive_Pixels)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual),
+             alpha = 0.8, #for visibility as I collapse data down
+             size = 3,
+             position = position_identity()) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = c(ind_cols_if)) +
+  scale_fill_manual(values = txtime_col_old) +
+  labs(title = &quot;Step 2: Image-Level Mean Red Positive Pixels&quot;,
+       x = &quot;Condition&quot;, 
+       y = &quot;Mean Red Positive Pixels&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;bottom&quot;)
+
+
+plot_step2</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/Figure1.Rmd/Step%202%20-%20Collapse%20by%20Image-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>IF Quantification Step 3 - Select Images with Consistent Nuclei per
+Individual</p>
+<pre class="r"><code>#now I will be selecting images based on their nuclei count
+
+#first let&#39;s find the median number of nuclei per individual to get an idea of how many are there per experiment
+#all experiments were performed separately but with the same protocol, so each individual is separate
+
+# median_nuclei &lt;- merged_image_summary %&gt;%
+#   group_by(Individual, Condition) %&gt;%
+#   summarize(
+#     Median_Nuclei = median(Nuclei_Count, na.rm = TRUE),
+#     Mean_Positive = mean(Mean_Red_Positive_Pixels),
+#     Image_Count = n(),
+#     .groups = &quot;drop&quot;
+#   ) %&gt;%
+#   arrange(Individual, Condition)
+
+#let&#39;s pick out the three images per condition that have consistent nuclei counts
+
+#first I am going to remove some outlier images from my Ind1 since I had some dim/blurry ones that should not be included since they weren&#39;t properly detected
+#I chose the images that were in focus and had consistent numbers of nuclei based on summary from above 
+
+# Define the good images for Ind4 (IDs = the 4-digit part before &quot;_DAPI&quot;)
+# images_Ind4 &lt;- tibble::tribble(
+#   ~Condition,   ~ID,
+#   &quot;DOX_24T&quot;,  &quot;0012&quot;,
+#   &quot;DOX_24T&quot;,  &quot;0013&quot;,
+#   &quot;DOX_24T&quot;,  &quot;0017&quot;,
+#   &quot;VEH_24T&quot;,  &quot;0006&quot;,
+#   &quot;VEH_24T&quot;,  &quot;0004&quot;,
+#   &quot;VEH_24T&quot;,  &quot;0003&quot;,
+#   &quot;DOX_24R&quot;,  &quot;0006&quot;,
+#   &quot;DOX_24R&quot;,  &quot;0004&quot;,
+#   &quot;DOX_24R&quot;,  &quot;0003&quot;,
+#   &quot;VEH_24R&quot;,  &quot;0004&quot;,
+#   &quot;VEH_24R&quot;,  &quot;0005&quot;,
+#   &quot;VEH_24R&quot;,  &quot;0003&quot;,
+#   &quot;DOX_144R&quot;, &quot;0002&quot;,
+#   &quot;DOX_144R&quot;, &quot;0003&quot;,
+#   &quot;DOX_144R&quot;, &quot;0005&quot;,
+#   &quot;VEH_144R&quot;, &quot;0003&quot;,
+#   &quot;VEH_144R&quot;, &quot;0004&quot;,
+#   &quot;VEH_144R&quot;, &quot;0012&quot;
+# )
+
+#filter my merged_image_summary for Ind1 using IDs
+# ind4_filtered &lt;- merged_image_summary %&gt;%
+#   filter(Individual == &quot;Ind4&quot;) %&gt;%
+#   mutate(
+#     Image_ID  = str_extract(Image, &quot;_\\d{4}_&quot;) %&gt;% str_remove_all(&quot;_&quot;)
+#   ) %&gt;%
+#   inner_join(images_Ind1, by = c(&quot;Condition&quot;, &quot;Image_ID&quot; = &quot;ID&quot;))
+
+#now join this back into my pipeline because now I have the images I need based on nucleus count?
+
+# merged_image_summary_filt &lt;- merged_image_summary %&gt;%
+#   dplyr::filter(Individual != &quot;Ind4&quot;) %&gt;%
+#   bind_rows(ind1_filtered)
+
+#now that I&#39;ve put Ind1 back in, let&#39;s select images based on nuclei for Ind1 and Ind3
+
+# select_top3_images &lt;- function(df, individual) {
+#   df %&gt;%
+#     filter(Individual == individual) %&gt;%
+#     group_by(Condition) %&gt;%
+#     mutate(
+#       med_nuclei = median(Nuclei_Count, na.rm = TRUE),
+#       med_pos    = median(Mean_Norm_Percent_Red_Positive, na.rm = TRUE),
+#       score = abs(Nuclei_Count - med_nuclei) + abs(Mean_Norm_Percent_Red_Positive - med_pos)
+#     ) %&gt;%
+#     arrange(score) %&gt;%
+#     slice_head(n = 3) %&gt;%
+#     ungroup()
+# }
+
+# ind1_filtered &lt;- select_top3_images(merged_image_summary, &quot;Ind1&quot;)
+# ind3_filtered &lt;- select_top3_images(merged_image_summary, &quot;Ind3&quot;)
+
+#filter Ind 4 to get the same scores at the end
+# ind4_filtered &lt;- ind4_filtered %&gt;%
+#     group_by(Condition) %&gt;%
+#     mutate(
+#         med_nuclei = median(Nuclei_Count, na.rm = TRUE),
+#         med_pos    = median(Mean_Percent_Red_Positive, na.rm = TRUE),
+#         score = abs(Nuclei_Count - med_nuclei) +
+#             abs(Mean_Percent_Red_Positive - med_pos)
+#     ) %&gt;%
+#     ungroup()
+
+#merge these summaries together to have all individuals represented in one
+# merged_image_summary_final &lt;- bind_rows(
+#   merged_image_summary %&gt;% filter(!Individual %in% c(&quot;Ind1&quot;, &quot;Ind3&quot;, &quot;Ind4&quot;)),
+#   ind1_filtered,
+#   ind3_filtered,
+#   ind4_filtered
+# ) %&gt;%
+#   dplyr::select(-(&quot;Image_ID&quot;))
+
+#save the finalized version as an R object and read it back in, keep code for posterity
+# saveRDS(merged_image_summary_final, &quot;data/new/IF_quant/merged_image_summary_final.RDS&quot;)
+
+merged_image_summary_final &lt;- readRDS(&quot;data/new/IF_quant/merged_image_summary_final.RDS&quot;)
+
+#plot these in a boxplot now that they&#39;re filtered down to the top 3 images per individual based on consistent nuclei counts
+
+plot_step3 &lt;- ggplot(merged_image_summary_final, 
+                     aes(x = Condition, 
+                         y = Mean_Norm_Percent_Red_Positive)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 2, 
+             alpha = 1, #now fewer points so no need to be transparent
+             position = position_identity()) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = c(ind_cols_if)) +
+  scale_fill_manual(values = txtime_col_old) +
+  labs(title = &quot;Step 3: Select 3 Images Per Individual with Consistent Nuclei&quot;,
+       x = &quot;Condition&quot;,
+       y = &quot;Mean Percent Red Positive&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;bottom&quot;)
+
+plot_step3</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/Figure1.Rmd/Step%203%20-%20Images%20by%20Consistent%20Nuclei%20Count-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#do stats for step 3 boxplot between DOX and VEH at each timepoint for comparison
+ttests_step3 &lt;- merged_image_summary_final %&gt;%
+  group_by(Timepoint) %&gt;%
+  t_test(Mean_Norm_Percent_Red_Positive ~ Treatment) %&gt;%
+  mutate(
+    y.position = max(merged_image_summary_final$Mean_Norm_Percent_Red_Positive, na.rm = TRUE) * 1.05
+  )
+
+sig_table_step3 &lt;- merged_image_summary_final %&gt;%
+  group_by(Timepoint) %&gt;%
+  summarise(
+    p = t.test(Mean_Norm_Percent_Red_Positive ~ Treatment)$p.value,
+    y.position = max(Mean_Norm_Percent_Red_Positive, na.rm = TRUE) * 1.05,
+    .groups = &quot;drop&quot;
+  ) %&gt;%
+  mutate(
+    signif = case_when(
+      p &lt; 0.001 ~ &quot;***&quot;,
+      p &lt; 0.01  ~ &quot;**&quot;,
+      p &lt; 0.05  ~ &quot;*&quot;,
+      TRUE      ~ &quot;ns&quot;
+    ),
+    group1 = paste0(&quot;VEH_&quot;, Timepoint),
+    group2 = paste0(&quot;DOX_&quot;, Timepoint)
+  )
+  
+ttests_step3</code></pre>
+<pre><code># A tibble: 3 × 10
+  Timepoint .y.     group1 group2    n1    n2 statistic    df       p y.position
+  &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt; &lt;int&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+1 144R      Mean_N… DOX    VEH        9     9     0.751  8.81 4.72e-1       708.
+2 24R       Mean_N… DOX    VEH        9     9    11.8    8.72 1.20e-6       708.
+3 24T       Mean_N… DOX    VEH        9     9    13.4   11.9  1.57e-8       708.</code></pre>
+<pre class="r"><code>#plot with t test statistics included above plot
+plot_step3_test &lt;- ggplot(merged_image_summary_final, 
+                     aes(x = Condition,
+                         y = Mean_Norm_Percent_Red_Positive)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 2,
+             alpha = 1,
+             position = position_identity()) +
+  stat_pvalue_manual(sig_table_step3, 
+                     label = &quot;signif&quot;, 
+                     tip.length = 0.02) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = c(ind_cols_if)) +
+  scale_fill_manual(values = txtime_col_old) +
+  labs(title = &quot;Step 3: Select 3 Images Per Individual with Consistent Nuclei&quot;,
+       x = &quot;Condition&quot;, 
+       y = &quot;Mean Percent Red Positive&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;bottom&quot;)
+
+
+plot_step3_test</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/Figure1.Rmd/Step%203%20-%20Images%20by%20Consistent%20Nuclei%20Count-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Step 4: Normalize DOX/VEH before Individual Level Collapse</p>
+<pre class="r"><code>#Now I want to normalize these images by max intensity
+
+merged_image_summary_norm &lt;- merged_image_summary_final %&gt;%
+  group_by(Magnification) %&gt;%
+  mutate(Norm_Percent_Red_Positive = (Mean_Percent_Red_Positive / max(Mean_Percent_Red_Positive, na.rm = TRUE)) * 100) %&gt;%
+  ungroup() %&gt;%
+  mutate(Condition = paste0(Treatment, &quot;_&quot;, Timepoint))
+
+#now these are scaled 0-100
+
+individual_summary_norm &lt;- merged_image_summary_norm %&gt;%
+  group_by(Individual, Treatment, Timepoint) %&gt;%
+  summarise(
+    Mean_Norm = mean(Norm_Percent_Red_Positive, na.rm = TRUE),
+    Median_Norm = median(Norm_Percent_Red_Positive, na.rm = TRUE),
+    .groups = &quot;drop&quot;
+  ) %&gt;%
+  mutate(
+    Condition = paste0(Treatment, &quot;_&quot;, Timepoint)
+  )
+
+#alter the t test table from before to plot the same comparisons
+ttest_table_step4 &lt;- ttests_step3 %&gt;%
+  filter(Timepoint %in% c(&quot;24T&quot;, &quot;24R&quot;, &quot;144R&quot;)) %&gt;%
+  mutate(
+    group1 = paste0(&quot;DOX_&quot;, Timepoint),
+    group2 = paste0(&quot;VEH_&quot;, Timepoint),
+    y.position = max(individual_summary_norm$Mean_Norm, na.rm = TRUE) * 1.05,
+    
+    #add in significance stars
+    p.signif = case_when(
+      p &lt; 0.001 ~ &quot;***&quot;,
+      p &lt; 0.01  ~ &quot;**&quot;,
+      p &lt; 0.05  ~ &quot;*&quot;,
+      TRUE      ~ &quot;ns&quot;
+    )
+  )
+
+#plot step 4
+plot_step4 &lt;- ggplot(merged_image_summary_norm, 
+                     aes(x = Condition,
+                         y = Norm_Percent_Red_Positive)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 2, 
+             alpha = 1, 
+             position = position_identity()) +
+  scale_y_continuous(limits = c(0, 105)) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = ind_cols_if) +
+  scale_fill_manual(values = txtime_col_old) +
+  stat_pvalue_manual(ttest_table_step4,
+                     label = &quot;p.signif&quot;, 
+                     xmin = &quot;group1&quot;,
+                     xmax = &quot;group2&quot;, 
+                     tip.length = 0.02) +
+  labs(title = &quot;Step 4: Normalized by Max Intensity (0–100%)&quot;,
+       x = &quot;Condition&quot;, 
+       y = &quot;Percent Red Positive&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;bottom&quot;)
+
+plot_step4</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/Figure1.Rmd/Step%204%20-%20Normalization%20by%20Max%20Intensity-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Step 5 Collapse by Individual</p>
+<pre class="r"><code>#now I want to collapse these three images per condition into their respective individual after normalization
+#I now only have three points, one per individual, on each boxplot
+#I also performed a t-test between DOX and VEH at each timepoint to assess differences between treated and untreated within each timepoint
+
+individual_summary_step5 &lt;- merged_image_summary_norm %&gt;%
+  group_by(Individual, Treatment, Timepoint, Magnification) %&gt;%
+  summarise(
+    Mean_Norm = mean(Norm_Percent_Red_Positive, na.rm = TRUE),
+    Median_Norm = median(Norm_Percent_Red_Positive, na.rm = TRUE),
+    .groups = &quot;drop&quot;
+  ) %&gt;%
+  mutate(
+    Condition = paste0(Treatment, &quot;_&quot;, Timepoint)
+  )
+
+#utilize the same t tests performed earlier since it is just a collapsed version of the same data
+#changed the name to reduce confusion
+ttest_table_step5 &lt;- ttests_step3 %&gt;%
+  filter(Timepoint %in% c(&quot;24T&quot;, &quot;24R&quot;, &quot;144R&quot;)) %&gt;%
+  mutate(
+    group1 = paste0(&quot;DOX_&quot;, Timepoint),
+    group2 = paste0(&quot;VEH_&quot;, Timepoint),
+    y.position = max(individual_summary_step5$Mean_Norm, na.rm = TRUE) * 1.05,
+    
+    #add in significance stars
+    p.signif = case_when(
+      p &lt; 0.001 ~ &quot;***&quot;,
+      p &lt; 0.01  ~ &quot;**&quot;,
+      p &lt; 0.05  ~ &quot;*&quot;,
+      TRUE      ~ &quot;ns&quot;
+    )
+  )
+
+
+#plot the collapsed image-level data 0-100
+plot_step5 &lt;- ggplot(individual_summary_step5, 
+                     aes(x = Condition, y = Mean_Norm)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 3, 
+             alpha = 1, 
+             position = position_identity()) +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = ind_cols_if) +
+  scale_fill_manual(values = txtime_col_old) +
+  stat_pvalue_manual(ttest_table_step5,
+                     label = &quot;p.signif&quot;, 
+                     xmin = &quot;group1&quot;,
+                     xmax = &quot;group2&quot;, 
+                     tip.length = 0.02) +
+  labs(title = &quot;Step 5: Individual-Level Percent Red Positive&quot;,
+       x = &quot;Condition&quot;, 
+       y = &quot;Normalized Percent Positive&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;bottom&quot;)
+
+plot_step5</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/Figure1.Rmd/Step%205%20-%20Collapse%20by%20Individual-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># save_plot(
+#   plot = plot_step5,
+#   filename = &quot;IFQuant_Step5_Final_EMP&quot;,
+#   folder = output_folder,
+#   height = plot_height,
+#   width = plot_width
+# )</code></pre>
+<p>IF Quantification Step 6 - Add Significance Between Timepoints</p>
+<pre class="r"><code>#Above, I compared DOX to VEH for each timepoint
+#I want to now make comparisons between DOX timepoints to see if there are any differences between each timepoint after treatment and recovery time
+#I will then add these to the plot in Illustrator to show both comparisons together since they don&#39;t want to plot correctly
+
+individual_summary_step6_dox &lt;- merged_image_summary_norm %&gt;%
+  group_by(Individual, Treatment, Timepoint, Magnification) %&gt;%
+  summarise(
+    Mean_Norm = mean(Norm_Percent_Red_Positive, na.rm = TRUE),
+    Median_Norm = median(Norm_Percent_Red_Positive, na.rm = TRUE),
+    .groups = &quot;drop&quot;
+  ) %&gt;%
+  mutate(
+    Condition = paste0(Treatment, &quot;_&quot;, Timepoint)
+  )
+
+#set condition levels for x axis to plot all boxes
+condition_levels &lt;- c(&quot;DOX_24T&quot;, &quot;VEH_24T&quot;,
+                      &quot;DOX_24R&quot;, &quot;VEH_24R&quot;,
+                      &quot;DOX_144R&quot;, &quot;VEH_144R&quot;)
+
+dox_conditions &lt;- c(&quot;DOX_24T&quot;, &quot;DOX_24R&quot;, &quot;DOX_144R&quot;)
+
+individual_summary_step6_dox &lt;- individual_summary_step6_dox %&gt;%
+  mutate(Condition = factor(Condition, levels = condition_levels))
+
+#perform paired t-tests between DOX timepoints
+timepoint_pairs &lt;- list(
+  c(&quot;24T&quot;,&quot;24R&quot;),
+  c(&quot;24R&quot;,&quot;144R&quot;),
+  c(&quot;24T&quot;,&quot;144R&quot;)
+)
+
+#t test table
+ttest_table_dox_time &lt;- purrr::map_df(seq_along(timepoint_pairs), function(i){
+  tp &lt;- timepoint_pairs[[i]]
+  
+  df_wide &lt;- individual_summary_step6_dox %&gt;%
+    filter(Timepoint %in% tp) %&gt;%
+    group_by(Individual, Timepoint) %&gt;%
+    summarise(Mean_Norm = mean(Mean_Norm, na.rm = TRUE), .groups = &quot;drop&quot;) %&gt;%
+    pivot_wider(names_from = Timepoint, values_from = Mean_Norm) %&gt;%
+    drop_na()
+  
+  base_y &lt;- max(individual_summary_step6_dox$Mean_Norm, 
+                na.rm = TRUE) * 0.9
+  
+  y_increment &lt;- max(individual_summary_step6_dox$Mean_Norm, 
+                     na.rm = TRUE) * 0.05
+  
+  y_pos &lt;- base_y + y_increment * i 
+  
+  if(nrow(df_wide) &lt; 2){
+    tibble(
+      group1 = paste0(&quot;DOX_&quot;, tp[1]),
+      group2 = paste0(&quot;DOX_&quot;, tp[2]),
+      p.value = NA_real_,
+      p.signif = &quot;NA&quot;,
+      y.position = y_pos
+    )
+  } else {
+    test &lt;- t.test(df_wide[[tp[1]]], df_wide[[tp[2]]], paired = TRUE)
+    tibble(
+      group1 = paste0(&quot;DOX_&quot;, tp[1]),
+      group2 = paste0(&quot;DOX_&quot;, tp[2]),
+      p.value = test$p.value,
+      p.signif = case_when(
+        test$p.value &lt; 0.001 ~ &quot;***&quot;,
+        test$p.value &lt; 0.01  ~ &quot;**&quot;,
+        test$p.value &lt; 0.05  ~ &quot;*&quot;,
+        TRUE                 ~ &quot;ns&quot;
+      ),
+      y.position = y_pos
+    )
+  }
+})
+
+#map to numeric positions for stat_pvalue_manual
+ttest_table_dox_time &lt;- ttest_table_dox_time %&gt;%
+  mutate(
+    group1_num = as.numeric(factor(group1, levels = condition_levels)),
+    group2_num = as.numeric(factor(group2, levels = condition_levels))
+  )
+
+#manually set y positions for each comparison (so I can see all of it)
+max_val &lt;- max(individual_summary_step6_dox$Mean_Norm, na.rm = TRUE)
+
+ttest_table_dox_time &lt;- ttest_table_dox_time %&gt;%
+  mutate(
+    y.position = case_when(
+      group1 == &quot;DOX_24T&quot; &amp; group2 == &quot;DOX_24R&quot; ~ max_val * 1.05,  #middle
+      group1 == &quot;DOX_24T&quot; &amp; group2 == &quot;DOX_144R&quot; ~ max_val * 1.10, #top
+      group1 == &quot;DOX_24R&quot; &amp; group2 == &quot;DOX_144R&quot; ~ max_val * 1.00  #bottom
+    ),
+    group1_num = as.numeric(factor(group1, levels = condition_levels)),
+    group2_num = as.numeric(factor(group2, levels = condition_levels))
+  )
+
+#plot DOX timepoint comparisons
+plot_step6_dox_time &lt;- ggplot(individual_summary_step6_dox, 
+                              aes(x = Condition, 
+                                  y = Mean_Norm)) +
+  geom_boxplot(aes(fill = Condition), 
+               show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 3, 
+             alpha = 1,
+             position = position_identity()) +
+  scale_y_continuous(limits = c(0, 105)) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = ind_cols_if) +
+  scale_fill_manual(values = txtime_col_old) +
+  stat_pvalue_manual(ttest_table_dox_time, 
+                     label = &quot;p.signif&quot;, 
+                     xmin = &quot;group1_num&quot;, 
+                     xmax = &quot;group2_num&quot;, 
+                     y.position = &quot;y.position&quot;,
+                     tip.length = 0.02) +
+  labs(title = &quot;Step 6: DOX Timepoint Comparisons Norm Percent Positive&quot;,
+       x = &quot;Condition&quot;,
+       y = &quot;Normalized Percent Positive&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;bottom&quot;)
+
+#print the plot
+plot_step6_dox_time</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/Figure1.Rmd/Step%206%20-%20Significance%20Between%20Timepoints%20DOX-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># save_plot(
+#   plot = plot_step6_dox_time,
+#   filename = &quot;IFQuant_Step6_DOX_TimeComp_EMP&quot;,
+#   folder = output_folder
+# )</code></pre>
+<p>Figure 1E - IF Images yH2AX from Individual 87-1 (Ind 1)</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22000)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] ggpubr_0.6.0     rstatix_0.7.2    RImageJROI_0.1.3 scales_1.4.0    
+ [5] drc_3.0-1        MASS_7.3-61      readxl_1.4.5     lubridate_1.9.4 
+ [9] forcats_1.0.0    stringr_1.5.1    dplyr_1.1.4      purrr_1.0.4     
+[13] readr_2.1.5      tidyr_1.3.1      tibble_3.2.1     ggplot2_3.5.2   
+[17] tidyverse_2.0.0  workflowr_1.7.1 
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1      farver_2.1.2          fastmap_1.2.0        
+ [4] TH.data_1.1-3         spatstat.geom_3.5-0   promises_1.3.2       
+ [7] digest_0.6.37         timechange_0.3.0      lifecycle_1.0.4      
+[10] survival_3.7-0        processx_3.8.6        spatstat.data_3.1-6  
+[13] magrittr_2.0.3        compiler_4.4.2        rlang_1.1.6          
+[16] sass_0.4.10           tools_4.4.2           utf8_1.2.5           
+[19] plotrix_3.8-4         yaml_2.3.10           ggsignif_0.6.4       
+[22] knitr_1.50            labeling_0.4.3        bit_4.5.0            
+[25] RColorBrewer_1.1-3    multcomp_1.4-28       abind_1.4-8          
+[28] withr_3.0.2           grid_4.4.2            polyclip_1.10-7      
+[31] git2r_0.36.2          gtools_3.9.5          spatstat.utils_3.1-5 
+[34] cli_3.6.3             mvtnorm_1.3-3         crayon_1.5.3         
+[37] rmarkdown_2.29        generics_0.1.4        rstudioapi_0.17.1    
+[40] httr_1.4.7            tzdb_0.5.0            cachem_1.1.0         
+[43] splines_4.4.2         parallel_4.4.2        cellranger_1.1.0     
+[46] vctrs_0.6.5           Matrix_1.7-1          sandwich_3.1-1       
+[49] jsonlite_2.0.0        carData_3.0-5         car_3.1-3            
+[52] callr_3.7.6           hms_1.1.3             bit64_4.5.2          
+[55] Formula_1.2-5         spatstat.univar_3.1-4 jquerylib_0.1.4      
+[58] glue_1.8.0            codetools_0.2-20      ps_1.9.1             
+[61] stringi_1.8.7         gtable_0.3.6          later_1.4.2          
+[64] deldir_2.0-4          pillar_1.10.2         htmltools_0.5.8.1    
+[67] R6_2.6.1              rprojroot_2.0.4       vroom_1.6.5          
+[70] evaluate_1.0.3        lattice_0.22-6        backports_1.5.0      
+[73] broom_1.0.8           httpuv_1.6.16         bslib_0.9.0          
+[76] Rcpp_1.0.14           whisker_0.4.1         xfun_0.52            
+[79] fs_1.6.6              zoo_1.8-14            getPass_0.2-4        
+[82] pkgconfig_2.0.3      </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
