@@ -1,0 +1,1880 @@
+---
+title: "Figure 1"
+author: "Emma M Pfortmiller"
+date: "2025-12-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+```
+
+
+Libraries
+```{r Necessary Libraries, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(readr)
+library(drc)
+library(scales)
+library(RImageJROI)
+library(stringr)
+```
+
+Define custom plot theme
+```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
+
+# # Define the custom theme
+# plot_theme_custom <- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = "black"),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, "in"),
+# 
+#       #text and font
+#       axis.text = element_text(color = "black",
+#                                family = "Arial",
+#                                size = 7),
+#       axis.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 9),
+#       legend.text = element_text(color = "black",
+#                                  family = "Arial",
+#                                  size = 7),
+#       legend.title = element_text(color = "black",
+#                                   family = "Arial",
+#                                   size = 9),
+#       plot.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = "grey80", linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = "grey90", linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, "data/plot_theme_custom.RDS")
+
+theme_custom <- readRDS("data/plot_theme_custom.RDS")
+
+```
+
+Define saving plots as pdfs
+```{r pdf saving function, echo=TRUE, message=FALSE, warning=FALSE}
+
+save_plot <- function(plot, filename, 
+                      folder = ".", 
+                      width = 8, 
+                      height = 6, 
+                      units = "in", 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop("Please provide a filename (without extension) for the plot.")
+
+  date_str <- if (add_date) paste0("_", format(Sys.Date(), "%y%m%d")) else ""
+  pdf_file <- file.path(folder, paste0(filename, date_str, ".pdf"))
+  png_file <- file.path(folder, paste0(filename, date_str, ".png"))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = "transparent")
+  ggsave(filename = png_file, plot = plot, device = "png", width = width, height = height, units = units, dpi = dpi, bg = "transparent")
+  message("Saved plot as Cairo PDF: ", pdf_file)
+  message("Saved plot as PNG: ", png_file)
+}
+
+output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height
+```
+
+Figure 1B - Flow Cytometry Barplot
+```{r Flow Cytometry Barplot, fig.width=6, fig.height=6, warning=FALSE}
+#Individuals for Flow Cytometry
+#1 = 87-1 (F)
+#2 = 78-1 (F)
+#3 = 75-1 (F)
+#4 = 84-1 (M)
+#5 = 17-3 (M)
+#6 = 90-1 (M)
+#6R = 90-1R (M)
+
+ind_col <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90",
+  "7" = "#C61E4E"
+)
+
+#read in csv with flow cytometry information
+flow_dxr <- read_csv("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/Flow/Recovery_flow_purity.csv",
+                     show_col_types = FALSE)
+
+View(flow_dxr)
+
+flow <- flow_dxr %>% column_to_rownames("Line")
+
+#make a barplot
+
+flow_dxr_df <- as.data.frame(flow_dxr)
+
+#Plot
+flow_plot_tnnt2 <- ggplot(flow_dxr_df, aes(x = Ind, y = Purity)) +
+  geom_bar(stat = "identity", 
+           fill = ind_col,
+           width = 0.3 / (0.3 + 0.02)) +
+  scale_y_continuous(limits = c(0, 100), 
+                     expand = c(0, 0)) +
+  scale_x_discrete(expand = expansion(mult = c(0.02, 0.02)))+
+  labs(title = "iPSC-CM Purity",
+       y = "TNNT2 Expression (%)", 
+       x = "Individual") +
+  theme_custom() +
+  theme(strip.text.y = element_text(color = "white"))
+
+print(flow_plot_tnnt2)
+
+# save_plot(
+#   plot = flow_plot_tnnt2,
+#   filename = "FlowCytometry_TNNT2_withrep_EMP",
+#   folder = output_folder,
+#   width = 2.8,
+#   height = 5.25
+# )
+
+```
+
+Figure 1C - Dose Response Curves
+```{r Full DRC dataset, results=FALSE}
+AllData <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+     sheet = "Fin_Sheet_Analysis")
+View(AllData)
+
+Ind3_78_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+     sheet = "Fin_78_Sheet")
+View(Ind3_78_data)
+
+#this is actually ind 2 according to my RNAseq - 78-1 F
+
+Ind4_75_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+     sheet = "Fin_75_Sheet")
+View(Ind4_75_data)
+
+#this is actually ind 3 according to my RNAseq - 75-1 F
+
+Ind5_17_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+     sheet = "Fin_17_Sheet")
+View(Ind5_17_data)
+
+#this is actually ind 5 according to my RNAseq - 17-3 M
+
+```
+
+Now that I've imported my data, let's go ahead and filter the data to reflect time and treatment groups.
+```{r Filter Data, echo=FALSE}
+####all ind####
+dox_all <- AllData %>% filter(Drug =="DOX")
+dmso_all <- AllData %>% filter(Drug =="DMSO")
+
+####Ind1 78-1####
+dox_78 <- Ind3_78_data %>% filter(Drug=="DOX")
+dmso_78 <- Ind3_78_data %>% filter(Drug=="DMSO")
+
+####Ind4 75-1####
+dox_75 <- Ind4_75_data %>% filter(Drug=="DOX")
+dmso_75 <- Ind4_75_data %>% filter(Drug=="DMSO")
+
+####Ind5 17-3####
+dox_17 <- Ind5_17_data %>% filter(Drug=="DOX")
+dmso_17 <- Ind5_17_data %>% filter(Drug=="DMSO")
+```
+
+```{r Filter Data Timepoint, echo = FALSE}
+
+####DOX Timepoints All####
+dox24hrall <- dox_all %>% filter(FinTime == "24hr")
+
+####DMSO VEH Timepoints All####
+dmso24hrall <- dmso_all %>% filter(FinTime == "24hr")
+
+#Filter these again by individual
+
+####DOX Timepoints 75-1####
+dox24hr75 <- dox_75 %>% filter(FinTime == "24hr")
+
+####DMSO Timepoints 75-1####
+dmso24hr75 <- dmso_75 %>% filter(FinTime == "24hr")
+
+####DOX Timepoints 78-1####
+dox24hr78 <- dox_78 %>% filter(FinTime == "24hr")
+
+####DMSO Timepoints 78-1####
+dmso24hr78 <- dmso_78 %>% filter(FinTime == "24hr")
+
+####DOX Timepoints 17-3####
+dox24hr17 <- dox_17 %>% filter(FinTime == "24hr")
+
+####DMSO Timepoints 17-3####
+dmso24hr17 <- dmso_17 %>% filter(FinTime == "24hr")
+
+```
+
+Analysis of Raw Data
+```{r Boxplots Raw Data 24hr}
+
+#####DOX Samples#####
+#dox 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"RFLU by Concentration DOX - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In ~ dox24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 78-1 Raw Data"
+)
+
+boxplot(dox24hr78$Ind2_78_Fin ~ dox24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 78-1 Raw Data"
+)
+
+#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"RFLU by Concentration DOX - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In ~ dox24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 75-1 Raw Data"
+)
+
+boxplot(dox24hr75$Ind1_75_Fin ~ dox24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 75-1 Raw Data"
+)
+
+#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"RFLU by Concentration DOX - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In ~ dox24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 17-3 Raw Data"
+)
+
+boxplot(dox24hr17$Ind3_17_Fin ~ dox24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 17-3 Raw Data"
+)
+
+#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"RFLU by Concentration DMSO - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In ~ dmso24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 78-1"
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin ~ dmso24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 78-1"
+)
+
+#DMSO 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"RFLU by Concentration DMSO - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In ~ dmso24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 75-1"
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin ~ dmso24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 75-1"
+)
+
+#DMSO 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"RFLU by Concentration DMSO - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In ~ dmso24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 17-3"
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin ~ dmso24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 17-3"
+)
+
+```
+
+Now that I've taken a look at the raw data, let's look at the analyzed data step by step
+The following steps were taken in analysis:
+1. Import raw fluorescence values (RFLU) from platereader, baseline 0hr and final timepoints
+2. Subtract background wells (prestoblue only wells) by plate
+3. Subtract average of empty wells (galactose only, with 50k cells/well) by plate
+4. Divide all values by matched vehicle average (ie DOX 0.01 / DMSO 0.01)
+5. Divide initial 0hr value from final timepoint (24, 48, 72) value 
+```{r Boxplots BG removed 24hr}
+#####DOX Samples#####
+#dox 78-1 no BG 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In_noBG ~ dox24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 78-1 no BG"
+)
+
+boxplot(dox24hr78$Ind2_78_Fin_noBG ~ dox24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 78-1 no BG"
+)
+
+#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In_noBG ~ dox24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 75-1 no BG"
+)
+
+boxplot(dox24hr75$Ind1_75_Fin_noBG ~ dox24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 75-1 no BG"
+)
+
+#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In_noBG ~ dox24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 17-3 no BG"
+)
+
+boxplot(dox24hr17$Ind3_17_Fin_noBG ~ dox24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 17-3 no BG"
+)
+
+#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In_noBG ~ dmso24hr78$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 78-1 no BG"
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin_noBG ~ dmso24hr78$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 78-1 no BG"
+)
+
+#DMSO 75-1 no BG 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In_noBG ~ dmso24hr75$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 75-1 no BG"
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin_noBG ~ dmso24hr75$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 75-1 no BG"
+)
+
+#DMSO 17-3 no BG 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In_noBG ~ dmso24hr17$Conc, 
+        ylim = c(0, 80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 17-3 no BG"
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin_noBG ~ dmso24hr17$Conc, 
+        ylim = c(0,80000), 
+        ylab = "Cell Viability (RFLU)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 17-3 no BG"
+)
+
+```
+
+Now let's plot the next step: subtracting the empty wells
+```{r Boxplots Empty Wells Removed 24hr}
+#####DOX Samples#####
+#dox 78-1 Empty Wells 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG Empty - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In_noBG_Low ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 78-1 no BG Empty"
+)
+
+boxplot(dox24hr78$Ind2_78_Fin_noBG_Low ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 78-1 no BG"
+)
+
+#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG Empty - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In_noBG_Low ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 75-1 no BG Empty"
+)
+
+boxplot(dox24hr75$Ind1_75_Fin_noBG_Low ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 75-1 no BG Empty"
+)
+
+#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG Empty - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In_noBG_Low ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 17-3 no BG Empty"
+)
+
+boxplot(dox24hr17$Ind3_17_Fin_noBG_Low ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 17-3 no BG Empty"
+)
+
+#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG Empty - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In_noBG_Low ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 78-1 no BG Empty"
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin_noBG_Low ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 78-1 no BG Empty"
+)
+
+#DMSO 75-1 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG Empty - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In_noBG_Low ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 75-1 no BG Empty"
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin_noBG_Low ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 75-1 no BG Empty"
+)
+
+#DMSO 17-3 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG Empty - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In_noBG_Low ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 17-3 no BG Empty"
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 17-3 no BG Empty"
+)
+
+```
+
+Now let's plot the third step: dividing the matched vehicle values
+```{r Boxplots Matched Vehicle Divided 24hr}
+#####DOX Samples#####
+#dox 78-1 Veh 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG Empty Veh - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_In_noBG_Low_Veh ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 78-1 no BG Empty Veh"
+)
+
+boxplot(dox24hr78$Ind2_78_Fin_noBG_Low_Veh ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 78-1 no BG Veh"
+)
+
+#dox 75-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG Empty Veh - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr75$Ind1_75_In_noBG_Low_Veh ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 75-1 no BG Empty Veh"
+)
+
+boxplot(dox24hr75$Ind1_75_Fin_noBG_Low_Veh ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 75-1 no BG Empty Veh"
+)
+
+#dox 17-3 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOX no BG Empty Veh - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr17$Ind3_17_In_noBG_Low_Veh ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 0hr 17-3 no BG Empty Veh"
+)
+
+boxplot(dox24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DOXORUBICIN 24hr 17-3 no BG Empty Veh"
+)
+
+#####DMSO samples#####
+#DMSO 78-1 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG Empty Veh - 78-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_In_noBG_Low_Veh ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 78-1 no BG Empty Veh"
+)
+
+boxplot(dmso24hr78$Ind2_78_Fin_noBG_Low_Veh ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 78-1 no BG Empty Veh"
+)
+
+#DMSO 75-1 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG Empty Veh - 75-1 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr75$Ind1_75_In_noBG_Low_Veh ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 75-1 no BG Empty Veh"
+)
+
+boxplot(dmso24hr75$Ind1_75_Fin_noBG_Low_Veh ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 75-1 no BG Empty Veh"
+)
+
+#DMSO 17-3 no BG Empty 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO no BG Empty Veh - 17-3 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr17$Ind3_17_In_noBG_Low_Veh ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 0hr 17-3 no BG Empty Veh"
+)
+
+boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "DMSO VEHICLE 24hr 17-3 no BG Empty Veh"
+)
+
+```
+
+Now for the final step, dividing the final timepoint by the initial baseline reading at 0hr
+```{r Boxplots Final Data 24hr}
+#####DOX Samples#####
+#dox All 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DOXORUBICIN - 24hr",cex = 2,font = 2)
+
+boxplot(dox24hr78$Ind2_78_Div ~ dox24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "78-1 Div"
+)
+
+boxplot(dox24hr75$Ind1_75_Div ~ dox24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "75-1 Div"
+)
+
+boxplot(dox24hr17$Ind3_17_Div ~ dox24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "17-3 Div"
+)
+
+#####DMSO samples#####
+#DMSO All 24HR
+par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
+layout(matrix(c(1, 2, 1, 3, 1, 4), nrow = 2, ncol = 3), heights = c(0.5, 2, 2, 2))
+#layout.show(3)
+plot.new()
+text(0.5,0.5,"DMSO VEHICLE - 24hr",cex = 2,font = 2)
+
+boxplot(dmso24hr78$Ind2_78_Div ~ dmso24hr78$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "78-1 Div"
+)
+
+boxplot(dmso24hr75$Ind1_75_Div ~ dmso24hr75$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "75-1 Div"
+)
+
+boxplot(dmso24hr17$Ind3_17_Div ~ dmso24hr17$Conc, 
+        ylim = c(0, 1.5), 
+        ylab = "Cell Viability (%)", 
+        xlab = "Concentration (uM)", 
+        main = "17-3 Div"
+)
+```
+
+Fit Models for DRC
+```{r Data for Models DRCs}
+dox24tox_75 <- dox24hr75 %>% mutate(response = Ind1_75_Div*100)
+summary(dox24tox_75$response)
+
+dox24tox_78 <- dox24hr78 %>% mutate(response = Ind2_78_Div*100)
+summary(dox24tox_78$response)
+
+dox24tox_17 <- dox24hr17 %>% mutate(response = Ind3_17_Div*100)
+summary(dox24tox_17$response)
+
+#Fit Models
+doxtox24_78_model <- drm(response ~ Conc, data = dox24tox_78, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+
+doxtox24_75_model <- drm(response ~ Conc, data = dox24tox_75, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+
+doxtox24_17_model <- drm(response ~ Conc, data = dox24tox_17, fct = LL.4(fixed = c(NA, 0, 100, NA)))
+
+#Add in labels
+conc_labels <- c(0.01, 0.1, 0.5, 1, 10, 50, 100, 1000)
+pct_labels <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+
+#extract LD50
+ed75 <- ED(doxtox24_78_model, 50, interval = "delta")[1]
+ed78 <- ED(doxtox24_75_model, 50, interval = "delta")[1]
+ed17 <- ED(doxtox24_17_model, 50, interval = "delta")[1]
+
+#find the median ld50 for plotting
+median_ld50 <- median(c(ed78, ed75, ed17))
+
+```
+
+Plot DRC
+```{r Final plot with exports}
+# Define output folder and base filename
+# output_folder
+# base_name <- "viability_curve_scaled"
+
+# Full file paths
+# png_path <- file.path(output_folder, paste0(base_name, ".png"))
+# svg_path <- file.path(output_folder, paste0(base_name, ".svg"))
+# pdf_path <- file.path(output_folder, paste0(base_name, ".pdf"))
+
+# New scaled dimensions (2x)
+# plot_height <- 7.3212
+# plot_width<- 3.8604
+# plot_width <- 5.7906
+
+#export as a png
+# png(filename = png_path,
+#     width = plot_width, height = plot_height,
+#     units = "in", res = 300)
+
+#plot code as above in finalized version
+plot(doxtox24_78_model, type = "none", broken = TRUE,
+     ylim = c(0,100), col = "#9ACCDE", lwd = 3,
+     ylab = "Percent Viability (%)", xlab = "Concentration (uM)",
+     main = "24hr Treatment", log = "x", axes = FALSE)
+plot(doxtox24_75_model, add = TRUE, col = "#499FBD", lwd = 3, type = "none")
+plot(doxtox24_17_model, add = TRUE, col = "#254F5E", lwd = 3, type = "none")
+
+axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+
+abline(v = 0.5, col = "grey50", lty = 2, lwd = 2)
+abline(v = median_ld50, col = "red", lty = 3, lwd = 2)
+text(x = median_ld50, y = 99,
+     labels = paste0("Median LD50"),
+     col = "red", pos = 4, cex = 1, font = 2)
+
+legend("bottomleft",
+       legend = c(
+         paste0("Ind3 (LD50 = ", round(ed78, 2), " µM)"),
+         paste0("Ind4 (LD50 = ", round(ed75, 2), " µM)"),
+         paste0("Ind5 (LD50 = ", round(ed17, 2), " µM)")
+       ),
+       col = c("#9ACCDE", "#499FBD", "#254F5E"),
+       lwd = 3, lty = c(1,1,1), cex = 1,
+       title = "Individuals")
+
+# dev.off()
+
+#export as svg
+# svg(filename = svg_path,
+#     width = plot_width, height = plot_height)
+
+#repeat plotting code with same adjustments
+# plot(doxtox24_78_model, type = "none", broken = TRUE,
+#      ylim = c(0,100), col = "#9ACCDE", lwd = 3,
+#      ylab = "Percent Viability (%)", xlab = "Concentration (uM)",
+#      main = "24hr Treatment", log = "x", axes = FALSE)
+# plot(doxtox24_75_model, add = TRUE, col = "#499FBD", lwd = 3, type = "none")
+# plot(doxtox24_17_model, add = TRUE, col = "#254F5E", lwd = 3, type = "none")
+# axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+# axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+# abline(v = 0.5, col = "grey50", lty = 2, lwd = 2)
+# abline(v = median_ld50, col = "red", lty = 3, lwd = 2)
+# text(x = median_ld50, y = 99,
+#      labels = paste0("Median LD50"),
+#      col = "red", pos = 4, cex = 1, font = 2)
+# legend("bottomleft",
+#        legend = c(
+#          paste0("Ind3 (LD50 = ", round(ed78, 2), " µM)"),
+#          paste0("Ind4 (LD50 = ", round(ed75, 2), " µM)"),
+#          paste0("Ind5 (LD50 = ", round(ed17, 2), " µM)")
+#        ),
+#        col = c("#9ACCDE", "#499FBD", "#254F5E"),
+#        lwd = 3, lty = c(1,1,1), cex = 1,
+#        title = "Individuals")
+
+# dev.off()
+
+#export as pdf
+# pdf(file = pdf_path,
+#     width = plot_width, height = plot_height)
+
+#repeat plotting code again to print
+# plot(doxtox24_78_model, type = "none", broken = TRUE,
+#      ylim = c(0,100), col = "#9ACCDE", lwd = 3,
+#      ylab = "Percent Viability (%)", xlab = "Concentration (uM)",
+#      main = "24hr Treatment", log = "x", axes = FALSE)
+# plot(doxtox24_75_model, add = TRUE, col = "#499FBD", lwd = 3, type = "none")
+# plot(doxtox24_17_model, add = TRUE, col = "#254F5E", lwd = 3, type = "none")
+# axis(1, at = conc_labels, labels = conc_labels, las = 2, cex.axis = 1)
+# axis(2, at = pct_labels, labels = pct_labels, las = 2, cex.axis = 0.9)
+# abline(v = 0.5, col = "grey50", lty = 2, lwd = 2)
+# abline(v = median_ld50, col = "red", lty = 3, lwd = 2)
+# text(x = median_ld50, y = 99,
+#      labels = paste0("Median LD50"),
+#      col = "red", pos = 4, cex = 1, font = 2)
+# legend("bottomleft",
+#        legend = c(
+#          paste0("Ind3 (LD50 = ", round(ed78, 2), " µM)"),
+#          paste0("Ind4 (LD50 = ", round(ed75, 2), " µM)"),
+#          paste0("Ind5 (LD50 = ", round(ed17, 2), " µM)")
+#        ),
+#        col = c("#9ACCDE", "#499FBD", "#254F5E"),
+#        lwd = 3, lty = c(1,1,1), cex = 1,
+#        title = "Individuals")
+
+# dev.off()
+
+#saved code for saving the plots for posterity!
+
+```
+
+Figure 1D - yH2AX Quantification
+#Fiji/ImageJ Macros
+```{r Macros Run in Fiji/ImageJ}
+#these are the macros that I made for ImageJ/Fiji and are included for reference only
+#they will not run in R
+
+#DAPI ROI generator macro to split DAPI channel and map nuclei
+# // === STEP 1: Define folders ===
+# folder = "D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\rgb quant\\";
+# saveRoiFolder = "D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\outline new\\";
+# saveRedFolder = "D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\TxRed new\\";
+# 
+# list = getFileList(folder);
+# 
+# for (i = 0; i < list.length; i++) {
+#     if (endsWith(list[i], ".tif")) {
+#         print("----------------------------------------------------");
+#         print("Processing file: " + list[i]);
+# 
+#         // Open composite image
+#         open(folder + list[i]);
+#         originalTitle = getTitle();
+#         baseName = replace(list[i], ".tif", "");
+# 
+#         // === STEP 2: Duplicate and close original ===
+#         newTitle = baseName + "_proc";
+#         run("Duplicate...", "title=" + newTitle);
+#         dupTitle = getTitle(); 
+#         print("Created duplicate: " + dupTitle);
+# 
+#         selectImage(originalTitle);
+#         close();
+#         print("Closed original composite: " + originalTitle);
+# 
+#         // === STEP 3: Split channels of duplicate ===
+#         selectImage(dupTitle);
+#         run("Split Channels");
+#         print("Split channels from: " + dupTitle);
+# 
+#         // === STEP 4: Save the red channel ===
+#         redTitle = newTitle + " (red)";
+#         if (isOpen(redTitle)) {
+#             selectWindow(redTitle);
+#             saveAs("Tiff", saveRedFolder + baseName + "_TxRed.tif");
+#             print("Saved and closed red channel: " + redTitle);
+#             close();
+#         } else {
+#             print("WARNING: Red channel not found for " + baseName);
+#         }
+# 
+#         // === STEP 5: Close green channel ===
+#         greenTitle = newTitle + " (green)";
+#         if (isOpen(greenTitle)) {
+#             selectWindow(greenTitle);
+#             close();
+#             print("Closed green channel: " + greenTitle);
+#         } else {
+#             print("Green channel not found for " + baseName);
+#         }
+# 
+#         // === STEP 6: Process DAPI (blue) channel ===
+#         dapiTitle = newTitle + " (blue)";
+#         if (isOpen(dapiTitle)) {
+#             selectWindow(dapiTitle);
+#             rename(baseName + "_DAPI_proc");
+#             print("Processing DAPI channel: " + baseName);
+# 
+#             run("8-bit");
+#             run("Enhance Contrast...", "saturated=0.3 normalize");  // normalize intensity
+#             setAutoThreshold("Otsu");
+#             getThreshold(lower, upper);
+#             minThreshold = 10;
+#             if (lower < minThreshold) lower = minThreshold;
+#             setThreshold(lower, 255);
+#             //convert and segment nuclei
+#             setOption("BlackBackground", false);
+#             run("Convert to Mask");
+#             run("Watershed");
+# 
+#             run("Analyze Particles...", 
+#                 "size=21-Infinity circularity=0.30-1.00 show=[Count Masks] display exclude summarize add");
+#                 
+#             // === If no ROIs detected, allow manual threshold adjustment ===
+#     if (roiManager("count") == 0) {
+#         print("⚠️ No ROIs found for: " + baseName + " — manual adjustment required.");
+#         selectWindow(baseName + "_DAPI_proc");
+#         run("Threshold...");
+#         waitForUser("Adjust the threshold manually until nuclei are visible, then click OK.");
+#         run("Convert to Mask");
+#         run("Watershed");
+# 
+#         // Re-run particle analysis
+#         run("Analyze Particles...", 
+#             "size=21-Infinity circularity=0.30-1.00 show=[Count Masks] display exclude summarize add");
+#     }
+# 
+#             // Save ROIs
+#             if (roiManager("count") > 0) {
+#                 saveName = baseName + "_DAPI.zip";
+#                 roiManager("Save", saveRoiFolder + saveName);
+#                 print("Saved ROI zip: " + saveName);
+#             } else {
+#                 print("No ROIs found for: " + baseName);
+#             }
+# 
+#             // Cleanup DAPI
+#             close();
+#             maskTitle = "Count Masks of " + baseName + "_DAPI_proc";
+#             if (isOpen(maskTitle)) {
+#                 selectWindow(maskTitle);
+#                 close();
+#                 print("Closed mask window: " + maskTitle);
+#             }
+#             roiManager("Deselect");
+#             roiManager("Reset");
+#         } else {
+#             print("DAPI channel not found for " + baseName);
+#         }
+# 
+#         // === STEP 7: Close duplicate container window if still open ===
+#         if (isOpen(dupTitle)) {
+#             selectWindow(dupTitle);
+#             close();
+#             print("Closed duplicate window: " + dupTitle);
+#         }
+# 
+#         print("Finished processing file: " + baseName);
+#     }
+# }
+
+#each time I ran this I just changed the cell line name in the top
+
+#Red Positivity Macro for identifying red pixels within ROIs and accounting for area
+# // ==== USER SETTINGS ====
+# roiFolder  = "D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\outline new\\";   
+# redImageFolder = "D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\TxRed new\\"
+# outputFolder = "D:\\DXR Project\\IF yH2AX\\if yh2ax dxr 84-1\\outline new\\analyzed\\";
+# imageExt  = ".tif";                                       
+# thresholdLow = 20;
+# thresholdHigh = 250;
+# // ========================
+# 
+# // Clear results table for combined per-ROI data
+# run("Clear Results");
+# 
+# // Initialize arrays for summary
+# roiAreas = newArray();
+# maxInts = newArray();
+# meanInts = newArray();
+# medianInts = newArray();
+# percentReds = newArray();
+# nROIsWithRed = 0;
+# 
+# // Get list of ROI ZIP files
+# roiFiles = getFileList(roiFolder);
+# 
+# for (f = 0; f < roiFiles.length; f++) {
+#     roiFile = roiFiles[f];
+#     if (!endsWith(roiFile, "_DAPI.zip")) continue;
+# 
+#     // Build corresponding red image filename
+#     base = replace(roiFile, "_DAPI.zip", "");
+#     redImageName = base + "_TxRed.tif";
+#     redImagePath = redImageFolder + redImageName;
+# 
+#     print("Trying to open red image: " + redImagePath);
+# 
+#     if (!File.exists(redImagePath)) {
+#         print("Red image not found for " + roiFile + ", skipping.");
+#         continue;
+#     }
+# 
+#     roiZipPath = roiFolder + roiFile;
+# 
+#     // Open red image
+#     open(redImagePath);
+#     redTitle = getTitle();
+#     selectWindow(redTitle);
+# 
+#     // Load ROIs
+#     roiManager("Reset");
+#     roiManager("Open", roiZipPath);
+# 
+#     nROIs = roiManager("Count");
+#     for (r = 0; r < nROIs; r++) {
+#         roiManager("Select", r);
+#         selectWindow(redTitle);
+# 
+#         // Declare measurement variables
+#         areaInt = 0;
+#         meanInt = 0;
+#         minInt = 0;
+#         maxInt = 0;
+#         stdInt = 0;
+#         histogram = newArray(256);
+# 
+#         getStatistics(areaInt, meanInt, minInt, maxInt, stdInt, histogram);
+# 
+#         // Count red-positive pixels
+#         redCount = 0;
+#         for (p = thresholdLow; p <= thresholdHigh; p++) redCount += histogram[p];
+#         if (redCount == 0) continue; // skip ROIs with no red
+# 
+#         percentRed = (redCount / areaInt) * 100;
+#         medianIntVal = getMedianFromHistogram(histogram, areaInt);
+# 
+#         // Save per-ROI results
+#         row = nResults;
+#         setResult("ROI_File", row, roiFile);
+#         setResult("ROI_Area", row, areaInt);
+#         setResult("Max_Intensity", row, maxInt);
+#         setResult("Mean_Intensity", row, meanInt);
+#         setResult("Median_Intensity", row, medianIntVal);
+#         setResult("Red_Positive_Pixels", row, redCount);
+#         setResult("Percent_Red_Positive", row, percentRed);
+#         updateResults();
+# 
+#         // Store for summary
+#         roiAreas = arrayAdd(roiAreas, areaInt);
+#         maxInts = arrayAdd(maxInts, maxInt);
+#         meanInts = arrayAdd(meanInts, meanInt);
+#         medianInts = arrayAdd(medianInts, medianIntVal);
+#         percentReds = arrayAdd(percentReds, percentRed);
+#         nROIsWithRed++;
+#     }
+# 
+#     close(redTitle);
+# }
+# 
+# // Save combined per-ROI CSV
+# saveAs("Results", outputFolder + "All_ROIs_Combined.csv");
+# print("Combined per-ROI results saved.");
+# 
+# // Build summary table
+# run("Clear Results");
+# 
+# totalNuclearArea = sumArray(roiAreas);
+# 
+# setResult("Experiment", 0, roiFolder);
+# setResult("N_Nuclei_With_Red", 0, nROIsWithRed);
+# setResult("Mean_ROI_Area", 0, mean(roiAreas));
+# setResult("SD_ROI_Area", 0, sd(roiAreas));
+# setResult("Mean_Max_Intensity", 0, mean(maxInts));
+# setResult("SD_Max_Intensity", 0, sd(maxInts));
+# setResult("Mean_Mean_Intensity", 0, mean(meanInts));
+# setResult("SD_Mean_Intensity", 0, sd(meanInts));
+# setResult("Mean_Median_Intensity", 0, mean(medianInts));
+# setResult("SD_Median_Intensity", 0, sd(medianInts));
+# setResult("Mean_Percent_Red_Positive", 0, mean(percentReds));
+# setResult("SD_Percent_Red_Positive", 0, sd(percentReds));
+# setResult("Total_Nuclear_Area", 0, totalNuclearArea);
+# updateResults();
+# 
+# // Save summary CSV
+# saveAs("Results", outputFolder + "Experiment_Summary.csv");
+# print("Summary saved.");
+# 
+# // ==========================
+# // Helper functions
+# function getMedianFromHistogram(hist, totalPixels) {
+#     sum = 0;
+#     for (i = 0; i < lengthOf(hist); i++) {
+#         sum += hist[i];
+#         if (sum >= totalPixels / 2) return i;
+#     }
+#     return NaN;
+# }
+# 
+# function arrayAdd(arr, value) {
+#     if (lengthOf(arr) == 0) {
+#         newArr = newArray(value);
+#     } else {
+#         newArr = newArray();
+#         for (i = 0; i < lengthOf(arr); i++) newArr[i] = arr[i];
+#         newArr[lengthOf(newArr)] = value;
+#     }
+#     return newArr;
+# }
+# 
+# function mean(arr) {
+#     if (lengthOf(arr) == 0) return NaN;
+#     s = 0;
+#     for (i = 0; i < lengthOf(arr); i++) s += arr[i];
+#     return s / lengthOf(arr);
+# }
+# 
+# function sd(arr) {
+#     if (lengthOf(arr) <= 1) return NaN;
+#     m = mean(arr);
+#     s = 0;
+#     for (i = 0; i < lengthOf(arr); i++) s += (arr[i] - m) * (arr[i] - m);
+#     return sqrt(s / (lengthOf(arr) - 1));
+# }
+# 
+# function sumArray(arr) {
+#     s = 0;
+#     for (i = 0; i < lengthOf(arr); i++) s += arr[i];
+#     return s;
+# }
+
+#these two macros gave the desired output of a csv file with all of the parameters I needed
+
+```
+
+Read in ROI Summaries
+```{r Read in roi summary from IF macros}
+
+#read in the data from the macros that you ran for each individual
+#I am going to focus on 20X for these now, so remove any non-20X samples in the next step
+#also ensure that you label each with their respective individual number for ease later on
+
+####Ind 1 - 84-1####
+# ind1_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/outline new/analyzed/All_ROIs_Combined_84-1_EMP_250916.csv") %>% 
+#   mutate(Individual = "Ind1") %>% 
+#   mutate(Magnification = "20X") #specify magnification since all were 20X so not in labels
+
+# saveRDS(ind1_roi, "data/new/IF_quant/All_ROIs_Combined_84-1_Ind1.RDS")
+
+####Ind 2 - 87-1####
+# ind2_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/analyzed/All_ROIs_Combined_87-1_EMP_250825.csv") %>% 
+#   mutate(Individual = "Ind2",
+#          Magnification = case_when(
+#            grepl("20X", ROI_File, ignore.case = TRUE) ~ "20X",
+#            grepl("10X", ROI_File, ignore.case = TRUE) ~ "10X",
+#            grepl("40X", ROI_File, ignore.case = TRUE) ~ "40X",
+#            TRUE ~ "Other"
+#          )) %>% 
+#   dplyr::select(-"X")
+
+# saveRDS(ind2_roi, "data/new/IF_quant/All_ROIs_Combined_87-1_Ind2.RDS")
+
+####Ind 4 - 75-1####
+# ind4_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new/analyzed/All_ROIs_Combined_75-1_EMP_250825.csv") %>%
+#     mutate(Individual = "Ind4",
+#          Magnification = case_when(
+#            grepl("20X", ROI_File, ignore.case = TRUE) ~ "20X",
+#            grepl("10X", ROI_File, ignore.case = TRUE) ~ "10X",
+#            grepl("40X", ROI_File, ignore.case = TRUE) ~ "40X",
+#            TRUE ~ "Other"
+#          )) %>%
+#   dplyr::select(-"X")
+
+# saveRDS(ind4_roi, "data/new/IF_quant/All_ROIs_Combined_75-1_Ind4.RDS")
+
+#keep all of this for posterity and read them in for plots
+
+ind1_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind1.RDS")
+
+ind2_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_87-1_Ind2.RDS")
+
+ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_75-1_Ind4.RDS")
+
+```
+
+Create Dataframes
+```{r Create Summary Sheet all Ind}
+#I want to combine all of these csv files into one dataframe
+
+#ensure that I am removing secondary only controls and any other magnifications (ie 10X and 40X images)
+
+# ind_roi_all <- bind_rows(ind1_roi, ind2_roi, ind4_roi) %>%
+#   mutate(
+#     Treatment = case_when(
+#       grepl("DOX", ROI_File) ~ "DOX",
+#       grepl("DMSO", ROI_File) ~ "VEH",
+#       TRUE ~ "Other"
+#     ),
+#     Timepoint = case_when(
+#       grepl("24T", ROI_File) ~ "24T",
+#       grepl("24R", ROI_File) ~ "24R",
+#       grepl("144R", ROI_File) ~ "144R",
+#       TRUE ~ "Other"
+#     ),
+#     Condition = paste0(Treatment, "_", Timepoint)
+#   ) %>%
+#   dplyr::filter(Treatment != "Other") %>%
+#   dplyr::filter(Magnification == "20X") %>%
+#   dplyr::filter(!grepl("^2nd", ROI_File, ignore.case = TRUE)) %>%
+#   dplyr::select(-"X")
+
+# saveRDS(ind_roi_all, "data/new/IF_quant/individual_rois_all.RDS")
+
+#now I have successfully made sure this only contains 20X and has all of the three individuals
+
+```
+
+Boxplot Step 1 ROI Level
+```{r Step 1 Boxplot ROI Level All Individuals}
+
+#make sure to normalize by area to get positive red for the next step
+# ind_roi_all <- ind_roi_all %>% 
+#   mutate(
+#     Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100
+#   )
+
+#saved this one in RDS
+
+ind_roi_all <- readRDS("data/new/IF_quant/individual_rois_all.RDS") 
+
+ind_cols_if <- c("Ind1" = "#FFB482",
+              "Ind2" = "#8AC6D1",
+              "Ind4" = "#F9E07F")
+
+condition_levels <- c("DOX_24T", "VEH_24T", "DOX_24R", "VEH_24R", "DOX_144R", "VEH_144R")
+
+plot_step1 <- ind_roi_all %>% 
+  mutate(Condition = factor(Condition, levels = c(condition_levels))) %>% 
+  ggplot(aes(x = Condition, y = Percent_Red_Positive_Area)) +
+  geom_boxplot() +
+  geom_point(aes(color = Individual),
+             size = 1.5, alpha = 0.8, 
+             position = position_identity()) +
+  scale_color_manual(values = ind_cols_if) +
+  labs(title = "Step 1: ROI Level % Red Positive",
+       x = "Condition", y = "Percent Red Positive Pixels") +
+  theme_bw(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+plot_step1
+
+```
+
+Collapse to Image Level Summaries
+```{r Image Level Summary Sheet}
+
+#calculate the area for each individual level roi before passing through function
+ind1_roi <- ind1_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
+ind2_roi <- ind2_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
+ind4_roi <- ind4_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
+
+#now I will collapse these to image level using the below function
+collapse_to_image <- function(roi_df) {
+  roi_df %>%
+    mutate(Image = gsub("_ROI.*", "", ROI_File),
+           Image = gsub("\\.zip$", "", Image),
+           Image = trimws(Image)
+           ) %>%
+    group_by(Image, Individual) %>%
+    summarise(
+      Mean_of_Mean   = mean(Mean_Intensity, na.rm = TRUE),
+      Mean_of_Median = mean(Median_Intensity, na.rm = TRUE),
+      Mean_of_Max    = mean(Max_Intensity, na.rm = TRUE),
+      Mean_Percent_Red_Positive = mean(Percent_Red_Positive, na.rm = TRUE),
+      Mean_Red_Positive_Pixels  = mean(Red_Positive_Pixels, na.rm = TRUE),
+      Mean_Norm_Percent_Red_Positive = 
+        mean(Percent_Red_Positive_Area, na.rm = TRUE),
+      .groups = "drop"
+    )
+}
+
+#use function to create a summary for each individual
+# ind1_img_summary <- collapse_to_image(ind1_roi) %>%
+#  mutate(Individual = "Ind1",          Magnification = "20X")
+
+ # ind2_img_summary <- collapse_to_image(ind2_roi) %>%
+ #  mutate(Individual = "Ind2",
+ #         Magnification = case_when(
+ #           grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+ #           grepl("10X", Image, ignore.case = TRUE) ~ "10X",
+ #           grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+ #           TRUE ~ "Other"
+ #           ))
+
+ # ind4_img_summary <- collapse_to_image(ind4_roi) %>%
+ #  mutate(Individual = "Ind4",
+ #         Magnification = case_when(
+ #           grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+ #            grepl("10X", Image, ignore.case = TRUE) ~ "10X", 
+ #           grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+ #            TRUE ~ "Other"
+ #           ))
+
+#now, combine all individuals together with their image level summaries
+# roi_image_level_summary <-
+#   bind_rows(ind1_img_summary, ind2_img_summary, ind4_img_summary)
+
+#ensure that the secondary only ctrls are removed from this one too
+# roi_image_level_summary <- roi_image_level_summary %>%
+#   dplyr::filter(!grepl("^2nd", Image, ignore.case = TRUE)) %>%
+#    dplyr::filter(Magnification == "20X")
+# 
+# saveRDS(roi_image_level_summary,
+#         "data/new/IF_quant/roi_image_level_summary_all.RDS")
+
+```
+
+Read in Dataframe
+```{r ROI Summary Dataframe}
+#now that I've created the image level summary table for all individuals above, read it in so I don't have to generate it multiple times
+
+roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_all.RDS")
+
+# write.csv(roi_image_level_summary, "data/new/IF_quant/roi_image_level_summary_all.csv")
+
+```
+
+Make a Metadata Table
+```{r Metadata from image level summaries}
+#now I want to make a metadata table with all of the relevant info 
+#these files come from my DAPI Counts new folder from each individual
+
+# roi_folders <- list(
+#   Ind1 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/DAPI counts new",
+#   Ind2 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/DAPI counts new",
+#   Ind4 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/DAPI counts new"
+# )
+
+#read the csvs that come from the folders and loop over each individual
+read_csvs <- function(folder, individual_label) {
+  files <- list.files(folder, pattern = "^Cell_intensity",
+                      full.names = TRUE,
+                      ignore.case = TRUE)
+
+  if(length(files) == 0) {
+    message("No csv files found in folder: ", folder)
+    return(NULL)
+  }
+
+  lapply(files, function(file) {
+    data <- read.csv(file)
+    tibble(
+      Individual = individual_label,
+      Image = tools::file_path_sans_ext(basename(file)),
+      Nuclei_Count = nrow(data)
+    )
+  }) %>% bind_rows()
+}
+
+#now loop over each individual using the above function
+ind1_metadata <- read_csvs(roi_folders$Ind1, "Ind1") %>% 
+  mutate(Magnification = "20X")
+
+
+ind2_metadata <- read_csvs(roi_folders$Ind2, "Ind2") %>% 
+  mutate(Magnification = case_when(
+          grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+           grepl("10X", Image, ignore.case = TRUE) ~ "10X",
+           grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+          TRUE ~ "Other"
+          )) %>% 
+  dplyr::filter(Magnification == "20X")
+
+ind4_metadata <- read_csvs(roi_folders$Ind4, "Ind4") %>% 
+  mutate(Magnification = case_when(
+    grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+    grepl("10X", Image, ignore.case = TRUE) ~ "10X",
+    grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+    TRUE ~ "Other"
+    )) %>% 
+  dplyr::filter(Magnification == "20X")
+
+image_level_metadata <- bind_rows(ind1_metadata, ind2_metadata, ind4_metadata)
+
+
+#now parse out the treatments and remove the prefix cell_intensity so it matches my other summary file
+
+image_level_metadata <- image_level_metadata %>%
+  mutate(
+    Image = str_remove(Image, "^Cell_intensity_"),
+    Treatment = ifelse(str_detect(Image, "DOX"), "DOX",
+                       ifelse(str_detect(Image, "DMSO"), "VEH", NA_character_)),
+    Timepoint = str_extract(Image, "24T|24R|144R")
+  ) %>%
+  dplyr::filter(!is.na(Treatment)) %>%
+  dplyr::filter(!str_detect(Image, "test")) %>%
+  dplyr::filter(!str_detect(Image, "edit")) %>% 
+  dplyr::select(Individual, Treatment, Timepoint, Image, Nuclei_Count) %>% 
+  mutate(
+    Condition = paste0(Treatment, "_", Timepoint),
+    Magnification = "20X"
+  )
+
+# saveRDS(image_level_metadata, "data/new/IF_quant/image_level_metadata_all.RDS")
+
+# write.csv(image_level_metadata, "data/new/IF_quant/image_level_metadata_all.csv")
+
+```
+
+Combine metadata with summary sheet
+```{r Combine summary sheet with metadata sheet}
+#Now that I've made my image_level_metadata sheet match to my roi_image_level_summary, let's combine them
+
+#I commented out the top for posterity so I don't have to run it multiple times
+#thus I will read in my two sheets to combine them
+
+#original summary sheet
+roi_image_level_summary
+
+#metadata sheet
+image_level_metadata <- readRDS("data/new/IF_quant/image_level_metadata_all.RDS")
+
+#create the merged image summary for all individuals
+merged_image_summary <-
+  image_level_metadata %>%
+  dplyr::select(Individual, Treatment, Timepoint, Condition, Magnification, Image, Nuclei_Count) %>%
+  dplyr::left_join(roi_image_level_summary, by = c("Image", "Individual", "Magnification"))
+
+merged_image_summary <- merged_image_summary %>% mutate(Condition = factor(Condition, levels = c(condition_levels)))
+
+# saveRDS(merged_image_summary, "data/new/IF_quant/merged_image_summary_all.RDS")
+
+# write.csv(merged_image_summary, "data/new/IF_quant/merged_image_summary_all.csv")
+
+#read back in my merged image summary so I don't have to run it multiple times
+
+merged_image_summary <- readRDS("data/new/IF_quant/merged_image_summary_all.RDS")
+
+```
+
+Step 2 Boxplots Image Level Summary
+```{r Boxplots Collapsed by Image}
+#now I'll plot the outcome of the second step where I collapsed by image and merged the metadata with the measurements
+
+plot_step2 <- ggplot(merged_image_summary, 
+         aes(x = Condition,
+             y = Mean_Red_Positive_Pixels)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(aes(color = Individual),
+             alpha = 0.8, size = 3,
+             position = position_identity()) +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 2: Image-Level Mean Red Positive Pixels",
+       x = "Condition", y = "Mean Red Positive Pixels") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top") +
+  scale_color_manual(values = c(ind_cols_if))
+
+plot_step2
+
+```
+
+Step 3 Select Consistent Images Per Individual
+```{r Images by Consistent Nuclei Count}
+#now I will be selecting images based on their nuclei count
+
+#first let's find the median number of nuclei per individual to get an idea of how many are there per experiment
+#all experiments were performed separately but with the same protocol, so each individual is separate
+
+median_nuclei <- merged_image_summary %>% 
+  group_by(Individual, Condition) %>% 
+  summarize(
+    Median_Nuclei = median(Nuclei_Count, na.rm = TRUE),
+    Mean_Positive = mean(Mean_Red_Positive_Pixels),
+    Image_Count = n(),
+    .groups = "drop"
+  ) %>% 
+  arrange(Individual, Condition)
+
+#let's pick out the three images per condition that have consistent nuclei counts
+
+#first I am going to remove some outlier images from my Ind1 since I had some dim/blurry ones that should not be included since they weren't properly detected
+
+# Define the good images for Ind1 (IDs = the 4-digit part before "_DAPI")
+images_Ind1 <- tibble::tribble(
+  ~Condition,   ~ID,
+  "DOX_24T",  "0012",
+  "DOX_24T",  "0013",
+  "DOX_24T",  "0017",
+  "VEH_24T",  "0006",
+  "VEH_24T",  "0004",
+  "VEH_24T",  "0003",
+  "DOX_24R",  "0006",
+  "DOX_24R",  "0004",
+  "DOX_24R",  "0003",
+  "VEH_24R",  "0004",
+  "VEH_24R",  "0005",
+  "VEH_24R",  "0003",
+  "DOX_144R", "0002",
+  "DOX_144R", "0003",
+  "DOX_144R", "0005",
+  "VEH_144R", "0003", 
+  "VEH_144R", "0004", 
+  "VEH_144R", "0012"
+)
+
+#filter my merged_image_summary for Ind1 using IDs
+ind1_filtered <- merged_image_summary %>%
+  filter(Individual == "Ind1") %>%
+  mutate(
+    Image_ID  = str_extract(Image, "_\\d{4}_") %>% str_remove_all("_")   
+  ) %>%
+  inner_join(images_Ind1, by = c("Condition", "Image_ID" = "ID"))
+
+#now join this back into my pipeline because now I have the images I need based on nucleus count?
+
+merged_image_summary_filt <- merged_image_summary %>% 
+  dplyr::filter(Individual != "Ind1") %>% 
+  bind_rows(ind1_filtered)
+
+#now that I've put Ind1 back in, let's select images based on nuclei for Ind2 and Ind4
+
+select_top3_images <- function(df, individual) {
+  df %>%
+    filter(Individual == individual) %>%
+    group_by(Condition) %>%
+    mutate(
+      med_nuclei = median(Nuclei_Count, na.rm = TRUE),
+      med_pos    = median(Mean_Norm_Percent_Red_Positive, na.rm = TRUE),
+      score = abs(Nuclei_Count - med_nuclei) + abs(Mean_Norm_Percent_Red_Positive - med_pos)
+    ) %>%
+    arrange(score) %>%
+    slice_head(n = 3) %>%
+    ungroup()
+}
+
+ind2_filtered <- select_top3_images(merged_image_summary, "Ind2")
+ind4_filtered <- select_top3_images(merged_image_summary, "Ind4")
+
+#filter Ind 1 to get the same scores at the end
+ind1_filtered <- ind1_filtered %>%
+    group_by(Condition) %>%
+    mutate(
+        med_nuclei = median(Nuclei_Count, na.rm = TRUE),
+        med_pos    = median(Mean_Percent_Red_Positive, na.rm = TRUE),
+        score = abs(Nuclei_Count - med_nuclei) +
+            abs(Mean_Percent_Red_Positive - med_pos)
+    ) %>%
+    ungroup()
+
+merged_image_summary_final <- bind_rows(
+  merged_image_summary %>% filter(!Individual %in% c("Ind1", "Ind2", "Ind4")),
+  ind1_filtered,
+  ind2_filtered,
+  ind4_filtered
+) %>% 
+  dplyr::select(-("Image_ID"))
+
+#plot these in a boxplot now that they're filtered down to the top 3 images per individual based on consistent nuclei counts
+
+plot_step3 <- ggplot(merged_image_summary_final, 
+                     aes(x = Condition, y = Mean_Norm_Percent_Red_Positive)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(aes(color = Individual), size = 2, alpha = 1,
+             position = position_identity()) +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 3: Select 3 Images Per Individual for Consistent Nuclei",
+       x = "Condition", y = "Mean Percent Red Positive") +
+  theme_bw() +
+  scale_color_manual(values = c(ind_cols_if)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+plot_step3
+
+#do stats for step 3 boxplot between DOX and VEH at each timepoint for comparison
+ttests_step3 <- merged_image_summary_final %>%
+  group_by(Timepoint) %>%
+  t_test(Mean_Norm_Percent_Red_Positive ~ Treatment) %>%
+  add_significance("p") %>%
+  mutate(
+    y.position = max(plot_data$Mean_Norm_Percent_Red_Positive, na.rm = TRUE) * 1.05
+  )
+
+sig_table_step3 <- merged_image_summary_final %>%
+  group_by(Timepoint) %>%
+  summarise(
+    p = t.test(Mean_Norm_Percent_Red_Positive ~ Treatment)$p.value,
+    y.position = max(Mean_Norm_Percent_Red_Positive, na.rm = TRUE) * 1.05,
+    .groups = "drop"
+  ) %>%
+  mutate(
+    signif = case_when(
+      p < 0.001 ~ "***",
+      p < 0.01  ~ "**",
+      p < 0.05  ~ "*",
+      TRUE      ~ "ns"
+    ),
+    group1 = paste0("VEH_", Timepoint),
+    group2 = paste0("DOX_", Timepoint)
+  )
+  
+ttests_step3
+
+#plot
+plot_step3_test <- ggplot(merged_image_summary_final, 
+                     aes(x = Condition, y = Mean_Norm_Percent_Red_Positive)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(aes(color = Individual), size = 2, alpha = 0.7,
+             position = position_identity()) +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 3: Select 3 Images Per Individual for Consistent Nuclei",
+       x = "Condition", y = "Mean Percent Red Positive") +
+  theme_bw() +
+  scale_color_manual(values = ind_cols_if) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top") +
+  stat_pvalue_manual(sig_table_step3, label = "signif", tip.length = 0)
+
+plot_step3_test
+
+
+```
+
+Step 4: Normalize DOX/VEH before Individual Level Collapse
+```{r Step 4 Normalization}
+
+#Now I want to normalize these images by max intensity
+
+merged_image_summary_norm <- merged_image_summary_final %>%
+  group_by(Magnification) %>%
+  mutate(Norm_Percent_Red_Positive = (Mean_Percent_Red_Positive / max(Mean_Percent_Red_Positive, na.rm = TRUE)) * 100) %>%
+  ungroup() %>%
+  mutate(Condition = paste0(Treatment, "_", Timepoint))
+
+#now these are scaled 0-100
+
+individual_summary_norm <- merged_image_summary_norm %>%
+  group_by(Individual, Treatment, Timepoint) %>%
+  summarise(
+    Mean_Norm = mean(Norm_Percent_Red_Positive, na.rm = TRUE),
+    Median_Norm = median(Norm_Percent_Red_Positive, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Condition = paste0(Treatment, "_", Timepoint)
+  )
+
+#plot step 4
+plot_step4 <- ggplot(merged_image_summary_norm, 
+                        aes(x = Condition, y = Norm_Percent_Red_Positive)) +
+  geom_boxplot(alpha = 0.6, outlier.shape = NA, fill = "lightgray") +
+  geom_point(aes(color = Individual), size = 2, alpha = 0.7, position = position_identity()) +
+  scale_x_discrete(limits = condition_levels) +
+  labs(title = "Step 4: Normalized by Max Intensity (0–100%)",
+       x = "Condition", y = "Percent Red Positive") +
+  theme_bw() +
+  scale_color_manual(values = ind_cols_if) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+plot_step4
+
+```
+
+Step 5 Collapse by Individual
+```{r Step 5 Collapse by Individual Points}
+#now I want to collapse these three images per condition into their respective individual after normalization
+
+individual_summary_step5 <- merged_image_summary_norm %>%
+  group_by(Individual, Treatment, Timepoint, Magnification) %>%
+  summarise(
+    Mean_Norm = mean(Norm_Percent_Red_Positive, na.rm = TRUE),
+    Median_Norm = median(Norm_Percent_Red_Positive, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Condition = paste0(Treatment, "_", Timepoint)
+  )
+
+#compute stats before starting
+ttest_table_step5 <- ttests_step3 %>%
+  filter(Timepoint %in% c("24T", "24R", "144R")) %>%
+  mutate(
+    group1 = paste0("DOX_", Timepoint),
+    group2 = paste0("VEH_", Timepoint),
+    y.position = max(individual_summary_step5$Mean_Norm, na.rm = TRUE) * 1.05
+  )
+
+
+#plot the collapsed image-level data 0-100
+plot_step5 <- ggplot(individual_summary_step5, 
+                     aes(x = Condition, y = Mean_Norm)) +
+  geom_boxplot() +
+  geom_point(aes(color = Individual), size = 3, alpha = 1, position = position_identity()) +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = ind_cols_if) +
+  stat_pvalue_manual(ttest_table_step5, label = "p.signif", 
+                     xmin = "group1", xmax = "group2", tip.length = 0.02) +
+  labs(title = "Step 5: Individual-Level Percent Red Positive",
+       x = "Condition", y = "Normalized Percent Positive") +
+  theme_custom() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
+plot_step5
+
+# save_plot(
+#   plot = plot_step5,
+#   filename = "IFQuant_Step5_Final_EMP",
+#   folder = output_folder,
+#   height = plot_height,
+#   width = plot_width
+# )
+
+```
+
