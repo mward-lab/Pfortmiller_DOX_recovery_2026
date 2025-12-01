@@ -24,14 +24,17 @@ pre[class] {
 
 
 Libraries
-```{r Necessary Libraries, message=FALSE, warning=FALSE, include=FALSE}
+```{r Necessary Libraries, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(readxl)
 library(readr)
 library(drc)
 library(scales)
-library(RImageJROI)
+library(RImageJROI) #to read in ROI from ImageJ/Fiji
 library(stringr)
+library(purrr)
+library(rstatix)
+library(ggpubr)
 ```
 
 Define custom plot theme
@@ -85,8 +88,8 @@ theme_custom <- readRDS("data/plot_theme_custom.RDS")
 
 ```
 
-Define saving plots as pdfs
-```{r pdf saving function, echo=TRUE, message=FALSE, warning=FALSE}
+Define saving plots as pdfs and pngs
+```{r pdf png saving function, echo=TRUE, message=FALSE, warning=FALSE}
 
 save_plot <- function(plot, filename, 
                       folder = ".", 
@@ -112,6 +115,8 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 #save plot function created
 #to use: just define the plot name, filename_base, width, height
 ```
+
+Figure 1A - Experimental Schematic (no code)
 
 Figure 1B - Flow Cytometry Barplot
 ```{r Flow Cytometry Barplot, fig.width=6, fig.height=6, warning=FALSE}
@@ -176,25 +181,25 @@ Figure 1C - Dose Response Curves
 ```{r Full DRC dataset, results=FALSE}
 AllData <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
      sheet = "Fin_Sheet_Analysis")
-View(AllData)
+# View(AllData)
 
-Ind3_78_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+Ind2_78_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
      sheet = "Fin_78_Sheet")
-View(Ind3_78_data)
+# View(Ind2_78_data)
 
-#this is actually ind 2 according to my RNAseq - 78-1 F
+#this is now Individual 2 after reordering individuals earlier - 78-1 F
 
-Ind4_75_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
+Ind3_75_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
      sheet = "Fin_75_Sheet")
-View(Ind4_75_data)
+# View(Ind3_75_data)
 
-#this is actually ind 3 according to my RNAseq - 75-1 F
+#this is now Ind3 since I reordered individuals - 75-1 F
 
 Ind5_17_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
      sheet = "Fin_17_Sheet")
-View(Ind5_17_data)
+# View(Ind5_17_data)
 
-#this is actually ind 5 according to my RNAseq - 17-3 M
+#this is still ind 5 according to my RNAseq - 17-3 M
 
 ```
 
@@ -204,13 +209,13 @@ Now that I've imported my data, let's go ahead and filter the data to reflect ti
 dox_all <- AllData %>% filter(Drug =="DOX")
 dmso_all <- AllData %>% filter(Drug =="DMSO")
 
-####Ind1 78-1####
-dox_78 <- Ind3_78_data %>% filter(Drug=="DOX")
-dmso_78 <- Ind3_78_data %>% filter(Drug=="DMSO")
+####Ind2 78-1####
+dox_78 <- Ind2_78_data %>% filter(Drug=="DOX")
+dmso_78 <- Ind2_78_data %>% filter(Drug=="DMSO")
 
-####Ind4 75-1####
-dox_75 <- Ind4_75_data %>% filter(Drug=="DOX")
-dmso_75 <- Ind4_75_data %>% filter(Drug=="DMSO")
+####Ind3 75-1####
+dox_75 <- Ind3_75_data %>% filter(Drug=="DOX")
+dmso_75 <- Ind3_75_data %>% filter(Drug=="DMSO")
 
 ####Ind5 17-3####
 dox_17 <- Ind5_17_data %>% filter(Drug=="DOX")
@@ -381,12 +386,19 @@ boxplot(dmso24hr17$Ind3_17_Fin ~ dmso24hr17$Conc,
 ```
 
 Now that I've taken a look at the raw data, let's look at the analyzed data step by step
+
 The following steps were taken in analysis:
+
 1. Import raw fluorescence values (RFLU) from platereader, baseline 0hr and final timepoints
+
 2. Subtract background wells (prestoblue only wells) by plate
+
 3. Subtract average of empty wells (galactose only, with 50k cells/well) by plate
+
 4. Divide all values by matched vehicle average (ie DOX 0.01 / DMSO 0.01)
+
 5. Divide initial 0hr value from final timepoint (24, 48, 72) value 
+
 ```{r Boxplots BG removed 24hr}
 #####DOX Samples#####
 #dox 78-1 no BG 24HR
@@ -845,6 +857,7 @@ boxplot(dmso24hr17$Ind3_17_Div ~ dmso24hr17$Conc,
 
 Fit Models for DRC
 ```{r Data for Models DRCs}
+#these sheets are not numbered properly by individual because they're in order of experiments
 dox24tox_75 <- dox24hr75 %>% mutate(response = Ind1_75_Div*100)
 summary(dox24tox_75$response)
 
@@ -989,8 +1002,9 @@ legend("bottomleft",
 
 ```
 
-Figure 1D - yH2AX Quantification
-#Fiji/ImageJ Macros
+Figure 1D - yH2AX Quantification (Immunofluorescence Staining)
+
+Fiji/ImageJ Macros
 ```{r Macros Run in Fiji/ImageJ}
 #these are the macros that I made for ImageJ/Fiji and are included for reference only
 #they will not run in R
@@ -1294,35 +1308,15 @@ Figure 1D - yH2AX Quantification
 ```
 
 Read in ROI Summaries
-```{r Read in roi summary from IF macros}
+```{r Read in ROI summary from IF macros}
+#read in the data from the macros that I ran for each individual
+#I am going to focus on 20X magnification images, remove any non-20X samples 
+#ensure that you label each with respective individual number for ease later on
 
-#read in the data from the macros that you ran for each individual
-#I am going to focus on 20X for these now, so remove any non-20X samples in the next step
-#also ensure that you label each with their respective individual number for ease later on
-
-####Ind 1 - 84-1####
-# ind1_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/outline new/analyzed/All_ROIs_Combined_84-1_EMP_250916.csv") %>% 
-#   mutate(Individual = "Ind1") %>% 
-#   mutate(Magnification = "20X") #specify magnification since all were 20X so not in labels
-
-# saveRDS(ind1_roi, "data/new/IF_quant/All_ROIs_Combined_84-1_Ind1.RDS")
-
-####Ind 2 - 87-1####
-# ind2_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/analyzed/All_ROIs_Combined_87-1_EMP_250825.csv") %>% 
-#   mutate(Individual = "Ind2",
-#          Magnification = case_when(
-#            grepl("20X", ROI_File, ignore.case = TRUE) ~ "20X",
-#            grepl("10X", ROI_File, ignore.case = TRUE) ~ "10X",
-#            grepl("40X", ROI_File, ignore.case = TRUE) ~ "40X",
-#            TRUE ~ "Other"
-#          )) %>% 
-#   dplyr::select(-"X")
-
-# saveRDS(ind2_roi, "data/new/IF_quant/All_ROIs_Combined_87-1_Ind2.RDS")
-
-####Ind 4 - 75-1####
-# ind4_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new/analyzed/All_ROIs_Combined_75-1_EMP_250825.csv") %>%
-#     mutate(Individual = "Ind4",
+####Ind 1 - 87-1####
+# ind1_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/outline new/analyzed/All_ROIs_Combined_87-1_EMP_250825.csv") %>%
+#   mutate(Individual = "Ind1",
+#          Line = "87-1",
 #          Magnification = case_when(
 #            grepl("20X", ROI_File, ignore.case = TRUE) ~ "20X",
 #            grepl("10X", ROI_File, ignore.case = TRUE) ~ "10X",
@@ -1331,15 +1325,37 @@ Read in ROI Summaries
 #          )) %>%
 #   dplyr::select(-"X")
 
-# saveRDS(ind4_roi, "data/new/IF_quant/All_ROIs_Combined_75-1_Ind4.RDS")
+# saveRDS(ind1_roi, "data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS")
+
+####Ind 3 - 75-1####
+# ind3_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new/analyzed/All_ROIs_Combined_75-1_EMP_250825.csv") %>%
+#     mutate(Individual = "Ind3",
+#            Line = "75-1",
+#          Magnification = case_when(
+#            grepl("20X", ROI_File, ignore.case = TRUE) ~ "20X",
+#            grepl("10X", ROI_File, ignore.case = TRUE) ~ "10X",
+#            grepl("40X", ROI_File, ignore.case = TRUE) ~ "40X",
+#            TRUE ~ "Other"
+#          )) %>%
+#   dplyr::select(-"X")
+
+# saveRDS(ind3_roi, "data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS")
+
+####Ind 4 - 84-1####
+# ind4_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/outline new/analyzed/All_ROIs_Combined_84-1_EMP_250916.csv") %>%
+#   mutate(Individual = "Ind4") %>%
+#   mutate(Line = "84-1") %>% 
+#   mutate(Magnification = "20X") #specify since all were 20X so not in labels
+
+# saveRDS(ind4_roi, "data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 
 #keep all of this for posterity and read them in for plots
+ind1_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS")
 
-ind1_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind1.RDS")
+ind3_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS")
 
-ind2_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_87-1_Ind2.RDS")
+ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 
-ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_75-1_Ind4.RDS")
 
 ```
 
@@ -1349,7 +1365,7 @@ Create Dataframes
 
 #ensure that I am removing secondary only controls and any other magnifications (ie 10X and 40X images)
 
-# ind_roi_all <- bind_rows(ind1_roi, ind2_roi, ind4_roi) %>%
+# ind_roi_all <- bind_rows(ind1_roi, ind3_roi, ind4_roi) %>%
 #   mutate(
 #     Treatment = case_when(
 #       grepl("DOX", ROI_File) ~ "DOX",
@@ -1375,11 +1391,11 @@ Create Dataframes
 
 ```
 
-Boxplot Step 1 ROI Level
-```{r Step 1 Boxplot ROI Level All Individuals}
+IF Quantification yH2AX Step 1 - ROI Level
+```{r Step 1 - ROI Level All Individuals}
 
 #make sure to normalize by area to get positive red for the next step
-# ind_roi_all <- ind_roi_all %>% 
+# ind_roi_all <- ind_roi_all %>%
 #   mutate(
 #     Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100
 #   )
@@ -1388,180 +1404,203 @@ Boxplot Step 1 ROI Level
 
 ind_roi_all <- readRDS("data/new/IF_quant/individual_rois_all.RDS") 
 
-ind_cols_if <- c("Ind1" = "#FFB482",
-              "Ind2" = "#8AC6D1",
-              "Ind4" = "#F9E07F")
+ind_cols_if <- c("Ind1" = "#FFA364",
+              "Ind3" = "#A4D177",
+              "Ind4" = "#EAD050")
 
-condition_levels <- c("DOX_24T", "VEH_24T", "DOX_24R", "VEH_24R", "DOX_144R", "VEH_144R")
+#previous timepoint names prior to tx+0 (24T), tx+24 (24R), tx+144 (144R)
+condition_levels <- c("DOX_24T", "VEH_24T", 
+                      "DOX_24R", "VEH_24R", 
+                      "DOX_144R", "VEH_144R")
+
+#add in colors for boxplots
+txtime_col_old <- list(
+  "DOX_24T" = "#263CA5",
+  "VEH_24T" = "#444343",
+  "DOX_24R" = "#5B8FD1",
+  "VEH_24R" = "#757575",
+  "DOX_144R" = "#89C5E5",
+  "VEH_144R" = "#AAAAAA"
+)
 
 plot_step1 <- ind_roi_all %>% 
   mutate(Condition = factor(Condition, levels = c(condition_levels))) %>% 
   ggplot(aes(x = Condition, y = Percent_Red_Positive_Area)) +
-  geom_boxplot() +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
   geom_point(aes(color = Individual),
-             size = 1.5, alpha = 0.8, 
+             size = 1.5,
+             alpha = 0.6, #for visibility of all of these points
              position = position_identity()) +
   scale_color_manual(values = ind_cols_if) +
+  scale_fill_manual(values = txtime_col_old) +
   labs(title = "Step 1: ROI Level % Red Positive",
-       x = "Condition", y = "Percent Red Positive Pixels") +
-  theme_bw(base_size = 14) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top")
+       x = "Condition",
+       y = "Percent Red Positive Pixels") +
+  theme_custom() +
+  theme(legend.position = "bottom")
 
 plot_step1
 
 ```
 
-Collapse to Image Level Summaries
-```{r Image Level Summary Sheet}
+Step 2 - Collapse to Image Level Summaries
+```{r Image Level Summary Dataframe, message=FALSE, warning=FALSE, include=FALSE}
 
 #calculate the area for each individual level roi before passing through function
-ind1_roi <- ind1_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
-ind2_roi <- ind2_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
-ind4_roi <- ind4_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
+# ind1_roi <- ind1_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
+# ind3_roi <- ind3_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
+# ind4_roi <- ind4_roi %>% mutate(Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100)
 
 #now I will collapse these to image level using the below function
-collapse_to_image <- function(roi_df) {
-  roi_df %>%
-    mutate(Image = gsub("_ROI.*", "", ROI_File),
-           Image = gsub("\\.zip$", "", Image),
-           Image = trimws(Image)
-           ) %>%
-    group_by(Image, Individual) %>%
-    summarise(
-      Mean_of_Mean   = mean(Mean_Intensity, na.rm = TRUE),
-      Mean_of_Median = mean(Median_Intensity, na.rm = TRUE),
-      Mean_of_Max    = mean(Max_Intensity, na.rm = TRUE),
-      Mean_Percent_Red_Positive = mean(Percent_Red_Positive, na.rm = TRUE),
-      Mean_Red_Positive_Pixels  = mean(Red_Positive_Pixels, na.rm = TRUE),
-      Mean_Norm_Percent_Red_Positive = 
-        mean(Percent_Red_Positive_Area, na.rm = TRUE),
-      .groups = "drop"
-    )
-}
+# collapse_to_image <- function(roi_df) {
+#   roi_df %>%
+#     mutate(Image = gsub("_ROI.*", "", ROI_File),
+#            Image = gsub("\\.zip$", "", Image),
+#            Image = trimws(Image)
+#            ) %>%
+#     group_by(Image, Individual) %>%
+#     summarise(
+#       Mean_of_Mean   = mean(Mean_Intensity, na.rm = TRUE),
+#       Mean_of_Median = mean(Median_Intensity, na.rm = TRUE),
+#       Mean_of_Max    = mean(Max_Intensity, na.rm = TRUE),
+#       Mean_Percent_Red_Positive = mean(Percent_Red_Positive, na.rm = TRUE),
+#       Mean_Red_Positive_Pixels  = mean(Red_Positive_Pixels, na.rm = TRUE),
+#       Mean_Norm_Percent_Red_Positive =
+#         mean(Percent_Red_Positive_Area, na.rm = TRUE),
+#       .groups = "drop"
+#     )
+# }
 
 #use function to create a summary for each individual
 # ind1_img_summary <- collapse_to_image(ind1_roi) %>%
-#  mutate(Individual = "Ind1",          Magnification = "20X")
-
- # ind2_img_summary <- collapse_to_image(ind2_roi) %>%
- #  mutate(Individual = "Ind2",
- #         Magnification = case_when(
- #           grepl("20X", Image, ignore.case = TRUE) ~ "20X",
- #           grepl("10X", Image, ignore.case = TRUE) ~ "10X",
- #           grepl("40X", Image, ignore.case = TRUE) ~ "40X",
- #           TRUE ~ "Other"
- #           ))
-
- # ind4_img_summary <- collapse_to_image(ind4_roi) %>%
- #  mutate(Individual = "Ind4",
- #         Magnification = case_when(
- #           grepl("20X", Image, ignore.case = TRUE) ~ "20X",
- #            grepl("10X", Image, ignore.case = TRUE) ~ "10X", 
- #           grepl("40X", Image, ignore.case = TRUE) ~ "40X",
- #            TRUE ~ "Other"
- #           ))
+#   mutate(Individual = "Ind1",
+#          Magnification = case_when(
+#            grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+#            grepl("10X", Image, ignore.case = TRUE) ~ "10X",
+#            grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+#            TRUE ~ "Other"
+#            ))
+# 
+# ind3_img_summary <- collapse_to_image(ind3_roi) %>%
+#   mutate(Individual = "Ind3",
+#          Magnification = case_when(
+#            grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+#             grepl("10X", Image, ignore.case = TRUE) ~ "10X",
+#            grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+#             TRUE ~ "Other"
+#            ))
+#  
+# ind4_img_summary <- collapse_to_image(ind4_roi) %>%
+#   mutate(Individual = "Ind4",
+#          Magnification = "20X") #only has 20X so add this label
 
 #now, combine all individuals together with their image level summaries
-# roi_image_level_summary <-
-#   bind_rows(ind1_img_summary, ind2_img_summary, ind4_img_summary)
+# roi_image_level_summary <- bind_rows(ind1_img_summary,
+#                                      ind3_img_summary,
+#                                      ind4_img_summary)
 
 #ensure that the secondary only ctrls are removed from this one too
 # roi_image_level_summary <- roi_image_level_summary %>%
 #   dplyr::filter(!grepl("^2nd", Image, ignore.case = TRUE)) %>%
 #    dplyr::filter(Magnification == "20X")
-# 
-# saveRDS(roi_image_level_summary,
-#         "data/new/IF_quant/roi_image_level_summary_all.RDS")
+
+# saveRDS(roi_image_level_summary, "data/new/IF_quant/roi_image_level_summary_all.RDS")
 
 ```
 
-Read in Dataframe
+Read in Dataframe of Image Level Summary
 ```{r ROI Summary Dataframe}
-#now that I've created the image level summary table for all individuals above, read it in so I don't have to generate it multiple times
+#now that I've created the image level summary table for all individuals above, read it in so I don't have to create it multiple times
 
 roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_all.RDS")
-
-# write.csv(roi_image_level_summary, "data/new/IF_quant/roi_image_level_summary_all.csv")
 
 ```
 
 Make a Metadata Table
-```{r Metadata from image level summaries}
+```{r Metadata Table Image Level, warning=FALSE, include=FALSE}
 #now I want to make a metadata table with all of the relevant info 
 #these files come from my DAPI Counts new folder from each individual
 
 # roi_folders <- list(
-#   Ind1 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/DAPI counts new",
-#   Ind2 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/DAPI counts new",
-#   Ind4 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/DAPI counts new"
+#   Ind1 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/DAPI counts new",
+#   Ind3 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/DAPI counts new",
+#   Ind4 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/DAPI Counts new" 
+              #be careful since this one has a slightly different name
 # )
 
 #read the csvs that come from the folders and loop over each individual
-read_csvs <- function(folder, individual_label) {
-  files <- list.files(folder, pattern = "^Cell_intensity",
-                      full.names = TRUE,
-                      ignore.case = TRUE)
-
-  if(length(files) == 0) {
-    message("No csv files found in folder: ", folder)
-    return(NULL)
-  }
-
-  lapply(files, function(file) {
-    data <- read.csv(file)
-    tibble(
-      Individual = individual_label,
-      Image = tools::file_path_sans_ext(basename(file)),
-      Nuclei_Count = nrow(data)
-    )
-  }) %>% bind_rows()
-}
+# read_csvs <- function(folder, individual_label) {
+#   files <- list.files(folder, pattern = "^Cell_intensity",
+#                       full.names = TRUE,
+#                       ignore.case = TRUE)
+# 
+#   if(length(files) == 0) {
+#     message("No csv files found in folder: ", folder)
+#     return(NULL)
+#   }
+# 
+#   lapply(files, function(file) {
+#     data <- read.csv(file)
+#     tibble(
+#       Individual = individual_label,
+#       Image = tools::file_path_sans_ext(basename(file)),
+#       Nuclei_Count = nrow(data)
+#     )
+#   }) %>% bind_rows()
+# }
 
 #now loop over each individual using the above function
-ind1_metadata <- read_csvs(roi_folders$Ind1, "Ind1") %>% 
-  mutate(Magnification = "20X")
-
-
-ind2_metadata <- read_csvs(roi_folders$Ind2, "Ind2") %>% 
-  mutate(Magnification = case_when(
-          grepl("20X", Image, ignore.case = TRUE) ~ "20X",
-           grepl("10X", Image, ignore.case = TRUE) ~ "10X",
-           grepl("40X", Image, ignore.case = TRUE) ~ "40X",
-          TRUE ~ "Other"
-          )) %>% 
-  dplyr::filter(Magnification == "20X")
-
-ind4_metadata <- read_csvs(roi_folders$Ind4, "Ind4") %>% 
-  mutate(Magnification = case_when(
-    grepl("20X", Image, ignore.case = TRUE) ~ "20X",
-    grepl("10X", Image, ignore.case = TRUE) ~ "10X",
-    grepl("40X", Image, ignore.case = TRUE) ~ "40X",
-    TRUE ~ "Other"
-    )) %>% 
-  dplyr::filter(Magnification == "20X")
-
-image_level_metadata <- bind_rows(ind1_metadata, ind2_metadata, ind4_metadata)
+# ind1_metadata <- read_csvs(roi_folders$Ind1, "Ind1") %>%
+#   mutate(Magnification = case_when(
+#     grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+#     grepl("10X", Image, ignore.case = TRUE) ~ "10X",
+#     grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+#     TRUE ~ "Other"
+#     )) %>%
+#   dplyr::filter(Magnification == "20X")
+# 
+# ind3_metadata <- read_csvs(roi_folders$Ind3, "Ind3") %>%
+#   mutate(Magnification = case_when(
+#           grepl("20X", Image, ignore.case = TRUE) ~ "20X",
+#            grepl("10X", Image, ignore.case = TRUE) ~ "10X",
+#            grepl("40X", Image, ignore.case = TRUE) ~ "40X",
+#           TRUE ~ "Other"
+#           )) %>%
+#   dplyr::filter(Magnification == "20X")
+# 
+# ind4_metadata <- read_csvs(roi_folders$Ind4, "Ind4") %>%
+#   mutate(Magnification = "20X")
+# 
+# image_level_metadata <- bind_rows(ind1_metadata,
+#                                   ind3_metadata,
+#                                   ind4_metadata)
 
 
 #now parse out the treatments and remove the prefix cell_intensity so it matches my other summary file
+#add Line in so I can make sure that the individuals are correct after renum
+# image_level_metadata <- image_level_metadata %>%
+#   mutate(
+#     Image = str_remove(Image, "^Cell_intensity_"),
+#     Treatment = ifelse(str_detect(Image, "DOX"), "DOX",
+#                        ifelse(str_detect(Image, "DMSO"), "VEH", NA_character_)),
+#     Timepoint = str_extract(Image, "24T|24R|144R"),
+#     Line = case_when(
+#       Individual == "Ind1" ~ "87-1",
+#       Individual == "Ind3" ~ "75-1",
+#       Individual == "Ind4" ~ "84-1",
+#       TRUE ~ NA_character_
+#     )
+#   ) %>%
+#   dplyr::filter(!is.na(Treatment)) %>%
+#   dplyr::filter(!str_detect(Image, "test")) %>%
+#   dplyr::filter(!str_detect(Image, "edit")) %>%
+#   dplyr::select(Individual, Line, Treatment, Timepoint, Image, Nuclei_Count) %>%
+#   mutate(
+#     Condition = paste0(Treatment, "_", Timepoint),
+#     Magnification = "20X"
+#   )
 
-image_level_metadata <- image_level_metadata %>%
-  mutate(
-    Image = str_remove(Image, "^Cell_intensity_"),
-    Treatment = ifelse(str_detect(Image, "DOX"), "DOX",
-                       ifelse(str_detect(Image, "DMSO"), "VEH", NA_character_)),
-    Timepoint = str_extract(Image, "24T|24R|144R")
-  ) %>%
-  dplyr::filter(!is.na(Treatment)) %>%
-  dplyr::filter(!str_detect(Image, "test")) %>%
-  dplyr::filter(!str_detect(Image, "edit")) %>% 
-  dplyr::select(Individual, Treatment, Timepoint, Image, Nuclei_Count) %>% 
-  mutate(
-    Condition = paste0(Treatment, "_", Timepoint),
-    Magnification = "20X"
-  )
-
+#save this metadata dataframe as an R object and as a csv for later
 # saveRDS(image_level_metadata, "data/new/IF_quant/image_level_metadata_all.RDS")
 
 # write.csv(image_level_metadata, "data/new/IF_quant/image_level_metadata_all.csv")
@@ -1569,25 +1608,27 @@ image_level_metadata <- image_level_metadata %>%
 ```
 
 Combine metadata with summary sheet
-```{r Combine summary sheet with metadata sheet}
+```{r Summary and Metadata, include = FALSE}
 #Now that I've made my image_level_metadata sheet match to my roi_image_level_summary, let's combine them
 
 #I commented out the top for posterity so I don't have to run it multiple times
 #thus I will read in my two sheets to combine them
 
-#original summary sheet
-roi_image_level_summary
+#original summary sheet roi_image_level_summary needed
 
 #metadata sheet
 image_level_metadata <- readRDS("data/new/IF_quant/image_level_metadata_all.RDS")
 
 #create the merged image summary for all individuals
-merged_image_summary <-
-  image_level_metadata %>%
-  dplyr::select(Individual, Treatment, Timepoint, Condition, Magnification, Image, Nuclei_Count) %>%
-  dplyr::left_join(roi_image_level_summary, by = c("Image", "Individual", "Magnification"))
+# merged_image_summary <-
+#   image_level_metadata %>%
+#   dplyr::select(Individual, Line, Treatment, Timepoint, Condition,
+#                 Magnification, Image, Nuclei_Count) %>%
+#   dplyr::left_join(roi_image_level_summary, by = c("Image", "Individual", "Magnification"))
 
-merged_image_summary <- merged_image_summary %>% mutate(Condition = factor(Condition, levels = c(condition_levels)))
+# merged_image_summary <- merged_image_summary %>%
+#   mutate(Condition = factor(Condition,
+#                             levels = c(condition_levels)))
 
 # saveRDS(merged_image_summary, "data/new/IF_quant/merged_image_summary_all.RDS")
 
@@ -1599,139 +1640,153 @@ merged_image_summary <- readRDS("data/new/IF_quant/merged_image_summary_all.RDS"
 
 ```
 
-Step 2 Boxplots Image Level Summary
-```{r Boxplots Collapsed by Image}
+IF Quantification Step 2 - Image Level
+```{r Step 2 - Collapse by Image}
 #now I'll plot the outcome of the second step where I collapsed by image and merged the metadata with the measurements
 
 plot_step2 <- ggplot(merged_image_summary, 
          aes(x = Condition,
              y = Mean_Red_Positive_Pixels)) +
-  geom_boxplot(outlier.shape = NA) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
   geom_point(aes(color = Individual),
-             alpha = 0.8, size = 3,
+             alpha = 0.8, #for visibility as I collapse data down
+             size = 3,
              position = position_identity()) +
   scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = c(ind_cols_if)) +
+  scale_fill_manual(values = txtime_col_old) +
   labs(title = "Step 2: Image-Level Mean Red Positive Pixels",
-       x = "Condition", y = "Mean Red Positive Pixels") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top") +
-  scale_color_manual(values = c(ind_cols_if))
+       x = "Condition", 
+       y = "Mean Red Positive Pixels") +
+  theme_custom() +
+  theme(legend.position = "bottom")
+
 
 plot_step2
 
 ```
 
-Step 3 Select Consistent Images Per Individual
-```{r Images by Consistent Nuclei Count}
+IF Quantification Step 3 - Select Images with Consistent Nuclei per Individual
+```{r Step 3 - Images by Consistent Nuclei Count}
 #now I will be selecting images based on their nuclei count
 
 #first let's find the median number of nuclei per individual to get an idea of how many are there per experiment
 #all experiments were performed separately but with the same protocol, so each individual is separate
 
-median_nuclei <- merged_image_summary %>% 
-  group_by(Individual, Condition) %>% 
-  summarize(
-    Median_Nuclei = median(Nuclei_Count, na.rm = TRUE),
-    Mean_Positive = mean(Mean_Red_Positive_Pixels),
-    Image_Count = n(),
-    .groups = "drop"
-  ) %>% 
-  arrange(Individual, Condition)
+# median_nuclei <- merged_image_summary %>%
+#   group_by(Individual, Condition) %>%
+#   summarize(
+#     Median_Nuclei = median(Nuclei_Count, na.rm = TRUE),
+#     Mean_Positive = mean(Mean_Red_Positive_Pixels),
+#     Image_Count = n(),
+#     .groups = "drop"
+#   ) %>%
+#   arrange(Individual, Condition)
 
 #let's pick out the three images per condition that have consistent nuclei counts
 
 #first I am going to remove some outlier images from my Ind1 since I had some dim/blurry ones that should not be included since they weren't properly detected
+#I chose the images that were in focus and had consistent numbers of nuclei based on summary from above 
 
-# Define the good images for Ind1 (IDs = the 4-digit part before "_DAPI")
-images_Ind1 <- tibble::tribble(
-  ~Condition,   ~ID,
-  "DOX_24T",  "0012",
-  "DOX_24T",  "0013",
-  "DOX_24T",  "0017",
-  "VEH_24T",  "0006",
-  "VEH_24T",  "0004",
-  "VEH_24T",  "0003",
-  "DOX_24R",  "0006",
-  "DOX_24R",  "0004",
-  "DOX_24R",  "0003",
-  "VEH_24R",  "0004",
-  "VEH_24R",  "0005",
-  "VEH_24R",  "0003",
-  "DOX_144R", "0002",
-  "DOX_144R", "0003",
-  "DOX_144R", "0005",
-  "VEH_144R", "0003", 
-  "VEH_144R", "0004", 
-  "VEH_144R", "0012"
-)
+# Define the good images for Ind4 (IDs = the 4-digit part before "_DAPI")
+# images_Ind4 <- tibble::tribble(
+#   ~Condition,   ~ID,
+#   "DOX_24T",  "0012",
+#   "DOX_24T",  "0013",
+#   "DOX_24T",  "0017",
+#   "VEH_24T",  "0006",
+#   "VEH_24T",  "0004",
+#   "VEH_24T",  "0003",
+#   "DOX_24R",  "0006",
+#   "DOX_24R",  "0004",
+#   "DOX_24R",  "0003",
+#   "VEH_24R",  "0004",
+#   "VEH_24R",  "0005",
+#   "VEH_24R",  "0003",
+#   "DOX_144R", "0002",
+#   "DOX_144R", "0003",
+#   "DOX_144R", "0005",
+#   "VEH_144R", "0003",
+#   "VEH_144R", "0004",
+#   "VEH_144R", "0012"
+# )
 
 #filter my merged_image_summary for Ind1 using IDs
-ind1_filtered <- merged_image_summary %>%
-  filter(Individual == "Ind1") %>%
-  mutate(
-    Image_ID  = str_extract(Image, "_\\d{4}_") %>% str_remove_all("_")   
-  ) %>%
-  inner_join(images_Ind1, by = c("Condition", "Image_ID" = "ID"))
+# ind4_filtered <- merged_image_summary %>%
+#   filter(Individual == "Ind4") %>%
+#   mutate(
+#     Image_ID  = str_extract(Image, "_\\d{4}_") %>% str_remove_all("_")
+#   ) %>%
+#   inner_join(images_Ind1, by = c("Condition", "Image_ID" = "ID"))
 
 #now join this back into my pipeline because now I have the images I need based on nucleus count?
 
-merged_image_summary_filt <- merged_image_summary %>% 
-  dplyr::filter(Individual != "Ind1") %>% 
-  bind_rows(ind1_filtered)
+# merged_image_summary_filt <- merged_image_summary %>%
+#   dplyr::filter(Individual != "Ind4") %>%
+#   bind_rows(ind1_filtered)
 
-#now that I've put Ind1 back in, let's select images based on nuclei for Ind2 and Ind4
+#now that I've put Ind1 back in, let's select images based on nuclei for Ind1 and Ind3
 
-select_top3_images <- function(df, individual) {
-  df %>%
-    filter(Individual == individual) %>%
-    group_by(Condition) %>%
-    mutate(
-      med_nuclei = median(Nuclei_Count, na.rm = TRUE),
-      med_pos    = median(Mean_Norm_Percent_Red_Positive, na.rm = TRUE),
-      score = abs(Nuclei_Count - med_nuclei) + abs(Mean_Norm_Percent_Red_Positive - med_pos)
-    ) %>%
-    arrange(score) %>%
-    slice_head(n = 3) %>%
-    ungroup()
-}
+# select_top3_images <- function(df, individual) {
+#   df %>%
+#     filter(Individual == individual) %>%
+#     group_by(Condition) %>%
+#     mutate(
+#       med_nuclei = median(Nuclei_Count, na.rm = TRUE),
+#       med_pos    = median(Mean_Norm_Percent_Red_Positive, na.rm = TRUE),
+#       score = abs(Nuclei_Count - med_nuclei) + abs(Mean_Norm_Percent_Red_Positive - med_pos)
+#     ) %>%
+#     arrange(score) %>%
+#     slice_head(n = 3) %>%
+#     ungroup()
+# }
 
-ind2_filtered <- select_top3_images(merged_image_summary, "Ind2")
-ind4_filtered <- select_top3_images(merged_image_summary, "Ind4")
+# ind1_filtered <- select_top3_images(merged_image_summary, "Ind1")
+# ind3_filtered <- select_top3_images(merged_image_summary, "Ind3")
 
-#filter Ind 1 to get the same scores at the end
-ind1_filtered <- ind1_filtered %>%
-    group_by(Condition) %>%
-    mutate(
-        med_nuclei = median(Nuclei_Count, na.rm = TRUE),
-        med_pos    = median(Mean_Percent_Red_Positive, na.rm = TRUE),
-        score = abs(Nuclei_Count - med_nuclei) +
-            abs(Mean_Percent_Red_Positive - med_pos)
-    ) %>%
-    ungroup()
+#filter Ind 4 to get the same scores at the end
+# ind4_filtered <- ind4_filtered %>%
+#     group_by(Condition) %>%
+#     mutate(
+#         med_nuclei = median(Nuclei_Count, na.rm = TRUE),
+#         med_pos    = median(Mean_Percent_Red_Positive, na.rm = TRUE),
+#         score = abs(Nuclei_Count - med_nuclei) +
+#             abs(Mean_Percent_Red_Positive - med_pos)
+#     ) %>%
+#     ungroup()
 
-merged_image_summary_final <- bind_rows(
-  merged_image_summary %>% filter(!Individual %in% c("Ind1", "Ind2", "Ind4")),
-  ind1_filtered,
-  ind2_filtered,
-  ind4_filtered
-) %>% 
-  dplyr::select(-("Image_ID"))
+#merge these summaries together to have all individuals represented in one
+# merged_image_summary_final <- bind_rows(
+#   merged_image_summary %>% filter(!Individual %in% c("Ind1", "Ind3", "Ind4")),
+#   ind1_filtered,
+#   ind3_filtered,
+#   ind4_filtered
+# ) %>%
+#   dplyr::select(-("Image_ID"))
+
+#save the finalized version as an R object and read it back in, keep code for posterity
+# saveRDS(merged_image_summary_final, "data/new/IF_quant/merged_image_summary_final.RDS")
+
+merged_image_summary_final <- readRDS("data/new/IF_quant/merged_image_summary_final.RDS")
 
 #plot these in a boxplot now that they're filtered down to the top 3 images per individual based on consistent nuclei counts
 
 plot_step3 <- ggplot(merged_image_summary_final, 
-                     aes(x = Condition, y = Mean_Norm_Percent_Red_Positive)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_point(aes(color = Individual), size = 2, alpha = 1,
+                     aes(x = Condition, 
+                         y = Mean_Norm_Percent_Red_Positive)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 2, 
+             alpha = 1, #now fewer points so no need to be transparent
              position = position_identity()) +
   scale_x_discrete(limits = condition_levels) +
-  labs(title = "Step 3: Select 3 Images Per Individual for Consistent Nuclei",
-       x = "Condition", y = "Mean Percent Red Positive") +
-  theme_bw() +
   scale_color_manual(values = c(ind_cols_if)) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top")
+  scale_fill_manual(values = txtime_col_old) +
+  labs(title = "Step 3: Select 3 Images Per Individual with Consistent Nuclei",
+       x = "Condition",
+       y = "Mean Percent Red Positive") +
+  theme_custom() +
+  theme(legend.position = "bottom")
 
 plot_step3
 
@@ -1739,9 +1794,8 @@ plot_step3
 ttests_step3 <- merged_image_summary_final %>%
   group_by(Timepoint) %>%
   t_test(Mean_Norm_Percent_Red_Positive ~ Treatment) %>%
-  add_significance("p") %>%
   mutate(
-    y.position = max(plot_data$Mean_Norm_Percent_Red_Positive, na.rm = TRUE) * 1.05
+    y.position = max(merged_image_summary_final$Mean_Norm_Percent_Red_Positive, na.rm = TRUE) * 1.05
   )
 
 sig_table_step3 <- merged_image_summary_final %>%
@@ -1764,20 +1818,27 @@ sig_table_step3 <- merged_image_summary_final %>%
   
 ttests_step3
 
-#plot
+#plot with t test statistics included above plot
 plot_step3_test <- ggplot(merged_image_summary_final, 
-                     aes(x = Condition, y = Mean_Norm_Percent_Red_Positive)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_point(aes(color = Individual), size = 2, alpha = 0.7,
+                     aes(x = Condition,
+                         y = Mean_Norm_Percent_Red_Positive)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 2,
+             alpha = 1,
              position = position_identity()) +
+  stat_pvalue_manual(sig_table_step3, 
+                     label = "signif", 
+                     tip.length = 0.02) +
   scale_x_discrete(limits = condition_levels) +
-  labs(title = "Step 3: Select 3 Images Per Individual for Consistent Nuclei",
-       x = "Condition", y = "Mean Percent Red Positive") +
-  theme_bw() +
-  scale_color_manual(values = ind_cols_if) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top") +
-  stat_pvalue_manual(sig_table_step3, label = "signif", tip.length = 0)
+  scale_color_manual(values = c(ind_cols_if)) +
+  scale_fill_manual(values = txtime_col_old) +
+  labs(title = "Step 3: Select 3 Images Per Individual with Consistent Nuclei",
+       x = "Condition", 
+       y = "Mean Percent Red Positive") +
+  theme_custom() +
+  theme(legend.position = "bottom")
+
 
 plot_step3_test
 
@@ -1785,7 +1846,7 @@ plot_step3_test
 ```
 
 Step 4: Normalize DOX/VEH before Individual Level Collapse
-```{r Step 4 Normalization}
+```{r Step 4 - Normalization by Max Intensity}
 
 #Now I want to normalize these images by max intensity
 
@@ -1808,26 +1869,56 @@ individual_summary_norm <- merged_image_summary_norm %>%
     Condition = paste0(Treatment, "_", Timepoint)
   )
 
+#alter the t test table from before to plot the same comparisons
+ttest_table_step4 <- ttests_step3 %>%
+  filter(Timepoint %in% c("24T", "24R", "144R")) %>%
+  mutate(
+    group1 = paste0("DOX_", Timepoint),
+    group2 = paste0("VEH_", Timepoint),
+    y.position = max(individual_summary_norm$Mean_Norm, na.rm = TRUE) * 1.05,
+    
+    #add in significance stars
+    p.signif = case_when(
+      p < 0.001 ~ "***",
+      p < 0.01  ~ "**",
+      p < 0.05  ~ "*",
+      TRUE      ~ "ns"
+    )
+  )
+
 #plot step 4
 plot_step4 <- ggplot(merged_image_summary_norm, 
-                        aes(x = Condition, y = Norm_Percent_Red_Positive)) +
-  geom_boxplot(alpha = 0.6, outlier.shape = NA, fill = "lightgray") +
-  geom_point(aes(color = Individual), size = 2, alpha = 0.7, position = position_identity()) +
+                     aes(x = Condition,
+                         y = Norm_Percent_Red_Positive)) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 2, 
+             alpha = 1, 
+             position = position_identity()) +
+  scale_y_continuous(limits = c(0, 105)) +
   scale_x_discrete(limits = condition_levels) +
-  labs(title = "Step 4: Normalized by Max Intensity (0–100%)",
-       x = "Condition", y = "Percent Red Positive") +
-  theme_bw() +
   scale_color_manual(values = ind_cols_if) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top")
+  scale_fill_manual(values = txtime_col_old) +
+  stat_pvalue_manual(ttest_table_step4,
+                     label = "p.signif", 
+                     xmin = "group1",
+                     xmax = "group2", 
+                     tip.length = 0.02) +
+  labs(title = "Step 4: Normalized by Max Intensity (0–100%)",
+       x = "Condition", 
+       y = "Percent Red Positive") +
+  theme_custom() +
+  theme(legend.position = "bottom")
 
 plot_step4
 
 ```
 
 Step 5 Collapse by Individual
-```{r Step 5 Collapse by Individual Points}
+```{r Step 5 - Collapse by Individual}
 #now I want to collapse these three images per condition into their respective individual after normalization
+#I now only have three points, one per individual, on each boxplot
+#I also performed a t-test between DOX and VEH at each timepoint to assess differences between treated and untreated within each timepoint
 
 individual_summary_step5 <- merged_image_summary_norm %>%
   group_by(Individual, Treatment, Timepoint, Magnification) %>%
@@ -1840,31 +1931,47 @@ individual_summary_step5 <- merged_image_summary_norm %>%
     Condition = paste0(Treatment, "_", Timepoint)
   )
 
-#compute stats before starting
+#utilize the same t tests performed earlier since it is just a collapsed version of the same data
+#changed the name to reduce confusion
 ttest_table_step5 <- ttests_step3 %>%
   filter(Timepoint %in% c("24T", "24R", "144R")) %>%
   mutate(
     group1 = paste0("DOX_", Timepoint),
     group2 = paste0("VEH_", Timepoint),
-    y.position = max(individual_summary_step5$Mean_Norm, na.rm = TRUE) * 1.05
+    y.position = max(individual_summary_step5$Mean_Norm, na.rm = TRUE) * 1.05,
+    
+    #add in significance stars
+    p.signif = case_when(
+      p < 0.001 ~ "***",
+      p < 0.01  ~ "**",
+      p < 0.05  ~ "*",
+      TRUE      ~ "ns"
+    )
   )
 
 
 #plot the collapsed image-level data 0-100
 plot_step5 <- ggplot(individual_summary_step5, 
                      aes(x = Condition, y = Mean_Norm)) +
-  geom_boxplot() +
-  geom_point(aes(color = Individual), size = 3, alpha = 1, position = position_identity()) +
+  geom_boxplot(aes(fill = Condition), show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 3, 
+             alpha = 1, 
+             position = position_identity()) +
   scale_y_continuous(limits = c(0, 100)) +
   scale_x_discrete(limits = condition_levels) +
   scale_color_manual(values = ind_cols_if) +
-  stat_pvalue_manual(ttest_table_step5, label = "p.signif", 
-                     xmin = "group1", xmax = "group2", tip.length = 0.02) +
+  scale_fill_manual(values = txtime_col_old) +
+  stat_pvalue_manual(ttest_table_step5,
+                     label = "p.signif", 
+                     xmin = "group1",
+                     xmax = "group2", 
+                     tip.length = 0.02) +
   labs(title = "Step 5: Individual-Level Percent Red Positive",
-       x = "Condition", y = "Normalized Percent Positive") +
+       x = "Condition", 
+       y = "Normalized Percent Positive") +
   theme_custom() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "top")
+  theme(legend.position = "bottom")
 
 plot_step5
 
@@ -1877,4 +1984,140 @@ plot_step5
 # )
 
 ```
+IF Quantification Step 6 - Add Significance Between Timepoints
+```{r Step 6 - Significance Between Timepoints DOX}
+#Above, I compared DOX to VEH for each timepoint
+#I want to now make comparisons between DOX timepoints to see if there are any differences between each timepoint after treatment and recovery time
+#I will then add these to the plot in Illustrator to show both comparisons together since they don't want to plot correctly
 
+individual_summary_step6_dox <- merged_image_summary_norm %>%
+  group_by(Individual, Treatment, Timepoint, Magnification) %>%
+  summarise(
+    Mean_Norm = mean(Norm_Percent_Red_Positive, na.rm = TRUE),
+    Median_Norm = median(Norm_Percent_Red_Positive, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Condition = paste0(Treatment, "_", Timepoint)
+  )
+
+#set condition levels for x axis to plot all boxes
+condition_levels <- c("DOX_24T", "VEH_24T",
+                      "DOX_24R", "VEH_24R",
+                      "DOX_144R", "VEH_144R")
+
+dox_conditions <- c("DOX_24T", "DOX_24R", "DOX_144R")
+
+individual_summary_step6_dox <- individual_summary_step6_dox %>%
+  mutate(Condition = factor(Condition, levels = condition_levels))
+
+#perform paired t-tests between DOX timepoints
+timepoint_pairs <- list(
+  c("24T","24R"),
+  c("24R","144R"),
+  c("24T","144R")
+)
+
+#t test table
+ttest_table_dox_time <- purrr::map_df(seq_along(timepoint_pairs), function(i){
+  tp <- timepoint_pairs[[i]]
+  
+  df_wide <- individual_summary_step6_dox %>%
+    filter(Timepoint %in% tp) %>%
+    group_by(Individual, Timepoint) %>%
+    summarise(Mean_Norm = mean(Mean_Norm, na.rm = TRUE), .groups = "drop") %>%
+    pivot_wider(names_from = Timepoint, values_from = Mean_Norm) %>%
+    drop_na()
+  
+  base_y <- max(individual_summary_step6_dox$Mean_Norm, 
+                na.rm = TRUE) * 0.9
+  
+  y_increment <- max(individual_summary_step6_dox$Mean_Norm, 
+                     na.rm = TRUE) * 0.05
+  
+  y_pos <- base_y + y_increment * i 
+  
+  if(nrow(df_wide) < 2){
+    tibble(
+      group1 = paste0("DOX_", tp[1]),
+      group2 = paste0("DOX_", tp[2]),
+      p.value = NA_real_,
+      p.signif = "NA",
+      y.position = y_pos
+    )
+  } else {
+    test <- t.test(df_wide[[tp[1]]], df_wide[[tp[2]]], paired = TRUE)
+    tibble(
+      group1 = paste0("DOX_", tp[1]),
+      group2 = paste0("DOX_", tp[2]),
+      p.value = test$p.value,
+      p.signif = case_when(
+        test$p.value < 0.001 ~ "***",
+        test$p.value < 0.01  ~ "**",
+        test$p.value < 0.05  ~ "*",
+        TRUE                 ~ "ns"
+      ),
+      y.position = y_pos
+    )
+  }
+})
+
+#map to numeric positions for stat_pvalue_manual
+ttest_table_dox_time <- ttest_table_dox_time %>%
+  mutate(
+    group1_num = as.numeric(factor(group1, levels = condition_levels)),
+    group2_num = as.numeric(factor(group2, levels = condition_levels))
+  )
+
+#manually set y positions for each comparison (so I can see all of it)
+max_val <- max(individual_summary_step6_dox$Mean_Norm, na.rm = TRUE)
+
+ttest_table_dox_time <- ttest_table_dox_time %>%
+  mutate(
+    y.position = case_when(
+      group1 == "DOX_24T" & group2 == "DOX_24R" ~ max_val * 1.05,  #middle
+      group1 == "DOX_24T" & group2 == "DOX_144R" ~ max_val * 1.10, #top
+      group1 == "DOX_24R" & group2 == "DOX_144R" ~ max_val * 1.00  #bottom
+    ),
+    group1_num = as.numeric(factor(group1, levels = condition_levels)),
+    group2_num = as.numeric(factor(group2, levels = condition_levels))
+  )
+
+#plot DOX timepoint comparisons
+plot_step6_dox_time <- ggplot(individual_summary_step6_dox, 
+                              aes(x = Condition, 
+                                  y = Mean_Norm)) +
+  geom_boxplot(aes(fill = Condition), 
+               show.legend = FALSE) +
+  geom_point(aes(color = Individual), 
+             size = 3, 
+             alpha = 1,
+             position = position_identity()) +
+  scale_y_continuous(limits = c(0, 105)) +
+  scale_x_discrete(limits = condition_levels) +
+  scale_color_manual(values = ind_cols_if) +
+  scale_fill_manual(values = txtime_col_old) +
+  stat_pvalue_manual(ttest_table_dox_time, 
+                     label = "p.signif", 
+                     xmin = "group1_num", 
+                     xmax = "group2_num", 
+                     y.position = "y.position",
+                     tip.length = 0.02) +
+  labs(title = "Step 6: DOX Timepoint Comparisons Norm Percent Positive",
+       x = "Condition",
+       y = "Normalized Percent Positive") +
+  theme_custom() +
+  theme(legend.position = "bottom")
+
+#print the plot
+plot_step6_dox_time
+
+# save_plot(
+#   plot = plot_step6_dox_time,
+#   filename = "IFQuant_Step6_DOX_TimeComp_EMP",
+#   folder = output_folder
+# )
+
+```
+
+Figure 1E - IF Images yH2AX from Individual 87-1 (Ind 1)
