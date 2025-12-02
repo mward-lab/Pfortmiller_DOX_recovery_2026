@@ -2,14 +2,10 @@ name: DXR_RNAseq
 output_dir: ../docs
 
 navbar:
-  title: DXR_RNAseq
+  title: DXR
   left:
     - text: About
       href: index.html
-    - text: Dose-Response
-      href: Recovery_DRC.html
-    - text: Differential Analysis
-      href: DXR_Project_Analysis.html
   right:
     - icon: fab fa-github
       href: https://github.com/emmapfort/DXR_Project
@@ -21,6 +17,6 @@ output:
     toc_float:
       collapsed: false
       smooth_scroll: true
-    toc_depth: 4
+    toc_depth: 3
     theme: journal
     highlight: textmate
