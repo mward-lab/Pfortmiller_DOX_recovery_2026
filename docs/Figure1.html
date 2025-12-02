@@ -521,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1d3f09e97d37fc550dd68f2f304c25347e856f22targetblank1d3f09ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreef1fd037be5f5c07b505bc6a3c7c0571bb048b98ctargetblankf1fd037a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/emmapfort/DXR_Project/tree/1d3f09e97d37fc550dd68f2f304c25347e856f22" target="_blank">1d3f09e</a>
+<a href="https://github.com/emmapfort/DXR_Project/tree/f1fd037be5f5c07b505bc6a3c7c0571bb048b98c" target="_blank">f1fd037</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1d3f09e97d37fc550dd68f2f304c25347e856f22targetblank1d3f09ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreef1fd037be5f5c07b505bc6a3c7c0571bb048b98ctargetblankf1fd037a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -539,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/emmapfort/DXR_Project/tree/1d3f09e97d37fc550dd68f2f304c25347e856f22" target="_blank">1d3f09e</a>.
+<a href="https://github.com/emmapfort/DXR_Project/tree/f1fd037be5f5c07b505bc6a3c7c0571bb048b98c" target="_blank">f1fd037</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -744,6 +744,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f1fd037be5f5c07b505bc6a3c7c0571bb048b98c/analysis/Figure1.Rmd" target="_blank">f1fd037</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Add TOC properly
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/2bc89a9037eac386769cb01c9ba1adec31869687/docs/Figure1.html" target="_blank">2bc89a9</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/emmapfort/DXR_Project/blob/1d3f09e97d37fc550dd68f2f304c25347e856f22/analysis/Figure1.Rmd" target="_blank">1d3f09e</a>
 </td>
 <td>
@@ -826,6 +860,7 @@ pre[class] {
 }
 </style>
 <p>#Libraries</p>
+<p>Load necessary libraries for analysis.</p>
 <pre class="r"><code>library(tidyverse)
 library(readxl)
 library(readr)
@@ -836,7 +871,7 @@ library(stringr)
 library(purrr)
 library(rstatix)
 library(ggpubr)</code></pre>
-<p>#Define custom plot theme</p>
+<p>Define my custom plot theme</p>
 <pre class="r"><code># # Define the custom theme
 # plot_theme_custom &lt;- function() {
 #   theme_minimal() +
@@ -882,7 +917,7 @@ library(ggpubr)</code></pre>
 # saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
 
 theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
-<p>#Define saving plots as pdfs and pngs</p>
+<p>Define a function to save plots as .pdf and .png</p>
 <pre class="r"><code>save_plot &lt;- function(plot, filename, 
                       folder = &quot;.&quot;, 
                       width = 8, 
@@ -908,6 +943,7 @@ output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materia
 #to use: just define the plot name, filename_base, width, height</code></pre>
 <p>Figure 1A - Experimental Schematic (no code)</p>
 <p>#Figure 1B - Flow Cytometry Barplot</p>
+<p>Data to create Figure 1B.</p>
 <pre class="r"><code>#Individuals for Flow Cytometry
 #1 = 87-1 (F)
 #2 = 78-1 (F)
@@ -1000,6 +1036,7 @@ emmapfort
 #   height = 5.25
 # )</code></pre>
 <p>#Figure 1C - Dose Response Curves</p>
+<p>Data for Figure 1C.</p>
 <pre class="r"><code>AllData &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx&quot;,
      sheet = &quot;Fin_Sheet_Analysis&quot;)
 # View(AllData)
@@ -1388,7 +1425,7 @@ cells/well) by plate</p></li>
 <li><p>Divide initial 0hr value from final timepoint (24, 48, 72)
 value</p></li>
 </ol>
-<p>##Remove BG Wells</p>
+<p>##Remove Background Wells</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 no BG 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1739,8 +1776,8 @@ emmapfort
 </table>
 </div>
 </div>
-<p>Now let’s plot the next step: subtracting the empty wells ##Subtract
-Empty Wells</p>
+<p>Now let’s plot the next step: subtracting the empty wells</p>
+<p>##Subtract Empty Wells</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 Empty Wells 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -2097,8 +2134,9 @@ emmapfort
 </table>
 </div>
 </div>
-<p>Now let’s plot the third step: dividing the matched vehicle values
-##Divide by Matched Vehicle</p>
+<p>Now let’s plot the third step: dividing the matched vehicle
+values</p>
+<p>##Divide by Matched Vehicle</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 Veh 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -2456,7 +2494,8 @@ emmapfort
 </div>
 </div>
 <p>Now for the final step, dividing the final timepoint by the initial
-baseline reading at 0hr ##Divide Final Timepoint by Baseline</p>
+baseline reading at 0hr</p>
+<p>##Divide Final Timepoint by Baseline</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox All 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -2782,8 +2821,11 @@ emmapfort
 # dev.off()
 
 #saved code for saving the plots for posterity!</code></pre>
-<p>#Figure 1D - yH2AX Quantification (Immunofluorescence Staining)</p>
+<p>#Figure 1D</p>
+<p>yH2AX Quantification (Immunofluorescence Staining).</p>
 <p>##Fiji/ImageJ Macros</p>
+<p>Macros used in ImageJ/Fiji to identify nuclear ROIs from yH2AX IF
+staining.</p>
 <pre class="r"><code>#these are the macros that I made for ImageJ/Fiji and are included for reference only
 #they will not run in R
 
@@ -3157,7 +3199,8 @@ ind4_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS&q
 # saveRDS(ind_roi_all, &quot;data/new/IF_quant/individual_rois_all.RDS&quot;)
 
 #now I have successfully made sure this only contains 20X and has all of the three individuals</code></pre>
-<p>##IF Quantification yH2AX Step 1 - ROI Level</p>
+<p>##IF Quant Step 1</p>
+<p>Pull all ROIs from each image to make a combined dataframe.</p>
 <pre class="r"><code>#make sure to normalize by area to get positive red for the next step
 # ind_roi_all &lt;- ind_roi_all %&gt;%
 #   mutate(
@@ -3263,14 +3306,16 @@ emmapfort
 </table>
 </div>
 </div>
-<p>##Step 2 - Collapse to Image Level Summaries</p>
-<p>##Read in Dataframe of Image Level Summary</p>
+<p>##IF Quant Step 2</p>
+<p>Collapse ROIs into an image level summary.</p>
+<p>##Read in Image Level Summary</p>
 <pre class="r"><code>#now that I&#39;ve created the image level summary table for all individuals above, read it in so I don&#39;t have to create it multiple times
 
 roi_image_level_summary &lt;- readRDS(&quot;data/new/IF_quant/roi_image_level_summary_all.RDS&quot;)</code></pre>
 <p>##Make a Metadata Table</p>
-<p>Combine metadata with summary sheet</p>
-<p>##IF Quantification Step 2 - Image Level</p>
+<p>##Combine Metadata with Image Level Summary</p>
+<p>##IF Quant Step 2</p>
+<p>Collapse ROIs into their respective images.</p>
 <pre class="r"><code>#now I&#39;ll plot the outcome of the second step where I collapsed by image and merged the metadata with the measurements
 
 plot_step2 &lt;- ggplot(merged_image_summary, 
@@ -3350,8 +3395,8 @@ emmapfort
 </table>
 </div>
 </div>
-<p>##IF Quantification Step 3 - Select Images with Consistent Nuclei per
-Individual</p>
+<p>##IF Quant Step 3</p>
+<p>Select 3 images with consistent numbers of nuclei per individual.</p>
 <pre class="r"><code>#now I will be selecting images based on their nuclei count
 
 #first let&#39;s find the median number of nuclei per individual to get an idea of how many are there per experiment
@@ -3647,7 +3692,8 @@ emmapfort
 </table>
 </div>
 </div>
-<p>##Step 4: Normalize DOX/VEH before Individual Level Collapse</p>
+<p>##IF Quant Step 4</p>
+<p>Normalize DOX/VEH before combining images by individual.</p>
 <pre class="r"><code>#Now I want to normalize these images by max intensity
 
 merged_image_summary_norm &lt;- merged_image_summary_final %&gt;%
@@ -3770,7 +3816,8 @@ emmapfort
 </table>
 </div>
 </div>
-<p>#Step 5 Collapse by Individual</p>
+<p>#IF Quant Step 5</p>
+<p>Collapse images by individual.</p>
 <pre class="r"><code>#now I want to collapse these three images per condition into their respective individual after normalization
 #I now only have three points, one per individual, on each boxplot
 #I also performed a t-test between DOX and VEH at each timepoint to assess differences between treated and untreated within each timepoint
@@ -3895,7 +3942,8 @@ emmapfort
 #   height = plot_height,
 #   width = plot_width
 # )</code></pre>
-<p>##IF Quantification Step 6 - Add Significance Between Timepoints</p>
+<p>##IF Quant Step 6</p>
+<p>Perform significance testing between treated timepoints.</p>
 <pre class="r"><code>#Above, I compared DOX to VEH for each timepoint
 #I want to now make comparisons between DOX timepoints to see if there are any differences between each timepoint after treatment and recovery time
 #I will then add these to the plot in Illustrator to show both comparisons together since they don&#39;t want to plot correctly
@@ -4085,7 +4133,8 @@ emmapfort
 #   filename = &quot;IFQuant_Step6_DOX_TimeComp_EMP&quot;,
 #   folder = output_folder
 # )</code></pre>
-<p>Figure 1E - IF Images yH2AX from Individual 87-1 (Ind 1)</p>
+<p>Figure 1E - IF Images yH2AX from Individual 87-1 (Ind 1) (no
+code)</p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
