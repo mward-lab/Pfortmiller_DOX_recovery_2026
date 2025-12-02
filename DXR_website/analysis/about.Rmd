@@ -7,4 +7,4 @@ editor_options:
   chunk_output_type: console
 ---
 
-Describe your project.
+This project aims to measure cardiomyocyte gene expression responses to the DNA-damaging agent Doxorubicin (DOX) following acute treatment and after recovery times. 
