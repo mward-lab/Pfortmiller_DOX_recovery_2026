@@ -31,6 +31,9 @@ pre[class] {
 
 
 #Libraries
+
+Load necessary libraries for analysis.
+
 ```{r Necessary Libraries, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(readxl)
@@ -44,7 +47,8 @@ library(rstatix)
 library(ggpubr)
 ```
 
-#Define custom plot theme
+Define my custom plot theme
+
 ```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
 
 # # Define the custom theme
@@ -95,7 +99,9 @@ theme_custom <- readRDS("data/plot_theme_custom.RDS")
 
 ```
 
-#Define saving plots as pdfs and pngs
+
+Define a function to save plots as .pdf and .png
+
 ```{r pdf png saving function, echo=TRUE, message=FALSE, warning=FALSE}
 
 save_plot <- function(plot, filename, 
@@ -126,6 +132,9 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 Figure 1A - Experimental Schematic (no code)
 
 #Figure 1B - Flow Cytometry Barplot
+
+Data to create Figure 1B.
+
 ```{r Flow Cytometry Barplot, fig.width=6, fig.height=6, warning=FALSE}
 #Individuals for Flow Cytometry
 #1 = 87-1 (F)
@@ -185,6 +194,9 @@ print(flow_plot_tnnt2)
 ```
 
 #Figure 1C - Dose Response Curves
+
+Data for Figure 1C.
+
 ```{r Full DRC dataset, results=FALSE}
 AllData <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx",
      sheet = "Fin_Sheet_Analysis")
@@ -211,6 +223,7 @@ Ind5_17_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments
 ```
 
 ##Filter for Time and Treatment Groups
+
 ```{r Filter Data, echo=FALSE}
 ####all ind####
 dox_all <- AllData %>% filter(Drug =="DOX")
@@ -260,6 +273,7 @@ dmso24hr17 <- dmso_17 %>% filter(FinTime == "24hr")
 ```
 
 ##Analysis of Raw Data
+
 ```{r Boxplots Raw Data 24hr}
 
 #####DOX Samples#####
@@ -406,7 +420,9 @@ The following steps were taken in analysis:
 
 5. Divide initial 0hr value from final timepoint (24, 48, 72) value 
 
-##Remove BG Wells
+##Remove Background Wells
+
+
 ```{r Boxplots BG removed 24hr}
 #####DOX Samples#####
 #dox 78-1 no BG 24HR
@@ -539,7 +555,9 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG ~ dmso24hr17$Conc,
 ```
 
 Now let's plot the next step: subtracting the empty wells
+
 ##Subtract Empty Wells
+
 ```{r Boxplots Empty Wells Removed 24hr}
 #####DOX Samples#####
 #dox 78-1 Empty Wells 24HR
@@ -672,7 +690,9 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low ~ dmso24hr17$Conc,
 ```
 
 Now let's plot the third step: dividing the matched vehicle values
+
 ##Divide by Matched Vehicle
+
 ```{r Boxplots Matched Vehicle Divided 24hr}
 #####DOX Samples#####
 #dox 78-1 Veh 24HR
@@ -805,7 +825,9 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso24hr17$Conc,
 ```
 
 Now for the final step, dividing the final timepoint by the initial baseline reading at 0hr
+
 ##Divide Final Timepoint by Baseline
+
 ```{r Boxplots Final Data 24hr}
 #####DOX Samples#####
 #dox All 24HR
@@ -867,6 +889,7 @@ boxplot(dmso24hr17$Ind3_17_Div ~ dmso24hr17$Conc,
 ```
 
 ##Fit Models for DRC
+
 ```{r Data for Models DRCs}
 #these sheets are not numbered properly by individual because they're in order of experiments
 dox24tox_75 <- dox24hr75 %>% mutate(response = Ind1_75_Div*100)
@@ -900,6 +923,7 @@ median_ld50 <- median(c(ed78, ed75, ed17))
 ```
 
 ##Plot DRC
+
 ```{r Final plot with exports}
 # Define output folder and base filename
 # output_folder
@@ -1013,9 +1037,14 @@ legend("bottomleft",
 
 ```
 
-#Figure 1D - yH2AX Quantification (Immunofluorescence Staining)
+#Figure 1D 
+
+yH2AX Quantification (Immunofluorescence Staining).
 
 ##Fiji/ImageJ Macros
+
+Macros used in ImageJ/Fiji to identify nuclear ROIs from yH2AX IF staining.
+
 ```{r Macros Run in Fiji/ImageJ}
 #these are the macros that I made for ImageJ/Fiji and are included for reference only
 #they will not run in R
@@ -1319,6 +1348,7 @@ legend("bottomleft",
 ```
 
 ##Read in ROI Summaries
+
 ```{r Read in ROI summary from IF macros}
 #read in the data from the macros that I ran for each individual
 #I am going to focus on 20X magnification images, remove any non-20X samples 
@@ -1371,6 +1401,7 @@ ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 ```
 
 ##Create Dataframes
+
 ```{r Create Summary Sheet all Ind}
 #I want to combine all of these csv files into one dataframe
 
@@ -1402,7 +1433,10 @@ ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 
 ```
 
-##IF Quantification yH2AX Step 1 - ROI Level
+##IF Quant Step 1 
+
+Pull all ROIs from each image to make a combined dataframe.
+
 ```{r Step 1 - ROI Level All Individuals}
 
 #make sure to normalize by area to get positive red for the next step
@@ -1454,7 +1488,10 @@ plot_step1
 
 ```
 
-##Step 2 - Collapse to Image Level Summaries
+##IF Quant Step 2
+
+Collapse ROIs into an image level summary.
+
 ```{r Image Level Summary Dataframe, message=FALSE, warning=FALSE, include=FALSE}
 
 #calculate the area for each individual level roi before passing through function
@@ -1519,7 +1556,8 @@ plot_step1
 
 ```
 
-##Read in Dataframe of Image Level Summary
+##Read in Image Level Summary
+
 ```{r ROI Summary Dataframe}
 #now that I've created the image level summary table for all individuals above, read it in so I don't have to create it multiple times
 
@@ -1528,6 +1566,7 @@ roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_al
 ```
 
 ##Make a Metadata Table
+
 ```{r Metadata Table Image Level, warning=FALSE, include=FALSE}
 #now I want to make a metadata table with all of the relevant info 
 #these files come from my DAPI Counts new folder from each individual
@@ -1618,7 +1657,8 @@ roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_al
 
 ```
 
-Combine metadata with summary sheet
+##Combine Metadata with Image Level Summary
+
 ```{r Summary and Metadata, include = FALSE}
 #Now that I've made my image_level_metadata sheet match to my roi_image_level_summary, let's combine them
 
@@ -1651,7 +1691,10 @@ merged_image_summary <- readRDS("data/new/IF_quant/merged_image_summary_all.RDS"
 
 ```
 
-##IF Quantification Step 2 - Image Level
+##IF Quant Step 2
+
+Collapse ROIs into their respective images.
+
 ```{r Step 2 - Collapse by Image}
 #now I'll plot the outcome of the second step where I collapsed by image and merged the metadata with the measurements
 
@@ -1677,7 +1720,10 @@ plot_step2
 
 ```
 
-##IF Quantification Step 3 - Select Images with Consistent Nuclei per Individual
+##IF Quant Step 3 
+
+Select 3 images with consistent numbers of nuclei per individual.
+
 ```{r Step 3 - Images by Consistent Nuclei Count}
 #now I will be selecting images based on their nuclei count
 
@@ -1856,7 +1902,11 @@ plot_step3_test
 
 ```
 
-##Step 4: Normalize DOX/VEH before Individual Level Collapse
+##IF Quant Step 4
+
+Normalize DOX/VEH before combining images by individual.
+
+
 ```{r Step 4 - Normalization by Max Intensity}
 
 #Now I want to normalize these images by max intensity
@@ -1925,7 +1975,11 @@ plot_step4
 
 ```
 
-#Step 5 Collapse by Individual
+#IF Quant Step 5
+
+Collapse images by individual.
+
+
 ```{r Step 5 - Collapse by Individual}
 #now I want to collapse these three images per condition into their respective individual after normalization
 #I now only have three points, one per individual, on each boxplot
@@ -1995,7 +2049,10 @@ plot_step5
 # )
 
 ```
-##IF Quantification Step 6 - Add Significance Between Timepoints
+##IF Quant Step 6
+
+Perform significance testing between treated timepoints.
+
 ```{r Step 6 - Significance Between Timepoints DOX}
 #Above, I compared DOX to VEH for each timepoint
 #I want to now make comparisons between DOX timepoints to see if there are any differences between each timepoint after treatment and recovery time
@@ -2131,4 +2188,4 @@ plot_step6_dox_time
 
 ```
 
-Figure 1E - IF Images yH2AX from Individual 87-1 (Ind 1)
+Figure 1E - IF Images yH2AX from Individual 87-1 (Ind 1) (no code)
