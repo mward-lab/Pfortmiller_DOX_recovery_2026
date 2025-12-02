@@ -30,7 +30,7 @@ pre[class] {
 ```
 
 
-#Libraries
+# Libraries
 
 Load necessary libraries for analysis.
 
@@ -131,7 +131,7 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 
 Figure 1A - Experimental Schematic (no code)
 
-#Figure 1B - Flow Cytometry Barplot
+# Figure 1B - Flow Cytometry Barplot
 
 Data to create Figure 1B.
 
@@ -193,7 +193,7 @@ print(flow_plot_tnnt2)
 
 ```
 
-#Figure 1C - Dose Response Curves
+# Figure 1C - Dose Response Curves
 
 Data for Figure 1C.
 
@@ -222,7 +222,7 @@ Ind5_17_data <- read_excel("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments
 
 ```
 
-##Filter for Time and Treatment Groups
+## Filter for Time and Treatment Groups
 
 ```{r Filter Data, echo=FALSE}
 ####all ind####
@@ -272,7 +272,7 @@ dmso24hr17 <- dmso_17 %>% filter(FinTime == "24hr")
 
 ```
 
-##Analysis of Raw Data
+## Analysis of Raw Data
 
 ```{r Boxplots Raw Data 24hr}
 
@@ -410,7 +410,7 @@ Now that I've taken a look at the raw data, let's look at the analyzed data step
 
 The following steps were taken in analysis:
 
-1. Import raw fluorescence values (RFLU) from platereader, baseline 0hr and final timepoints
+1. Import raw fluorescence values (RFLU) from platereader, baseline 0hr and final timepoint
 
 2. Subtract background wells (prestoblue only wells) by plate
 
@@ -420,7 +420,7 @@ The following steps were taken in analysis:
 
 5. Divide initial 0hr value from final timepoint (24, 48, 72) value 
 
-##Remove Background Wells
+## Remove Background Wells
 
 
 ```{r Boxplots BG removed 24hr}
@@ -556,7 +556,7 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG ~ dmso24hr17$Conc,
 
 Now let's plot the next step: subtracting the empty wells
 
-##Subtract Empty Wells
+## Subtract Empty Wells
 
 ```{r Boxplots Empty Wells Removed 24hr}
 #####DOX Samples#####
@@ -691,7 +691,7 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low ~ dmso24hr17$Conc,
 
 Now let's plot the third step: dividing the matched vehicle values
 
-##Divide by Matched Vehicle
+## Divide by Matched Vehicle
 
 ```{r Boxplots Matched Vehicle Divided 24hr}
 #####DOX Samples#####
@@ -826,7 +826,7 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso24hr17$Conc,
 
 Now for the final step, dividing the final timepoint by the initial baseline reading at 0hr
 
-##Divide Final Timepoint by Baseline
+## Divide Final Timepoint by Baseline
 
 ```{r Boxplots Final Data 24hr}
 #####DOX Samples#####
@@ -888,7 +888,7 @@ boxplot(dmso24hr17$Ind3_17_Div ~ dmso24hr17$Conc,
 )
 ```
 
-##Fit Models for DRC
+## Fit Models for DRC
 
 ```{r Data for Models DRCs}
 #these sheets are not numbered properly by individual because they're in order of experiments
@@ -922,7 +922,7 @@ median_ld50 <- median(c(ed78, ed75, ed17))
 
 ```
 
-##Plot DRC
+## Plot DRC
 
 ```{r Final plot with exports}
 # Define output folder and base filename
@@ -1037,11 +1037,11 @@ legend("bottomleft",
 
 ```
 
-#Figure 1D 
+# Figure 1D 
 
 yH2AX Quantification (Immunofluorescence Staining).
 
-##Fiji/ImageJ Macros
+## Fiji/ImageJ Macros
 
 Macros used in ImageJ/Fiji to identify nuclear ROIs from yH2AX IF staining.
 
@@ -1347,7 +1347,7 @@ Macros used in ImageJ/Fiji to identify nuclear ROIs from yH2AX IF staining.
 
 ```
 
-##Read in ROI Summaries
+## Read in ROI Summaries
 
 ```{r Read in ROI summary from IF macros}
 #read in the data from the macros that I ran for each individual
@@ -1400,7 +1400,7 @@ ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 
 ```
 
-##Create Dataframes
+## Create Dataframes
 
 ```{r Create Summary Sheet all Ind}
 #I want to combine all of these csv files into one dataframe
@@ -1433,7 +1433,7 @@ ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 
 ```
 
-##IF Quant Step 1 
+## IF Quant Step 1 
 
 Pull all ROIs from each image to make a combined dataframe.
 
@@ -1488,7 +1488,7 @@ plot_step1
 
 ```
 
-##IF Quant Step 2
+## IF Quant Step 2
 
 Collapse ROIs into an image level summary.
 
@@ -1556,7 +1556,7 @@ Collapse ROIs into an image level summary.
 
 ```
 
-##Read in Image Level Summary
+## Read in Image Level Summary
 
 ```{r ROI Summary Dataframe}
 #now that I've created the image level summary table for all individuals above, read it in so I don't have to create it multiple times
@@ -1565,7 +1565,7 @@ roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_al
 
 ```
 
-##Make a Metadata Table
+## Make a Metadata Table
 
 ```{r Metadata Table Image Level, warning=FALSE, include=FALSE}
 #now I want to make a metadata table with all of the relevant info 
@@ -1657,7 +1657,7 @@ roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_al
 
 ```
 
-##Combine Metadata with Image Level Summary
+## Combine Metadata with Image Level Summary
 
 ```{r Summary and Metadata, include = FALSE}
 #Now that I've made my image_level_metadata sheet match to my roi_image_level_summary, let's combine them
@@ -1691,7 +1691,7 @@ merged_image_summary <- readRDS("data/new/IF_quant/merged_image_summary_all.RDS"
 
 ```
 
-##IF Quant Step 2
+## IF Quant Step 2
 
 Collapse ROIs into their respective images.
 
@@ -1720,7 +1720,7 @@ plot_step2
 
 ```
 
-##IF Quant Step 3 
+## IF Quant Step 3 
 
 Select 3 images with consistent numbers of nuclei per individual.
 
@@ -1902,7 +1902,7 @@ plot_step3_test
 
 ```
 
-##IF Quant Step 4
+## IF Quant Step 4
 
 Normalize DOX/VEH before combining images by individual.
 
@@ -1975,7 +1975,7 @@ plot_step4
 
 ```
 
-#IF Quant Step 5
+## IF Quant Step 5
 
 Collapse images by individual.
 
@@ -2049,7 +2049,7 @@ plot_step5
 # )
 
 ```
-##IF Quant Step 6
+## IF Quant Step 6
 
 Perform significance testing between treated timepoints.
 
