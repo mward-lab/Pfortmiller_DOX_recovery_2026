@@ -295,12 +295,6 @@ div.tocify {
   border-radius: 0px;
 }
 
-.tocify-subheader {
-  display: inline;
-}
-.tocify-subheader .tocify-item {
-  font-size: 0.95em;
-}
 
 </style>
 
@@ -527,15 +521,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466ctargetblank1fd9c3ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1d3f09e97d37fc550dd68f2f304c25347e856f22targetblank1d3f09ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/emmapfort/DXR_Project/tree/1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466c" target="_blank">1fd9c3c</a>
+<a href="https://github.com/emmapfort/DXR_Project/tree/1d3f09e97d37fc550dd68f2f304c25347e856f22" target="_blank">1d3f09e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466ctargetblank1fd9c3ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree1d3f09e97d37fc550dd68f2f304c25347e856f22targetblank1d3f09ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -545,7 +539,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/emmapfort/DXR_Project/tree/1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466c" target="_blank">1fd9c3c</a>.
+<a href="https://github.com/emmapfort/DXR_Project/tree/1d3f09e97d37fc550dd68f2f304c25347e856f22" target="_blank">1d3f09e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -750,6 +744,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/1d3f09e97d37fc550dd68f2f304c25347e856f22/analysis/Figure1.Rmd" target="_blank">1d3f09e</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Add TOC
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/Figure1.html" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/emmapfort/DXR_Project/blob/1fd9c3ca0c7933200cc4dde53e02cbb2b1cb466c/analysis/Figure1.Rmd" target="_blank">1fd9c3c</a>
 </td>
 <td>
@@ -797,7 +825,7 @@ pre[class] {
   
 }
 </style>
-<p>Libraries</p>
+<p>#Libraries</p>
 <pre class="r"><code>library(tidyverse)
 library(readxl)
 library(readr)
@@ -808,7 +836,7 @@ library(stringr)
 library(purrr)
 library(rstatix)
 library(ggpubr)</code></pre>
-<p>Define custom plot theme</p>
+<p>#Define custom plot theme</p>
 <pre class="r"><code># # Define the custom theme
 # plot_theme_custom &lt;- function() {
 #   theme_minimal() +
@@ -854,7 +882,7 @@ library(ggpubr)</code></pre>
 # saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
 
 theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
-<p>Define saving plots as pdfs and pngs</p>
+<p>#Define saving plots as pdfs and pngs</p>
 <pre class="r"><code>save_plot &lt;- function(plot, filename, 
                       folder = &quot;.&quot;, 
                       width = 8, 
@@ -879,7 +907,7 @@ output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materia
 #save plot function created
 #to use: just define the plot name, filename_base, width, height</code></pre>
 <p>Figure 1A - Experimental Schematic (no code)</p>
-<p>Figure 1B - Flow Cytometry Barplot</p>
+<p>#Figure 1B - Flow Cytometry Barplot</p>
 <pre class="r"><code>#Individuals for Flow Cytometry
 #1 = 87-1 (F)
 #2 = 78-1 (F)
@@ -927,6 +955,43 @@ flow_plot_tnnt2 &lt;- ggplot(flow_dxr_df, aes(x = Ind, y = Purity)) +
 
 print(flow_plot_tnnt2)</code></pre>
 <p><img src="figure/Figure1.Rmd/Flow%20Cytometry%20Barplot-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Flow-Cytometry-Barplot-1">
+Past versions of "Flow Cytometry Barplot-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Flow-Cytometry-Barplot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Flow Cytometry Barplot-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># save_plot(
 #   plot = flow_plot_tnnt2,
 #   filename = &quot;FlowCytometry_TNNT2_withrep_EMP&quot;,
@@ -934,7 +999,7 @@ print(flow_plot_tnnt2)</code></pre>
 #   width = 2.8,
 #   height = 5.25
 # )</code></pre>
-<p>Figure 1C - Dose Response Curves</p>
+<p>#Figure 1C - Dose Response Curves</p>
 <pre class="r"><code>AllData &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx&quot;,
      sheet = &quot;Fin_Sheet_Analysis&quot;)
 # View(AllData)
@@ -956,9 +1021,8 @@ Ind5_17_data &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Exp
 # View(Ind5_17_data)
 
 #this is still ind 5 according to my RNAseq - 17-3 M</code></pre>
-<p>Now that I’ve imported my data, let’s go ahead and filter the data to
-reflect time and treatment groups.</p>
-<p>Analysis of Raw Data</p>
+<p>##Filter for Time and Treatment Groups</p>
+<p>##Analysis of Raw Data</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -981,6 +1045,43 @@ boxplot(dox24hr78$Ind2_78_Fin ~ dox24hr78$Conc,
         main = &quot;DOXORUBICIN 24hr 78-1 Raw Data&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Raw-Data-24hr-1">
+Past versions of "Boxplots Raw Data 24hr-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Raw-Data-24hr-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Raw Data 24hr-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 75-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1002,6 +1103,43 @@ boxplot(dox24hr75$Ind1_75_Fin ~ dox24hr75$Conc,
         main = &quot;DOXORUBICIN 24hr 75-1 Raw Data&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Raw-Data-24hr-2">
+Past versions of "Boxplots Raw Data 24hr-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Raw-Data-24hr-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Raw Data 24hr-2.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 17-3 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1023,6 +1161,43 @@ boxplot(dox24hr17$Ind3_17_Fin ~ dox24hr17$Conc,
         main = &quot;DOXORUBICIN 24hr 17-3 Raw Data&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Raw-Data-24hr-3">
+Past versions of "Boxplots Raw Data 24hr-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Raw-Data-24hr-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Raw Data 24hr-3.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#####DMSO samples#####
 #DMSO 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1045,6 +1220,43 @@ boxplot(dmso24hr78$Ind2_78_Fin ~ dmso24hr78$Conc,
         main = &quot;DMSO VEHICLE 24hr 78-1&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Raw-Data-24hr-4">
+Past versions of "Boxplots Raw Data 24hr-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Raw-Data-24hr-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Raw Data 24hr-4.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 75-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1066,6 +1278,43 @@ boxplot(dmso24hr75$Ind1_75_Fin ~ dmso24hr75$Conc,
         main = &quot;DMSO VEHICLE 24hr 75-1&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Raw-Data-24hr-5">
+Past versions of "Boxplots Raw Data 24hr-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Raw-Data-24hr-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Raw Data 24hr-5.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 17-3 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1087,6 +1336,43 @@ boxplot(dmso24hr17$Ind3_17_Fin ~ dmso24hr17$Conc,
         main = &quot;DMSO VEHICLE 24hr 17-3&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Raw%20Data%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Raw-Data-24hr-6">
+Past versions of "Boxplots Raw Data 24hr-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Raw-Data-24hr-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Raw Data 24hr-6.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Now that I’ve taken a look at the raw data, let’s look at the
 analyzed data step by step</p>
 <p>The following steps were taken in analysis:</p>
@@ -1102,6 +1388,7 @@ cells/well) by plate</p></li>
 <li><p>Divide initial 0hr value from final timepoint (24, 48, 72)
 value</p></li>
 </ol>
+<p>##Remove BG Wells</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 no BG 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1124,6 +1411,43 @@ boxplot(dox24hr78$Ind2_78_Fin_noBG ~ dox24hr78$Conc,
         main = &quot;DOXORUBICIN 24hr 78-1 no BG&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-BG-removed-24hr-1">
+Past versions of "Boxplots BG removed 24hr-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-BG-removed-24hr-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots BG removed 24hr-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 75-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1145,6 +1469,43 @@ boxplot(dox24hr75$Ind1_75_Fin_noBG ~ dox24hr75$Conc,
         main = &quot;DOXORUBICIN 24hr 75-1 no BG&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-BG-removed-24hr-2">
+Past versions of "Boxplots BG removed 24hr-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-BG-removed-24hr-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots BG removed 24hr-2.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 17-3 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1166,6 +1527,43 @@ boxplot(dox24hr17$Ind3_17_Fin_noBG ~ dox24hr17$Conc,
         main = &quot;DOXORUBICIN 24hr 17-3 no BG&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-BG-removed-24hr-3">
+Past versions of "Boxplots BG removed 24hr-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-BG-removed-24hr-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots BG removed 24hr-3.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#####DMSO samples#####
 #DMSO 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1188,6 +1586,43 @@ boxplot(dmso24hr78$Ind2_78_Fin_noBG ~ dmso24hr78$Conc,
         main = &quot;DMSO VEHICLE 24hr 78-1 no BG&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-BG-removed-24hr-4">
+Past versions of "Boxplots BG removed 24hr-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-BG-removed-24hr-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots BG removed 24hr-4.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 75-1 no BG 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1209,6 +1644,43 @@ boxplot(dmso24hr75$Ind1_75_Fin_noBG ~ dmso24hr75$Conc,
         main = &quot;DMSO VEHICLE 24hr 75-1 no BG&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-BG-removed-24hr-5">
+Past versions of "Boxplots BG removed 24hr-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-BG-removed-24hr-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots BG removed 24hr-5.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 17-3 no BG 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1230,7 +1702,45 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG ~ dmso24hr17$Conc,
         main = &quot;DMSO VEHICLE 24hr 17-3 no BG&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20BG%20removed%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Now let’s plot the next step: subtracting the empty wells</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-BG-removed-24hr-6">
+Past versions of "Boxplots BG removed 24hr-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-BG-removed-24hr-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots BG removed 24hr-6.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now let’s plot the next step: subtracting the empty wells ##Subtract
+Empty Wells</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 Empty Wells 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1253,6 +1763,44 @@ boxplot(dox24hr78$Ind2_78_Fin_noBG_Low ~ dox24hr78$Conc,
         main = &quot;DOXORUBICIN 24hr 78-1 no BG&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-1">
+Past versions of "Boxplots Empty Wells Removed 24hr-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Empty Wells Removed 24hr-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 75-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1274,6 +1822,44 @@ boxplot(dox24hr75$Ind1_75_Fin_noBG_Low ~ dox24hr75$Conc,
         main = &quot;DOXORUBICIN 24hr 75-1 no BG Empty&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-2">
+Past versions of "Boxplots Empty Wells Removed 24hr-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Empty Wells Removed 24hr-2.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 17-3 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1295,6 +1881,44 @@ boxplot(dox24hr17$Ind3_17_Fin_noBG_Low ~ dox24hr17$Conc,
         main = &quot;DOXORUBICIN 24hr 17-3 no BG Empty&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-3">
+Past versions of "Boxplots Empty Wells Removed 24hr-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-3"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Empty Wells Removed 24hr-3.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#####DMSO samples#####
 #DMSO 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1317,6 +1941,44 @@ boxplot(dmso24hr78$Ind2_78_Fin_noBG_Low ~ dmso24hr78$Conc,
         main = &quot;DMSO VEHICLE 24hr 78-1 no BG Empty&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-4">
+Past versions of "Boxplots Empty Wells Removed 24hr-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-4"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Empty Wells Removed 24hr-4.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 75-1 no BG Empty 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1338,6 +2000,44 @@ boxplot(dmso24hr75$Ind1_75_Fin_noBG_Low ~ dmso24hr75$Conc,
         main = &quot;DMSO VEHICLE 24hr 75-1 no BG Empty&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-5">
+Past versions of "Boxplots Empty Wells Removed 24hr-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-5"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Empty Wells Removed 24hr-5.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 17-3 no BG Empty 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1359,8 +2059,46 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low ~ dmso24hr17$Conc,
         main = &quot;DMSO VEHICLE 24hr 17-3 no BG Empty&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Empty%20Wells%20Removed%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Now let’s plot the third step: dividing the matched vehicle
-values</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-6">
+Past versions of "Boxplots Empty Wells Removed 24hr-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Empty-Wells-Removed-24hr-6"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Empty Wells Removed 24hr-6.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now let’s plot the third step: dividing the matched vehicle values
+##Divide by Matched Vehicle</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 Veh 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1383,6 +2121,44 @@ boxplot(dox24hr78$Ind2_78_Fin_noBG_Low_Veh ~ dox24hr78$Conc,
         main = &quot;DOXORUBICIN 24hr 78-1 no BG Veh&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-1">
+Past versions of "Boxplots Matched Vehicle Divided 24hr-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Matched Vehicle Divided 24hr-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 75-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1404,6 +2180,44 @@ boxplot(dox24hr75$Ind1_75_Fin_noBG_Low_Veh ~ dox24hr75$Conc,
         main = &quot;DOXORUBICIN 24hr 75-1 no BG Empty Veh&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-2">
+Past versions of "Boxplots Matched Vehicle Divided 24hr-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Matched Vehicle Divided 24hr-2.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#dox 17-3 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1425,6 +2239,44 @@ boxplot(dox24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dox24hr17$Conc,
         main = &quot;DOXORUBICIN 24hr 17-3 no BG Empty Veh&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-3">
+Past versions of "Boxplots Matched Vehicle Divided 24hr-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-3"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Matched Vehicle Divided 24hr-3.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#####DMSO samples#####
 #DMSO 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1447,6 +2299,44 @@ boxplot(dmso24hr78$Ind2_78_Fin_noBG_Low_Veh ~ dmso24hr78$Conc,
         main = &quot;DMSO VEHICLE 24hr 78-1 no BG Empty Veh&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-4">
+Past versions of "Boxplots Matched Vehicle Divided 24hr-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-4"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Matched Vehicle Divided 24hr-4.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 75-1 no BG Empty 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1468,6 +2358,44 @@ boxplot(dmso24hr75$Ind1_75_Fin_noBG_Low_Veh ~ dmso24hr75$Conc,
         main = &quot;DMSO VEHICLE 24hr 75-1 no BG Empty Veh&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-5">
+Past versions of "Boxplots Matched Vehicle Divided 24hr-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-5"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Matched Vehicle Divided 24hr-5.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#DMSO 17-3 no BG Empty 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
 layout(matrix(c(1, 2, 1, 3), nrow = 2, ncol = 2), heights = c(0.5, 2, 2, 2))
@@ -1489,8 +2417,46 @@ boxplot(dmso24hr17$Ind3_17_Fin_noBG_Low_Veh ~ dmso24hr17$Conc,
         main = &quot;DMSO VEHICLE 24hr 17-3 no BG Empty Veh&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Matched%20Vehicle%20Divided%2024hr-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-6">
+Past versions of "Boxplots Matched Vehicle Divided 24hr-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Matched-Vehicle-Divided-24hr-6"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Matched Vehicle Divided 24hr-6.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Now for the final step, dividing the final timepoint by the initial
-baseline reading at 0hr</p>
+baseline reading at 0hr ##Divide Final Timepoint by Baseline</p>
 <pre class="r"><code>#####DOX Samples#####
 #dox All 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1520,6 +2486,43 @@ boxplot(dox24hr17$Ind3_17_Div ~ dox24hr17$Conc,
         main = &quot;17-3 Div&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Final%20Data%2024hr-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Final-Data-24hr-1">
+Past versions of "Boxplots Final Data 24hr-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Final-Data-24hr-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Final Data 24hr-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#####DMSO samples#####
 #DMSO All 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1549,7 +2552,44 @@ boxplot(dmso24hr17$Ind3_17_Div ~ dmso24hr17$Conc,
         main = &quot;17-3 Div&quot;
 )</code></pre>
 <p><img src="figure/Figure1.Rmd/Boxplots%20Final%20Data%2024hr-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Fit Models for DRC</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Boxplots-Final-Data-24hr-2">
+Past versions of "Boxplots Final Data 24hr-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Boxplots-Final-Data-24hr-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Boxplots Final Data 24hr-2.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>##Fit Models for DRC</p>
 <pre class="r"><code>#these sheets are not numbered properly by individual because they&#39;re in order of experiments
 dox24tox_75 &lt;- dox24hr75 %&gt;% mutate(response = Ind1_75_Div*100)
 summary(dox24tox_75$response)</code></pre>
@@ -1595,7 +2635,7 @@ Estimated effective doses
 e:1:50   9.7850     1.7753  6.1771 13.3928</code></pre>
 <pre class="r"><code>#find the median ld50 for plotting
 median_ld50 &lt;- median(c(ed78, ed75, ed17))</code></pre>
-<p>Plot DRC</p>
+<p>##Plot DRC</p>
 <pre class="r"><code># Define output folder and base filename
 # output_folder
 # base_name &lt;- &quot;viability_curve_scaled&quot;
@@ -1642,6 +2682,43 @@ legend(&quot;bottomleft&quot;,
        lwd = 3, lty = c(1,1,1), cex = 1,
        title = &quot;Individuals&quot;)</code></pre>
 <p><img src="figure/Figure1.Rmd/Final%20plot%20with%20exports-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Final-plot-with-exports-1">
+Past versions of "Final plot with exports-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Final-plot-with-exports-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Final plot with exports-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># dev.off()
 
 #export as svg
@@ -1705,8 +2782,8 @@ legend(&quot;bottomleft&quot;,
 # dev.off()
 
 #saved code for saving the plots for posterity!</code></pre>
-<p>Figure 1D - yH2AX Quantification (Immunofluorescence Staining)</p>
-<p>Fiji/ImageJ Macros</p>
+<p>#Figure 1D - yH2AX Quantification (Immunofluorescence Staining)</p>
+<p>##Fiji/ImageJ Macros</p>
 <pre class="r"><code>#these are the macros that I made for ImageJ/Fiji and are included for reference only
 #they will not run in R
 
@@ -2005,7 +3082,7 @@ legend(&quot;bottomleft&quot;,
 # }
 
 #these two macros gave the desired output of a csv file with all of the parameters I needed</code></pre>
-<p>Read in ROI Summaries</p>
+<p>##Read in ROI Summaries</p>
 <pre class="r"><code>#read in the data from the macros that I ran for each individual
 #I am going to focus on 20X magnification images, remove any non-20X samples 
 #ensure that you label each with respective individual number for ease later on
@@ -2052,7 +3129,7 @@ ind1_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS&q
 ind3_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS&quot;)
 
 ind4_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS&quot;)</code></pre>
-<p>Create Dataframes</p>
+<p>##Create Dataframes</p>
 <pre class="r"><code>#I want to combine all of these csv files into one dataframe
 
 #ensure that I am removing secondary only controls and any other magnifications (ie 10X and 40X images)
@@ -2080,7 +3157,7 @@ ind4_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS&q
 # saveRDS(ind_roi_all, &quot;data/new/IF_quant/individual_rois_all.RDS&quot;)
 
 #now I have successfully made sure this only contains 20X and has all of the three individuals</code></pre>
-<p>IF Quantification yH2AX Step 1 - ROI Level</p>
+<p>##IF Quantification yH2AX Step 1 - ROI Level</p>
 <pre class="r"><code>#make sure to normalize by area to get positive red for the next step
 # ind_roi_all &lt;- ind_roi_all %&gt;%
 #   mutate(
@@ -2148,14 +3225,52 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/Figure1.Rmd/Step%201%20-%20ROI%20Level%20All%20Individuals-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Step 2 - Collapse to Image Level Summaries</p>
-<p>Read in Dataframe of Image Level Summary</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-1---ROI-Level-All-Individuals-1">
+Past versions of "Step 1 - ROI Level All Individuals-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-1---ROI-Level-All-Individuals-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Step 1 - ROI Level All Individuals-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>##Step 2 - Collapse to Image Level Summaries</p>
+<p>##Read in Dataframe of Image Level Summary</p>
 <pre class="r"><code>#now that I&#39;ve created the image level summary table for all individuals above, read it in so I don&#39;t have to create it multiple times
 
 roi_image_level_summary &lt;- readRDS(&quot;data/new/IF_quant/roi_image_level_summary_all.RDS&quot;)</code></pre>
-<p>Make a Metadata Table</p>
+<p>##Make a Metadata Table</p>
 <p>Combine metadata with summary sheet</p>
-<p>IF Quantification Step 2 - Image Level</p>
+<p>##IF Quantification Step 2 - Image Level</p>
 <pre class="r"><code>#now I&#39;ll plot the outcome of the second step where I collapsed by image and merged the metadata with the measurements
 
 plot_step2 &lt;- ggplot(merged_image_summary, 
@@ -2198,7 +3313,44 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/Figure1.Rmd/Step%202%20-%20Collapse%20by%20Image-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>IF Quantification Step 3 - Select Images with Consistent Nuclei per
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-2---Collapse-by-Image-1">
+Past versions of "Step 2 - Collapse by Image-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-2---Collapse-by-Image-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Step 2 - Collapse by Image-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>##IF Quantification Step 3 - Select Images with Consistent Nuclei per
 Individual</p>
 <pre class="r"><code>#now I will be selecting images based on their nuclei count
 
@@ -2342,6 +3494,44 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/Figure1.Rmd/Step%203%20-%20Images%20by%20Consistent%20Nuclei%20Count-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-3---Images-by-Consistent-Nuclei-Count-1">
+Past versions of "Step 3 - Images by Consistent Nuclei Count-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-3---Images-by-Consistent-Nuclei-Count-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Step 3 - Images by Consistent Nuclei Count-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#do stats for step 3 boxplot between DOX and VEH at each timepoint for comparison
 ttests_step3 &lt;- merged_image_summary_final %&gt;%
   group_by(Timepoint) %&gt;%
@@ -2419,7 +3609,45 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/Figure1.Rmd/Step%203%20-%20Images%20by%20Consistent%20Nuclei%20Count-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Step 4: Normalize DOX/VEH before Individual Level Collapse</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-3---Images-by-Consistent-Nuclei-Count-2">
+Past versions of "Step 3 - Images by Consistent Nuclei Count-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-3---Images-by-Consistent-Nuclei-Count-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Step 3 - Images by Consistent Nuclei Count-2.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>##Step 4: Normalize DOX/VEH before Individual Level Collapse</p>
 <pre class="r"><code>#Now I want to normalize these images by max intensity
 
 merged_image_summary_norm &lt;- merged_image_summary_final %&gt;%
@@ -2504,7 +3732,45 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/Figure1.Rmd/Step%204%20-%20Normalization%20by%20Max%20Intensity-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Step 5 Collapse by Individual</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-4---Normalization-by-Max-Intensity-1">
+Past versions of "Step 4 - Normalization by Max Intensity-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-4---Normalization-by-Max-Intensity-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Step 4 - Normalization by Max Intensity-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>#Step 5 Collapse by Individual</p>
 <pre class="r"><code>#now I want to collapse these three images per condition into their respective individual after normalization
 #I now only have three points, one per individual, on each boxplot
 #I also performed a t-test between DOX and VEH at each timepoint to assess differences between treated and untreated within each timepoint
@@ -2584,6 +3850,44 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/Figure1.Rmd/Step%205%20-%20Collapse%20by%20Individual-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-5---Collapse-by-Individual-1">
+Past versions of "Step 5 - Collapse by Individual-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-5---Collapse-by-Individual-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Step 5 - Collapse by Individual-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># save_plot(
 #   plot = plot_step5,
 #   filename = &quot;IFQuant_Step5_Final_EMP&quot;,
@@ -2591,7 +3895,7 @@ font family not found in Windows font database</code></pre>
 #   height = plot_height,
 #   width = plot_width
 # )</code></pre>
-<p>IF Quantification Step 6 - Add Significance Between Timepoints</p>
+<p>##IF Quantification Step 6 - Add Significance Between Timepoints</p>
 <pre class="r"><code>#Above, I compared DOX to VEH for each timepoint
 #I want to now make comparisons between DOX timepoints to see if there are any differences between each timepoint after treatment and recovery time
 #I will then add these to the plot in Illustrator to show both comparisons together since they don&#39;t want to plot correctly
@@ -2738,6 +4042,44 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/Figure1.Rmd/Step%206%20-%20Significance%20Between%20Timepoints%20DOX-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-6---Significance-Between-Timepoints-DOX-1">
+Past versions of "Step 6 - Significance Between Timepoints DOX-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-6---Significance-Between-Timepoints-DOX-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/bf08ae2852287443bd3f8d4c8eb2b05c5da0e281/docs/figure/Figure1.Rmd/Step 6 - Significance Between Timepoints DOX-1.png" target="_blank">bf08ae2</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># save_plot(
 #   plot = plot_step6_dox_time,
 #   filename = &quot;IFQuant_Step6_DOX_TimeComp_EMP&quot;,
@@ -2879,7 +4221,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3,h4",
+      selectors: "h1,h2,h3",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
@@ -2888,7 +4230,7 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = false;
+    options.showAndHide = true;
     options.smoothScroll = true;
 
     // tocify
