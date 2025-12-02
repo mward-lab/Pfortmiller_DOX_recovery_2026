@@ -378,7 +378,7 @@ tx_col <- list(
 #   )
 
 
-# fC_DOXCounts <- readRDS("data/fC_DOXCounts.RDS")
+# fC_DOXCounts <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/fC_DOXCounts.RDS")
 # #factor individual
 # fC_DOXCounts <- fC_DOXCounts %>% 
 #   mutate(
@@ -12577,7 +12577,7 @@ cmf_logNC_cpm <- clust_mat_100 %>%
 #     )
 #   )
 
-combined_toptables_dxr_RUV <- readRDS("data/new/RUV/Combined_toptables_timepoint_dataframe.RDS")
+combined_toptables_dxr_RUV <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/Combined_toptables_timepoint_dataframe.RDS")
 
 Sets_cmf_cpmNC <- combined_toptables_dxr_RUV %>%
   dplyr::mutate(
@@ -21483,7 +21483,9 @@ plot_proSus_fin_summary <- ggplot(proSus_fin_summary, aes(x = Study, y = Percent
   geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
             position = position_stack(vjust = 0.5),
             size = 4, color = "white") +
-  scale_y_continuous(limits = c(0, 102)) +
+  scale_y_continuous(limits = c(0, 102),
+                     expand = c(0, 0)) +
+  scale_x_discrete(expand = c(0, 0)) +
   scale_fill_manual(values = category_colors) +
   theme_custom() +
   labs(
@@ -21498,7 +21500,9 @@ print(plot_proSus_fin_summary)
 # save_plot(
 #   plot = plot_proSus_fin_summary,
 #   filename = "Sustained_Proportion_Barplot_proSus_finalset_DEGs_EMP",
-#   folder = output_folder
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
 # )
 
 
@@ -21508,7 +21512,7 @@ print(plot_proSus_fin_summary)
 ```{r create a df with my proSus and notproSus gene sets}
 
 #read in my final dataframe with all of the info for proSus and notproSus genes
-proSus_df <- readRDS("data/new/RUV/CMF/Sustained_proSus_dataframe_symbolentrez.RDS")
+proSus_df <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/CMF/Sustained_proSus_dataframe_symbolentrez.RDS")
 
 #ensure numeric absFC values
 proSus_df_all <- proSus_df %>%
@@ -21561,8 +21565,8 @@ length(notproSus_gene_list)
 #this would be the 163 genes where t0 < t144 & t24 < t144 - named proSus
 
 #read in my sustained dataframe from above
-proSus_gene_list <- readRDS("data/new/RUV/CMF/proSus_gene_list.RDS")
-notproSus_gene_list <- readRDS("data/new/RUV/CMF/notproSus_gene_list.RDS")
+proSus_gene_list <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/CMF/proSus_gene_list.RDS")
+notproSus_gene_list <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/CMF/notproSus_gene_list.RDS")
 
 #background
 # all_genes
@@ -22029,9 +22033,9 @@ filt_toptable_proSus_RUV <- combined_toptables_dxr_RUV %>%
   dplyr::filter(!is.na(SYMBOL)) %>% 
   dplyr::filter(!is.na(proSus)) %>% 
   mutate(Time = factor(Time, 
-                       levels = c("24T",
-                                  "24R",
-                                  "144R"))) %>% 
+                       levels = c("t0",
+                                  "t24",
+                                  "t144"))) %>% 
   mutate(absFC = abs(logFC))
 #this should contain 163 unique genes across timepoints
 
@@ -22071,7 +22075,7 @@ plot_proSus_logFC <- ggplot() +
             aes(x = Time, 
                 y = logFC, 
                 group = Entrez_ID),
-            color = "orchid",
+            color = "#59754A",
             alpha = 0.4, 
             linewidth = 0.9) +
   geom_line(data = medians_proSus_RUV,
@@ -22083,13 +22087,18 @@ plot_proSus_logFC <- ggplot() +
             ) +
   scale_color_manual(
     breaks = c("median"), 
-    values = c("median" = "#3D6680"),
+    values = c("median" = "#83C67C"),
     labels = c(
       median = labs_logFC_proSus),
     name = NULL
     ) +
   labs(title = "logFC — proSus Genes (n = 163)",
        y = "logFC", x = "Timepoint") +
+  scale_y_continuous(breaks = c(-5, 0, 5), 
+                     limits = c(-5, 5),
+                     expand = c(0,0)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
   theme_custom() +
   theme(legend.position = "right")
 
@@ -22118,6 +22127,10 @@ plot_proSus_absFC <- ggplot() +
     ) +
   labs(title = "abs logFC — proSus Genes (n = 163)",
        y = "absFC", x = "Timepoint") +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0, 10)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
   theme_custom() +
   theme(legend.position = "right")
 
@@ -22139,9 +22152,9 @@ filt_toptable_notproSus_RUV <- combined_toptables_dxr_RUV %>%
   dplyr::filter(!is.na(SYMBOL)) %>% 
   dplyr::filter(!is.na(notproSus)) %>% 
   mutate(Time = factor(Time, 
-                       levels = c("24T",
-                                  "24R",
-                                  "144R"))) %>% 
+                       levels = c("t0",
+                                  "t24",
+                                  "t144"))) %>% 
   mutate(absFC = abs(logFC))
 #this should contain 163 unique genes across timepoints
 
@@ -22165,7 +22178,7 @@ labs_absFC_notproSus <- paste0(
   paste0(medians_notproSus_RUV$Time, "=", round(medians_notproSus_RUV$median_abslogFC, 2), collapse = "\n")
 )
 
-# #sdd a column that labels positive/negative direction
+#add a column that labels positive/negative direction
 filt_toptable_notproSus_RUV <- filt_toptable_notproSus_RUV %>%
   mutate(direction = ifelse(logFC >= 0, "up", "down"))
 
@@ -22180,7 +22193,7 @@ plot_notproSus_logFC <- ggplot() +
             aes(x = Time, 
                 y = logFC, 
                 group = Entrez_ID),
-            color = "orchid",
+            color = "#B1D8A9",
             alpha = 0.4, 
             linewidth = 0.9) +
   geom_line(data = medians_notproSus_RUV,
@@ -22192,13 +22205,18 @@ plot_notproSus_logFC <- ggplot() +
             ) +
   scale_color_manual(
     breaks = c("median"), 
-    values = c("median" = "#3D6680"),
+    values = c("median" = "#83C67C"),
     labels = c(
       median = labs_logFC_notproSus),
     name = NULL
     ) +
   labs(title = "logFC — notproSus Genes (n = 338)",
        y = "logFC", x = "Timepoint") +
+  scale_y_continuous(breaks = c(-5, 0, 5), 
+                     limits = c(-5, 5),
+                     expand = c(0,0)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
   theme_custom() +
   theme(legend.position = "right")
 
@@ -22228,6 +22246,10 @@ plot_notproSus_absFC <- ggplot() +
     ) +
   labs(title = "abslogFC — notproSus Genes (n = 338)",
        y = "absFC", x = "Timepoint") +
+  scale_y_continuous(limits = c(0, 10),
+                     expand = c(0, 0)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
   theme_custom() +
   theme(legend.position = "right")
 
@@ -22238,23 +22260,33 @@ print(plot_notproSus_absFC)
 # save_plot(
 #   plot = plot_proSus_logFC,
 #   filename = "Lineplot_proSus_logFC_EMP_251112",
-#   folder = output_folder
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
 # )
 # save_plot(
 #   plot = plot_proSus_absFC,
 #   filename = "Lineplot_proSus_absFC_EMP_251112",
-#   folder = output_folder
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
 # )
 # save_plot(
 #   plot = plot_notproSus_logFC,
 #   filename = "Lineplot_notproSus_logFC_EMP_251112",
-#   folder = output_folder
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
 # )
 # save_plot(
 #   plot = plot_notproSus_absFC,
 #   filename = "Lineplot_notproSus_absFC_EMP_251112",
-#   folder = output_folder
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
 # )
+
+#Fig6 data here
 
 ```
 
@@ -23896,7 +23928,42 @@ annotated_toptables_terms <- readRDS("data/new/RUV/CMF/annotated_toptables_list_
 
 #now I've created a list of Entrez_ID and SYMBOLs that are tied to each term for each cluster set
 
-clust_GOKEGG_terms_list <- readRDS("data/new/RUV/CMF/cluster_GOKEGG_terms_geneids.RDS")
+clust_GOKEGG_terms_list <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/CMF/cluster_GOKEGG_terms_geneids.RDS")
+
+#make these into a dataframe with SYMBOL and not Entrez_ID so it's easier to tell
+
+# biglist <- clust_GOKEGG_terms_list 
+# 
+# #make an excel workbook
+# wb <- createWorkbook()
+# 
+# for(set_name in names(biglist)) {
+#   
+#   terms <- biglist[[set_name]]
+#   top_terms <- head(names(terms), 10)
+#   
+#   # Build wide dataframe
+#   df_list <- map(top_terms, function(term) {
+#     genes <- terms[[term]]$SYMBOL
+#     
+#     # Create named columns gene1, gene2, ...
+#     gene_cols <- as.list(genes)
+#     names(gene_cols) <- paste0("gene", seq_along(genes))
+#     
+#     tibble(term = term, !!!gene_cols)
+#   })
+#   
+#   df <- bind_rows(df_list)
+#   
+#   # Add sheet & write
+#   addWorksheet(wb, sheetName = set_name)
+#   writeData(wb, sheet = set_name, df)
+# }
+
+# Save
+# saveWorkbook(wb, 
+#              file = file.path(output_folder, "top10_GO_KEGG_genes_list.xlsx"), 
+#              overwrite = TRUE)
 
 ```
 
