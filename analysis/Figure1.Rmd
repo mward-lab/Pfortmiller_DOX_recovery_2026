@@ -129,7 +129,9 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 #to use: just define the plot name, filename_base, width, height
 ```
 
-Figure 1A - Experimental Schematic (no code)
+# Figure 1A - Experimental Schematic (no code)
+
+This schematic did not require analysis.
 
 # Figure 1B - Flow Cytometry Barplot
 
@@ -1037,7 +1039,7 @@ legend("bottomleft",
 
 ```
 
-# Figure 1D 
+# Figure 1D - DNA Damage Quantification
 
 yH2AX Quantification (Immunofluorescence Staining).
 
@@ -2188,4 +2190,6 @@ plot_step6_dox_time
 
 ```
 
-Figure 1E - IF Images yH2AX from Individual 87-1 (Ind 1) (no code)
+# Figure 1E - yH2AX IF Images (no code)
+
+Images from individual 87-1 (Ind1).
