@@ -1,7 +1,6 @@
 ---
 title: "Figure 1"
-author: "Emma M Pfortmiller"
-date: "2025-12-01"
+author: "Emma Pfortmiller Elmore"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -51,7 +50,7 @@ Define my custom plot theme
 
 ```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
 
-# # Define the custom theme
+# Define the custom theme
 # plot_theme_custom <- function() {
 #   theme_minimal() +
 #     theme(
@@ -137,7 +136,7 @@ This schematic did not require analysis.
 
 Data to create Figure 1B.
 
-```{r Flow Cytometry Barplot, fig.width=6, fig.height=6, warning=FALSE}
+```{r Flow Cytometry Barplot, fig.width=3, fig.height=3, warning=FALSE}
 #Individuals for Flow Cytometry
 #1 = 87-1 (F)
 #2 = 78-1 (F)
@@ -161,7 +160,7 @@ ind_col <- list(
 flow_dxr <- read_csv("C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/Flow/Recovery_flow_purity.csv",
                      show_col_types = FALSE)
 
-View(flow_dxr)
+# View(flow_dxr)
 
 flow <- flow_dxr %>% column_to_rownames("Line")
 
@@ -1368,7 +1367,7 @@ Macros used in ImageJ/Fiji to identify nuclear ROIs from yH2AX IF staining.
 #          )) %>%
 #   dplyr::select(-"X")
 
-# saveRDS(ind1_roi, "data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS")
+# saveRDS(ind1_roi, "data/Fig1/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS")
 
 ####Ind 3 - 75-1####
 # ind3_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/outline new/analyzed/All_ROIs_Combined_75-1_EMP_250825.csv") %>%
@@ -1382,22 +1381,22 @@ Macros used in ImageJ/Fiji to identify nuclear ROIs from yH2AX IF staining.
 #          )) %>%
 #   dplyr::select(-"X")
 
-# saveRDS(ind3_roi, "data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS")
+# saveRDS(ind3_roi, "data/Fig1/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS")
 
 ####Ind 4 - 84-1####
 # ind4_roi <- read.csv("D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/outline new/analyzed/All_ROIs_Combined_84-1_EMP_250916.csv") %>%
 #   mutate(Individual = "Ind4") %>%
-#   mutate(Line = "84-1") %>% 
+#   mutate(Line = "84-1") %>%
 #   mutate(Magnification = "20X") #specify since all were 20X so not in labels
 
-# saveRDS(ind4_roi, "data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
+# saveRDS(ind4_roi, "data/Fig1/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 
 #keep all of this for posterity and read them in for plots
-ind1_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS")
+ind1_roi <- readRDS("data/Fig1/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS")
 
-ind3_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS")
+ind3_roi <- readRDS("data/Fig1/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS")
 
-ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
+ind4_roi <- readRDS("data/Fig1/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 
 
 ```
@@ -1408,7 +1407,7 @@ ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 #I want to combine all of these csv files into one dataframe
 
 #ensure that I am removing secondary only controls and any other magnifications (ie 10X and 40X images)
-
+ 
 # ind_roi_all <- bind_rows(ind1_roi, ind3_roi, ind4_roi) %>%
 #   mutate(
 #     Treatment = case_when(
@@ -1429,7 +1428,7 @@ ind4_roi <- readRDS("data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS")
 #   dplyr::filter(!grepl("^2nd", ROI_File, ignore.case = TRUE)) %>%
 #   dplyr::select(-"X")
 
-# saveRDS(ind_roi_all, "data/new/IF_quant/individual_rois_all.RDS")
+# saveRDS(ind_roi_all, "data/Fig1/IF_quant/individual_rois_all.RDS")
 
 #now I have successfully made sure this only contains 20X and has all of the three individuals
 
@@ -1447,9 +1446,10 @@ Pull all ROIs from each image to make a combined dataframe.
 #     Percent_Red_Positive_Area = (Red_Positive_Pixels / ROI_Area) * 100
 #   )
 
-#saved this one in RDS
+#save as an R Object
+# saveRDS(ind_roi_all, "data/Fig1/IF_quant/individual_rois_all.RDS")
 
-ind_roi_all <- readRDS("data/new/IF_quant/individual_rois_all.RDS") 
+ind_roi_all <- readRDS("data/Fig1/IF_quant/individual_rois_all.RDS") 
 
 ind_cols_if <- c("Ind1" = "#FFA364",
               "Ind3" = "#A4D177",
@@ -1539,7 +1539,7 @@ Collapse ROIs into an image level summary.
 #            grepl("40X", Image, ignore.case = TRUE) ~ "40X",
 #             TRUE ~ "Other"
 #            ))
-#  
+# 
 # ind4_img_summary <- collapse_to_image(ind4_roi) %>%
 #   mutate(Individual = "Ind4",
 #          Magnification = "20X") #only has 20X so add this label
@@ -1554,7 +1554,7 @@ Collapse ROIs into an image level summary.
 #   dplyr::filter(!grepl("^2nd", Image, ignore.case = TRUE)) %>%
 #    dplyr::filter(Magnification == "20X")
 
-# saveRDS(roi_image_level_summary, "data/new/IF_quant/roi_image_level_summary_all.RDS")
+# saveRDS(roi_image_level_summary, "data/Fig1/IF_quant/roi_image_level_summary_all.RDS")
 
 ```
 
@@ -1563,7 +1563,7 @@ Collapse ROIs into an image level summary.
 ```{r ROI Summary Dataframe}
 #now that I've created the image level summary table for all individuals above, read it in so I don't have to create it multiple times
 
-roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_all.RDS")
+roi_image_level_summary <- readRDS("data/Fig1/IF_quant/roi_image_level_summary_all.RDS")
 
 ```
 
@@ -1576,8 +1576,7 @@ roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_al
 # roi_folders <- list(
 #   Ind1 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 87-1/DAPI counts new",
 #   Ind3 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 75-1/DAPI counts new",
-#   Ind4 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/DAPI Counts new" 
-              #be careful since this one has a slightly different name
+#   Ind4 = "D:/DXR Project/IF yH2AX/if yh2ax dxr 84-1/DAPI Counts new" #be careful since this one has a slightly different name
 # )
 
 #read the csvs that come from the folders and loop over each individual
@@ -1653,9 +1652,9 @@ roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_al
 #   )
 
 #save this metadata dataframe as an R object and as a csv for later
-# saveRDS(image_level_metadata, "data/new/IF_quant/image_level_metadata_all.RDS")
+# saveRDS(image_level_metadata, "data/Fig1/IF_quant/image_level_metadata_all.RDS")
 
-# write.csv(image_level_metadata, "data/new/IF_quant/image_level_metadata_all.csv")
+# write.csv(image_level_metadata, "data/Fig1/IF_quant/image_level_metadata_all.csv")
 
 ```
 
@@ -1670,7 +1669,7 @@ roi_image_level_summary <- readRDS("data/new/IF_quant/roi_image_level_summary_al
 #original summary sheet roi_image_level_summary needed
 
 #metadata sheet
-image_level_metadata <- readRDS("data/new/IF_quant/image_level_metadata_all.RDS")
+image_level_metadata <- readRDS("data/Fig1/IF_quant/image_level_metadata_all.RDS")
 
 #create the merged image summary for all individuals
 # merged_image_summary <-
@@ -1683,13 +1682,13 @@ image_level_metadata <- readRDS("data/new/IF_quant/image_level_metadata_all.RDS"
 #   mutate(Condition = factor(Condition,
 #                             levels = c(condition_levels)))
 
-# saveRDS(merged_image_summary, "data/new/IF_quant/merged_image_summary_all.RDS")
+# saveRDS(merged_image_summary, "data/Fig1/IF_quant/merged_image_summary_all.RDS")
 
-# write.csv(merged_image_summary, "data/new/IF_quant/merged_image_summary_all.csv")
+# write.csv(merged_image_summary, "data/Fig1/IF_quant/merged_image_summary_all.csv")
 
 #read back in my merged image summary so I don't have to run it multiple times
 
-merged_image_summary <- readRDS("data/new/IF_quant/merged_image_summary_all.RDS")
+merged_image_summary <- readRDS("data/Fig1/IF_quant/merged_image_summary_all.RDS")
 
 ```
 
@@ -1824,9 +1823,9 @@ Select 3 images with consistent numbers of nuclei per individual.
 #   dplyr::select(-("Image_ID"))
 
 #save the finalized version as an R object and read it back in, keep code for posterity
-# saveRDS(merged_image_summary_final, "data/new/IF_quant/merged_image_summary_final.RDS")
+# saveRDS(merged_image_summary_final, "data/Fig1/IF_quant/merged_image_summary_final.RDS")
 
-merged_image_summary_final <- readRDS("data/new/IF_quant/merged_image_summary_final.RDS")
+merged_image_summary_final <- readRDS("data/Fig1/IF_quant/merged_image_summary_final.RDS")
 
 #plot these in a boxplot now that they're filtered down to the top 3 images per individual based on consistent nuclei counts
 
