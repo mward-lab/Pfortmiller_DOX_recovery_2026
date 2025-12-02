@@ -1,6 +1,5 @@
 ---
-title: "Figure 1"
-author: "Emma Pfortmiller Elmore"
+title: "Figure 1 Analysis"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
