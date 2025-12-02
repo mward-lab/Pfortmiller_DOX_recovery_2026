@@ -515,15 +515,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree7c2623a92335f3459897321b0fd5ac1bc7be151ctargetblank7c2623aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree5d9342a446c128f219296f098cbd0e6f2457add6targetblank5d9342aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/emmapfort/DXR_Project/tree/7c2623a92335f3459897321b0fd5ac1bc7be151c" target="_blank">7c2623a</a>
+<a href="https://github.com/emmapfort/DXR_Project/tree/5d9342a446c128f219296f098cbd0e6f2457add6" target="_blank">5d9342a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree7c2623a92335f3459897321b0fd5ac1bc7be151ctargetblank7c2623aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree5d9342a446c128f219296f098cbd0e6f2457add6targetblank5d9342aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -533,7 +533,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/emmapfort/DXR_Project/tree/7c2623a92335f3459897321b0fd5ac1bc7be151c" target="_blank">7c2623a</a>.
+<a href="https://github.com/emmapfort/DXR_Project/tree/5d9342a446c128f219296f098cbd0e6f2457add6" target="_blank">5d9342a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -738,6 +738,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/5d9342a446c128f219296f098cbd0e6f2457add6/analysis/Figure1.Rmd" target="_blank">5d9342a</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Update for TOC
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/d4ef94703d1fb4556ee1d363affd7be8ad7c5d3a/docs/Figure1.html" target="_blank">d4ef947</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/emmapfort/DXR_Project/blob/7c2623a92335f3459897321b0fd5ac1bc7be151c/analysis/Figure1.Rmd" target="_blank">7c2623a</a>
 </td>
 <td>
@@ -904,7 +938,8 @@ pre[class] {
   
 }
 </style>
-<p>#Libraries</p>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
 <p>Load necessary libraries for analysis.</p>
 <pre class="r"><code>library(tidyverse)
 library(readxl)
@@ -987,7 +1022,9 @@ output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materia
 #save plot function created
 #to use: just define the plot name, filename_base, width, height</code></pre>
 <p>Figure 1A - Experimental Schematic (no code)</p>
-<p>#Figure 1B - Flow Cytometry Barplot</p>
+</div>
+<div id="figure-1b---flow-cytometry-barplot" class="section level1">
+<h1>Figure 1B - Flow Cytometry Barplot</h1>
 <p>Data to create Figure 1B.</p>
 <pre class="r"><code>#Individuals for Flow Cytometry
 #1 = 87-1 (F)
@@ -1080,7 +1117,9 @@ emmapfort
 #   width = 2.8,
 #   height = 5.25
 # )</code></pre>
-<p>#Figure 1C - Dose Response Curves</p>
+</div>
+<div id="figure-1c---dose-response-curves" class="section level1">
+<h1>Figure 1C - Dose Response Curves</h1>
 <p>Data for Figure 1C.</p>
 <pre class="r"><code>AllData &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Experiments/DXR Project/DRCs/5FUProj_DRCTime_78-1_75-1_17-3_EMP_240226.xlsx&quot;,
      sheet = &quot;Fin_Sheet_Analysis&quot;)
@@ -1103,8 +1142,11 @@ Ind5_17_data &lt;- read_excel(&quot;C:/Users/emmap/OneDrive/Desktop/Ward Lab/Exp
 # View(Ind5_17_data)
 
 #this is still ind 5 according to my RNAseq - 17-3 M</code></pre>
-<p>##Filter for Time and Treatment Groups</p>
-<p>##Analysis of Raw Data</p>
+<div id="filter-for-time-and-treatment-groups" class="section level2">
+<h2>Filter for Time and Treatment Groups</h2>
+</div>
+<div id="analysis-of-raw-data" class="section level2">
+<h2>Analysis of Raw Data</h2>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1460,7 +1502,7 @@ analyzed data step by step</p>
 <p>The following steps were taken in analysis:</p>
 <ol style="list-style-type: decimal">
 <li><p>Import raw fluorescence values (RFLU) from platereader, baseline
-0hr and final timepoints</p></li>
+0hr and final timepoint</p></li>
 <li><p>Subtract background wells (prestoblue only wells) by
 plate</p></li>
 <li><p>Subtract average of empty wells (galactose only, with 50k
@@ -1470,7 +1512,9 @@ cells/well) by plate</p></li>
 <li><p>Divide initial 0hr value from final timepoint (24, 48, 72)
 value</p></li>
 </ol>
-<p>##Remove Background Wells</p>
+</div>
+<div id="remove-background-wells" class="section level2">
+<h2>Remove Background Wells</h2>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 no BG 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -1822,7 +1866,9 @@ emmapfort
 </div>
 </div>
 <p>Now let’s plot the next step: subtracting the empty wells</p>
-<p>##Subtract Empty Wells</p>
+</div>
+<div id="subtract-empty-wells" class="section level2">
+<h2>Subtract Empty Wells</h2>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 Empty Wells 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -2181,7 +2227,9 @@ emmapfort
 </div>
 <p>Now let’s plot the third step: dividing the matched vehicle
 values</p>
-<p>##Divide by Matched Vehicle</p>
+</div>
+<div id="divide-by-matched-vehicle" class="section level2">
+<h2>Divide by Matched Vehicle</h2>
 <pre class="r"><code>#####DOX Samples#####
 #dox 78-1 Veh 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -2540,7 +2588,9 @@ emmapfort
 </div>
 <p>Now for the final step, dividing the final timepoint by the initial
 baseline reading at 0hr</p>
-<p>##Divide Final Timepoint by Baseline</p>
+</div>
+<div id="divide-final-timepoint-by-baseline" class="section level2">
+<h2>Divide Final Timepoint by Baseline</h2>
 <pre class="r"><code>#####DOX Samples#####
 #dox All 24HR
 par(mar = c(3.0, 3.0, 1.2, 1), mgp = c(2, .7, 0))
@@ -2673,7 +2723,9 @@ emmapfort
 </table>
 </div>
 </div>
-<p>##Fit Models for DRC</p>
+</div>
+<div id="fit-models-for-drc" class="section level2">
+<h2>Fit Models for DRC</h2>
 <pre class="r"><code>#these sheets are not numbered properly by individual because they&#39;re in order of experiments
 dox24tox_75 &lt;- dox24hr75 %&gt;% mutate(response = Ind1_75_Div*100)
 summary(dox24tox_75$response)</code></pre>
@@ -2719,7 +2771,9 @@ Estimated effective doses
 e:1:50   9.7850     1.7753  6.1771 13.3928</code></pre>
 <pre class="r"><code>#find the median ld50 for plotting
 median_ld50 &lt;- median(c(ed78, ed75, ed17))</code></pre>
-<p>##Plot DRC</p>
+</div>
+<div id="plot-drc" class="section level2">
+<h2>Plot DRC</h2>
 <pre class="r"><code># Define output folder and base filename
 # output_folder
 # base_name &lt;- &quot;viability_curve_scaled&quot;
@@ -2866,9 +2920,13 @@ emmapfort
 # dev.off()
 
 #saved code for saving the plots for posterity!</code></pre>
-<p>#Figure 1D</p>
+</div>
+</div>
+<div id="figure-1d" class="section level1">
+<h1>Figure 1D</h1>
 <p>yH2AX Quantification (Immunofluorescence Staining).</p>
-<p>##Fiji/ImageJ Macros</p>
+<div id="fijiimagej-macros" class="section level2">
+<h2>Fiji/ImageJ Macros</h2>
 <p>Macros used in ImageJ/Fiji to identify nuclear ROIs from yH2AX IF
 staining.</p>
 <pre class="r"><code>#these are the macros that I made for ImageJ/Fiji and are included for reference only
@@ -3169,7 +3227,9 @@ staining.</p>
 # }
 
 #these two macros gave the desired output of a csv file with all of the parameters I needed</code></pre>
-<p>##Read in ROI Summaries</p>
+</div>
+<div id="read-in-roi-summaries" class="section level2">
+<h2>Read in ROI Summaries</h2>
 <pre class="r"><code>#read in the data from the macros that I ran for each individual
 #I am going to focus on 20X magnification images, remove any non-20X samples 
 #ensure that you label each with respective individual number for ease later on
@@ -3216,7 +3276,9 @@ ind1_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_87-1_Ind1.RDS&q
 ind3_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_75-1_Ind3.RDS&quot;)
 
 ind4_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS&quot;)</code></pre>
-<p>##Create Dataframes</p>
+</div>
+<div id="create-dataframes" class="section level2">
+<h2>Create Dataframes</h2>
 <pre class="r"><code>#I want to combine all of these csv files into one dataframe
 
 #ensure that I am removing secondary only controls and any other magnifications (ie 10X and 40X images)
@@ -3244,7 +3306,9 @@ ind4_roi &lt;- readRDS(&quot;data/new/IF_quant/All_ROIs_Combined_84-1_Ind4.RDS&q
 # saveRDS(ind_roi_all, &quot;data/new/IF_quant/individual_rois_all.RDS&quot;)
 
 #now I have successfully made sure this only contains 20X and has all of the three individuals</code></pre>
-<p>##IF Quant Step 1</p>
+</div>
+<div id="if-quant-step-1" class="section level2">
+<h2>IF Quant Step 1</h2>
 <p>Pull all ROIs from each image to make a combined dataframe.</p>
 <pre class="r"><code>#make sure to normalize by area to get positive red for the next step
 # ind_roi_all &lt;- ind_roi_all %&gt;%
@@ -3351,15 +3415,26 @@ emmapfort
 </table>
 </div>
 </div>
-<p>##IF Quant Step 2</p>
+</div>
+<div id="if-quant-step-2" class="section level2">
+<h2>IF Quant Step 2</h2>
 <p>Collapse ROIs into an image level summary.</p>
-<p>##Read in Image Level Summary</p>
+</div>
+<div id="read-in-image-level-summary" class="section level2">
+<h2>Read in Image Level Summary</h2>
 <pre class="r"><code>#now that I&#39;ve created the image level summary table for all individuals above, read it in so I don&#39;t have to create it multiple times
 
 roi_image_level_summary &lt;- readRDS(&quot;data/new/IF_quant/roi_image_level_summary_all.RDS&quot;)</code></pre>
-<p>##Make a Metadata Table</p>
-<p>##Combine Metadata with Image Level Summary</p>
-<p>##IF Quant Step 2</p>
+</div>
+<div id="make-a-metadata-table" class="section level2">
+<h2>Make a Metadata Table</h2>
+</div>
+<div id="combine-metadata-with-image-level-summary"
+class="section level2">
+<h2>Combine Metadata with Image Level Summary</h2>
+</div>
+<div id="if-quant-step-2-1" class="section level2">
+<h2>IF Quant Step 2</h2>
 <p>Collapse ROIs into their respective images.</p>
 <pre class="r"><code>#now I&#39;ll plot the outcome of the second step where I collapsed by image and merged the metadata with the measurements
 
@@ -3440,7 +3515,9 @@ emmapfort
 </table>
 </div>
 </div>
-<p>##IF Quant Step 3</p>
+</div>
+<div id="if-quant-step-3" class="section level2">
+<h2>IF Quant Step 3</h2>
 <p>Select 3 images with consistent numbers of nuclei per individual.</p>
 <pre class="r"><code>#now I will be selecting images based on their nuclei count
 
@@ -3737,7 +3814,9 @@ emmapfort
 </table>
 </div>
 </div>
-<p>##IF Quant Step 4</p>
+</div>
+<div id="if-quant-step-4" class="section level2">
+<h2>IF Quant Step 4</h2>
 <p>Normalize DOX/VEH before combining images by individual.</p>
 <pre class="r"><code>#Now I want to normalize these images by max intensity
 
@@ -3861,7 +3940,9 @@ emmapfort
 </table>
 </div>
 </div>
-<p>#IF Quant Step 5</p>
+</div>
+<div id="if-quant-step-5" class="section level2">
+<h2>IF Quant Step 5</h2>
 <p>Collapse images by individual.</p>
 <pre class="r"><code>#now I want to collapse these three images per condition into their respective individual after normalization
 #I now only have three points, one per individual, on each boxplot
@@ -3987,7 +4068,9 @@ emmapfort
 #   height = plot_height,
 #   width = plot_width
 # )</code></pre>
-<p>##IF Quant Step 6</p>
+</div>
+<div id="if-quant-step-6" class="section level2">
+<h2>IF Quant Step 6</h2>
 <p>Perform significance testing between treated timepoints.</p>
 <pre class="r"><code>#Above, I compared DOX to VEH for each timepoint
 #I want to now make comparisons between DOX timepoints to see if there are any differences between each timepoint after treatment and recovery time
@@ -4245,6 +4328,8 @@ loaded via a namespace (and not attached):
 [76] Rcpp_1.0.14           whisker_0.4.1         xfun_0.52            
 [79] fs_1.6.6              zoo_1.8-14            getPass_0.2-4        
 [82] pkgconfig_2.0.3      </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
