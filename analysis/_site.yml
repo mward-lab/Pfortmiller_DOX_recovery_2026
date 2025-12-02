@@ -18,5 +18,5 @@ output:
       collapsed: false
       smooth_scroll: true
     toc_depth: 3
-    theme: journal
+    theme: flatly
     highlight: textmate
