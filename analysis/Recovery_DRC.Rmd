@@ -3191,7 +3191,7 @@ ed17 <- ED(doxtox24_17_model, 50, interval = "delta")[1]
 
 median_ld50 <- median(c(ed78, ed75, ed17))
 
-# Plot first model, then overlay
+#plot first model, then overlay
 plot(doxtox24_78_model, type = "none", broken = TRUE,
      ylim = c(0,100), col = "#9ACCDE", lwd = 3,
      ylab = "Percent Viability (%)", xlab = "Concentration (uM)",

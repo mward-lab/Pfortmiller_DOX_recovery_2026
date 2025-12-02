@@ -10,8 +10,6 @@ output:
     toc_float: true
     theme: journal
     highlight: textmate
-editor_options: 
-  chunk_output_type: console
 ---
 
 editor_options: 
@@ -34,7 +32,7 @@ pre[class] {
 ```
 
 I did this part with Sayan according to his analysis to ensure that my matrix was consistent with his - allowing me to work on downstream analysis
-#Read in Libraries
+0#Read in Libraries
 ```{r Necessary Libraries, message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)
 library(Biobase)
@@ -186,7 +184,7 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 # Counts_75_DMSO_24rec <- readRDS("data/counts/Counts_75_DMSO_24rec.RDS")
 # Counts_75_DOX_144rec <- readRDS("data/counts/Counts_75_DOX_144rec.RDS")
 # Counts_75_DMSO_144rec <- readRDS("data/counts/Counts_75_DMSO_144rec.RDS")
-#
+# 
 # ####Individual 4 - 84-1####
 # Counts_84_DOX_24 <- readRDS("data/counts/Counts_84_DOX_24.RDS")
 # Counts_84_DMSO_24 <- readRDS("data/counts/Counts_84_DMSO_24.RDS")
@@ -271,7 +269,7 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 #    )
 
 #now save this as a matrix
-counts_raw_matrix <- counts_raw_df %>% column_to_rownames(var = "X") %>% as.matrix()
+# counts_raw_matrix <- counts_raw_df %>% column_to_rownames(var = "X") %>% as.matrix()
 
 counts_raw_matrix <- readRDS("data/new/counts_raw_matrix.RDS")
 
@@ -299,7 +297,26 @@ dim(counts_raw_matrix)
 
 # time_col <- c("#238B45", "#74C476", "#C7E9C0")
 
-cond_col <- c("#003F5C", "#45AE91",  "#58209D", "#8B3E9B", "#FF6361", "#BC4169")
+# cond_col <- c("#003F5C", "#45AE91",  "#58209D", "#8B3E9B", "#FF6361", "#BC4169")
+
+#this is the updated version of cond_col
+txtime_col <- list(
+  "DOX_t0" = "#263CA5",
+  "VEH_t0" = "#444343",
+  "DOX_t24" = "#5B8FD1",
+  "VEH_t24" = "#757575",
+  "DOX_t144" = "#89C5E5",
+  "VEH_t144" = "#AAAAAA"
+)
+
+txtime_col_old <- list(
+  "DOX_24T" = "#263CA5",
+  "VEH_24T" = "#444343",
+  "DOX_24R" = "#5B8FD1",
+  "VEH_24R" = "#757575",
+  "DOX_144R" = "#89C5E5",
+  "VEH_144R" = "#AAAAAA"
+)
 
 #updated colors and factors:
 ind_col <- list(
@@ -312,24 +329,23 @@ ind_col <- list(
   "6R" = "#C61E4E"
 )
 
+ind_col_nr <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90"
+)
+
 time_col <- list(
-  "t0" = "#238B45", 
-  "t24" = "#74C476", 
-  "t144" = "#C7E9C0")
+  "t0" = "#005A4C",
+  "t24" = "#328477",
+  "t144" = "#8FB9B1")
 
 tx_col <- list(
   "DOX" = "#499FBD", 
-  "DMSO" = "#BBBBBC")
-
-txtime_col <- list(
-  "DOX_t0" = "#182390",
-  "VEH_t0" = "#444343",
-  "DOX_t24" = "#5B8FD1",
-  "VEH_t24" = "#757575",
-  "DOX_t144" = "#89C5E5",
-  "VEH_t144" = "#AAAAAA"
-)
-
+  "VEH" = "#BBBBBC")
   
 ```
 
@@ -362,38 +378,40 @@ txtime_col <- list(
 #   )
 
 
-fC_DOXCounts <- readRDS("data/fC_DOXCounts.RDS")
-#factor individual
-fC_DOXCounts <- fC_DOXCounts %>% 
-  mutate(
-    Ind = factor(Ind, levels = c("1", "2", "3", "4", "5", "6", "6R"),
-                 ordered = TRUE)
-  )
+# fC_DOXCounts <- readRDS("data/fC_DOXCounts.RDS")
+# #factor individual
+# fC_DOXCounts <- fC_DOXCounts %>% 
+#   mutate(
+#     Ind = factor(Ind, levels = c("1", "2", "3", "4", "5", "6", "6R"),
+#                  ordered = TRUE)
+#   )
 
 
-fC_DOXCounts <- fC_DOXCounts %>%
-  mutate(
-    Ind = factor(Ind, levels = c("1", "2", "3", "4", "5", "6", "6R"), 
-                 ordered = TRUE),
-        Timepoint = factor(Timepoint, levels = c("t0", "t24", "t144"), 
-                       ordered = TRUE),
-        Tx = factor(Tx, levels = c("DOX", "VEH"), 
-                    ordered = TRUE)
-  ) %>%
-  mutate(
-    Condition = factor(
-      Condition,
-      levels = expand.grid(
-        Tx = levels(Tx),
-        Timepoint = levels(Timepoint),
-        Ind = levels(Ind)
-      ) %>%
-        transmute(Condition = paste(Tx, Timepoint, Ind, sep = "_")) %>%
-        pull(Condition),
-      ordered = TRUE
-    )
-  )
+# fC_DOXCounts <- fC_DOXCounts %>%
+#   mutate(
+#     Ind = factor(Ind, levels = c("1", "2", "3", "4", "5", "6", "6R"), 
+#                  ordered = TRUE),
+#         Timepoint = factor(Timepoint, levels = c("t0", "t24", "t144"), 
+#                        ordered = TRUE),
+#         Tx = factor(Tx, levels = c("DOX", "VEH"), 
+#                     ordered = TRUE)
+#   ) %>%
+#   mutate(
+#     Condition = factor(
+#       Condition,
+#       levels = expand.grid(
+#         Tx = levels(Tx),
+#         Timepoint = levels(Timepoint),
+#         Ind = levels(Ind)
+#       ) %>%
+#         transmute(Condition = paste(Tx, Timepoint, Ind, sep = "_")) %>%
+#         pull(Condition),
+#       ordered = TRUE
+#     )
+#   )
 
+# saveRDS(fC_DOXCounts, "data/featureCounts_DOXdata_updatedind.RDS")
+fC_DOXCounts <- readRDS("data/featureCounts_DOXdata_updatedind.RDS")
 
 #Now I want to plot these values out
 
@@ -491,9 +509,9 @@ map_time_box <- fC_DOXCounts %>%
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
         strip.text.y = element_text(color = "white"))
 
-save_plot(plot = map_time_box,
-          filename = "MappedReads_Boxplot_Supp1C_EMP_",
-          folder = output_folder)
+# save_plot(plot = map_time_box,
+          # filename = "MappedReads_Boxplot_Supp1C_EMP_",
+          # folder = output_folder)
 
 ####Total Mapped Reads Per Drug####
 
@@ -513,13 +531,13 @@ map_sample_plot <- fC_DOXCounts %>%
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
         strip.text.y = element_text(color = "white"))
 
-save_plot(
-  plot = map_sample_plot,
-  filename = "MappedReads_Sample_Supp1A_EMP_",
-  folder = output_folder,
-  height = 5,
-  width = 8
-)
+# save_plot(
+#   plot = map_sample_plot,
+#   filename = "MappedReads_Sample_Supp1A_EMP_",
+#   folder = output_folder,
+#   height = 5,
+#   width = 8
+# )
 
 ####Read Counts by Treatment####
 map_tx_bp <- fC_DOXCounts %>% 
@@ -534,9 +552,9 @@ map_tx_bp <- fC_DOXCounts %>%
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
         strip.text.y = element_text(color = "white"))
 
-save_plot(plot = map_tx_bp,
-          filename = "MappedReads_Treatment_Supp1B_EMP_",
-          folder = output_folder)
+# save_plot(plot = map_tx_bp,
+#           filename = "MappedReads_Treatment_Supp1B_EMP_",
+#           folder = output_folder)
 
 ####Total Reads Per Individual####
 fC_DOXCounts %>% 
@@ -601,52 +619,54 @@ hist(filcpm_matrix,
 #DOX144rec
 #DMSO144rec
 
-colnames(filcpm_matrix) <- c("DOX_24T_Ind1",
-                                "DMSO_24T_Ind1",
-                                "DOX_24R_Ind1",
-                                "DMSO_24R_Ind1",
-                                "DOX_144R_Ind1",
-                                "DMSO_144R_Ind1",
-                                "DOX_24T_Ind2",
-                                "DMSO_24T_Ind2",
-                                "DOX_24R_Ind2",
-                                "DMSO_24R_Ind2",
-                                "DOX_144R_Ind2",
-                                "DMSO_144R_Ind2",
-                                "DOX_24T_Ind3",
-                                "DMSO_24T_Ind3",
-                                "DOX_24R_Ind3",
-                                "DMSO_24R_Ind3",
-                                "DOX_144R_Ind3",
-                                "DMSO_144R_Ind3",
-                                "DOX_24T_Ind4",
-                                "DMSO_24T_Ind4",
-                                "DOX_24R_Ind4",
-                                "DMSO_24R_Ind4",
-                                "DOX_144R_Ind4",
-                                "DMSO_144R_Ind4",
-                                "DOX_24T_Ind5",
-                                "DMSO_24T_Ind5",
-                                "DOX_24R_Ind5",
-                                "DMSO_24R_Ind5",
-                                "DOX_144R_Ind5",
-                                "DMSO_144R_Ind5",
-                                "DOX_24T_Ind6",
-                                "DMSO_24T_Ind6",
-                                "DOX_24R_Ind6",
-                                "DMSO_24R_Ind6",
-                                "DOX_144R_Ind6",
-                                "DMSO_144R_Ind6",
-                                "DOX_24T_Ind6REP",
-                                "DMSO_24T_Ind6REP",
-                                "DOX_24R_Ind6REP",
-                                "DMSO_24R_Ind6REP",
-                                "DOX_144R_Ind6REP",
-                                "DMSO_144R_Ind6REP")
+# colnames(filcpm_matrix) <- c("DOX_24T_Ind1",
+#                                 "DMSO_24T_Ind1",
+#                                 "DOX_24R_Ind1",
+#                                 "DMSO_24R_Ind1",
+#                                 "DOX_144R_Ind1",
+#                                 "DMSO_144R_Ind1",
+#                                 "DOX_24T_Ind2",
+#                                 "DMSO_24T_Ind2",
+#                                 "DOX_24R_Ind2",
+#                                 "DMSO_24R_Ind2",
+#                                 "DOX_144R_Ind2",
+#                                 "DMSO_144R_Ind2",
+#                                 "DOX_24T_Ind3",
+#                                 "DMSO_24T_Ind3",
+#                                 "DOX_24R_Ind3",
+#                                 "DMSO_24R_Ind3",
+#                                 "DOX_144R_Ind3",
+#                                 "DMSO_144R_Ind3",
+#                                 "DOX_24T_Ind4",
+#                                 "DMSO_24T_Ind4",
+#                                 "DOX_24R_Ind4",
+#                                 "DMSO_24R_Ind4",
+#                                 "DOX_144R_Ind4",
+#                                 "DMSO_144R_Ind4",
+#                                 "DOX_24T_Ind5",
+#                                 "DMSO_24T_Ind5",
+#                                 "DOX_24R_Ind5",
+#                                 "DMSO_24R_Ind5",
+#                                 "DOX_144R_Ind5",
+#                                 "DMSO_144R_Ind5",
+#                                 "DOX_24T_Ind6",
+#                                 "DMSO_24T_Ind6",
+#                                 "DOX_24R_Ind6",
+#                                 "DMSO_24R_Ind6",
+#                                 "DOX_144R_Ind6",
+#                                 "DMSO_144R_Ind6",
+#                                 "DOX_24T_Ind6REP",
+#                                 "DMSO_24T_Ind6REP",
+#                                 "DOX_24R_Ind6REP",
+#                                 "DMSO_24R_Ind6REP",
+#                                 "DOX_144R_Ind6REP",
+#                                 "DMSO_144R_Ind6REP")
 
 #export this as a csv
 # write.csv(filcpm_matrix, "data/new/filcpm_final_matrix.csv")
 
+# saveRDS(filcpm_matrix, "data/new/filcpm_final_matrix_newind.RDS")
+filcpm_matrix <- readRDS("data/new/filcpm_final_matrix_newind.RDS")
 
 ```
 ##QC Boxplots of Filtered vs Unfiltered Data
@@ -711,8 +731,9 @@ We have triple checked this dataset to ensure that columns are in order
 #Check my Response Genes in log2cpm format
 ```{r Check Response Genes log2cpm}
 #Load in my count matrix
-boxplot1 <- read.csv("data/new/filcpm_final_matrix.csv") %>% 
-  as.data.frame()
+boxplot1 <- readRDS("data/new/filcpm_matrix_genes.RDS")
+#this is the corrected individual!
+# filcpm_matrix <- readRDS("data/new/filcpm_final_matrix_newind.RDS")
 
 
 #save boxplot1 as an object filcpm_matrix_genes
@@ -805,6 +826,7 @@ prcomp_res_unfilt <- prcomp(t(counts_cpm_unfilt %>% as.matrix()), center =  TRUE
 prcomp_res_filt <- prcomp(t(filcpm_matrix %>% as.matrix()), center =  TRUE)
 
 #read in my metadata annotations
+#this has already had the individual number changed to move 84-1
 Metadata <- read.csv("data/Metadata_update.csv")
 #84-1 is now Ind4
 
@@ -820,49 +842,51 @@ ind_num <- c("1", "1", "1", "1", "1", "1",
 
 # saveRDS(ind_num, "data/new/ind_num.RDS")
 
+
 #now plot my PCA for unfiltered log2cpm
 ####PC1/PC2####
-ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Condition", shape = "Time", size =4, x=1, y=2) +
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values=txtime_col) +
   ggtitle(expression("PCA of Unfiltered log"[2]*"cpm")) +
   theme_bw()
 
 ####PC2/PC3####
-ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Condition", shape = "Time", size =4, x=2, y=3) +
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Cond"
+                  , shape = "Time", size =4, x=2, y=3) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values=txtime_col) +
   ggtitle(expression("PCA of Unfiltered log"[2]*"cpm")) +
   theme_bw()
 
 ####PC3/PC4####
-ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Condition", shape = "Time", size =4, x=3, y=4) +
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=3, y=4) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values=txtime_col) +
   ggtitle(expression("PCA of Unfiltered log"[2]*"cpm")) +
   theme_bw()
 
 
 #Now plot my PCA for filtered log2cpm
 ####PC1/PC2####
-ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Condition", shape = "Time", size =4, x=1, y=2) +
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values=txtime_col) +
   ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
   theme_bw()
 
 
-ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Condition", shape = "Time", size =4, x=1, y=2) +
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values=txtime_col) +
   ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
   theme_bw()
 
 
 ####PC2/PC3####
-ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Condition", shape = "Time", size =4, x=2, y=3) +
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=2, y=3) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values=txtime_col) +
   ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
   theme_bw()
 
@@ -875,16 +899,16 @@ ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Condition", shape 
 
 
 
-ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Condition", shape = "Time", size =4, x=1, y=2) +
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values=txtime_col) +
   ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
   theme_bw()
 
 #now make a version for supplementary figure 2
 autoplot(prcomp_res_filt,
          data = Metadata,
-         colour = "Condition",
+         colour = "Cond",
          shape = "Time",
          size = 5,
          x = 1,
@@ -923,34 +947,34 @@ cor_matrix_spearman <- cor(lcpm_2,
 # Extract metadata columns
 Individual <- as.character(Metadata$Ind)
 Time <- as.character(Metadata$Time)
-Treatment <- as.character(Metadata$Drug)
+Treatment <- as.character(Metadata$Treatment)
 
 # Define color palettes for annotations
 annot_col_cor = list(drugs = c("DOX" = "#499FBD", 
-                               "DMSO" = "#BBBBBC"),
-                     individuals = c("1" = "#003F5C", 
-                                     "2" = "#45AE91", 
-                                     "3" = "#58209D", 
-                                     "4" = "#8B3E9B", 
-                                     "5" = "#FF6361", 
-                                     "6" = "#BC4169", 
-                                     "6R" = "#FF2362"),
-                     timepoints = c("24T" = "#238B45",
-                                    "24R" = "#74C476", 
-                                    "144R" = "#C7E9C0"))
+                               "VEH" = "#BBBBBC"),
+                     individuals = c("1" = "#FFA364", 
+                                     "2" = "#78EFDE", 
+                                     "3" = "#A4D177", 
+                                     "4" = "#EAD050", 
+                                     "5" = "#A68AC0", 
+                                     "6" = "#F16F90", 
+                                     "6R" = "#C61E4E"),
+                     timepoints = c("t0" = "#005A4C",
+                                    "t24" = "#328477", 
+                                    "t144" = "#8FB9B1"))
 
-drug_colors <- c("DOX" = "#499FBD", 
-                 "DMSO" = "#BBBBBC")
-ind_colors <- c("1" = "red",
-                "2" = "orange",
-                "3" = "yellow",
-                "4" = "green",
-                "5" = "blue",
-                "6" = "violet",
-                "6R" = "purple")
-time_colors <- c("24T" = "#238B45",
-                 "24R" = "#74C476",
-                 "144R" = "#C7E9C0")
+drug_colors <- c("DOX" = "#499FBD",
+                 "VEH" = "#BBBBBC")
+ind_colors <- c("1" = "#FFA364",
+                "2" = "#78EFDE",
+                "3" = "#A4D177",
+                "4" = "#EAD050",
+                "5" = "#A68AC0",
+                "6" = "#F16F90",
+                "6R" = "#C61E4E")
+time_colors <- c("t0" = "#005A4C",
+                 "t24" = "#328477",
+                 "t144" = "#8FB9B1")
 
 # Create annotations
 top_annotation <- HeatmapAnnotation(
@@ -1007,62 +1031,69 @@ filt_gene_list <- rownames(filcpm_matrix)
 
 ##Filter my Counts For DE Analysis
 ```{r Filter Counts for DE}
-counts_raw_matrix <- readRDS("data/new/counts_raw_matrix.RDS")
+# counts_raw_matrix <- readRDS("data/new/counts_raw_matrix.RDS")
 #change column names to match samples for my raw counts matrix
-colnames(counts_raw_matrix) <- c("DOX_24T_Ind1",
-                                "DMSO_24T_Ind1",
-                                "DOX_24R_Ind1",
-                                "DMSO_24R_Ind1",
-                                "DOX_144R_Ind1",
-                                "DMSO_144R_Ind1",
-                                "DOX_24T_Ind2",
-                                "DMSO_24T_Ind2",
-                                "DOX_24R_Ind2",
-                                "DMSO_24R_Ind2",
-                                "DOX_144R_Ind2",
-                                "DMSO_144R_Ind2",
-                                "DOX_24T_Ind3",
-                                "DMSO_24T_Ind3",
-                                "DOX_24R_Ind3",
-                                "DMSO_24R_Ind3",
-                                "DOX_144R_Ind3",
-                                "DMSO_144R_Ind3",
-                                "DOX_24T_Ind4",
-                                "DMSO_24T_Ind4",
-                                "DOX_24R_Ind4",
-                                "DMSO_24R_Ind4",
-                                "DOX_144R_Ind4",
-                                "DMSO_144R_Ind4",
-                                "DOX_24T_Ind5",
-                                "DMSO_24T_Ind5",
-                                "DOX_24R_Ind5",
-                                "DMSO_24R_Ind5",
-                                "DOX_144R_Ind5",
-                                "DMSO_144R_Ind5",
-                                "DOX_24T_Ind6",
-                                "DMSO_24T_Ind6",
-                                "DOX_24R_Ind6",
-                                "DMSO_24R_Ind6",
-                                "DOX_144R_Ind6",
-                                "DMSO_144R_Ind6",
-                                "DOX_24T_Ind6REP",
-                                "DMSO_24T_Ind6REP",
-                                "DOX_24R_Ind6REP",
-                                "DMSO_24R_Ind6REP",
-                                "DOX_144R_Ind6REP",
-                                "DMSO_144R_Ind6REP")
+#update them to the new nomenclature so I can have everything match up with Metadata new
+# colnames(counts_raw_matrix) <- c("DOX_t0_1",
+#                                 "VEH_t0_1",
+#                                 "DOX_t24_1",
+#                                 "VEH_t24_1",
+#                                 "DOX_t144_1",
+#                                 "VEH_t144_1",
+#                                 "DOX_t0_2",
+#                                 "VEH_t0_2",
+#                                 "DOX_t24_2",
+#                                 "VEH_t24_2",
+#                                 "DOX_t144_2",
+#                                 "VEH_t144_2",
+#                                 "DOX_t0_3",
+#                                 "VEH_t0_3",
+#                                 "DOX_t24_3",
+#                                 "VEH_t24_3",
+#                                 "DOX_t144_3",
+#                                 "VEH_t144_3",
+#                                 "DOX_t0_4",
+#                                 "VEH_t0_4",
+#                                 "DOX_t24_4",
+#                                 "VEH_t24_4",
+#                                 "DOX_t144_4",
+#                                 "VEH_t144_4",
+#                                 "DOX_t0_5",
+#                                 "VEH_t0_5",
+#                                 "DOX_t24_5",
+#                                 "VEH_t24_5",
+#                                 "DOX_t144_5",
+#                                 "VEH_t144_5",
+#                                 "DOX_t0_6",
+#                                 "VEH_t0_6",
+#                                 "DOX_t24_6",
+#                                 "VEH_t24_6",
+#                                 "DOX_t144_6",
+#                                 "VEH_t144_6",
+#                                 "DOX_t0_6R",
+#                                 "VEH_t0_6R",
+#                                 "DOX_t24_6R",
+#                                 "VEH_t24_6R",
+#                                 "DOX_t144_6R",
+#                                 "VEH_t144_6R")
 
+# saveRDS(counts_raw_matrix, "data/new/counts_raw_matrix.RDS")
+
+counts_raw_matrix <- readRDS("data/new/counts_raw_matrix.RDS")
 
 #subset my count matrix based on filtered CPM matrix
 x <- counts_raw_matrix[row.names(filcpm_matrix),]
 dim(x)
+# saveRDS(x, "data/new/x_dge_counts_allind_updated.RDS")
 #14319 genes as expected!
 #this is still in counts form
 
 #remove my replicate individual at this time
 x_norep <- x[,1:36]
 
-Metadata <- read.csv("data/new/Metadata.csv")
+# saveRDS(x_norep, "data/new/x_norep.RDS")
+
+Metadata <- read.csv("data/Metadata_update.csv")
 
 #modify my metadata to match
 Metadata_2 <- Metadata[1:36,]
@@ -1070,12 +1101,12 @@ rownames(Metadata_2) <- Metadata_2$Sample_bam
 colnames(x_norep) <- Metadata_2$Sample_ID
 rownames(Metadata_2) <- Metadata_2$Sample_ID
 
-Metadata_2$Condition <- make.names(Metadata_2$Condition)
+Metadata_2$Condition <- make.names(Metadata_2$Cond)
 Metadata_2$Ind <- as.character(Metadata_2$Ind)
 
-#saveRDS(Metadata_2, "data/new/Metadata_2_norep.RDS")
+# saveRDS(Metadata_2, "data/Metadata_2_norep_update.RDS")
 
-Metadata_2 <- readRDS("data/new/Metadata_2_norep.RDS")
+Metadata_2 <- readRDS("data/Metadata_2_norep_update.RDS")
 ```
 #Perform Differential Expression Analysis 
 ```{r Differential Expression Analysis}
@@ -1085,9 +1116,9 @@ dge <- DGEList(counts = x_norep)
 dge$samples$group <- factor(Metadata_2$Condition)
 dge <- calcNormFactors(dge, method = "TMM")
 
-#saveRDS(dge, "data/new/dge_matrix.RDS")
+# saveRDS(dge, "data/new/dge_matrix.RDS")
 
-#check normalization factors from TMM normalization of LIBRARIES
+# check normalization factors from TMM normalization of LIBRARIES
 dge$samples
 
 #create my design matrix for DE
@@ -1095,7 +1126,7 @@ design <- model.matrix(~ 0 + Metadata_2$Condition)
 colnames(design) <- gsub("Metadata_2\\$Condition", "", colnames(design))
 
 #take care that the matrix automatically sorts cols alphabetically
-##currently DMSO144R, DMSO24R, DMSO24T, DOX144R, DOX24R, DOX24T
+##currently DOX_t0, DOX_t144, DOX_t24, VEH_t0, VEH_t144, VEH_t24
 
 #run duplicate correlation for individual effect
 corfit <- duplicateCorrelation(object = dge$counts, design = design, block = Metadata_2$Ind)
@@ -1108,9 +1139,9 @@ fit <- lmFit(v, design, block = Metadata_2$Ind, correlation = corfit$consensus.c
 
 #make my contrast matrix to compare across tx and veh
 contrast_matrix <- makeContrasts(
-  V.D24T = DOX_24T - DMSO_24T,
-  V.D24R = DOX_24R - DMSO_24R, 
-  V.D144R = DOX_144R - DMSO_144R,
+  V.D24T = DOX_t0 - VEH_t0,
+  V.D24R = DOX_t24 - VEH_t24, 
+  V.D144R = DOX_t144 - VEH_t144,
   levels = design
 )
 
@@ -1171,7 +1202,7 @@ top5_D144R <- Toptable_V.D144R[order(Toptable_V.D144R$adj.P.Val), ][1:5,] %>%
 
 #now that I've pulled the top 5 DEGs from each, make a list to pull them from my log2cpm data
 
-boxplot1 <- read.csv("data/new/filcpm_final_matrix.csv") %>% 
+boxplot1 <- readRDS("data/new/filcpm_matrix_genes.RDS") %>% 
   as.data.frame()
 
 #Define gene list
@@ -1455,28 +1486,28 @@ length(D144R_DEGs)
 ####Try this####
 
 #Combine the toptables I have from pairwise analysis into a single dataframe
-d24_toptable_dxr <- Toptable_V.D24T %>% 
+d0_toptable_dxr <- Toptable_V.D24T %>% 
   rownames_to_column(var = "Entrez_ID") %>% 
-  mutate(Time = "24")
+  mutate(Time = "t0")
 
-d24r_toptable_dxr <- Toptable_V.D24R %>% 
+d24_toptable_dxr <- Toptable_V.D24R %>% 
   rownames_to_column(var = "Entrez_ID") %>% 
-  mutate(Time = "24R")
+  mutate(Time = "t24")
 
-d144r_toptable_dxr <- Toptable_V.D144R %>% 
+d144_toptable_dxr <- Toptable_V.D144R %>% 
   rownames_to_column(var = "Entrez_ID") %>% 
-  mutate(Time = "144R")
+  mutate(Time = "t144")
 
 combined_toptables_dxr <- bind_rows(
+  d0_toptable_dxr,
   d24_toptable_dxr,
-  d24r_toptable_dxr,
-  d144r_toptable_dxr)
+  d144_toptable_dxr)
 
 #Filter the data based on each motif
 filt_toptable_dxr <- combined_toptables_dxr %>% 
   dplyr::filter(Entrez_ID  %in% D24T_DEGs) %>% 
   mutate(absFC = abs(logFC)) %>% 
-  mutate(time = factor(Time, levels = c("24", "24R", "144R"), labels = c("24hr", "24hr Recovery", "144hr Recovery"))) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), labels = c("tx+0", "tx+24", "tx+144"))) %>% 
   ggplot(., aes(x = time, y = logFC))+
   geom_boxplot(aes(fill = time))+
   scale_fill_manual(values = time_col)+
@@ -1561,12 +1592,15 @@ RUV_filt_counts <- counts_raw_matrix %>%
 
 #add in the annotation files
 ind_num <- readRDS("data/new/ind_num.RDS")
-annot <- read.csv("data/new/Metadata.csv")
+annot <- read.csv("data/Metadata_update.csv")
+#same as Metadata
+
 
 #  counts need to be integer values and in a numeric matrix
 # note: the log transformation needs to be accounted for in the isLog argument in RUVs function.
 counts <- as.matrix(RUV_filt_counts)
-#saveRDS(counts, "data/new/RUV/filt_counts_matrix.RDS")
+  
+# saveRDS(counts, "data/new/RUV/filt_counts_matrix.RDS")
 
 # Create a DataFrame for the phenoData
 phenoData <- DataFrame(annot)
@@ -1577,7 +1611,7 @@ set <- SummarizedExperiment(assays =  counts, metadata = phenoData)
 
 # Generate a background matrix
 # The column "Cond" holds the comparisons that you actually want to make. DOX_24, DMSO_24,5FU_24, DOX_3,etc.
-scIdx <-RUVSeq::makeGroups(phenoData$Condition)
+scIdx <- RUVSeq::makeGroups(phenoData$Cond)
 scIdx
 
 #now I've made all of the data I need for this - they are located in each section for k values
@@ -1585,50 +1619,47 @@ scIdx
 #DO NOT USE THESE COUNTS FOR LINEAR MODELING
 
 #colors for all of the plots
-fill_col_ind <- c("#66C2A5", "#FC8D62", "#1F78B4", "#E78AC3", "#A6D854", "#FFD92A", "#8B3E9B")
-
-fill_col_ind_dark <- c("#003F5C", "#45AE91",  "#58508D", "#BC4099", "#8B3E9B", "#FF6361", "#FF2362")
-
-fill_col_tx <- c("#63666D", "#499FBD", "#DCACED")
-
-fill_col_txtime <- c("#003F5C", "#45AE91",  "#58508D", "#BC4099", "#8B3E9B", "#FF6361", "#FF2362", "#A6D854", "#FC8D62")
+# txtime_col
+# ind_col
+# time_col
+# tx_col
 
 # before ruv (counts PCA)
 prcomp_res_counts <- prcomp(t(counts), scale. = FALSE, center = TRUE)
 annot_prcomp_res <- prcomp_res_counts$x %>% cbind(., annot)
 
-group_2 <- annot$Condition
+group_2 <- annot$Cond
 
 #now plot my PCA for filtered counts
 ####PC1/PC2####
 ggplot2::autoplot(prcomp_res_counts, 
                   data = annot, 
-                  colour = "Condition", 
+                  colour = "Cond", 
                   shape = "Time", 
-                  size =4, 
-                  x=1, 
-                  y=2) +
-  ggrepel::geom_text_repel(label=ind_num, 
+                  size = 4, 
+                  x = 1, 
+                  y = 2) +
+  ggrepel::geom_text_repel(label = ind_num, 
                            vjust = -0.5, 
                            max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values = txtime_col) +
   ggtitle(expression("PCA of Filtered Counts")) +
-  theme_bw()
+  theme_custom()
 
 ####PC2/PC3####
 ggplot2::autoplot(prcomp_res_counts, 
                   data = annot, 
-                  colour = "Condition", 
+                  colour = "Cond", 
                   shape = "Time", 
-                  size =4, 
-                  x=2, 
-                  y=3) +
-  ggrepel::geom_text_repel(label=ind_num, 
+                  size = 4, 
+                  x = 2, 
+                  y = 3) +
+  ggrepel::geom_text_repel(label = ind_num, 
                            vjust = -0.5, 
                            max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values = txtime_col) +
   ggtitle(expression("PCA of Filtered Counts")) +
-  theme_bw()
+  theme_custom()
 
 #go ahead and plot PCA of log2cpm to compare (somewhat) later since the norm counts output isn't possible with these data since they don't undergo correction
 
@@ -1637,32 +1668,32 @@ prcomp_res_cpm <- prcomp(t(filcpm_matrix %>% as.matrix()), center =  TRUE)
 ####PC1/PC2####
 ggplot2::autoplot(prcomp_res_cpm, 
                   data = annot, 
-                  colour = "Condition", 
+                  colour = "Cond", 
                   shape = "Time", 
-                  size =4, 
-                  x=1, 
-                  y=2) +
-  ggrepel::geom_text_repel(label=ind_num, 
+                  size = 4, 
+                  x = 1, 
+                  y = 2) +
+  ggrepel::geom_text_repel(label = ind_num, 
                            vjust = -0.5, 
                            max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values = txtime_col) +
   ggtitle(expression("PCA of log2cpm no RUVs")) +
-  theme_bw()
+  theme_custom()
 
 ####PC2/PC3####
 ggplot2::autoplot(prcomp_res_cpm, 
                   data = annot, 
-                  colour = "Condition", 
+                  colour = "Cond", 
                   shape = "Time", 
-                  size =4, 
-                  x=2, 
-                  y=3) +
-  ggrepel::geom_text_repel(label=ind_num, 
+                  size = 4, 
+                  x = 2, 
+                  y = 3) +
+  ggrepel::geom_text_repel(label = ind_num, 
                            vjust = -0.5, 
                            max.overlaps = 30) +
-  scale_color_manual(values=cond_col) +
+  scale_color_manual(values = txtime_col) +
   ggtitle(expression("PCA of log2cpm no RUVs")) +
-  theme_bw()
+  theme_custom()
 
 
 ####new PCA plots no correction####
@@ -1687,24 +1718,40 @@ RUV_df1$Names <- rownames(RUV_df1)
 RUV_df_rm1 <- RUV_df1[RUV_df1$Names %in% annot$Final_sample_name, ] 
 RUV_1 <-  RUV_df_rm1$W_1
 
-#saveRDS(RUV_df_rm1, "data/new/RUV_df_rm1.RDS")
-#saveRDS(RUV_1, "data/new/RUV_1.RDS")
+# saveRDS(RUV_df_rm1, "data/new/RUV_df_rm1.RDS")
+# saveRDS(RUV_1, "data/new/RUV_1.RDS")
 
 #PCA checks
 #k=1
 prcomp_res_1 <- prcomp(t(set1$normalizedCounts), scale. = FALSE, center = TRUE)
 annot_prcomp_res_1 <- prcomp_res_1$x %>% cbind(., annot)
 
-ggplot2::autoplot(prcomp_res_1, data = annot, colour = "Condition", shape = "Time", size =4, x = 1, y = 2)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, vjust = -0.5, max.overlaps = 30)+
+ggplot2::autoplot(prcomp_res_1, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size =4, 
+                  x = 1, 
+                  y = 2)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
   ggtitle("RUVs Correction k=1 NormCounts")
 
-ggplot2::autoplot(prcomp_res_1, data = annot, colour = "Condition", shape = "Time", size =4, x=2, y=3)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, vjust = -0.5, max.overlaps = 30)+
+ggplot2::autoplot(prcomp_res_1, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4, 
+                  x = 2,
+                  y = 3)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
   ggtitle("RUVs Correction k=1 NormCounts")
 
 #also try by converting these values to log2cpm
@@ -1717,31 +1764,30 @@ annot_prcomp_res_1_cpm <- prcomp_res_1_cpm$x %>% cbind(., annot)
 ##PC1/2
 ggplot2::autoplot(prcomp_res_1_cpm, 
                   data = annot, 
-                  colour = "Condition", 
+                  colour = "Cond", 
                   shape = "Time", 
-                  size = 7,
-                  x=1,
-                  y=2)+
-  theme_bw(base_size = 14)+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
+                  size = 4,
+                  x = 1,
+                  y = 2)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
                            vjust = -0.5, 
-                           max.overlaps = 50,
-                           cex = 5)+
+                           max.overlaps = 50)+
   ggtitle("RUVs Correction k=1 log2cpm")
 
 
 ###PC2/3
 ggplot2::autoplot(prcomp_res_1_cpm, 
                   data = annot, 
-                  colour = "Condition", 
+                  colour = "Cond", 
                   shape = "Time", 
-                  size = 8, 
-                  x=2, 
-                  y=3)+
-  theme_bw()+
-  scale_color_manual(values=cond_col)+
-  ggrepel::geom_text_repel(label= ind_num, 
+                  size = 4, 
+                  x = 2, 
+                  y = 3)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
                            vjust = -0.5, 
                            max.overlaps = 30)+
   ggtitle("RUVs Correction k=1 log2cpm")
@@ -1749,25 +1795,31 @@ ggplot2::autoplot(prcomp_res_1_cpm,
 
 #make a larger version where the points stay together for figures
 
-autoplot(prcomp_res_1_cpm,
+fig2a <- autoplot(prcomp_res_1_cpm,
          data = annot,
-         colour = "Condition",
+         colour = "Cond",
          shape = "Time",
-         size = 7,
+         size = 5,
          x = 1,
          y = 2) +
-  theme_bw(base_size = 14) +
-  scale_color_manual(values = cond_col) +
-  geom_text_repel(aes(label = ind_num),       # use aes() here
-                  nudge_y = 0.05,            # small nudge instead of vjust
-                  max.overlaps = 50,
-                  size = 6,                   # cex is not needed in ggplot2
-                  segment.color = "grey50") + 
+  theme_custom() +
+  scale_color_manual(values = txtime_col) +
+  geom_text_repel(aes(label = ind_num),       
+                  nudge_y = 0.05,            
+                  max.overlaps = 100,                   
+                  segment.color = "grey40") + 
   ggtitle("RUVs Correction k=1 log2cpm")
 
 #save for figure generation
 
-# ggsave("fig2a_pca_6x8_EMP.pdf", width = 6, height = 8, device = cairo_pdf)
+#before I knew how to save things - keep for posterity for now
+# ggsave("fig2a_pca_6x8_EMP_new_251121.pdf", width = 6, height = 8, device = cairo_pdf)
+
+# save_plot(plot = fig2a,
+#           filename = "Fig2A_PCA_6x8_EMP",
+#           folder = output_folder,
+#           width = 6,
+#           height = 8)
 
 
 ```
@@ -2135,7 +2187,7 @@ line_to_ind <- c(
 
 # saveRDS(Metadata, "data/Metadata_update.RDS")
 # write.csv(Metadata, "data/Metadata_update.csv")
-Metadata <- read.csv("data/Metadata_update.csv")
+# Metadata <- read.csv("data/Metadata_update.csv")
 
 ####RUVs k=1-3
 #check to make sure that the column names are correct
@@ -2209,16 +2261,16 @@ cor_matrix_spmn_k1_cpm <- cor(cpm_k1,
 
 #extract metadata columns
 Individual <- as.character(Metadata$Ind)
-Time <- as.character(Metadata$Timepoint)
+Time <- as.character(Metadata$Time)
 Treatment <- as.character(Metadata$Treatment)
 
 # Define color palettes for annotations
 annot_col_cor = list(Treatment = c("DOX" = "#499FBD", 
                                "VEH" = "#BBBBBC"),
-                     Individual = c("1" = "#FF9F64", 
-                                     "2" = "#78EBDA", 
-                                     "3" = "#ADCD77", 
-                                     "4" = "#E6CC50", 
+                     Individual = c("1" = "#FFA364", 
+                                     "2" = "#78EFDE", 
+                                     "3" = "#A4D177", 
+                                     "4" = "#EAD050", 
                                      "5" = "#A68AC0", 
                                      "6" = "#F16F90", 
                                      "6R" = "#C61E4E"),
@@ -2228,10 +2280,10 @@ annot_col_cor = list(Treatment = c("DOX" = "#499FBD",
 
 tx_colors <- c("DOX" = "#499FBD",
                  "VEH" = "#BBBBBC")
-ind_colors <- c("1" = "#FF9F64",
-                "2" = "#78EBDA",
-                "3" = "#ADCD77",
-                "4" = "#E6CC50",
+ind_colors <- c("1" = "#FFA364",
+                "2" = "#78EFDE",
+                "3" = "#A4D177",
+                "4" = "#EAD050",
                 "5" = "#A68AC0",
                 "6" = "#F16F90",
                 "6R" = "#C61E4E")
@@ -2392,13 +2444,13 @@ cat("Sign test p-value (greater than 0):", sign_test$p.value, "\n")
 
 #now I want to test correlations by timepoint with DOX vs DMSO
 #list your timepoints
-cor_time_sp <- c("24T", "24R", "144R")
+cor_time_sp <- c("t0", "t24", "t144")
 
 for (tp in cor_time_sp) {
   
   # Match DOX and DMSO samples at this timepoint
   dox_samples <- grep(paste0("^DOX_", tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
-  dmso_samples <- grep(paste0("^DMSO_", tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
+  dmso_samples <- grep(paste0("^VEH_", tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
   
   # Extract Spearman correlations between DOX and DMSO at this timepoint
   cor_vals <- as.vector(cor_matrix_spmn_k1_cpm[dox_samples, dmso_samples])
@@ -2413,7 +2465,8 @@ for (tp in cor_time_sp) {
   
   # Perform binomial test if valid
   if (n_total > 0) {
-    sign_test <- binom.test(x = n_pos, n = n_total, p = 0.5, alternative = "greater")
+    sign_test <- binom.test(x = n_pos, n = n_total, p = 0.5,
+                            alternative = "greater")
     p_val <- sign_test$p.value
   } else {
     p_val <- NA
@@ -2421,24 +2474,24 @@ for (tp in cor_time_sp) {
   
   # Output
   cat("====", tp, "====\n")
-  cat("Median Spearman correlation (DOX vs DMSO):", round(median_cor, 4), "\n")
+  cat("Median Spearman correlation (DOX vs VEH):", round(median_cor, 4), "\n")
   cat("Sign test p-value:", p_val, "\n\n")
 }
 
 # output
-# ==== 24T ====
-# Median Spearman correlation (DOX vs DMSO): 0.8899 
+# ==== t0 ====
+# Median Spearman correlation (DOX vs VEH): 0.8899 
 # Sign test p-value: 1.776357e-15 
 # 
-# ==== 24R ====
-# Median Spearman correlation (DOX vs DMSO): 0.9347 
+# ==== t24 ====
+# Median Spearman correlation (DOX vs VEH): 0.9347 
 # Sign test p-value: 1.776357e-15 
 # 
-# ==== 144R ====
-# Median Spearman correlation (DOX vs DMSO): 0.9767 
+# ==== t144 ====
+# Median Spearman correlation (DOX vs VEH): 0.9767 
 # Sign test p-value: 1.776357e-15 
 
-#this means that my DOX and DMSO are highly similar and significant according to P values
+#this means that my DOX and VEH are highly similar and significant according to P values
 
 ```
 
@@ -2446,22 +2499,23 @@ for (tp in cor_time_sp) {
 #Make your supplement heatmap 
 
 #rename your columns for your matrix cpm_k1 to be correct
-new_colname <- colnames(cpm_k1) %>%
-  gsub("24T", "t0", .) %>%
-  gsub("24R", "t24", .) %>%
-  gsub("144R", "t144", .) %>%
-  gsub("DMSO", "VEH", .)
+# I RENAMED THESE EARLIER 
+# new_colname <- colnames(cpm_k1) %>%
+#   gsub("24T", "t0", .) %>%
+#   gsub("24R", "t24", .) %>%
+#   gsub("144R", "t144", .) %>%
+#   gsub("DMSO", "VEH", .)
 
-colnames(cpm_k1_rename) <- new_colname
+# colnames(cpm_k1_rename) <- new_colname
 
-cor_matrix_spmn_k1_cpm_new <- cor(cpm_k1_rename,
+cor_matrix_spmn_k1_cpm_new <- cor(cpm_k1,
                            y = NULL,
                            use = "everything",
                            method = "spearman")
 
 #create ComplexHeatmap
 heatmap_spmn_supp <- Heatmap(
-  cor_matrix_spmn_k1_cpm_new,
+  cor_matrix_spmn_k1_cpm,
   name = "Spearman",
   top_annotation = top_annotation,
   show_row_names = TRUE,
@@ -2495,13 +2549,13 @@ save_complex_heatmap <- function(plot, filename, folder, width = 6, height = 8) 
 }
 
 # Save to PDF in your output folder
-save_complex_heatmap(
-  plot = heatmap_spmn_supp,
-  filename = "SuppFig3_SpearmanCorHM_RUV_log2cpm_EMP_251022.pdf",
-  folder = output_folder,
-  width = 8,
-  height = 6
-)
+# save_complex_heatmap(
+#   plot = heatmap_spmn_supp,
+#   filename = "SuppFig3_SpearmanCorHM_RUV_log2cpm_EMP_251121.pdf",
+#   folder = output_folder,
+#   width = 8,
+#   height = 6
+# )
 ```
 
 
@@ -2530,14 +2584,13 @@ length(RUV_1_df_filt$W_1)
 #now make this into a list
 RUV_1_DE <-  RUV_1_df_filt$W_1
 
-#saveRDS(RUV_1_DE, "data/new/RUV_1_DE.RDS")
+# saveRDS(RUV_1_DE, "data/new/RUV_1_DE.RDS")
 
 #create my design matrix for DE + RUVs covariate k=1
 design1 <- model.matrix(~0 + RUV_1_DE + Metadata_2$Condition)
 colnames(design1) <- gsub("Metadata_2\\$Condition", "", colnames(design1))
 
 #take care that the matrix automatically sorts cols alphabetically
-##currently DMSO144R, DMSO24R, DMSO24T, DOX144R, DOX24R, DOX24T
 
 #run duplicate correlation for individual effect
 corfit1 <- duplicateCorrelation(object = dge$counts, design = design1, block = Metadata_2$Ind)
@@ -2550,12 +2603,12 @@ fit1 <- lmFit(v1, design1, block = Metadata_2$Ind, correlation = corfit1$consens
 
 #make my contrast matrix to compare across tx and veh
 contrast_matrix_RUV <- makeContrasts(
-  V.D24T = DOX_24T - DMSO_24T,
-  V.D24R = DOX_24R - DMSO_24R, 
-  V.D144R = DOX_144R - DMSO_144R,
-  RUV_1_24T = RUV_1_DE - DMSO_24T,
-  RUV_1_24R = RUV_1_DE - DMSO_24R,
-  RUV_1_144R = RUV_1_DE - DMSO_144R,  
+  V.D24T = DOX_t0 - VEH_t0,
+  V.D24R = DOX_t24 - VEH_t24, 
+  V.D144R = DOX_t144 - VEH_t144,
+  RUV_1_24T = RUV_1_DE - VEH_t0,
+  RUV_1_24R = RUV_1_DE - VEH_t24,
+  RUV_1_144R = RUV_1_DE - VEH_t144,  
   levels = design1
 )
 
@@ -2571,10 +2624,10 @@ plotSA(fit_RUV, main = "Mean-Variance Trend, RUVs k=1")
 results_summary1 <- decideTests(fit_RUV, adjust.method = "BH", p.value = 0.05)
 
 summary(results_summary1)
-#        V.D24T V.D24R V.D144R RUV_1_24T RUV_1_24R RUV_1_144R
-# Down     4866   3727     466     13212     13224      13168
-# NotSig   4899   7107   13659      1014      1002       1058
-# Up       4554   3485     194        93        93         93
+#        V.D24T V.D24R V.D144R
+# Down     4866   3727     466  
+# NotSig   4899   7107   13659    
+# Up       4554   3485     194
 
 #compare this to my previous DEGs I found
 # summary(results_summary)
@@ -2593,13 +2646,13 @@ summary(results_summary1)
 # Generate Top Table for Specific Comparisons
 
 Toptable_V.D24T_k1 <- topTable(fit = fit_RUV, coef = "V.D24T", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
-#write.csv(Toptable_V.D24T_k1, "data/new/DEGs/Toptable_V.D24T_k1.csv")
+# write.csv(Toptable_V.D24T_k1, "data/new/DEGs/Toptable_V.D24T_k1.csv")
 
 Toptable_V.D24R_k1 <- topTable(fit = fit_RUV, coef = "V.D24R", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
-#write.csv(Toptable_V.D24R_k1, "data/new/DEGs/Toptable_V.D24R_k1.csv")
+# write.csv(Toptable_V.D24R_k1, "data/new/DEGs/Toptable_V.D24R_k1.csv")
 
 Toptable_V.D144R_k1 <- topTable(fit = fit_RUV, coef = "V.D144R", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
-#write.csv(Toptable_V.D144R_k1, "data/new/DEGs/Toptable_V.D144R_k1.csv")
+write.csv(Toptable_V.D144R_k1, "data/new/DEGs/Toptable_V.D144R_k1.csv")
 
 # save all of these toptables as R objects
 # saveRDS(list(
@@ -2617,27 +2670,27 @@ Toptable_list_RUVk1 <- readRDS("data/new/Toptable_list_RUVk1.RDS")
 # #I want to add the hgnc symbols to my toptables as well
 # ####D24T####
 # #load in data
-# sample_toptab_24T <- read_csv("data/new/DEGs/Toptable_V.D24T_k1.csv", show_col_types = FALSE)
+sample_toptab_24T <- read_csv("data/new/DEGs/Toptable_V.D24T_k1.csv", show_col_types = FALSE)
 # # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
 # # Check column names
-# print(colnames(sample_toptab_24T))
+print(colnames(sample_toptab_24T))
 # # Rename if needed (adjust if the column name is not exactly 'Entrez_ID')
-# colnames(sample_toptab_24T)[1] <- "Entrez_ID"
+colnames(sample_toptab_24T)[1] <- "Entrez_ID"
 # # Convert Entrez_ID to character
-# sample_toptab_24T <- sample_toptab_24T %>%
-#   mutate(Entrez_ID = as.character(Entrez_ID))
+sample_toptab_24T <- sample_toptab_24T %>%
+  mutate(Entrez_ID = as.character(Entrez_ID))
 # # ----------------- Map Entrez_ID to Gene Symbol -----------------
-# gene_symbols1 <- AnnotationDbi::select(
-#   org.Hs.eg.db,
-#   keys = sample_toptab_24T$Entrez_ID,
-#   columns = c("SYMBOL"),
-#   keytype = "ENTREZID"
-# )
+gene_symbols1 <- AnnotationDbi::select(
+  org.Hs.eg.db,
+  keys = sample_toptab_24T$Entrez_ID,
+  columns = c("SYMBOL"),
+  keytype = "ENTREZID"
+)
 # # ----------------- Join Back to Main Data -----------------
-# Toptable_RUV_24T <- left_join(sample_toptab_24T, gene_symbols1, by = c("Entrez_ID" = "ENTREZID"))
-# Toptable_RUV_24T %>% column_to_rownames(., var = "Entrez_ID")
+Toptable_RUV_24T <- left_join(sample_toptab_24T, gene_symbols1, by = c("Entrez_ID" = "ENTREZID"))
+Toptable_RUV_24T %>% column_to_rownames(., var = "Entrez_ID")
 # # ----------------- Save Annotated Output -----------------
-# #write_csv(Toptable_RUV_24T, "data/new/DEGs/Toptable_RUV_24T.csv")
+# write_csv(Toptable_RUV_24T, "data/new/DEGs/Toptable_RUV_24T.csv")
 # 
 # #now do this again for my other two toptables
 # 
@@ -2651,7 +2704,7 @@ Toptable_list_RUVk1 <- readRDS("data/new/Toptable_list_RUVk1.RDS")
 # colnames(sample_toptab_24R)[1] <- "Entrez_ID"
 # # Convert Entrez_ID to character
 # sample_toptab_24R <- sample_toptab_24R %>%
-#   mutate(Entrez_ID = as.character(Entrez_ID))
+  # mutate(Entrez_ID = as.character(Entrez_ID))
 # # ----------------- Map Entrez_ID to Gene Symbol -----------------
 # gene_symbols2 <- AnnotationDbi::select(
 #   org.Hs.eg.db,
@@ -2664,7 +2717,7 @@ Toptable_list_RUVk1 <- readRDS("data/new/Toptable_list_RUVk1.RDS")
 # Toptable_RUV_24R %>% column_to_rownames(., var = "Entrez_ID")
 # # ----------------- Save Annotated Output -----------------
 # #I'll make these symbols into rownames later for my volcano plots
-# #write_csv(Toptable_RUV_24R, "data/new/DEGs/Toptable_RUV_24R.csv")
+# write_csv(Toptable_RUV_24R, "data/new/DEGs/Toptable_RUV_24R.csv")
 # 
 # 
 # ####D144R####
@@ -2677,7 +2730,7 @@ Toptable_list_RUVk1 <- readRDS("data/new/Toptable_list_RUVk1.RDS")
 # colnames(sample_toptab_144R)[1] <- "Entrez_ID"
 # # Convert Entrez_ID to character
 # sample_toptab_144R <- sample_toptab_144R %>%
-#   mutate(Entrez_ID = as.character(Entrez_ID))
+  # mutate(Entrez_ID = as.character(Entrez_ID))
 # # ----------------- Map Entrez_ID to Gene Symbol -----------------
 # gene_symbols3 <- AnnotationDbi::select(
 #   org.Hs.eg.db,
@@ -2690,17 +2743,18 @@ Toptable_list_RUVk1 <- readRDS("data/new/Toptable_list_RUVk1.RDS")
 # Toptable_RUV_144R %>% column_to_rownames(., var = "Entrez_ID")
 # # ----------------- Save Annotated Output -----------------
 # #I'll make these symbols into rownames later for my volcano plots
-# #write_csv(Toptable_RUV_144R, "data/new/DEGs/Toptable_RUV_144R.csv")
-
+# write_csv(Toptable_RUV_144R, "data/new/DEGs/Toptable_RUV_144R.csv")
+# 
 # write.csv(Toptable_RUV_24T, "data/new/DEGs/Toptable_RUV_24T_final.csv")
 # write.csv(Toptable_RUV_24R, "data/new/DEGs/Toptable_RUV_24R_final.csv")
 # write.csv(Toptable_RUV_144R, "data/new/DEGs/Toptable_RUV_144R_final.csv")
 
-Toptable_RUV_24T <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv")
-Toptable_RUV_24R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv")
-Toptable_RUV_144R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv")
-
-
+Toptable_RUV_24T <- read_csv("data/new/DEGs/Toptable_RUV_24T_final.csv",
+                             col_select = -1)
+Toptable_RUV_24R <- read_csv("data/new/DEGs/Toptable_RUV_24R_final.csv",
+                             col_select = -1)
+Toptable_RUV_144R <- read_csv("data/new/DEGs/Toptable_RUV_144R_final.csv",
+                              col_select = -1)
 
 # save all of these toptables as R objects
 # saveRDS(list(
@@ -2999,28 +3053,26 @@ for (gene in top5_D144R_geneslist_1) {
 ```{r Top DEGs all timepoints list}
 #find the top 10 DEGs for the entire dataset with my combined toptables
 #Combine the toptables I have from pairwise analysis into a single dataframe
-d24_toptable_dxr_RUV <- Toptable_RUV_24T %>% 
-  dplyr::select(-("X")) %>% 
-  # rownames_to_column(var = "Entrez_ID") %>% 
-  mutate(Time = "24")
+# d0_toptable_dxr_RUV <- Toptable_RUV_24T %>% 
+#   mutate(Time = "t0")
+# 
+# d24_toptable_dxr_RUV <- Toptable_RUV_24R %>% 
+#   mutate(Time = "t24")
+# 
+# d144_toptable_dxr_RUV <- Toptable_RUV_144R %>% 
+#   mutate(Time = "t144")
 
-d24r_toptable_dxr_RUV <- Toptable_RUV_24R %>% 
-  dplyr::select(-("X")) %>% 
-  # rownames_to_column(var = "Entrez_ID") %>% 
-  mutate(Time = "24R")
+# combined_toptables_dxr_RUV <- bind_rows(
+#   d0_toptable_dxr_RUV,
+#   d24_toptable_dxr_RUV,
+#   d144_toptable_dxr_RUV)
 
-d144r_toptable_dxr_RUV <- Toptable_RUV_144R %>% 
-  dplyr::select(-("X")) %>% 
-  # rownames_to_column(var = "Entrez_ID") %>% 
-  mutate(Time = "144R")
+# combined_toptables_dxr_RUV
 
-combined_toptables_dxr_RUV <- bind_rows(
-  d24_toptable_dxr_RUV,
-  d24r_toptable_dxr_RUV,
-  d144r_toptable_dxr_RUV)
+# saveRDS(combined_toptables_dxr_RUV, "data/new/RUV/combined_toptables_RUVs.RDS")
 
-combined_toptables_dxr_RUV
-  
+combined_toptables_dxr_RUV <- readRDS("data/new/RUV/combined_toptables_RUVs.RDS")
+
 top10_DEGs_RUV <- combined_toptables_dxr_RUV[order(combined_toptables_dxr_RUV$adj.P.Val), ][1:10,]
 
 print(top10_DEGs_RUV$SYMBOL)
@@ -3256,13 +3308,13 @@ draw(heatmap_spearman_RUV_time_abs)
 
 ```
 
-#Scatterplot Spearman Cor Heatmap
+#Scatterplot Spearman Cor Heatmap Fig2
 ```{r logFC scatterplot}
 
 # Define the timepoints from your data
-timepoints <- c("24", "24R", "144R")
+timepoints <- c("t0", "t24", "t144")
 
-comparison_order <- c("24 vs 24R", "24R vs 144R", "24 vs 144R")
+comparison_order <- c("t0 vs t24", "t24 vs t144", "t0 vs t144")
 
 # Make all pairwise combinations
 pairs_df <- t(combn(timepoints, 2)) %>%
@@ -3285,9 +3337,9 @@ prepare_pair_data <- function(time_x, time_y, df) {
 }
 
 comparison_colors <- c(
-  "24T vs 24R"  = "#05139b",
-  "24R vs 144R" = "#5b8fd1",
-  "24T vs 144R" = "#aed6f1"
+  "t0 vs t24"  = "#4167BD",
+  "t24 vs t144" = "#72AEE0",
+  "t0 vs t144" = "#5780C5"
 )
 
 # Build combined plotting dataset
@@ -3321,7 +3373,7 @@ make_scatter <- function(df_sub) {
       x = unique(df_sub$x_lab),
       y = unique(df_sub$y_lab)
     ) +
-    theme_bw(base_size = 14) +
+    theme_custom() +
     theme(
       axis.line = element_line(linewidth = 1, 
                                color = "black"),
@@ -3334,28 +3386,29 @@ make_scatter <- function(df_sub) {
 }
 
 #my custom theme for these figures
-theme_custom <- function(base_size = 14) {
-  theme_bw(base_size = base_size) %+replace%
-    theme(
-      axis.line = element_line(linewidth = 1, color = "black"),
-      axis.ticks.length = unit(0.05, "in"),
-      axis.text = element_text(color = "black"),
-      panel.background = element_blank(),
-      panel.border = element_blank()
-    )
-}
-  
+# theme_plots <- function(base_size = 14) {
+#   theme_bw(base_size = base_size) %+replace%
+#     theme(
+#       axis.line = element_line(linewidth = 1, color = "black"),
+#       axis.ticks.length = unit(0.05, "in"),
+#       axis.text = element_text(color = "black"),
+#       panel.background = element_blank(),
+#       panel.border = element_blank()
+#     )
+# }
+#   
 
 #make plot
 plot_list <- lapply(split_data, make_scatter)
 #wrap all three together to get the final plot
-scatterplot_fig2d <- wrap_plots(plot_list, ncol = length(plot_list))
-
-scatterplot_fig2d
+scatterplot_fig2d_wide <- wrap_plots(plot_list, ncol  = length(plot_list))
+scatterplot_fig2d_tall <- wrap_plots(plot_list, nrow = length(plot_list))
+scatterplot_fig2d_wide
+scatterplot_fig2d_tall
 
 #save plot to a pdf and to a png
-ggsave("Fig2D_Scatterplot_fixedlims_EMP_250919.pdf", scatterplot_fig2d, width = 8, height = 6, device = cairo_pdf, path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
-ggsave("Fig2D_Scatterplot_fixedlims_EMP_250919.png", scatterplot_fig2d, width = 12, height = 4, dpi = 300, type = "cairo", path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
+ggsave("Fig2D_Scatterplot_fixedlims_EMP_251121.pdf", scatterplot_fig2d_wide, width = 8, height = 6, device = cairo_pdf, path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
+ggsave("Fig2D_Scatterplot_fixedlims_EMP_251121.png", scatterplot_fig2d_wide, width = 12, height = 4, dpi = 300, type = "cairo", path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
 
 #make a rasterized version (old)
 # ggplot(scatter_df, aes(x = x_val, y = y_val, color = comparison)) +
@@ -3379,6 +3432,108 @@ ggsave("Fig2D_Scatterplot_fixedlims_EMP_250919.png", scatterplot_fig2d, width = 
 #   theme_classic(base_size = 14) +
 #   theme(legend.position = "none")
 
+```
+#Updated Fig2D Scatterplots
+```{r Scatterplots Timepoint Comparisons}
+
+#define timepoints
+timepoints <- c("t0", "t24", "t144")
+comparison_order <- c("t0 vs t24", "t24 vs t144", "t0 vs t144")
+
+#make all pairwise combinations
+pairs_df <- t(combn(timepoints, 2)) %>%
+  as.data.frame(stringsAsFactors = FALSE) %>%
+  setNames(c("time_x", "time_y"))
+
+#function: prepare scatter data plus add rho + p-value
+prepare_pair_data_new <- function(time_x, time_y, df) {
+  ct <- cor.test(df[[time_x]], df[[time_y]], method = "spearman")
+  
+  formatted_p <- if(ct$p.value < 0.001) "< 0.001" else signif(ct$p.value, 2)
+
+  df %>%
+    mutate(
+      x_val = .data[[time_x]],
+      y_val = .data[[time_y]],
+      comparison = paste0(time_x, " vs ", time_y),
+      rho_label = paste0("rho = ", round(ct$estimate, 2),
+                         "\np = ", signif(ct$p.value)),
+      rho = ct$estimate,
+      pval = ct$p.value,
+      x_lab = paste0("log2FC ", time_x),
+      y_lab = paste0("log2FC ", time_y)
+    )
+  
+  print(ct)
+}
+
+# Colors
+comparison_colors <- c(
+  "t0 vs t24"   = "#4A1A2A",
+  "t24 vs t144" = "#B07891",
+  "t0 vs t144"  = "#7B435B"
+)
+
+# Build combined plotting dataset
+scatter_df <- map2_df(
+  pairs_df$time_x, pairs_df$time_y,
+  ~ prepare_pair_data(.x, .y, logFC_wide_RUV)
+) %>%
+  mutate(comparison = factor(comparison, levels = comparison_order))
+
+# Split data by comparison
+split_data <- split(scatter_df, scatter_df$comparison)
+
+# Plot function
+make_scatter <- function(df_sub) {
+  comp <- df_sub$comparison[1]
+
+  ggplot(df_sub, aes(x = x_val, y = y_val)) +
+    geom_point_rast(alpha = 0.8, size = 1.25, raster.dpi = 300,
+                    color = comparison_colors[comp]) +
+    geom_smooth(method = "lm", se = FALSE,
+                linetype = "dashed", color = "black") +
+    geom_text(
+      data = df_sub %>% distinct(comparison, rho_label),
+      aes(x = -Inf, y = Inf, label = rho_label),
+      hjust = -0.1, vjust = 1.5,
+      size = 4,
+      inherit.aes = FALSE
+    ) +
+    coord_fixed(xlim = c(-9, 9), ylim = c(-9, 9), ratio = 1) +
+    labs(
+      x = unique(df_sub$x_lab),
+      y = unique(df_sub$y_lab)
+    ) +
+    theme_custom()
+    # theme(
+    #   axis.line = element_line(linewidth = 1, color = "black"),
+    #   axis.ticks.length = unit(0.05, "in"),
+    #   axis.text = element_text(color = "black"),
+    #   panel.background = element_blank(),
+    #   panel.border = element_blank(),
+    #   legend.position = "none"
+    # )
+
+}
+
+# Make list of plots
+plot_list <- lapply(split_data, make_scatter)
+
+#tall version
+# scatterplot_tall <- wrap_plots(plot_list, nrow = length(plot_list))
+# scatterplot_tall
+
+#wide version
+scatterplot_wide <- wrap_plots(plot_list, ncol = length(plot_list))
+scatterplot_wide
+
+#summary table for stats
+comparison_summary <- scatter_df %>%
+  distinct(comparison, rho, pval) %>%
+  arrange(comparison)
+
+comparison_summary
 ```
 
 
@@ -4081,21 +4236,24 @@ DOX144R_DEGs_GO <- DOX_144R_DEGs %>%
 ```{r RUVs Overlap of DEGs}
 #plot a venn diagram with all of your conditions from your toptables
 
-# Load DEGs Data
-DOX_24T_1 <- read.csv("data/new/DEGs/TTBL_RUV_24T_OLD.csv")
-DOX_24R_1 <- read.csv("data/new/DEGs/TTBL_RUV_24R_OLD.csv")
-DOX_144R_1 <- read.csv("data/new/DEGs/TTBL_RUV_144R_OLD.csv")
+# Load DEGs Data (replaced with new set)
+DOX_t0 <- read_csv("data/new/DEGs/Toptable_RUV_24T_final.csv") #this one no X col
+DOX_t24 <- read_csv("data/new/DEGs/Toptable_RUV_24R_final.csv", 
+                    col_select = -1)
+DOX_t144 <- read_csv("data/new/DEGs/Toptable_RUV_144R_final.csv", 
+                     col_select = -1)
 
-# Extract Significant DEGs
-DEG1_RUV <- DOX_24T_1$Entrez_ID[DOX_24T_1$adj.P.Val < 0.05]
-DEG2_RUV <- DOX_24R_1$Entrez_ID[DOX_24R_1$adj.P.Val < 0.05]
-DEG3_RUV <- DOX_144R_1$Entrez_ID[DOX_144R_1$adj.P.Val < 0.05]
+# Extract Significant DEGs (change names to timepoint)
+DEG_t0_RUV <- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val < 0.05]
+DEG_t24_RUV <- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val < 0.05]
+DEG_t144_RUV <- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val < 0.05]
 
-venn_test_RUV <- list(DEG1_RUV, DEG2_RUV, DEG3_RUV)
+venn_test_RUV <- list(DEG_t0_RUV, DEG_t24_RUV, DEG_t144_RUV)
 ggVennDiagram(
   venn_test_RUV,
-  category.names = c("DOX_24T", "DOX_24R", "DOX_144R")
+  category.names = c("DOX_t0", "DOX_t24", "DOX_t144")
 ) + ggtitle("DXR Specific and Shared DEGs RUVs")+
+  theme_custom() +
   theme(
     plot.title = element_text(size = 16, face = "bold"),  # Increase title size
     text = element_text(size = 16)  # Increase text size globally
@@ -4107,13 +4265,13 @@ ggVennDiagram(
 # library(eulerr)
 
 venn_prop_RUV <- euler(list(
-  `24T` = DEG1_RUV,
-  `24R` = DEG2_RUV,
-  `144R` = DEG3_RUV
+  "t0" = DEG_t0_RUV,
+  "t24" = DEG_t24_RUV,
+  "t144" = DEG_t144_RUV
 ))
 
 plot(venn_prop_RUV,
-     fills = list(fill = c("#238B45", "#74C476", "#C7E9C0"), 
+     fills = list(fill = c("#263CA5", "#5B8FD1", "#89C5E5"), 
                   alpha = 1),
      labels = list(font = 4),
      quantities = list(cex = 0.75),
@@ -4125,116 +4283,116 @@ plot(venn_prop_RUV,
 #Set 2 - DOX_24T shared genes
 #Set 3 - DOX_144R shared genes
 plot.new()
-venn_test_RUV <- venndetail(venntest_RUV)
+venn_test_RUV <- venndetail(venn_test_RUV)
 plot(venn_test_RUV)
 detail(venn_test_RUV)
 #now that I have the genes subsetted by condition, I can pull out the genes I want to look at
 
-venn_DOX_24T_RUV <- getSet(object = venn_test_RUV, subset = c("Group 1"))
-dim(venn_DOX_24T_RUV)
+venn_genes_t0_RUV <- getSet(object = venn_test_RUV, subset = c("Group 1"))
+dim(venn_genes_t0_RUV)
 #4411 genes in DOX_24T only
 
-venn_DOX_shared_RUV <- getSet(object = venn_test_RUV, subset = c("Shared", "Group 1_Group 2", "Group 1_Group 3"))
-dim(venn_DOX_shared_RUV)
+venn_genes_shared_RUV <- getSet(object = venn_test_RUV, subset = c("Shared", "Group 1_Group 2", "Group 1_Group 3"))
+dim(venn_genes_shared_RUV)
 #total of 5009 genes in this set which does not include D24T specific genes
 
-venn_DOX144R_shared_RUV <- getSet(object = venn_test_RUV, subset = c("Shared", "Group 3", "Group 2_Group 3", "Group 1_Group 3"))
-dim(venn_DOX144R_shared_RUV)
+venn_genes_t144_shared_RUV <- getSet(object = venn_test_RUV, subset = c("Shared", "Group 3", "Group 2_Group 3", "Group 1_Group 3"))
+dim(venn_genes_t144_shared_RUV)
 #total of 660 genes: (original 509)
  #342 shared all
- #32 DOX144R Specific
- #85 DOX24T + DOX144R
- #181 DOX24R + DOX144R
+ #32 DOX_t144 Specific
+ #85 DOX_t0 + DOX_t144
+ #181 DOX_t24 + DOX_t144
 
 #after that, run GO analysis
-venn_shared_DEGs_RUV <- venn_DOX_shared_RUV %>% 
+venn_shared_DEGs_RUV <- venn_genes_shared_RUV %>% 
   as.data.frame() %>% 
   column_to_rownames(., var = "Detail")
 
-venn_DOX24T_DEGs_RUV <- venn_DOX_24T_RUV %>% 
+venn_genes_t0_DEGs_RUV <- venn_genes_t0_RUV %>% 
   as.data.frame() %>% 
   column_to_rownames(., var = "Detail")
 
-venn_sharedD144R_DEGs_RUV <- venn_DOX144R_shared_RUV %>% 
+venn_genes_t144_DEGs_RUV <- venn_genes_t144_shared_RUV %>% 
   as.data.frame() %>% 
   column_to_rownames(., var = "Detail")
 
 #pull these genes out of my DEG matrix with logFC
-DOX_24T_DEGs_RUV <-
-  Toptable_list_RUVk1_symbols$V.D24T_RUV[row.names(venn_DOX24T_DEGs_RUV),]
-DOX_24T_shared_DEGs_RUV <- 
+DOX_t0_DEGs_RUV <-
+  Toptable_list_RUVk1_symbols$V.D24T_RUV[row.names(venn_genes_t0_DEGs_RUV),]
+DOX_t0_shared_DEGs_RUV <- 
   Toptable_list_RUVk1_symbols$V.D24T_RUV[row.names(venn_shared_DEGs_RUV),]
-DOX_144R_shared_DEGs_RUV <- 
-  Toptable_list_RUVk1_symbols$V.D144R_RUV[row.names(venn_sharedD144R_DEGs_RUV),]
+DOX_t144_shared_DEGs_RUV <- 
+  Toptable_list_RUVk1_symbols$V.D144R_RUV[row.names(venn_genes_t144_DEGs_RUV),]
 
 #next, make the vectors that I need for plotting after cutting off by adj. p value < 0.05
-DOX24T_DEGs_GO_RUV <- DOX_24T_DEGs_RUV %>% 
+DOX_t0_DEGs_GO_RUV <- DOX_t0_DEGs_RUV %>% 
   dplyr::filter(., adj.P.Val < 0.05)
 
 #shared D24T genes venn diagram
-DOX24Tshare_DEGs_GO_RUV <- DOX_24T_shared_DEGs_RUV %>% 
+DOX_t0_share_DEGs_GO_RUV <- DOX_t0_shared_DEGs_RUV %>% 
   dplyr::filter(., adj.P.Val < 0.05) 
 
-DOX24T_share_DEGs_GO_plot_RUV <- DOX24Tshare_DEGs_GO_RUV %>% 
+DOX_t0_share_DEGs_GO_plot_RUV <- DOX_t0_share_DEGs_GO_RUV %>% 
   dplyr::select("Entrez_ID")
 
-#shared D144R genes venn diagram
+#shared DOX_t144 genes venn diagram
 
-DOX144Rshare_DEGs_GO_RUV <- DOX_144R_shared_DEGs_RUV %>% 
+DOX_t144_share_DEGs_GO_RUV <- DOX_t144_shared_DEGs_RUV %>% 
   dplyr::filter(., adj.P.Val < 0.05)
 
-DOX144Rshare_DEGs_GO_plot_RUV <- DOX144Rshare_DEGs_GO_RUV %>% 
+DOX_t144_share_DEGs_GO_plot_RUV <- DOX_t144_share_DEGs_GO_RUV %>% 
   dplyr::select("Entrez_ID")
 
 #now go ahead and do this for each condition as well
 
-#DOX24T
-venn_DOX_24T_RUV <- getSet(object = venn_test_RUV, subset = c("Group 1"))
-dim(venn_DOX_24T_RUV)
+#DOX_t0
+venn_DOX_t0_RUV <- getSet(object = venn_test_RUV, subset = c("Group 1"))
+dim(venn_DOX_t0_RUV)
 #4411 genes in DOX_24T only
 
-venn_DOX24T_DEGs_RUV <- venn_DOX_24T_RUV %>% 
+venn_DOX_t0_DEGs_RUV <- venn_DOX_t0_RUV %>% 
   as.data.frame() %>% 
   column_to_rownames(., var = "Detail")
 
 #pull these genes out of my DEG matrix with logFC
-DOX_24T_DEGs_RUV <- Toptable_list_RUVk1_symbols$V.D24T_RUV[row.names(venn_DOX24T_DEGs_RUV),]
+DOX_t0_DEGs_RUV <- Toptable_list_RUVk1_symbols$V.D24T_RUV[row.names(venn_DOX_t0_DEGs_RUV),]
 
-DOX24T_DEGs_GO_RUV <- DOX_24T_DEGs_RUV %>% 
+DOX_t0_DEGs_GO_RUV <- DOX_t0_DEGs_RUV %>% 
   dplyr::filter(., adj.P.Val < 0.05) %>% 
   dplyr::select("Entrez_ID")
 
-#DOX24R
-venn_DOX_24R_RUV <- getSet(object = venn_test_RUV, subset = c("Group 2"))
-dim(venn_DOX_24R_RUV)
+#DOX_t24
+venn_DOX_t24_RUV <- getSet(object = venn_test_RUV, subset = c("Group 2"))
+dim(venn_DOX_t24_RUV)
 #2107 genes in DOX_24R only
 
-venn_DOX24R_DEGs_RUV <- venn_DOX_24R_RUV %>% 
+venn_DOX_t24_DEGs_RUV <- venn_DOX_t24_RUV %>% 
   as.data.frame() %>% 
   column_to_rownames(., var = "Detail")
 
 #pull these genes out of my DEG matrix with logFC
-DOX_24R_DEGs_RUV <- Toptable_list_RUVk1_symbols$V.D24R_RUV[row.names(venn_DOX24R_DEGs_RUV),]
+DOX_t24_DEGs_RUV <- Toptable_list_RUVk1_symbols$V.D24R_RUV[row.names(venn_DOX_t24_DEGs_RUV),]
 
-DOX24R_DEGs_GO_RUV <- DOX_24R_DEGs_RUV %>% 
+DOX_t24_DEGs_GO_RUV <- DOX_t24_DEGs_RUV %>% 
   dplyr::filter(., adj.P.Val < 0.05) %>% 
   dplyr::select("Entrez_ID")
 
 
 #DOX144R
-venn_DOX_144R_RUV <- getSet(object = venn_test_RUV, subset = c("Group 3"))
-dim(venn_DOX_144R_RUV)
+venn_DOX_t144_RUV <- getSet(object = venn_test_RUV, subset = c("Group 3"))
+dim(venn_DOX_t144_RUV)
 #52 genes in DOX_144R only
 
-venn_DOX144R_DEGs_RUV <- venn_DOX_144R_RUV %>% 
+venn_DOX_t144_DEGs_RUV <- venn_DOX_t144_RUV %>% 
   as.data.frame() %>% 
   column_to_rownames(., var = "Detail")
 
 #pull these genes out of my DEG matrix with logFC
-DOX_144R_DEGs_RUV <- 
-  Toptable_list_RUVk1_symbols$V.D144R_RUV[row.names(venn_DOX144R_DEGs_RUV),]
+DOX_t144_DEGs_RUV <- 
+  Toptable_list_RUVk1_symbols$V.D144R_RUV[row.names(venn_DOX_t144_DEGs_RUV),]
 
-DOX144R_DEGs_GO_RUV <- DOX_144R_DEGs_RUV %>% 
+DOX_t144_DEGs_GO_RUV <- DOX_t144_DEGs_RUV %>% 
   dplyr::filter(., adj.P.Val < 0.05) %>% 
   dplyr::select("Entrez_ID")
 ```
@@ -4253,30 +4411,27 @@ all_genes_set <- mapIds(org.Hs.eg.db,
                         keytype = "ENTREZID",
                         multiVals = "first")
 
-#load in my DEGs
-#load in DEGs for all timepoints 
-DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% 
-  dplyr::select(-(X))
-DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% 
-  dplyr::select(-(X))
-DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% 
-  dplyr::select(-(X))
+#load in my DEGs (replaced with new set)
+DOX_24T_R <- read_csv("data/new/DEGs/Toptable_RUV_24T_final.csv") #this one no X col
+DOX_24R_R <- read_csv("data/new/DEGs/Toptable_RUV_24R_final.csv",
+                    col_select = -1)
+DOX_144R_R <- read_csv("data/new/DEGs/Toptable_RUV_144R_final.csv",
+                     col_select = -1)
 
-# Extract Significant DEGs from these lists
-DEGs_24T_R <- DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05]
-# saveRDS(DEGs_24T_R, "data/new/RUV/DEGs_sig_list_24T_RUVs_set.RDS")
+# Extract Significant DEGs (change names to timepoint)
+DEG_24T_RUV <- DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05]
+DEG_24R_RUV <- DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05]
+DEG_144R_RUV <- DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
 
-DEGs_24R_R <- DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05]
-# saveRDS(DEGs_24R_R, "data/new/RUV/DEGs_sig_list_24R_RUVs_set.RDS")
+# saveRDS(DEG_24T_RUV, "data/new/RUV/DEGs_sig_list_24T_RUVs_set.RDS")
+# saveRDS(DEG_24R_RUV, "data/new/RUV/DEGs_sig_list_24R_RUVs_set.RDS")
+# saveRDS(DEG_144R_RUV, "data/new/RUV/DEGs_sig_list_144R_RUVs_set.RDS")
 
-DEGs_144R_R <- DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
-# saveRDS(DEGs_144R_R, "data/new/RUV/DEGs_sig_list_144R_RUVs_set.RDS")
-
-#make a list of all of my DEGs
+#make a list of all of my significant DEGs
 timepoint_DEGs_RUV <- list(
-  "24T" = DEGs_24T_R,
-  "24R" = DEGs_24R_R,
-  "144R" = DEGs_144R_R
+  "24T" = DEG_24T_RUV,
+  "24R" = DEG_24R_RUV,
+  "144R" = DEG_144R_RUV
 )
 
 # Function to compute proportions
@@ -4291,36 +4446,36 @@ get_proportions_degs <- function(degs, total_genes) {
 }
 
 # Compute proportions for each timepoint
-prop_24T <- get_proportions_degs(DEGs_24T_R, length(all_genes_set))
-prop_24R <- get_proportions_degs(DEGs_24R_R, length(all_genes_set))
-prop_144R <- get_proportions_degs(DEGs_144R_R, length(all_genes_set))
+prop_t0 <- get_proportions_degs(DEG_24T_RUV, length(all_genes_set))
+prop_t24 <- get_proportions_degs(DEG_24R_RUV, length(all_genes_set))
+prop_t144 <- get_proportions_degs(DEG_144R_RUV, length(all_genes_set))
 
 # Combine for bar plot
 prop_bar <- rbind(
-  cbind(Timepoint = "24T", prop_24T),
-  cbind(Timepoint = "24R", prop_24R),
-  cbind(Timepoint = "144R", prop_144R)
+  cbind(Timepoint = "t0", prop_t0),
+  cbind(Timepoint = "t24", prop_t24),
+  cbind(Timepoint = "t144", prop_t144)
 )
 
-#pie chart for 24T
-ggplot(prop_24T, aes(x = "", y = Count, fill = Category)) +
+#pie chart for t0
+ggplot(prop_t0, aes(x = "", y = Count, fill = Category)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
-  labs(title = "DEGs vs Non-DEGs (24T)") +
+  labs(title = "DEGs vs Non-DEGs (t0)") +
   theme_void()
 
-#pie chart for 24R
-ggplot(prop_24R, aes(x = "", y = Count, fill = Category)) +
+#pie chart for t24
+ggplot(prop_t24, aes(x = "", y = Count, fill = Category)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
-  labs(title = "DEGs vs Non-DEGs (24R)") +
+  labs(title = "DEGs vs Non-DEGs (t24)") +
   theme_void()
 
-#pie chart for 144R
-ggplot(prop_144R, aes(x = "", y = Count, fill = Category)) +
+#pie chart for t144
+ggplot(prop_t144, aes(x = "", y = Count, fill = Category)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
-  labs(title = "DEGs vs Non-DEGs (144R)") +
+  labs(title = "DEGs vs Non-DEGs (t144)") +
   theme_void()
 
 # library(patchwork)
@@ -4329,12 +4484,12 @@ ggplot(prop_144R, aes(x = "", y = Count, fill = Category)) +
 degs_prop_colors <- c("DEGs" = "red", "Non-DEGs" = "blue")
 
 #labels for percentage based on proportion
-prop_24T$Label <- paste0(round(prop_24T$Proportion * 100, 1), "%")
-prop_24R$Label <- paste0(round(prop_24R$Proportion * 100, 1), "%")
-prop_144R$Label <- paste0(round(prop_144R$Proportion * 100, 1), "%")
+prop_t0$Label <- paste0(round(prop_t0$Proportion * 100, 1), "")
+prop_t24$Label <- paste0(round(prop_t24$Proportion * 100, 1), "")
+prop_t144$Label <- paste0(round(prop_t144$Proportion * 100, 1), "")
 
 #create each plot and assign to variables
-plot_24T <- ggplot(prop_24T, aes(x = "", y = Count, fill = Category)) +
+plot_t0 <- ggplot(prop_t0, aes(x = "", y = Count, fill = Category)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
   geom_text(aes(label = Label), 
@@ -4342,10 +4497,10 @@ plot_24T <- ggplot(prop_24T, aes(x = "", y = Count, fill = Category)) +
             color = "white", 
             size = 4) +
   scale_fill_manual(values = degs_prop_colors) +
-  labs(title = "24hr Treatment") +
+  labs(title = "t0") +
   theme_void()
 
-plot_24R <- ggplot(prop_24R, aes(x = "", y = Count, fill = Category)) +
+plot_t24 <- ggplot(prop_t24, aes(x = "", y = Count, fill = Category)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
   geom_text(aes(label = Label), 
@@ -4353,10 +4508,10 @@ plot_24R <- ggplot(prop_24R, aes(x = "", y = Count, fill = Category)) +
             color = "white", 
             size = 4) +
   scale_fill_manual(values = degs_prop_colors) +
-  labs(title = "24hr Recovery") +
+  labs(title = "t24") +
   theme_void()
 
-plot_144R <- ggplot(prop_144R, aes(x = "", y = Count, fill = Category)) +
+plot_t144 <- ggplot(prop_t144, aes(x = "", y = Count, fill = Category)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar("y") +
   geom_text(aes(label = Label), 
@@ -4364,14 +4519,14 @@ plot_144R <- ggplot(prop_144R, aes(x = "", y = Count, fill = Category)) +
             color = "white", 
             size = 4) +
   scale_fill_manual(values = degs_prop_colors) +
-  labs(title = "144hr Recovery") +
+  labs(title = "t144") +
   theme_void()
 
 #combine all three pie charts in a row
 combined_prop_degs_plots <- 
-  plot_24T + 
-  plot_24R + 
-  plot_144R +
+  plot_t0 + 
+  plot_t24 + 
+  plot_t144 +
   plot_layout(ncol = 3, nrow = 1, guides = "collect") + 
   plot_annotation(title = "Proportion of DEGs vs Non-DEGs")
 
@@ -4380,9 +4535,9 @@ combined_prop_degs_plots
 
 #combine all three pie charts in a column
 combined_prop_degs_plots_col <- 
-  plot_24T + 
-  plot_24R + 
-  plot_144R +
+  plot_t0 + 
+  plot_t24 + 
+  plot_t144 +
   plot_layout(ncol = 1, nrow = 3, guides = "collect") + 
   plot_annotation(title = "Proportion of DEGs vs Non-DEGs")
 
@@ -4392,13 +4547,13 @@ combined_prop_degs_plots_col
 ####proportion bar plots####
 #first factor the timepoints so that they are in the right order
 prop_bar$Timepoint <- factor(prop_bar$Timepoint, 
-                             levels = c("24T", "24R", "144R"))
+                             levels = c("t0", "t24", "t144"))
 
 #percentage labels
-prop_bar$Label <- paste0(round(prop_bar$Proportion * 100, 1), "%")
+prop_bar$Label <- paste0(round(prop_bar$Proportion * 100, 1), "")
 
 #plot the bar plot
-ggplot(prop_bar, aes(x = Timepoint, 
+barplot_deg_perc <- ggplot(prop_bar, aes(x = Timepoint, 
                      y = Proportion, 
                      fill = Category)) +
   geom_bar(stat = "identity", 
@@ -4408,15 +4563,22 @@ ggplot(prop_bar, aes(x = Timepoint,
             color = "white",
             size = 4) +
   scale_fill_manual(values = degs_prop_colors) +
-  labs(title = "Proportion of DEGs vs Non-DEGs by Timepoint",
-       y = "Proportion", 
-       x = "Timepoint") +
-  scale_y_continuous(labels = scales::percent) +
-  theme_minimal()
+  labs(title = "Percentage of DEGs vs nonDEGs by Timepoint",
+       y = "Percentage of DEGs (%)", 
+       x = "") +
+  scale_y_continuous(labels = c(0, 25, 50, 75, 100)) +
+  theme_custom()
 
+#save this barplot
+
+# save_plot(
+#   plot = barplot_deg_perc,
+#   filename = "DEGvsnonDEG_Barplot_update_EMP",
+#   folder = output_folder
+# )
 
 ```
-
+#I FINISHED CHANGING NAMES HERE
 
 ###GO KEGG Overlap of DEGs From Original Data
 ```{r GO KEGG Overlap DEGs Original}
@@ -4450,8 +4612,6 @@ table_DOX24_genes %>%
   kableExtra::kable_paper("striped", full_width = FALSE) %>% 
   kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
   kableExtra::scroll_box(width = "100%", height = "400px")
-
-write.csv(table_DOX24_genes, "output/table_DOX24_genes.csv")
 
 #GO:BP
 table_DOX24_genes_GOBP <- table_DOX24_genes %>% 
@@ -12941,7 +13101,7 @@ motif1_mat_GOKEGG_RUV <- gost(query = motif1_genes_matrix_RUV,
                           organism = "hsapiens",
                           ordered_query = FALSE,
                           measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
+                          evcodes = TRUE,
                           user_threshold = 0.05,
                           significant = TRUE,
                           custom_bg = all_genes,
@@ -13011,7 +13171,7 @@ motif2_mat_GOKEGG_RUV <- gost(query = motif2_genes_matrix_RUV,
                           organism = "hsapiens",
                           ordered_query = FALSE,
                           measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
+                          evcodes = TRUE,
                           user_threshold = 0.05,
                           custom_bg = all_genes,
                           correction_method = c("fdr"),
@@ -13136,6 +13296,7 @@ print(kegg_m2_plot)
 dev.off()
 
 ```
+
 
 ```{r GO/KEGG Cormotif log2cpm clustlike only, include=FALSE}
 
@@ -19272,7 +19433,7 @@ final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 
 
 #define DE gene sets
-DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_t0_RUV <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
 DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
 DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
 
@@ -19384,8 +19545,7 @@ final_genes_2_RUV
 #501 genes
 
 #read in toptables after RUV, need logFC 
-DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% 
-  dplyr::select(-(X))
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") 
 DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% 
   dplyr::select(-(X))
 DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% 
@@ -19410,8 +19570,8 @@ all_genes_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
 })
 
 #background (all expressed genes)
-# all_genes <- rownames(filcpm_matrix)
-all_genes <- readRDS("data/new/RUV/all_expressed_genes_list.RDS")
+all_genes <- rownames(filcpm_matrix)
+# all_genes <- readRDS("data/new/RUV/all_expressed_genes_list.RDS")
 cat("Total background genes:", length(all_genes), "\n")
 # saveRDS(all_genes, "data/new/RUV/all_expressed_genes_list.RDS")
 #should be comparing to background of all expressed genes, 14319 total
@@ -21414,7 +21574,7 @@ proSus_GOKEGG_RUV <- gost(query = proSus_gene_list,
                           organism = "hsapiens",
                           ordered_query = FALSE,
                           measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
+                          evcodes = TRUE,
                           user_threshold = 0.05,
                           significant = TRUE,
                           custom_bg = all_genes,
@@ -21489,7 +21649,7 @@ notproSus_GOKEGG_RUV <- gost(query = notproSus_gene_list,
                           organism = "hsapiens",
                           ordered_query = FALSE,
                           measure_underrepresentation = FALSE,
-                          evcodes = FALSE,
+                          evcodes = TRUE,
                           user_threshold = 0.05,
                           significant = TRUE,
                           custom_bg = all_genes,
@@ -21515,6 +21675,7 @@ table_notproSus_genes_GOBP_RUV <- table_notproSus_GOKEGG_genes_RUV %>%
   dplyr::select(p_value, term_name, intersection_size) %>% 
   dplyr::slice_min(., n=10, order_by=p_value) %>% 
   mutate(log_val = -log10(p_value))
+
 
 notproSus_table_genes_GOBP_plot <- ggplot(table_notproSus_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
   geom_point(aes(size = intersection_size)) +
@@ -21558,6 +21719,7 @@ print(notproSus_table_genes_KEGG_plot)
 # )
 
 ```
+
 
 #proSus vs notproSus venn diagrams
 ```{r Venn Diagram proSus notproSus CT Recovered}
@@ -21848,12 +22010,6 @@ for (p in c(proSus_plots, notproSus_plots)) print(p)
 
 ```
 
-#Pull out genes from GO/KEGG analysis in certain categories
-```{r GO KEGG example genes from terms}
-#I have several terms that I am interested in exploring further, since I have enrichment of DNA damage genes in proSus and notproSus but no p53 enrichment - that is all in notproSus
-
-
-```
 
 #logFC line plots proSus vs notproSus
 ```{r logFC line plots proSus vs notproSus genes}
@@ -23269,4 +23425,699 @@ save_plot(
 
 
 ```
+
+#Drug Bank Resource
+```{r Load in DrugBank database information}
+
+library(xml2)
+
+# drugbank_xml <- read_xml("D:/DrugBank/full database.xml")
+# 
+# #check the namespace so I'm pulling drugs correctly
+# ns <- xml_ns(drugbank_xml)
+# 
+# drug_nodes <- xml_find_all(drugbank_xml, ".//d1:drug", ns)
+# length(drug_nodes)
+# 
+# #extract all of the info I want from the database using the right namespace d1
+# extract_drug_info <- function(drug_node, ns) {
+#   # basic identifiers
+#   drug_id   <- xml_text(xml_find_first(drug_node,
+#                                        "./d1:drugbank-id[@primary='true']", ns))
+#   drug_name <- xml_text(xml_find_first(drug_node, 
+#                                        "./d1:name", ns))
+#   cas_num   <- xml_text(xml_find_first(drug_node,
+#                                        "./d1:cas-number", ns))
+#   
+#   # KEGG ID
+#   kegg_id <- xml_text(xml_find_first(drug_node,".//d1:external-identifiers/d1:external-identifier[d1:resource='KEGG Drug']/d1:identifier", ns))
+# 
+#   # groups (approved, investigational, etc.)
+#   groups <- xml_find_all(drug_node, "./d1:groups/d1:group", ns) %>%
+#     xml_text() %>% paste(collapse = "; ")
+# 
+#   # categories
+#   categories <- xml_find_all(drug_node,
+#                              "./d1:categories/d1:category/d1:category", ns) %>%
+#     xml_text() %>% paste(collapse = "; ")
+# 
+#   # classifications
+#   classification <- xml_find_first(drug_node, "./d1:classification", ns)
+#   if (!is.na(classification)) {
+#     kingdom    <- xml_text(xml_find_first(classification, "./d1:kingdom", ns))
+#     superclass <- xml_text(xml_find_first(classification, "./d1:superclass", ns))
+#     class      <- xml_text(xml_find_first(classification, "./d1:class", ns))
+#     subclass   <- xml_text(xml_find_first(classification, "./d1:subclass", ns))
+#     classifications <- paste(kingdom, superclass, class, subclass, sep = " | ")
+#   } else {
+#     classifications <- NA_character_
+#   }
+# 
+#   # major text fields
+#   description        <- xml_text(xml_find_first(drug_node, 
+#                                                 "./d1:description", ns))
+#   indication         <- xml_text(xml_find_first(drug_node, 
+#                                                 "./d1:indication", ns))
+#   pharmacodynamics   <- xml_text(xml_find_first(drug_node,
+#                                                 "./d1:pharmacodynamics", ns))
+#   mechanism_of_action <- xml_text(xml_find_first(drug_node,
+#                                                  "./d1:mechanism-of-action", ns))
+#   toxicity           <- xml_text(xml_find_first(drug_node, 
+#                                                 "./d1:toxicity", ns))
+# 
+#   # target genes and actions (no polypeptide sequences)
+#   target_nodes <- xml_find_all(drug_node, "./d1:targets/d1:target", ns)
+# 
+#   if (length(target_nodes) > 0) {
+#     target_info <- map_dfr(target_nodes, function(tn) {
+#       gene <- xml_text(xml_find_first(tn, "./d1:polypeptide/d1:gene-name", ns))
+#       actions <- xml_find_all(tn, "./d1:actions/d1:action", ns) %>% xml_text() %>%
+#         paste(collapse = "; ")
+#       tibble(gene = gene, target_actions = actions)
+#     })
+#   } else {
+#     target_info <- tibble(gene = NA_character_, target_actions = NA_character_)
+#   }
+# 
+#   # dosage info
+#   dosage_nodes <- xml_find_all(drug_node, "./d1:dosages/d1:dosage", ns)
+#   if (length(dosage_nodes) > 0) {
+#     dosages <- dosage_nodes %>% 
+#       map_chr(~ paste(
+#         xml_text(xml_find_first(.x, "./d1:form", ns)),
+#         xml_text(xml_find_first(.x, "./d1:route", ns)),
+#         xml_text(xml_find_first(.x, "./d1:strength", ns)),
+#         sep = " | "
+#       )) %>% paste(collapse = "; ")
+#   } else {
+#     dosages <- NA_character_
+#   }
+# 
+#   # combine into full table
+#   out <- target_info %>%
+#     mutate(
+#       drugbank_id        = drug_id,
+#       drug_name          = drug_name,
+#       cas_number         = cas_num,
+#       kegg_id            = kegg_id,
+#       groups             = groups,
+#       categories         = categories,
+#       classifications    = classifications,
+#       description        = description,
+#       indication         = indication,
+#       pharmacodynamics   = pharmacodynamics,
+#       mechanism_of_action = mechanism_of_action,
+#       toxicity           = toxicity,
+#       dosages            = dosages
+#     ) %>%
+#     relocate(drugbank_id, drug_name, cas_number, kegg_id)
+# 
+#   return(out)
+# }
+
+#run for all drugs in the system
+# drug_target_df <- map_dfr(drug_nodes, ~extract_drug_info(.x, ns))
+# drug_target_df <- na.omit(drug_target_df)
+# saveRDS(drug_target_df, "data/new/DrugBank/drug_target_df_allinfo.RDS")
+
+#read in the dataframe that I made above
+drug_target_df <- readRDS("data/new/DrugBank/drug_target_df_allinfo.RDS")
+
+```
+
+
+```{r Interrogate DrugBank for proSus up genes}
+#I am interested to find out if any upregulated proSus genes (9) are targetable
+
+#ddd in my target genes that I want to investigate to my df
+
+proSus_up_symbol <- names(proSus_up_genes)
+proSus_down_symbol <- names(proSus_down_genes)
+
+#first filter for my proSus upregulated genes (9)
+proSus_up_drugs <- drug_target_df %>%
+  filter(gene %in% proSus_up_symbol)
+proSus_up_drugs <- proSus_up_drugs %>% filter(!is.na(gene))
+
+#filter for my downregulated proSus genes
+proSus_down_drugs <- drug_target_df %>%
+  filter(gene %in% proSus_down_symbol)
+proSus_down_drugs <- proSus_down_drugs %>% filter(!is.na(gene))
+
+#make a list for upregulated genes
+up_drug_list_per_gene <- proSus_up_drugs %>%
+  group_by(gene) %>%
+  summarise(drugs = paste(unique(drug_name), collapse = ", "))
+
+# write.csv(up_drug_list_per_gene, "data/new/DrugBank/proSus_up_genes_drug_list.csv")
+
+#summarize downregulated genes in a list too
+down_drug_list_per_gene <- proSus_down_drugs %>%
+  group_by(gene) %>%
+  summarise(drugs = paste(unique(drug_name), collapse = ", "))
+
+# write.csv(down_drug_list_per_gene, "data/new/DrugBank/proSus_down_genes_drug_list.csv")
+
+#now check for heart-related indications from these drugs for up and down proSus
+heart_keywords <- c(
+  "heart failure", "CVD", "cardiomyopathy", "cardiac", "cardio",
+  "arrhythmia", "ventricular", "atrial", "myocardial",
+  "coronary", "CHF", "hypertension", "blood pressure", "cardiac failure",
+  "heart", "chronic heart failure", "acute heart failure"
+)
+
+#first filter for just the up and down genes without heart included
+proSus_up_allind <- proSus_up_drugs %>% 
+  filter(!is.na(indication))
+
+proSus_down_allind <- proSus_down_drugs %>% 
+  filter(!is.na(indication))
+
+#filter for heart-related indications from proSus up drugs
+proSus_up_heart <- proSus_up_drugs %>%
+  filter(!is.na(indication)) %>%
+  filter(str_detect(tolower(indication), paste(heart_keywords, collapse = "|")))
+
+#filter for heart-related indications from proSus down drugs
+proSus_down_heart <- proSus_down_drugs %>%
+  filter(!is.na(indication)) %>%
+  filter(str_detect(tolower(indication), paste(heart_keywords, collapse = "|")))
+
+#summarize per gene
+up_heart_summary <- proSus_up_heart %>%
+  group_by(gene) %>%
+  summarise(drugs = paste(unique(drug_name), collapse = ", "),
+            indications = paste(unique(indication), collapse = " | "))
+
+# write.csv(up_heart_summary, "data/new/DrugBank/heart_up_proSus_genes_list.csv")
+
+#summarize per gene
+down_heart_summary <- proSus_down_heart %>%
+  group_by(gene) %>%
+  summarise(drugs = paste(unique(drug_name), collapse = ", "),
+            indications = paste(unique(indication), collapse = " | "))
+
+# write.csv(down_heart_summary, "data/new/DrugBank/heart_down_proSus_genes_list.csv")
+
+
+```
+
+#dataframe
+```{r Make a dataframe for proSus}
+
+#use combined_toptables_dxr as the long dataframe already made
+#classify motif membership, proSus vs notproSus membership, and SYMBOL
+
+
+# Your motif sets and lists must be character vectors
+# final_genes_1_RUV      <- as.character(final_genes_1_RUV)
+# final_genes_2_RUV      <- as.character(final_genes_2_RUV)
+# proSus_gene_list       <- as.character(proSus_gene_list)
+# notproSus_gene_list    <- as.character(notproSus_gene_list)
+
+# Function to annotate ONE toptable dataframe
+# annotate_one_toptable <- function(df) {
+#   df %>%
+#     mutate(
+#       Cluster_Membership = case_when(
+#         Entrez_ID %in% final_genes_1_RUV ~ "Recovered",
+#         Entrez_ID %in% final_genes_2_RUV ~ "Sustained",
+#         TRUE ~ "NoMotif"
+#       ),
+#       Response_Direction = case_when(
+#         Cluster_Membership == "Sustained" & 
+#           Entrez_ID %in% proSus_gene_list ~ "proSus",
+#         Cluster_Membership == "Sustained" & 
+#           Entrez_ID %in% notproSus_gene_list ~ "notproSus",
+#         TRUE ~ NA
+#       )
+#     )
+# }
+
+#apply to all 3 timepoint-specific toptables
+# annotated_toptables <- lapply(combined_toptables_dxr_RUV, annotate_one_toptable)
+
+#save these to csvs to use for metadata
+# for (nm in names(annotated_toptables)) {
+#   write.csv(
+#     annotated_toptables[[nm]],
+#     file = paste0("data/new/RUV/CMF/Annotated_Toptables_", nm, "_EMP_251125.csv"),
+#     row.names = FALSE
+#   )
+# }
+
+#now add the KEGG and GO:BP terms to the annotated toptables
+
+#this function takes the gost() result and returns a gene-term dataframe
+# make_gene_term_df <- function(gost_result) {
+#   #extract the result table
+#   res <- gost_result$result
+#   
+#   #separate by source
+#   go_bp <- res %>%
+#     filter(source == "GO:BP") %>%
+#     dplyr::select(term_name, intersection, intersection_size) %>%
+#     #intersection is a comma-separated string of Entrez IDs
+#     separate_rows(intersection, sep = ",") %>%
+#     rename(Entrez_ID = intersection) %>%
+#     mutate(Entrez_ID = as.character(Entrez_ID),
+#            Entrez_ID  = trimws(Entrez_ID))
+#   
+#   kegg <- res %>%
+#     filter(source == "KEGG") %>%
+#     dplyr::select(term_name, intersection, intersection_size) %>%
+#     separate_rows(intersection, sep = ",") %>%
+#     rename(Entrez_ID = intersection) %>%
+#     mutate(Entrez_ID = as.character(Entrez_ID),
+#            Entrez_ID = trimws(Entrez_ID))
+#   
+#   list(GO_BP = go_bp, KEGG = kegg)
+# }
+
+# proSus_terms <- make_gene_term_df(proSus_GOKEGG_RUV)
+# notproSus_terms <- make_gene_term_df(notproSus_GOKEGG_RUV)
+# Rec_terms <- make_gene_term_df(motif1_mat_GOKEGG_RUV)
+# Sus_terms <- make_gene_term_df(motif2_mat_GOKEGG_RUV)
+
+#make a function to annotate genes with terms 
+# annotate_with_terms <- function(df) {
+#   
+#   df <- df %>%
+#     #add in GO:BP terms
+#     #recovered
+#     left_join(Rec_terms$GO_BP %>% 
+#                 group_by(Entrez_ID) %>% 
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(GO_BP_Terms_rec = paste(term_name,
+#                                                   collapse = "; "),
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>% 
+#     #sustained
+#     left_join(Sus_terms$GO_BP %>% 
+#                 group_by(Entrez_ID) %>% 
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(GO_BP_Terms_sus = paste(term_name,
+#                                                   collapse = "; "),
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>% 
+#     #proSus
+#     left_join(proSus_terms$GO_BP %>%
+#                 group_by(Entrez_ID) %>%
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(GO_BP_Terms_pro = paste(term_name, 
+#                                               collapse = "; "),
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>%
+#     #notproSus
+#     left_join(notproSus_terms$GO_BP %>%
+#                 group_by(Entrez_ID) %>%
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(GO_BP_Terms_notpro = paste(term_name, 
+#                                                      collapse = "; "),
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>%
+#     mutate(
+#       Clust_Memb_GOBP = coalesce(GO_BP_Terms_rec,
+#                                       GO_BP_Terms_sus),
+#       Resp_Dir_GOBP = coalesce(GO_BP_Terms_pro,
+#                              GO_BP_Terms_notpro)
+#     ) %>%
+#     dplyr::select(-GO_BP_Terms_rec,
+#                   -GO_BP_Terms_sus,
+#                   -GO_BP_Terms_pro,
+#                   -GO_BP_Terms_notpro) %>%
+#     
+#     #KEGG terms
+#     #recovered
+#     left_join(Rec_terms$KEGG %>% 
+#                 group_by(Entrez_ID) %>% 
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(KEGG_Terms_rec = paste(term_name,
+#                                                  collapse = "; "),
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>% 
+#     #sustained
+#     left_join(Sus_terms$KEGG %>% 
+#                 group_by(Entrez_ID) %>% 
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(KEGG_Terms_sus = paste(term_name,
+#                                                  collapse = "; "),
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>% 
+#     #proSus
+#     left_join(proSus_terms$KEGG %>%
+#                 group_by(Entrez_ID) %>%
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(KEGG_Terms_pro = paste(term_name, 
+#                                              collapse = "; "), 
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>%
+#     #notproSus
+#     left_join(notproSus_terms$KEGG %>%
+#                 group_by(Entrez_ID) %>%
+#                 arrange(desc(intersection_size)) %>% 
+#                 summarize(KEGG_Terms_notpro = paste(term_name, 
+#                                                     collapse = "; "), 
+#                           .groups = "drop"),
+#               by = "Entrez_ID") %>%
+#     mutate(
+#       Clust_Memb_KEGG = coalesce(KEGG_Terms_rec,
+#                                  KEGG_Terms_sus),
+#       Resp_Dir_KEGG = coalesce(KEGG_Terms_pro,
+#                                KEGG_Terms_notpro)) %>%
+#     dplyr::select(-KEGG_Terms_rec,
+#                   -KEGG_Terms_sus,
+#                   -KEGG_Terms_pro,
+#                   -KEGG_Terms_notpro)
+# 
+#   return(df)
+# }
+
+#coerce entrez_ids to character in this list of dataframes before joining
+# for (nm in names(annotated_toptables)) {
+#   annotated_toptables[[nm]]$Entrez_ID <- as.character(annotated_toptables[[nm]]$Entrez_ID)
+# }
+
+#now join them together to get the terms added to the toptables
+# annotated_toptables_terms <- lapply(annotated_toptables, annotate_with_terms)
+
+
+# saveRDS(annotated_toptables_terms, "data/new/RUV/CMF/annotated_toptables_list_GOKEGG.RDS")
+
+annotated_toptables_terms <- readRDS("data/new/RUV/CMF/annotated_toptables_list_GOKEGG.RDS")
+
+#save these to csvs to use for metadata
+# for (nm in names(annotated_toptables_terms)) {
+#   write.csv(
+#     annotated_toptables_terms[[nm]],
+#     file = paste0("data/new/RUV/CMF/Annotated_Toptables_GOKEGG_sep_", nm, "_EMP_251125.csv"),
+#     row.names = FALSE
+#   )
+# }
+
+
+```
+
+#compare GO and KEGG
+```{r GO KEGG analysis proSus notproSus Recovered Sustained}
+#I want to do what I tried above and compare four gene lists and get the genes from each intersecting term for KEGG and GO BP
+
+#take my results from above that are not combined into a toptable
+
+# proSus_terms <- make_gene_term_df(proSus_GOKEGG_RUV)
+# notproSus_terms <- make_gene_term_df(notproSus_GOKEGG_RUV)
+# Rec_terms <- make_gene_term_df(motif1_mat_GOKEGG_RUV)
+# Sus_terms <- make_gene_term_df(motif2_mat_GOKEGG_RUV)
+
+#add SYMBOL into these lists of Entrez_ID
+# gene_annot <- combined_toptables_dxr_RUV$t0 %>% 
+#   dplyr::select(Entrez_ID, SYMBOL) %>% 
+#   mutate(Entrez_ID = as.character(Entrez_ID)) %>% 
+#   distinct()
+
+#extract the genes in each term across clusters
+# make_term_gene_list <- function(term_table, gene_annot) {
+#   
+#   # join SYMBOLs
+#   df <- left_join(term_table, gene_annot, by = "Entrez_ID")
+#   
+#   # summarize: list of genes per term, and max intersection_size for ordering terms
+#   term_summary <- df %>%
+#     group_by(term_name) %>%
+#     arrange(desc(intersection_size)) %>%  # order genes within term
+#     summarize(
+#       Entrez_ID = list(as.character(Entrez_ID)),
+#       SYMBOL    = list(as.character(SYMBOL)),
+#       max_intersection = max(intersection_size),
+#       .groups = "drop"
+#     ) %>%
+#     arrange(desc(max_intersection))  # order terms by largest intersection_size
+#   
+#   # convert term_name to factor to preserve order
+#   term_summary$term_name <- factor(term_summary$term_name, levels = term_summary$term_name)
+#   
+#   # convert to named list
+#   term_list <- term_summary %>%
+#     select(-max_intersection) %>%
+#     split(.$term_name) %>%
+#     lapply(function(x) list(
+#       Entrez_ID = x$Entrez_ID[[1]],
+#       SYMBOL    = x$SYMBOL[[1]]
+#     ))
+#   
+#   return(term_list)
+# }
+
+# #GO:BP
+# Rec_GO_BP_list <- make_term_gene_list(Rec_terms$GO_BP, gene_annot)
+# Sus_GO_BP_list <- make_term_gene_list(Sus_terms$GO_BP, gene_annot)
+# proSus_GO_BP_list <- make_term_gene_list(proSus_terms$GO_BP, gene_annot)
+# notproSus_GO_BP_list <- make_term_gene_list(notproSus_terms$GO_BP, gene_annot)
+# 
+# #KEGG
+# Rec_KEGG_list <- make_term_gene_list(Rec_terms$KEGG, gene_annot)
+# Sus_KEGG_list <- make_term_gene_list(Sus_terms$KEGG, gene_annot)
+# proSus_KEGG_list <- make_term_gene_list(proSus_terms$KEGG, gene_annot)
+# notproSus_KEGG_list <- make_term_gene_list(notproSus_terms$KEGG, gene_annot)
+
+
+# clust_GOKEGG_terms_list <- list(
+#   Rec_GOBP = Rec_GO_BP_list,
+#   Sus_GOBP = Sus_GO_BP_list,
+#   proSus_GOBP = proSus_GO_BP_list,
+#   notproSus_GOBP = notproSus_GO_BP_list,
+#   Rec_KEGG = Rec_KEGG_list,
+#   Sus_KEGG = Sus_KEGG_list,
+#   proSus_KEGG = proSus_KEGG_list,
+#   notproSus_KEGG = notproSus_KEGG_list
+# )
+
+# saveRDS(clust_GOKEGG_terms_list, "data/new/RUV/CMF/cluster_GOKEGG_terms_geneids.RDS")
+
+#now I've created a list of Entrez_ID and SYMBOLs that are tied to each term for each cluster set
+
+clust_GOKEGG_terms_list <- readRDS("data/new/RUV/CMF/cluster_GOKEGG_terms_geneids.RDS")
+
+```
+
+#Check Intersection of GO KEGG Terms
+```{r GO KEGG intersection genes}
+
+#I want to go ahead and look at which genes are involved in each term that I have and compare them to my gene sets - are any of these genes involved in certain terms?
+
+liu_ids <- readRDS("data/new/RUV/liu_dataset_entrez.RDS")
+sapp_ids <- readRDS("data/new/RUV/sapp_dataset_entrez.RDS")
+fonoudi_ids <- readRDS("data/new/RUV/fonoudi_dataset_entrez.RDS") #prev DIC
+CT_genes <- unique(c(fonoudi_ids, sapp_ids, liu_ids)) #201 genes total
+
+AIC_genes <- readRDS("data/new/RUV/AIC_genes_entrezid.RDS") #this is now DIC
+AIC_set <- unique(na.omit(AIC_genes)) #this is now DIC
+p53_target_genes <- readRDS("data/new/RUV/p53_target_genes_symbolentrez.RDS")
+p53_set <- unique(na.omit(p53_target_genes))
+DNA_damage_genes <- readRDS("data/new/RUV/DDR_genes_entrezid.RDS")
+ddr_set <- unique(na.omit(DNA_damage_genes))
+
+CT_gene_sets <- list(
+  CT = CT_genes,
+  p53 = p53_set,
+  DDR = ddr_set,
+  AIC = AIC_set
+)
+
+#first, find all of the Entrez_IDs that overlap between terms and CT genes
+summarize_genes_in_terms <- function(term_list, gene_sets) {
+  
+  # term_list: named list of terms, each element has $Entrez_ID and $SYMBOL
+  # gene_sets: named list of gene sets
+  
+  term_summary <- lapply(names(term_list), function(term_name) {
+    genes_in_term <- term_list[[term_name]]$Entrez_ID
+    
+    # check which genes are in each gene set
+    gene_set_hits <- lapply(gene_sets, function(gs) genes_in_term[genes_in_term %in% gs])
+    
+    # collapse to strings for table
+    gene_set_hits <- lapply(gene_set_hits, function(x) if(length(x) > 0) paste(x, collapse = "; ") else NA)
+    
+    c(term_name = term_name, gene_set_hits)
+  })
+  
+  # convert to data.frame
+  term_summary_df <- do.call(rbind, term_summary) %>% as.data.frame(stringsAsFactors = FALSE)
+  
+  # rename columns: term_name + gene sets
+  colnames(term_summary_df) <- c("Term", names(gene_sets))
+  
+  return(term_summary_df)
+}
+
+#now put together the summary tables
+Rec_GOBP_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$Rec_GOBP, 
+  CT_gene_sets)
+Sus_GOBP_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$Sus_GOBP, 
+  CT_gene_sets)
+proSus_GOBP_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$proSus_GOBP, 
+  CT_gene_sets)
+notproSus_GOBP_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$notproSus_GOBP, 
+  CT_gene_sets)
+
+Rec_KEGG_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$Rec_KEGG,
+  CT_gene_sets)
+Sus_KEGG_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$Sus_KEGG,
+  CT_gene_sets)
+proSus_KEGG_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$proSus_KEGG,
+  CT_gene_sets)
+notproSus_KEGG_summary <- summarize_genes_in_terms(
+  clust_GOKEGG_terms_list$notproSus_KEGG,
+  CT_gene_sets)
+
+clust_CT_overlap_GOKEGG_summaries <- list(
+  Rec_GOBP = Rec_GOBP_summary,
+  Sus_GOBP = Sus_GOBP_summary,
+  proSus_GOBP = proSus_GOBP_summary,
+  notproSus_GOBP = notproSus_GOBP_summary,
+  Rec_KEGG = Rec_KEGG_summary,
+  Sus_KEGG = Sus_KEGG_summary,
+  proSus_KEGG = proSus_KEGG_summary,
+  notproSus_KEGG = notproSus_KEGG_summary
+)
+
+#now do another one for a simpler summary to show overlap
+make_term_gene_counts <- function(term_list, gene_sets) {
+  
+  # term_list: named list of terms, each element has $Entrez_ID and $SYMBOL
+  # gene_sets: named list of gene sets
+  
+  term_summary <- lapply(names(term_list), function(term_name) {
+    genes_in_term <- term_list[[term_name]]$Entrez_ID
+    
+    # count how many genes from each gene set are in this term
+    gene_set_counts <- sapply(gene_sets, function(gs) sum(genes_in_term %in% gs))
+    
+    c(Term = term_name, gene_set_counts)
+  })
+  
+  # convert to data.frame
+  term_summary_df <- do.call(rbind, term_summary) %>% as.data.frame(stringsAsFactors = FALSE)
+  
+  # convert counts to numeric
+  term_summary_df[, -1] <- lapply(term_summary_df[, -1], as.numeric)
+  
+  return(term_summary_df)
+}
+
+
+#now make the lists here
+Rec_GOBP_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$Rec_GOBP, 
+  CT_gene_sets)
+Sus_GOBP_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$Sus_GOBP, 
+  CT_gene_sets)
+proSus_GOBP_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$proSus_GOBP,
+  CT_gene_sets)
+notproSus_GOBP_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$notproSus_GOBP, 
+  CT_gene_sets)
+
+# KEGG
+Rec_KEGG_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$Rec_KEGG, 
+  CT_gene_sets)
+Sus_KEGG_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$Sus_KEGG, 
+  CT_gene_sets)
+proSus_KEGG_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$proSus_KEGG, 
+  CT_gene_sets)
+notproSus_KEGG_counts <- make_term_gene_counts(
+  clust_GOKEGG_terms_list$notproSus_KEGG, 
+  CT_gene_sets)
+
+
+GOBP_all_summary <- bind_rows(
+  Rec_GOBP_counts %>% mutate(Cluster = "Rec"),
+  Sus_GOBP_counts %>% mutate(Cluster = "Sus"),
+  proSus_GOBP_counts %>% mutate(Cluster = "proSus"),
+  notproSus_GOBP_counts %>% mutate(Cluster = "notproSus")
+)
+
+KEGG_all_summary <- bind_rows(
+  Rec_KEGG_counts %>% mutate(Cluster = "Rec"),
+  Sus_KEGG_counts %>% mutate(Cluster = "Sus"),
+  proSus_KEGG_counts %>% mutate(Cluster = "proSus"),
+  notproSus_KEGG_counts %>% mutate(Cluster = "notproSus")
+)
+
+#try to visualize this in heatmap form
+prepare_plot_data <- function(summary_df, cluster_name) {
+  summary_df %>%
+    filter(Cluster == cluster_name) %>%
+    rowwise() %>%
+    mutate(Total = sum(c(CT, p53, DDR, AIC))) %>%
+    ungroup() %>%
+    slice_max(order_by = Total, n = 10) %>%
+    pivot_longer(cols = c("CT", "p53", "DDR", "AIC"),
+                 names_to = "GeneSet",
+                 values_to = "Count") %>%
+    mutate(Term = factor(Term, levels = unique(Term[order(-Total)])))
+}
+
+plot_cluster_heatmap <- function(plot_data, cluster_name, category_name) {
+  ggplot(plot_data, aes(x = GeneSet, y = Term, fill = Count)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = ifelse(Count > 0, Count, "")), 
+              size = 3, 
+              colour = "white") +
+    scale_fill_gradient() +
+    theme_custom() +
+    labs(fill = "# Genes", x = "Gene Set", y = "Term",
+         title = paste0(cluster_name, " Top 10 ", category_name, " Terms"))
+}
+
+clusters <- c("Rec", "Sus", "proSus", "notproSus")
+categories <- c("GOBP", "KEGG")
+
+summary_tables_GOKEGG <- list(
+  "GOBP" = GOBP_all_summary,
+  "KEGG" = KEGG_all_summary
+)
+
+all_plots <- list()
+
+for(cat in categories) {
+  summary_df <- summary_tables_GOKEGG[[cat]]
+  
+  for(clust in clusters) {
+    plot_data <- prepare_plot_data(summary_df, clust)
+    plot_name <- paste0(clust, "_", cat)
+    
+    all_plots[[plot_name]] <- plot_cluster_heatmap(plot_data, clust, cat)
+  }
+}
+
+print(all_plots)
+
+# for(name in names(all_plots)) {
+#   save_plot(filename = paste0("Heatmap_", name, "_top10_Terms_EMP"),
+#          plot = all_plots[[name]],
+#          folder = output_folder,
+#          width = 6, height = 8)
+# }
+
+```
+
+
+
+
+
+
 
