@@ -351,7 +351,7 @@ tx_col <- list(
 
 #QC Mapping Plots
 ```{r QC Mapping Plots}
-#this dataframe contains my alignment percentages from featureCounts
+#this dataframe contains my alignment percentages from Subread
 ##already filtered to only include DOX + DMSO samples
 
 #I want to change these to reflect the final order of samples
@@ -2001,121 +2001,6 @@ fig2a <- autoplot(prcomp_res_1_cpm,
 #                            vjust = -0.5, 
 #                            max.overlaps = 30)+
 #   ggtitle("RUVs Correction k=3 log2cpm")
-
-```
-
-```{r RUVs Boxplots of Contributing Factors, include = FALSE}
-#I want to take a look at my RUV corrected k=3 PCA to see what the major contributing factors are - I'll create boxplots with my metadata to accompany the PCA plots
-
-#load my normalized counts data and my log2cpm converted data
-# normcounts_k1_matrix <- set1$normalizedCounts %>% as.matrix()
-# RUV_k1_cpm <- cpm(set1$normalizedCounts, log = TRUE)
-# 
-# #load in my metadata sheet
-# Metadata_RUV <- read.csv("data/Metadata.csv")
-# Metadata_RUV$Time <- factor(Metadata_RUV$Time, 
-#                             levels = c("24T", "24R", "144R"), 
-#                             labels = c("24T", "24R", "144R"))
-# Metadata_RUV$Ind <- as.factor(Metadata_RUV$Ind)
-# Metadata_RUV$Drug <- as.character(Metadata$Drug)
-# Metadata_RUV$Sex <- factor(Metadata_RUV$Sex, 
-#                            levels = c("M", "F")) 
-# 
-# 
-# #PCA plots in normalized counts and log2cpm
-# 
-# prcomp_res_3_RUV_normcounts <- prcomp(t(normcounts_k3_matrix), scale. = FALSE, center = TRUE)
-# pca_df_3_RUV_normcounts <- as.data.frame(prcomp_res_3_RUV_normcounts$x[, 1:3])  #PC1–PC3
-# pca_df_3_RUV_normcounts$Ind <- Metadata_RUV$Ind
-# pca_df_3_RUV_normcounts$Drug <- Metadata_RUV$Drug
-# pca_df_3_RUV_normcounts$Time <- Metadata_RUV$Time
-# pca_df_3_RUV_normcounts$Sex <- Metadata_RUV$Sex
-# 
-# prcomp_res_3_RUV_cpm <- prcomp(t(RUV_k3_cpm), scale. = FALSE, center = TRUE)
-# pca_df_3_RUV_cpm <- as.data.frame(prcomp_res_3_RUV_cpm$x[,1:3]) #PC1-3
-# pca_df_3_RUV_cpm$Ind <- Metadata_RUV$Ind
-# pca_df_3_RUV_cpm$Drug <- Metadata_RUV$Drug
-# pca_df_3_RUV_cpm$Time <- Metadata_RUV$Time
-# pca_df_3_RUV_cpm$Sex <- Metadata_RUV$Sex
-# 
-# #p-value from linear model
-# get_regr_pval <- function(mod) {
-#   stopifnot(class(mod) == "lm")
-#   fstat <- summary(mod)$fstatistic
-#   pval <- 1 - pf(fstat[1], fstat[2], fstat[3])
-#   return(pval)
-# }
-# 
-# #create boxplots of PCA contributing factors based on metadata
-# plot_pc_k3_normcounts_box <- function(df, group_var, pc) {
-#   group_data <- df[[group_var]]
-#   n_groups <- length(unique(group_data))
-#   
-#   if (n_groups > 1) {
-#     model <- lm(df[[pc]] ~ group_data)
-#     pval <- get_regr_pval(model)
-#     pval_label <- paste0("p-value: ", signif(pval, 3))
-#   } else {
-#     pval_label <- "p-value: NA"
-#   }
-#   
-#   ggplot(df, aes(x = .data[[group_var]], y = .data[[pc]], fill = .data[[group_var]])) +
-#     geom_boxplot(color = "black") +
-#     theme_bw(base_size = 11) +
-#     ylab(pc) + xlab(group_var) +
-#     ggtitle(NULL, subtitle = pval_label) +
-#     theme(
-#       legend.position = "none",
-#       plot.subtitle = element_text(size = 10),
-#       panel.border = element_rect(color = "black", fill = NA)
-#     )
-# }
-# 
-# #Generate 12 plots: PC1–3 × Ind, Drug, Time, Sex (these are )
-# pcs <- c("PC1", "PC2", "PC3")
-# group_vars <- c("Ind", "Drug", "Time", "Sex")
-# plots <- list()
-# 
-# for (pc in pcs) {
-#   for (group in group_vars) {
-#     key <- paste(pc, group, sep = "_")
-#     
-#     base_plot <- plot_pc_k3_normcounts_box(pca_df_3_RUV_normcounts, group, pc)
-#     
-#     if (pc == "PC1") {
-#       upper_limit <- max(pca_df_3_RUV_normcounts[[pc]], na.rm = TRUE) * 1.1
-#       plots[[key]] <- base_plot +
-#         scale_y_continuous(limits = c(-60, upper_limit),
-#                            breaks = c(-60, -30, 0, 30, 60, 90, 120))
-#     } else {
-#       plots[[key]] <- base_plot
-#     }
-#   }
-# }
-# 
-# # 📌 Remove main titles (retain subtitles for p-values)
-# plots <- lapply(plots, function(p) {
-#   p + theme(plot.title = element_blank())
-# })
-# 
-# # 📌 Create column headers
-# header_ind  <- ggplot() + theme_void() + ggtitle("Ind")   + theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
-# header_drug <- ggplot() + theme_void() + ggtitle("Drug")  + theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
-# header_conc <- ggplot() + theme_void() + ggtitle("Conc")  + theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
-# header_time <- ggplot() + theme_void() + ggtitle("Time")  + theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))
-# header_sex  <- ggplot() + theme_void() + ggtitle("Sex")   + theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"))  # ✅ New header
-# 
-# # 📌 Assemble 5-column layout with 3 PC rows
-# final_plot <- (
-#   (header_ind | header_drug | header_conc | header_time | header_sex) /
-#     (plots[["PC1_Ind"]] | plots[["PC1_Drug"]] | plots[["PC1_Conc"]] | plots[["PC1_Time"]] | plots[["PC1_Sex"]]) /
-#     (plots[["PC2_Ind"]] | plots[["PC2_Drug"]] | plots[["PC2_Conc"]] | plots[["PC2_Time"]] | plots[["PC2_Sex"]]) /
-#     (plots[["PC3_Ind"]] | plots[["PC3_Drug"]] | plots[["PC3_Conc"]] | plots[["PC3_Time"]] | plots[["PC3_Sex"]])
-# ) + plot_layout(heights = c(0.07, 1, 1, 1))  # Title row height
-# 
-# # 📌 Display the plot
-# print(final_plot)
-
 
 ```
 
@@ -13127,7 +13012,7 @@ table_motif1_GOKEGG_genes_RUV %>%
 table_motif1_genes_GOBP_RUV <- table_motif1_GOKEGG_genes_RUV %>% 
   dplyr::filter(source=="GO:BP") %>% 
   dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
   mutate(log_val = -log10(p_value))
 
 # saveRDS(table_motif1_genes_GOBP, "data/table_motif1_genes_GOBP.RDS")
@@ -13145,7 +13030,7 @@ table_motif1_genes_GOBP_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name
 table_motif1_genes_KEGG_RUV <- table_motif1_GOKEGG_genes_RUV %>% 
   dplyr::filter(source=="KEGG") %>% 
   dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
   mutate(log_val = -log10(p_value))
 
 table_motif1_genes_KEGG_RUV %>%
@@ -13180,7 +13065,7 @@ motif2_mat_GOKEGG_RUV <- gost(query = motif2_genes_matrix_RUV,
 motif2_GOKEGG_genes_RUV <- gostplot(motif2_mat_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
 motif2_GOKEGG_genes_RUV
 
-table_motif2_GOKEGG_genes_RUV <- motif2_mat_GOKEGG_RUV$result %>% 
+table_motif2_GOKEGG_genes_RUV <- motif2_mat_GOKEGG_RUV$result %>%
   dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
 
 table_motif2_GOKEGG_genes_RUV %>% 
@@ -13196,7 +13081,7 @@ table_motif2_GOKEGG_genes_RUV %>%
 table_motif2_genes_GOBP_RUV <- table_motif2_GOKEGG_genes_RUV %>% 
   dplyr::filter(source=="GO:BP") %>% 
   dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
   mutate(log_val = -log10(p_value))
 
 # saveRDS(table_motif2_genes_GOBP, "data/table_motif2_genes_GOBP.RDS")
@@ -13220,7 +13105,7 @@ table_motif2_genes_GOBP_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name
 table_motif2_genes_KEGG_RUV <- table_motif2_GOKEGG_genes_RUV %>% 
   dplyr::filter(source=="KEGG") %>% 
   dplyr::select(p_value, term_name, intersection_size) %>% 
-  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
   mutate(log_val = -log10(p_value))
 
 table_motif2_genes_KEGG_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
@@ -13230,7 +13115,7 @@ table_motif2_genes_KEGG_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name
   guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
   ylab("KEGG term")+
   scale_y_discrete(labels = scales::label_wrap(30))+
-  theme_bw()+
+  theme_custom()+
   theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
         axis.title = element_text(size = 15, colour = "black"),
         axis.ticks = element_line(linewidth = 1.5),
@@ -13276,24 +13161,26 @@ kegg_m2_plot <- table_motif2_genes_KEGG_RUV %>%
         legend.position = "bottom",
         )
 
+
+
 #now save them as pdfs so I can use them in figure 3
 #motif 1
-cairo_pdf(
-  file.path(output_folder, "KEGG_Recovered_UpdateFig3_EMP.pdf"),
-  width = 6,
-  height = 8
-)
-print(kegg_m1_plot)
-dev.off()
-
-#motif 2
-cairo_pdf(
-  file.path(output_folder, "KEGG_Sustained_UpdateFig3_EMP.pdf"),
-  width = 6,
-  height = 8
-)
-print(kegg_m2_plot)
-dev.off()
+# cairo_pdf(
+#   file.path(output_folder, "KEGG_Recovered_UpdateFig3_EMP.pdf"),
+#   width = 6,
+#   height = 8
+# )
+# print(kegg_m1_plot)
+# dev.off()
+# 
+# #motif 2
+# cairo_pdf(
+#   file.path(output_folder, "KEGG_Sustained_UpdateFig3_EMP.pdf"),
+#   width = 6,
+#   height = 8
+# )
+# print(kegg_m2_plot)
+# dev.off()
 
 ```
 
@@ -17249,7 +17136,7 @@ dim(MTX_RM_DEGs)
 #now combine these all into one dataframe for later
 
 DEGs_RM_24_df <- dplyr::bind_rows(
-  DOX_RM_DEGs %>% mutate(Drug = "DOX_RM"),
+  # DOX_RM_DEGs %>% mutate(Drug = "DOX_RM"),
   DNR_RM_DEGs %>% mutate(Drug = "DAUN_RM"),
   EPI_RM_DEGs %>% mutate(Drug = "EPI_RM"),
   MTX_RM_DEGs %>% mutate(Drug = "MITO_RM"),
@@ -17344,13 +17231,16 @@ DEGs_Top2i_24_df <- readRDS("data/new/DEGlist_Top2i_SP_RM.RDS")
 #also make a list version just in case
 
 DEGs_Top2i_24_list <- list(
-  "DOX_RM" = DOX_RM_DEGs,
-  "DNR_RM" = DNR_RM_DEGs,
-  "EPI_RM" = EPI_RM_DEGs,
-  "MTX_RM" = MTX_RM_DEGs,
-  "CX_SP" = CX_SP_DEGs,
-  "DOX_SP" = DOX_SP_DEGs
+  "DOX_RM" = DOX_RM_DEGs, #6645 DEGs
+  "DNR_RM" = DNR_RM_DEGs, #7017 DEGs
+  "EPI_RM" = EPI_RM_DEGs, #6328 DEGs
+  "MTX_RM" = MTX_RM_DEGs, #1115 DEGs
+  "CX_SP" = CX_SP_DEGs, #278 DEGs
+  "DOX_SP" = DOX_SP_DEGs #9828 DEGs
 )
+
+#total 10,106 DEGs from SP
+#total 21,105 DEGs from RM
 
 # saveRDS(DEGs_Top2i_24_list, "data/new/DEGs_Top2i_RM_SP_list.RDS")
 
@@ -19551,7 +19441,7 @@ DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>%
 DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% 
   dplyr::select(-(X))
 
-combined_toptables_dxr_RUV <- list(
+combined_toptables_dxr_list <- list(
   "t0" = DOX_24T_R,
   "t24" = DOX_24R_R,
   "t144" = DOX_144R_R
@@ -23662,32 +23552,32 @@ down_heart_summary <- proSus_down_heart %>%
 
 
 # Your motif sets and lists must be character vectors
-# final_genes_1_RUV      <- as.character(final_genes_1_RUV)
-# final_genes_2_RUV      <- as.character(final_genes_2_RUV)
-# proSus_gene_list       <- as.character(proSus_gene_list)
-# notproSus_gene_list    <- as.character(notproSus_gene_list)
+final_genes_1_RUV      <- as.character(final_genes_1_RUV)
+final_genes_2_RUV      <- as.character(final_genes_2_RUV)
+proSus_gene_list       <- as.character(proSus_gene_list)
+notproSus_gene_list    <- as.character(notproSus_gene_list)
 
 # Function to annotate ONE toptable dataframe
-# annotate_one_toptable <- function(df) {
-#   df %>%
-#     mutate(
-#       Cluster_Membership = case_when(
-#         Entrez_ID %in% final_genes_1_RUV ~ "Recovered",
-#         Entrez_ID %in% final_genes_2_RUV ~ "Sustained",
-#         TRUE ~ "NoMotif"
-#       ),
-#       Response_Direction = case_when(
-#         Cluster_Membership == "Sustained" & 
-#           Entrez_ID %in% proSus_gene_list ~ "proSus",
-#         Cluster_Membership == "Sustained" & 
-#           Entrez_ID %in% notproSus_gene_list ~ "notproSus",
-#         TRUE ~ NA
-#       )
-#     )
-# }
+annotate_one_toptable <- function(df) {
+  df %>%
+    mutate(
+      Cluster_Membership = case_when(
+        Entrez_ID %in% final_genes_1_RUV ~ "Recovered",
+        Entrez_ID %in% final_genes_2_RUV ~ "Sustained",
+        TRUE ~ "NoMotif"
+      ),
+      Response_Direction = case_when(
+        Cluster_Membership == "Sustained" &
+          Entrez_ID %in% proSus_gene_list ~ "proSus",
+        Cluster_Membership == "Sustained" &
+          Entrez_ID %in% notproSus_gene_list ~ "notproSus",
+        TRUE ~ NA
+      )
+    )
+}
 
 #apply to all 3 timepoint-specific toptables
-# annotated_toptables <- lapply(combined_toptables_dxr_RUV, annotate_one_toptable)
+annotated_toptables <- lapply(combined_toptables_dxr_RUV, annotate_one_toptable)
 
 #save these to csvs to use for metadata
 # for (nm in names(annotated_toptables)) {
@@ -23701,140 +23591,140 @@ down_heart_summary <- proSus_down_heart %>%
 #now add the KEGG and GO:BP terms to the annotated toptables
 
 #this function takes the gost() result and returns a gene-term dataframe
-# make_gene_term_df <- function(gost_result) {
-#   #extract the result table
-#   res <- gost_result$result
-#   
-#   #separate by source
-#   go_bp <- res %>%
-#     filter(source == "GO:BP") %>%
-#     dplyr::select(term_name, intersection, intersection_size) %>%
-#     #intersection is a comma-separated string of Entrez IDs
-#     separate_rows(intersection, sep = ",") %>%
-#     rename(Entrez_ID = intersection) %>%
-#     mutate(Entrez_ID = as.character(Entrez_ID),
-#            Entrez_ID  = trimws(Entrez_ID))
-#   
-#   kegg <- res %>%
-#     filter(source == "KEGG") %>%
-#     dplyr::select(term_name, intersection, intersection_size) %>%
-#     separate_rows(intersection, sep = ",") %>%
-#     rename(Entrez_ID = intersection) %>%
-#     mutate(Entrez_ID = as.character(Entrez_ID),
-#            Entrez_ID = trimws(Entrez_ID))
-#   
-#   list(GO_BP = go_bp, KEGG = kegg)
-# }
+make_gene_term_df <- function(gost_result) {
+  #extract the result table
+  res <- gost_result$result
 
-# proSus_terms <- make_gene_term_df(proSus_GOKEGG_RUV)
-# notproSus_terms <- make_gene_term_df(notproSus_GOKEGG_RUV)
-# Rec_terms <- make_gene_term_df(motif1_mat_GOKEGG_RUV)
-# Sus_terms <- make_gene_term_df(motif2_mat_GOKEGG_RUV)
+  #separate by source
+  go_bp <- res %>%
+    filter(source == "GO:BP") %>%
+    dplyr::select(term_name, intersection, intersection_size) %>%
+    #intersection is a comma-separated string of Entrez IDs
+    separate_rows(intersection, sep = ",") %>%
+    rename(Entrez_ID = intersection) %>%
+    mutate(Entrez_ID = as.character(Entrez_ID),
+           Entrez_ID  = trimws(Entrez_ID))
+
+  kegg <- res %>%
+    filter(source == "KEGG") %>%
+    dplyr::select(term_name, intersection, intersection_size) %>%
+    separate_rows(intersection, sep = ",") %>%
+    rename(Entrez_ID = intersection) %>%
+    mutate(Entrez_ID = as.character(Entrez_ID),
+           Entrez_ID = trimws(Entrez_ID))
+
+  list(GO_BP = go_bp, KEGG = kegg)
+}
+
+proSus_terms <- make_gene_term_df(proSus_GOKEGG_RUV)
+notproSus_terms <- make_gene_term_df(notproSus_GOKEGG_RUV)
+Rec_terms <- make_gene_term_df(motif1_mat_GOKEGG_RUV)
+Sus_terms <- make_gene_term_df(motif2_mat_GOKEGG_RUV)
 
 #make a function to annotate genes with terms 
-# annotate_with_terms <- function(df) {
-#   
-#   df <- df %>%
-#     #add in GO:BP terms
-#     #recovered
-#     left_join(Rec_terms$GO_BP %>% 
-#                 group_by(Entrez_ID) %>% 
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(GO_BP_Terms_rec = paste(term_name,
-#                                                   collapse = "; "),
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>% 
-#     #sustained
-#     left_join(Sus_terms$GO_BP %>% 
-#                 group_by(Entrez_ID) %>% 
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(GO_BP_Terms_sus = paste(term_name,
-#                                                   collapse = "; "),
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>% 
-#     #proSus
-#     left_join(proSus_terms$GO_BP %>%
-#                 group_by(Entrez_ID) %>%
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(GO_BP_Terms_pro = paste(term_name, 
-#                                               collapse = "; "),
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>%
-#     #notproSus
-#     left_join(notproSus_terms$GO_BP %>%
-#                 group_by(Entrez_ID) %>%
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(GO_BP_Terms_notpro = paste(term_name, 
-#                                                      collapse = "; "),
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>%
-#     mutate(
-#       Clust_Memb_GOBP = coalesce(GO_BP_Terms_rec,
-#                                       GO_BP_Terms_sus),
-#       Resp_Dir_GOBP = coalesce(GO_BP_Terms_pro,
-#                              GO_BP_Terms_notpro)
-#     ) %>%
-#     dplyr::select(-GO_BP_Terms_rec,
-#                   -GO_BP_Terms_sus,
-#                   -GO_BP_Terms_pro,
-#                   -GO_BP_Terms_notpro) %>%
-#     
-#     #KEGG terms
-#     #recovered
-#     left_join(Rec_terms$KEGG %>% 
-#                 group_by(Entrez_ID) %>% 
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(KEGG_Terms_rec = paste(term_name,
-#                                                  collapse = "; "),
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>% 
-#     #sustained
-#     left_join(Sus_terms$KEGG %>% 
-#                 group_by(Entrez_ID) %>% 
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(KEGG_Terms_sus = paste(term_name,
-#                                                  collapse = "; "),
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>% 
-#     #proSus
-#     left_join(proSus_terms$KEGG %>%
-#                 group_by(Entrez_ID) %>%
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(KEGG_Terms_pro = paste(term_name, 
-#                                              collapse = "; "), 
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>%
-#     #notproSus
-#     left_join(notproSus_terms$KEGG %>%
-#                 group_by(Entrez_ID) %>%
-#                 arrange(desc(intersection_size)) %>% 
-#                 summarize(KEGG_Terms_notpro = paste(term_name, 
-#                                                     collapse = "; "), 
-#                           .groups = "drop"),
-#               by = "Entrez_ID") %>%
-#     mutate(
-#       Clust_Memb_KEGG = coalesce(KEGG_Terms_rec,
-#                                  KEGG_Terms_sus),
-#       Resp_Dir_KEGG = coalesce(KEGG_Terms_pro,
-#                                KEGG_Terms_notpro)) %>%
-#     dplyr::select(-KEGG_Terms_rec,
-#                   -KEGG_Terms_sus,
-#                   -KEGG_Terms_pro,
-#                   -KEGG_Terms_notpro)
-# 
-#   return(df)
-# }
+annotate_with_terms <- function(df) {
+
+  df <- df %>%
+    #add in GO:BP terms
+    #recovered
+    left_join(Rec_terms$GO_BP %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(GO_BP_Terms_rec = paste(term_name,
+                                                  collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    #sustained
+    left_join(Sus_terms$GO_BP %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(GO_BP_Terms_sus = paste(term_name,
+                                                  collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    #proSus
+    left_join(proSus_terms$GO_BP %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(GO_BP_Terms_pro = paste(term_name,
+                                              collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    #notproSus
+    left_join(notproSus_terms$GO_BP %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(GO_BP_Terms_notpro = paste(term_name,
+                                                     collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    mutate(
+      Clust_Memb_GOBP = coalesce(GO_BP_Terms_rec,
+                                      GO_BP_Terms_sus),
+      Resp_Dir_GOBP = coalesce(GO_BP_Terms_pro,
+                             GO_BP_Terms_notpro)
+    ) %>%
+    dplyr::select(-GO_BP_Terms_rec,
+                  -GO_BP_Terms_sus,
+                  -GO_BP_Terms_pro,
+                  -GO_BP_Terms_notpro) %>%
+
+    #KEGG terms
+    #recovered
+    left_join(Rec_terms$KEGG %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(KEGG_Terms_rec = paste(term_name,
+                                                 collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    #sustained
+    left_join(Sus_terms$KEGG %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(KEGG_Terms_sus = paste(term_name,
+                                                 collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    #proSus
+    left_join(proSus_terms$KEGG %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(KEGG_Terms_pro = paste(term_name,
+                                             collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    #notproSus
+    left_join(notproSus_terms$KEGG %>%
+                group_by(Entrez_ID) %>%
+                arrange(desc(intersection_size)) %>%
+                summarize(KEGG_Terms_notpro = paste(term_name,
+                                                    collapse = "; "),
+                          .groups = "drop"),
+              by = "Entrez_ID") %>%
+    mutate(
+      Clust_Memb_KEGG = coalesce(KEGG_Terms_rec,
+                                 KEGG_Terms_sus),
+      Resp_Dir_KEGG = coalesce(KEGG_Terms_pro,
+                               KEGG_Terms_notpro)) %>%
+    dplyr::select(-KEGG_Terms_rec,
+                  -KEGG_Terms_sus,
+                  -KEGG_Terms_pro,
+                  -KEGG_Terms_notpro)
+
+  return(df)
+}
 
 #coerce entrez_ids to character in this list of dataframes before joining
-# for (nm in names(annotated_toptables)) {
-#   annotated_toptables[[nm]]$Entrez_ID <- as.character(annotated_toptables[[nm]]$Entrez_ID)
-# }
+for (nm in names(annotated_toptables)) {
+  annotated_toptables[[nm]]$Entrez_ID <- as.character(annotated_toptables[[nm]]$Entrez_ID)
+}
 
 #now join them together to get the terms added to the toptables
-# annotated_toptables_terms <- lapply(annotated_toptables, annotate_with_terms)
+annotated_toptables_terms <- lapply(annotated_toptables, annotate_with_terms)
 
 
-# saveRDS(annotated_toptables_terms, "data/new/RUV/CMF/annotated_toptables_list_GOKEGG.RDS")
+saveRDS(annotated_toptables_terms, "data/new/RUV/CMF/annotated_toptables_list_GOKEGG.RDS")
 
 annotated_toptables_terms <- readRDS("data/new/RUV/CMF/annotated_toptables_list_GOKEGG.RDS")
 
@@ -23850,81 +23740,280 @@ annotated_toptables_terms <- readRDS("data/new/RUV/CMF/annotated_toptables_list_
 
 ```
 
+```{r Rewrite workflow}
+
+make_gene_term_df <- function(gost_result) {
+
+  res <- gost_result$result
+
+  # Detect correct column that stores gene intersections
+  int_col <- intersect(
+    c("intersection", "intersections", "intersection_gene_ids"),
+    colnames(res)
+  )
+
+  if (length(int_col) == 0) {
+    stop("No intersection column found in gost table.")
+  }
+
+  int_col <- int_col[1]  # pick first matched column
+
+  # Internal cleaner
+  clean_terms <- function(df) {
+    df %>%
+      dplyr::select(term_name, !!sym(int_col), intersection_size) %>%   # use detected column
+      tidyr::separate_rows(!!sym(int_col), sep = ",") %>%              # explode to long
+      dplyr::mutate(
+        Entrez_ID = trimws(as.character(!!sym(int_col))),
+        Entrez_ID = gsub("[^0-9]", "", Entrez_ID)                       # keep only numeric IDs
+      ) %>%
+      dplyr::select(term_name, Entrez_ID, intersection_size)
+  }
+
+  list(
+    GO_BP = res %>% filter(source == "GO:BP") %>% clean_terms(),
+    KEGG  = res %>% filter(source == "KEGG")  %>% clean_terms()
+  )
+}
+
+#build term tables for 4 categories
+
+
+proSus_terms    <- make_gene_term_df(proSus_GOKEGG_RUV)
+notproSus_terms <- make_gene_term_df(notproSus_GOKEGG_RUV)
+Rec_terms       <- make_gene_term_df(motif1_mat_GOKEGG_RUV)
+Sus_terms       <- make_gene_term_df(motif2_mat_GOKEGG_RUV)
+
+#gene annotation table (Entrez_ID to SYMBOL)
+
+
+gene_annot <- combined_toptables_dxr_list$t0 %>%
+  dplyr::select(Entrez_ID, SYMBOL) %>%
+  mutate(Entrez_ID = as.character(Entrez_ID)) %>%
+  distinct()
+
+#make list of SYMBOLs per term
+
+make_term_gene_list <- function(term_table, gene_annot) {
+
+  df <- left_join(term_table, gene_annot, by = "Entrez_ID")
+
+  term_summary <- df %>%
+    group_by(term_name) %>%
+    arrange(desc(intersection_size)) %>%
+    summarize(
+      SYMBOL = list(as.character(SYMBOL)),
+      max_intersection = max(intersection_size),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(max_intersection))
+
+  term_summary$term_name <- factor(term_summary$term_name,
+                                   levels = term_summary$term_name)
+
+  #return a named list
+  term_summary %>%
+    select(-max_intersection) %>%
+    split(.$term_name) %>%
+    map(~ list(SYMBOL = .x$SYMBOL[[1]]))
+}
+
+
+#build the 8 final lists
+
+
+Rec_GO_BP_list       <- make_term_gene_list(Rec_terms$GO_BP, gene_annot)
+Sus_GO_BP_list       <- make_term_gene_list(Sus_terms$GO_BP, gene_annot)
+proSus_GO_BP_list    <- make_term_gene_list(proSus_terms$GO_BP, gene_annot)
+notproSus_GO_BP_list <- make_term_gene_list(notproSus_terms$GO_BP, gene_annot)
+
+Rec_KEGG_list        <- make_term_gene_list(Rec_terms$KEGG, gene_annot)
+Sus_KEGG_list        <- make_term_gene_list(Sus_terms$KEGG, gene_annot)
+proSus_KEGG_list     <- make_term_gene_list(proSus_terms$KEGG, gene_annot)
+notproSus_KEGG_list  <- make_term_gene_list(notproSus_terms$KEGG, gene_annot)
+
+
+#Store everything in a single unified list
+
+clust_GOKEGG_terms_list <- list(
+  Rec_GOBP       = Rec_GO_BP_list,
+  Sus_GOBP       = Sus_GO_BP_list,
+  proSus_GOBP    = proSus_GO_BP_list,
+  notproSus_GOBP = notproSus_GO_BP_list,
+  Rec_KEGG       = Rec_KEGG_list,
+  Sus_KEGG       = Sus_KEGG_list,
+  proSus_KEGG    = proSus_KEGG_list,
+  notproSus_KEGG = notproSus_KEGG_list
+)
+
+# Save RDS
+# saveRDS(clust_GOKEGG_terms_list, "data/new/RUV/CMF/cluster_GOKEGG_terms_geneids.RDS"
+# )
+
+
+#build Excel workbook of top 10 terms
+
+biglist <- clust_GOKEGG_terms_list
+wb <- createWorkbook()
+
+for (set_name in names(biglist)) {
+
+  terms <- biglist[[set_name]]
+  top_terms <- head(names(terms), 10)
+
+  df_list <- map(top_terms, function(term) {
+    genes <- terms[[term]]$SYMBOL
+    gene_cols <- as.list(genes)
+    names(gene_cols) <- paste0("gene", seq_along(genes))
+    tibble(term = term, !!!gene_cols)
+  })
+
+  df <- bind_rows(df_list)
+
+  addWorksheet(wb, sheetName = set_name)
+  writeData(wb, sheet = set_name, df)
+}
+
+saveWorkbook(
+  wb,
+  file = file.path(output_folder, "top10_GO_KEGG_genes_new.xlsx"),
+  overwrite = TRUE
+)
+
+```
+
+
+```{r}
+# extract KEGG term names for each set
+kegg_terms_list <- list(
+  Rec_KEGG       = names(clust_GOKEGG_terms_list$Rec_KEGG),
+  Sus_KEGG       = names(clust_GOKEGG_terms_list$Sus_KEGG),
+  proSus_KEGG    = names(clust_GOKEGG_terms_list$proSus_KEGG),
+  notproSus_KEGG = names(clust_GOKEGG_terms_list$notproSus_KEGG)
+)
+
+# check
+str(kegg_terms_list)
+
+gene_annot <- combined_toptables_dxr_list$t0 %>%
+  dplyr::select(Entrez_ID, SYMBOL) %>%
+  mutate(Entrez_ID = as.character(Entrez_ID)) %>%
+  distinct()
+
+# Function to convert Entrez_ID to SYMBOL and build summary table
+make_term_gene_df <- function(term_table, gene_annot) {
+  term_table %>%
+    left_join(gene_annot, by = "Entrez_ID") %>%
+    group_by(term_name) %>%
+    arrange(desc(intersection_size)) %>%
+    summarize(
+      Genes = paste(unique(SYMBOL), collapse = ", "),
+      .groups = "drop"
+    )
+}
+
+# Build list of dataframes for each KEGG set
+kegg_summary_list <- list(
+  Rec_KEGG = make_term_gene_df(Rec_terms$KEGG, gene_annot),
+  Sus_KEGG = make_term_gene_df(Sus_terms$KEGG, gene_annot),
+  proSus_KEGG = make_term_gene_df(proSus_terms$KEGG, gene_annot),
+  notproSus_KEGG = make_term_gene_df(notproSus_terms$KEGG, gene_annot)
+)
+
+# Create workbook and add sheets
+wb <- createWorkbook()
+for(set_name in names(kegg_summary_list)) {
+  df <- kegg_summary_list[[set_name]]
+  addWorksheet(wb, sheetName = set_name)
+  writeData(wb, sheet = set_name, df)
+}
+# 
+# # Save workbook
+# saveWorkbook(
+#   wb,
+#   file = file.path(output_folder, "KEGG_terms_with_genes.xlsx"),
+#   overwrite = TRUE
+# )
+# 
+
+```
+
+
 #compare GO and KEGG
 ```{r GO KEGG analysis proSus notproSus Recovered Sustained}
 #I want to do what I tried above and compare four gene lists and get the genes from each intersecting term for KEGG and GO BP
 
 #take my results from above that are not combined into a toptable
 
-# proSus_terms <- make_gene_term_df(proSus_GOKEGG_RUV)
-# notproSus_terms <- make_gene_term_df(notproSus_GOKEGG_RUV)
-# Rec_terms <- make_gene_term_df(motif1_mat_GOKEGG_RUV)
-# Sus_terms <- make_gene_term_df(motif2_mat_GOKEGG_RUV)
+proSus_terms <- make_gene_term_df(proSus_GOKEGG_RUV)
+notproSus_terms <- make_gene_term_df(notproSus_GOKEGG_RUV)
+Rec_terms <- make_gene_term_df(motif1_mat_GOKEGG_RUV)
+Sus_terms <- make_gene_term_df(motif2_mat_GOKEGG_RUV)
 
 #add SYMBOL into these lists of Entrez_ID
-# gene_annot <- combined_toptables_dxr_RUV$t0 %>% 
-#   dplyr::select(Entrez_ID, SYMBOL) %>% 
-#   mutate(Entrez_ID = as.character(Entrez_ID)) %>% 
-#   distinct()
+gene_annot <- combined_toptables_dxr_list$t0 %>%
+  dplyr::select(Entrez_ID, SYMBOL) %>%
+  mutate(Entrez_ID = as.character(Entrez_ID)) %>%
+  distinct()
 
 #extract the genes in each term across clusters
-# make_term_gene_list <- function(term_table, gene_annot) {
-#   
-#   # join SYMBOLs
-#   df <- left_join(term_table, gene_annot, by = "Entrez_ID")
-#   
-#   # summarize: list of genes per term, and max intersection_size for ordering terms
-#   term_summary <- df %>%
-#     group_by(term_name) %>%
-#     arrange(desc(intersection_size)) %>%  # order genes within term
-#     summarize(
-#       Entrez_ID = list(as.character(Entrez_ID)),
-#       SYMBOL    = list(as.character(SYMBOL)),
-#       max_intersection = max(intersection_size),
-#       .groups = "drop"
-#     ) %>%
-#     arrange(desc(max_intersection))  # order terms by largest intersection_size
-#   
-#   # convert term_name to factor to preserve order
-#   term_summary$term_name <- factor(term_summary$term_name, levels = term_summary$term_name)
-#   
-#   # convert to named list
-#   term_list <- term_summary %>%
-#     select(-max_intersection) %>%
-#     split(.$term_name) %>%
-#     lapply(function(x) list(
-#       Entrez_ID = x$Entrez_ID[[1]],
-#       SYMBOL    = x$SYMBOL[[1]]
-#     ))
-#   
-#   return(term_list)
-# }
+make_term_gene_list <- function(term_table, gene_annot) {
+
+  # join SYMBOLs
+  df <- left_join(term_table, gene_annot, by = "Entrez_ID")
+
+  # summarize: list of genes per term, and max intersection_size for ordering terms
+  term_summary <- df %>%
+    group_by(term_name) %>%
+    arrange(desc(intersection_size)) %>%  # order genes within term
+    summarize(
+      # Entrez_ID = list(as.character(Entrez_ID)),
+      SYMBOL    = list(as.character(SYMBOL)),
+      max_intersection = max(intersection_size),
+      .groups = "drop"
+    ) %>%
+    arrange(desc(max_intersection))  # order terms by largest intersection_size
+
+  # convert term_name to factor to preserve order
+  term_summary$term_name <- factor(term_summary$term_name, levels = term_summary$term_name)
+
+  # convert to named list
+  term_list <- term_summary %>%
+    select(-max_intersection) %>%
+    split(.$term_name) %>%
+    lapply(function(x) list(
+      # Entrez_ID = x$Entrez_ID[[1]],
+      SYMBOL    = x$SYMBOL[[1]]
+    ))
+
+  return(term_list)
+}
 
 # #GO:BP
-# Rec_GO_BP_list <- make_term_gene_list(Rec_terms$GO_BP, gene_annot)
-# Sus_GO_BP_list <- make_term_gene_list(Sus_terms$GO_BP, gene_annot)
-# proSus_GO_BP_list <- make_term_gene_list(proSus_terms$GO_BP, gene_annot)
-# notproSus_GO_BP_list <- make_term_gene_list(notproSus_terms$GO_BP, gene_annot)
-# 
-# #KEGG
-# Rec_KEGG_list <- make_term_gene_list(Rec_terms$KEGG, gene_annot)
-# Sus_KEGG_list <- make_term_gene_list(Sus_terms$KEGG, gene_annot)
-# proSus_KEGG_list <- make_term_gene_list(proSus_terms$KEGG, gene_annot)
-# notproSus_KEGG_list <- make_term_gene_list(notproSus_terms$KEGG, gene_annot)
+Rec_GO_BP_list <- make_term_gene_list(Rec_terms$GO_BP, gene_annot)
+Sus_GO_BP_list <- make_term_gene_list(Sus_terms$GO_BP, gene_annot)
+proSus_GO_BP_list <- make_term_gene_list(proSus_terms$GO_BP, gene_annot)
+notproSus_GO_BP_list <- make_term_gene_list(notproSus_terms$GO_BP, gene_annot)
+
+#KEGG
+Rec_KEGG_list <- make_term_gene_list(Rec_terms$KEGG, gene_annot)
+Sus_KEGG_list <- make_term_gene_list(Sus_terms$KEGG, gene_annot)
+proSus_KEGG_list <- make_term_gene_list(proSus_terms$KEGG, gene_annot)
+notproSus_KEGG_list <- make_term_gene_list(notproSus_terms$KEGG, gene_annot)
 
 
-# clust_GOKEGG_terms_list <- list(
-#   Rec_GOBP = Rec_GO_BP_list,
-#   Sus_GOBP = Sus_GO_BP_list,
-#   proSus_GOBP = proSus_GO_BP_list,
-#   notproSus_GOBP = notproSus_GO_BP_list,
-#   Rec_KEGG = Rec_KEGG_list,
-#   Sus_KEGG = Sus_KEGG_list,
-#   proSus_KEGG = proSus_KEGG_list,
-#   notproSus_KEGG = notproSus_KEGG_list
-# )
+clust_GOKEGG_terms_list <- list(
+  Rec_GOBP = Rec_GO_BP_list,
+  Sus_GOBP = Sus_GO_BP_list,
+  proSus_GOBP = proSus_GO_BP_list,
+  notproSus_GOBP = notproSus_GO_BP_list,
+  Rec_KEGG = Rec_KEGG_list,
+  Sus_KEGG = Sus_KEGG_list,
+  proSus_KEGG = proSus_KEGG_list,
+  notproSus_KEGG = notproSus_KEGG_list
+)
 
-# saveRDS(clust_GOKEGG_terms_list, "data/new/RUV/CMF/cluster_GOKEGG_terms_geneids.RDS")
+saveRDS(clust_GOKEGG_terms_list, "data/new/RUV/CMF/cluster_GOKEGG_terms_geneids.RDS")
 
 #now I've created a list of Entrez_ID and SYMBOLs that are tied to each term for each cluster set
 
@@ -23932,38 +24021,36 @@ clust_GOKEGG_terms_list <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Re
 
 #make these into a dataframe with SYMBOL and not Entrez_ID so it's easier to tell
 
-# biglist <- clust_GOKEGG_terms_list 
-# 
-# #make an excel workbook
-# wb <- createWorkbook()
-# 
-# for(set_name in names(biglist)) {
-#   
-#   terms <- biglist[[set_name]]
-#   top_terms <- head(names(terms), 10)
-#   
-#   # Build wide dataframe
-#   df_list <- map(top_terms, function(term) {
-#     genes <- terms[[term]]$SYMBOL
-#     
-#     # Create named columns gene1, gene2, ...
-#     gene_cols <- as.list(genes)
-#     names(gene_cols) <- paste0("gene", seq_along(genes))
-#     
-#     tibble(term = term, !!!gene_cols)
-#   })
-#   
-#   df <- bind_rows(df_list)
-#   
-#   # Add sheet & write
-#   addWorksheet(wb, sheetName = set_name)
-#   writeData(wb, sheet = set_name, df)
-# }
+biglist <- clust_GOKEGG_terms_list
 
-# Save
-# saveWorkbook(wb, 
-#              file = file.path(output_folder, "top10_GO_KEGG_genes_list.xlsx"), 
-#              overwrite = TRUE)
+#make an excel workbook
+wb <- createWorkbook()
+
+for(set_name in names(biglist)) {
+
+  terms <- biglist[[set_name]]
+
+  # Build wide dataframe
+  df_list <- map(terms, function(term) {
+    genes <- terms[[term]]$SYMBOL
+
+    # Create named columns gene1, gene2, ...
+    gene_cols <- as.list(genes)
+    names(gene_cols) <- paste0("gene", seq_along(genes))
+
+    tibble(term = term, !!!gene_cols)
+  })
+
+  df <- bind_rows(df_list)
+
+  # Add sheet & write
+  addWorksheet(wb, sheetName = set_name)
+  writeData(wb, sheet = set_name, df)
+}
+
+saveWorkbook(wb,
+             file = file.path(output_folder, "top10_GO_KEGG_genes_list.xlsx"),
+             overwrite = TRUE)
 
 ```
 
