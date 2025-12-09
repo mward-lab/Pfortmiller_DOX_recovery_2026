@@ -1,0 +1,1442 @@
+---
+title: "RUVs"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: flatly
+    highlight: textmate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+```
+
+
+# Libraries
+
+Load necessary libraries for analysis.
+
+```{r Necessary Libraries, message=FALSE, warning=FALSE}
+library(RUVSeq)
+library(tidyverse)
+library(readr)
+library(readxl)
+library(edgeR)
+library(ggfortify)
+library(ComplexHeatmap)
+library(ggrepel)
+```
+
+Define my custom plot theme
+
+```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
+
+# Define the custom theme
+# plot_theme_custom <- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = "black"),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, "in"),
+# 
+#       #text and font
+#       axis.text = element_text(color = "black",
+#                                family = "Arial",
+#                                size = 7),
+#       axis.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 9),
+#       legend.text = element_text(color = "black",
+#                                  family = "Arial",
+#                                  size = 7),
+#       legend.title = element_text(color = "black",
+#                                   family = "Arial",
+#                                   size = 9),
+#       plot.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = "grey80", linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = "grey90", linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, "data/plot_theme_custom.RDS")
+
+theme_custom <- readRDS("data/plot_theme_custom.RDS")
+
+```
+
+## Factors and Colors
+
+Include each of the factors for these experiments as well as their color schemes.
+
+```{r Colors + Factors}
+
+####Colors####
+
+# txtime_col_old <- list(
+#   "DOX_24T" = "#263CA5",
+#   "VEH_24T" = "#444343",
+#   "DOX_24R" = "#5B8FD1",
+#   "VEH_24R" = "#757575",
+#   "DOX_144R" = "#89C5E5",
+#   "VEH_144R" = "#AAAAAA"
+# )
+
+#updated colors and factors:
+ind_col <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90",
+  "6R" = "#C61E4E"
+)
+
+ind_col_nr <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90"
+)
+
+time_col <- list(
+  "t0" = "#005A4C",
+  "t24" = "#328477",
+  "t144" = "#8FB9B1")
+
+tx_col <- list(
+  "DOX" = "#499FBD", 
+  "VEH" = "#BBBBBC")
+
+txtime_col <- list(
+  "DOX_t0" = "#263CA5",
+  "VEH_t0" = "#444343",
+  "DOX_t24" = "#5B8FD1",
+  "VEH_t24" = "#757575",
+  "DOX_t144" = "#89C5E5",
+  "VEH_t144" = "#AAAAAA"
+)
+  
+```
+
+
+# Saving plots function
+
+Define a function to save plots as .pdf and .png
+
+```{r pdf png saving function, echo=TRUE, message=FALSE, warning=FALSE}
+
+save_plot <- function(plot, filename, 
+                      folder = ".", 
+                      width = 8, 
+                      height = 6, 
+                      units = "in", 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop("Please provide a filename (without extension) for the plot.")
+
+  date_str <- if (add_date) paste0("_", format(Sys.Date(), "%y%m%d")) else ""
+  pdf_file <- file.path(folder, paste0(filename, date_str, ".pdf"))
+  png_file <- file.path(folder, paste0(filename, date_str, ".png"))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = "transparent")
+  ggsave(filename = png_file, plot = plot, device = "png", width = width, height = height, units = units, dpi = dpi, bg = "transparent")
+  message("Saved plot as Cairo PDF: ", pdf_file)
+  message("Saved plot as PNG: ", png_file)
+}
+
+output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height
+```
+
+# Principal Component Analysis
+
+Identify principal components contributing to variation in the data.
+
+```{r PCA Analysis S2}
+#Now I want to check if my data is as expected on a PCA plot
+counts_cpm_unfilt <- readRDS("data/QC/counts_cpm_unfilt.RDS")
+filcpm_matrix <- readRDS("data/QC/filcpm_final_matrix_newind.RDS")
+
+#perform PCA calculations
+prcomp_res_unfilt <- prcomp(t(counts_cpm_unfilt %>% as.matrix()), center =  TRUE)
+
+prcomp_res_filt <- prcomp(t(filcpm_matrix %>% as.matrix()), center =  TRUE)
+
+#read in my metadata annotations
+#this has already had the individual number changed to move 84-1
+
+Metadata <- read.csv("data/QC/Metadata_update.csv") %>% 
+  dplyr::select(-X)
+#84-1 is now Ind4
+
+
+#add in labels for individual numbers
+ind_num <- c("1", "1", "1", "1", "1", "1", 
+             "2", "2", "2", "2", "2", "2", 
+             "3", "3", "3", "3", "3", "3", 
+             "4", "4", "4", "4", "4", "4", 
+             "5", "5", "5", "5", "5", "5", 
+             "6", "6", "6", "6", "6", "6", 
+             "6R", "6R", "6R", "6R", "6R", "6R")
+
+# saveRDS(ind_num, "data/QC/ind_num.RDS")
+
+
+#now plot my PCA for unfiltered log2cpm
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Unfiltered log"[2]*"cpm")) +
+  theme_custom()
+
+####PC2/PC3####
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Cond"
+                  , shape = "Time", size =4, x=2, y=3) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Unfiltered log"[2]*"cpm")) +
+  theme_custom()
+
+####PC3/PC4####
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=3, y=4) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Unfiltered log"[2]*"cpm")) +
+  theme_custom()
+
+
+#Now plot my PCA for filtered log2cpm
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
+  theme_custom()
+
+
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
+  theme_custom()
+
+
+####PC2/PC3####
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=2, y=3) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
+  theme_custom()
+
+####PC3/PC4####
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=3, y=4) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
+  theme_custom()
+
+
+
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = "Cond", shape = "Time", size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression("PCA of Filtered log"[2]*"cpm")) +
+  theme_custom()
+
+#now make a version for supplementary figure 2
+autoplot(prcomp_res_filt,
+         data = Metadata,
+         colour = "Cond",
+         shape = "Time",
+         size = 5,
+         x = 1,
+         y = 2) +
+  theme_custom() +
+  scale_color_manual(values = txtime_col) +
+  geom_text_repel(aes(label = ind_num),       
+                  nudge_y = 0.05,            
+                  max.overlaps = 50,
+                  size = 5,                   
+                  segment.color = "grey50") + 
+  ggtitle("PCA of global gene expression (pre-RUV)")
+
+#save for figure generation
+
+# ggsave("SuppFig2_pca_6x8_EMP.pdf", width = 8, height = 6, device = cairo_pdf,dpi = 300, path = output_folder)
+
+```
+
+
+# Correlation Heatmaps
+
+```{r Correlation Heatmaps, fig.width=12, fig.height=10}
+
+#check to make sure that the column names are correct
+lcpm_2 <- filcpm_matrix
+colnames(lcpm_2) <- Metadata$Final_sample_name
+
+#compute the correlation matrices, one pearson and one spearman
+cor_matrix_pearson <- cor(lcpm_2, 
+                          y = NULL, 
+                          use = "everything",  
+                          method = "pearson")
+cor_matrix_spearman <- cor(lcpm_2,
+                           y = NULL,
+                           use = "everything",
+                           method = "spearman")
+
+# Extract metadata columns
+Individual <- as.character(Metadata$Ind)
+Time <- as.character(Metadata$Time)
+Treatment <- as.character(Metadata$Treatment)
+
+# Define color palettes for annotations
+annot_col_cor = list(drugs = c("DOX" = "#499FBD", 
+                               "VEH" = "#BBBBBC"),
+                     individuals = c("1" = "#FFA364", 
+                                     "2" = "#78EFDE", 
+                                     "3" = "#A4D177", 
+                                     "4" = "#EAD050", 
+                                     "5" = "#A68AC0", 
+                                     "6" = "#F16F90", 
+                                     "6R" = "#C61E4E"),
+                     timepoints = c("t0" = "#005A4C",
+                                    "t24" = "#328477", 
+                                    "t144" = "#8FB9B1"))
+
+drug_colors <- c("DOX" = "#499FBD",
+                 "VEH" = "#BBBBBC")
+ind_colors <- c("1" = "#FFA364",
+                "2" = "#78EFDE",
+                "3" = "#A4D177",
+                "4" = "#EAD050",
+                "5" = "#A68AC0",
+                "6" = "#F16F90",
+                "6R" = "#C61E4E")
+time_colors <- c("t0" = "#005A4C",
+                 "t24" = "#328477",
+                 "t144" = "#8FB9B1")
+
+# Create annotations
+top_annotation <- HeatmapAnnotation(
+  Individual = Individual, 
+  Time = Time,
+  Treatment = Treatment,
+  col = list(
+    Individual = ind_colors, 
+    Time = time_colors,
+    Treatment = drug_colors
+  )
+)
+
+####Pearson Heatmap####
+heatmap_pearson <- Heatmap(cor_matrix_pearson,
+                           name = "Pearson",
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE)
+
+# Draw the heatmap
+draw(heatmap_pearson)
+
+####Spearman Heatmap####
+heatmap_spearman <- Heatmap(cor_matrix_spearman,
+                           name = "Spearman",
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE)
+
+# Draw the heatmap
+draw(heatmap_spearman)
+
+```
+
+
+# Filtered Gene List
+
+```{r Make Filtered Gene List}
+#Now I want to make a filtered gene list (my rownames)
+##I will use this to filter my counts for limma (+ Cormotif later on)
+
+# filt_gene_list <- rownames(filcpm_matrix)
+#save this filtered gene list as I'll use it to filter my counts
+# saveRDS(filt_gene_list, "data/QC/filt_gene_list.RDS")
+
+filt_gene_list <- readRDS("data/QC/filt_gene_list.RDS")
+
+```
+
+# Filter Genes for Differential Expression Analysis
+
+Perform preliminary DE analysis on non-corrected data to get a baseline for RUVs correction.
+
+```{r Filter Counts for DE}
+# counts_raw_matrix <- readRDS("data/QC/counts_raw_matrix.RDS")
+#change column names to match samples for my raw counts matrix
+#update them to the new nomenclature so I can have everything match up with Metadata new
+# colnames(counts_raw_matrix) <- c("DOX_t0_1",
+#                                 "VEH_t0_1",
+#                                 "DOX_t24_1",
+#                                 "VEH_t24_1",
+#                                 "DOX_t144_1",
+#                                 "VEH_t144_1",
+#                                 "DOX_t0_2",
+#                                 "VEH_t0_2",
+#                                 "DOX_t24_2",
+#                                 "VEH_t24_2",
+#                                 "DOX_t144_2",
+#                                 "VEH_t144_2",
+#                                 "DOX_t0_3",
+#                                 "VEH_t0_3",
+#                                 "DOX_t24_3",
+#                                 "VEH_t24_3",
+#                                 "DOX_t144_3",
+#                                 "VEH_t144_3",
+#                                 "DOX_t0_4",
+#                                 "VEH_t0_4",
+#                                 "DOX_t24_4",
+#                                 "VEH_t24_4",
+#                                 "DOX_t144_4",
+#                                 "VEH_t144_4",
+#                                 "DOX_t0_5",
+#                                 "VEH_t0_5",
+#                                 "DOX_t24_5",
+#                                 "VEH_t24_5",
+#                                 "DOX_t144_5",
+#                                 "VEH_t144_5",
+#                                 "DOX_t0_6",
+#                                 "VEH_t0_6",
+#                                 "DOX_t24_6",
+#                                 "VEH_t24_6",
+#                                 "DOX_t144_6",
+#                                 "VEH_t144_6",
+#                                 "DOX_t0_6R",
+#                                 "VEH_t0_6R",
+#                                 "DOX_t24_6R",
+#                                 "VEH_t24_6R",
+#                                 "DOX_t144_6R",
+#                                 "VEH_t144_6R")
+
+# saveRDS(counts_raw_matrix, "data/QC/counts_raw_matrix.RDS")
+
+counts_raw_matrix <- readRDS("data/QC/counts_raw_matrix.RDS")
+
+#subset my count matrix based on filtered CPM matrix
+x <- counts_raw_matrix[row.names(filcpm_matrix),]
+dim(x)
+# saveRDS(x, "data/DE/x_dge_counts_allind_updated.RDS")
+#14319 genes as expected!
+#this is still in counts form
+
+#remove my replicate individual at this time
+x_norep <- x[,1:36]
+
+# saveRDS(x_norep, "data/DE/x_norep.RDS")
+
+# Metadata <- read.csv("data/QC/Metadata_update.csv")
+# 
+#modify my metadata to match
+# Metadata_2 <- Metadata[1:36,]
+# rownames(Metadata_2) <- Metadata_2$Sample_bam
+# colnames(x_norep) <- Metadata_2$Sample_ID
+# rownames(Metadata_2) <- Metadata_2$Sample_ID
+
+# Metadata_2$Condition <- make.names(Metadata_2$Cond)
+# Metadata_2$Ind <- as.character(Metadata_2$Ind)
+
+# saveRDS(Metadata_2, "data/QC/Metadata_2_norep_update.RDS")
+
+Metadata_2 <- readRDS("data/QC/Metadata_2_norep_update.RDS")
+
+```
+
+
+# Perform DE Analysis
+
+```{r Differential Expression Analysis}
+
+#create DGEList object
+dge <- DGEList(counts = x_norep)
+dge$samples$group <- factor(Metadata_2$Condition)
+dge <- calcNormFactors(dge, method = "TMM")
+
+# saveRDS(dge, "data/DE/dge_matrix.RDS")
+
+# check normalization factors from TMM normalization of LIBRARIES
+dge$samples
+
+#create my design matrix for DE
+design <- model.matrix(~ 0 + Metadata_2$Condition)
+colnames(design) <- gsub("Metadata_2\\$Condition", "", colnames(design))
+
+#take care that the matrix automatically sorts cols alphabetically
+##currently DOX_t0, DOX_t144, DOX_t24, VEH_t0, VEH_t144, VEH_t24
+
+#run duplicate correlation for individual effect
+corfit <- duplicateCorrelation(object = dge$counts, design = design, block = Metadata_2$Ind)
+
+#voom transformation and plot
+v <- voom(dge, design, block = Metadata_2$Ind, correlation = corfit$consensus.correlation, plot = TRUE)
+
+#fit my linear model
+fit <- lmFit(v, design, block = Metadata_2$Ind, correlation = corfit$consensus.correlation)
+
+#make my contrast matrix to compare across tx and veh
+contrast_matrix <- makeContrasts(
+  V.D24T = DOX_t0 - VEH_t0,
+  V.D24R = DOX_t24 - VEH_t24, 
+  V.D144R = DOX_t144 - VEH_t144,
+  levels = design
+)
+
+#apply these contrasts to compare DOX to DMSO VEH
+fit2 <- contrasts.fit(fit, contrast_matrix)
+fit2 <- eBayes(fit2)
+
+#plot the mean-variance trend
+plotSA(fit2, main = "Final model: Mean-Variance trend")
+
+#look at the summary of your results
+##this tells you the number of DEGs in each condition
+results_summary <- decideTests(fit2, adjust.method = "BH", p.value = 0.05)
+summary(results_summary)
+#        V.D24 V.D24r V.D144r
+# Down    4723   3593     359
+# NotSig  5076   7151   13810
+# Up      4520   3575     150
+
+```
+
+
+## Create Prelim Toptables
+
+These toptables will not be used later as they need to be corrected, but let's look at what the data looks like before RUVs correction.
+
+```{r Make Toptables of DEGs}
+
+# Generate Top Table for Specific Comparisons
+
+Toptable_V.D24T <- topTable(fit = fit2, coef = "V.D24T", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
+# write.csv(Toptable_V.D24T, "data/DE/Toptable_V.D24T_noRUV.csv")
+
+Toptable_V.D24R <- topTable(fit = fit2, coef = "V.D24R", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
+# write.csv(Toptable_V.D24R, "data/DE/Toptable_V.D24R_noRUV.csv")
+
+Toptable_V.D144R <- topTable(fit = fit2, coef = "V.D144R", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
+# write.csv(Toptable_V.D144R, "data/DE/Toptable_V.D144R_noRUV.csv")
+
+#save all of these toptables as R objects
+# saveRDS(list(
+#   V.D24T = Toptable_V.D24T,
+#   V.D24R = Toptable_V.D24R,
+#   V.D144R = Toptable_V.D144R
+# ), file = "data/DE/Toptable_list_noRUV.RDS")
+
+Toptable_list_noRUV <- readRDS("data/DE/Toptable_list_noRUV.RDS")
+
+```
+
+## logFC Boxplots of DE by Timepoint
+
+```{r DOX24T DEGs logFC all Conditions}
+
+# Load DEGs Data
+DOX_24T <- read.csv("data/DE/Toptable_V.D24T_noRUV.csv", row.names = 1)
+DOX_24R <- read.csv("data/DE/Toptable_V.D24R_noRUV.csv", row.names = 1)
+DOX_144R <- read.csv("data/DE/Toptable_V.D144R_noRUV.csv", row.names = 1)
+
+#make a list of all of the genes in this set so I can plot the logFC in other sets
+D24T_DEGs <- rownames(DOX_24T)[DOX_24T$adj.P.Val < 0.05]
+length(D24T_DEGs)
+#9243 genes in length after adj. p value cutoff
+
+#now that I have a list of my DEGs from D24T - pull these genes out from the other DEG lists
+D24R_DEGs <- rownames(DOX_24R)[DOX_24R$adj.P.Val < 0.05]
+length(D24R_DEGs)
+#7168 genes here 
+
+
+D144R_DEGs <- rownames(DOX_144R)[DOX_144R$adj.P.Val < 0.05]
+length(D144R_DEGs)
+#509 genes in 144R
+
+
+#Combine the toptables I have from pairwise analysis into a single dataframe
+d0_toptable_dxr <- Toptable_V.D24T %>% 
+  rownames_to_column(var = "Entrez_ID") %>% 
+  mutate(Time = "t0")
+
+d24_toptable_dxr <- Toptable_V.D24R %>% 
+  rownames_to_column(var = "Entrez_ID") %>% 
+  mutate(Time = "t24")
+
+d144_toptable_dxr <- Toptable_V.D144R %>% 
+  rownames_to_column(var = "Entrez_ID") %>% 
+  mutate(Time = "t144")
+
+combined_toptables_dxr <- bind_rows(
+  d0_toptable_dxr,
+  d24_toptable_dxr,
+  d144_toptable_dxr)
+
+# saveRDS(combined_toptables_dxr, "data/DE/combined_toptables_dxr.RDS")
+
+#Filter the data based on each timepoint
+filt_toptable_dxr_t0 <- combined_toptables_dxr %>% 
+  dplyr::filter(Entrez_ID  %in% D24T_DEGs) %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), labels = c("t0", "t24", "t144"))) %>% 
+  ggplot(., aes(x = time, y = logFC)) +
+  geom_boxplot(aes(fill = time)) +
+  scale_fill_manual(values = time_col) +
+  guides(fill = guide_legend(title = "Time")) +
+  xlab(" ") +
+  ylab("logFC") +
+  theme_custom() +
+  ggtitle("LogFC for t0 DEGs Across Conditions")
+
+filt_toptable_dxr_t24 <- combined_toptables_dxr %>% 
+  dplyr::filter(Entrez_ID  %in% D24R_DEGs) %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), labels = c("t0", "t24", "t144"))) %>% 
+  ggplot(., aes(x = time, y = logFC)) +
+  geom_boxplot(aes(fill = time)) +
+  scale_fill_manual(values = time_col) +
+  guides(fill = guide_legend(title = "Time")) +
+  theme_custom() +
+  xlab(" ") +
+  ylab("logFC") +
+  theme_custom() +
+  ggtitle("LogFC for t24 DEGs Across Conditions")
+
+#D144R
+
+filt_toptable_dxr_t144 <- combined_toptables_dxr %>% 
+  dplyr::filter(Entrez_ID  %in% D144R_DEGs) %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), labels = c("t0", "t24", "t144"))) %>% 
+  ggplot(., aes(x = time, y = logFC))+
+  geom_boxplot(aes(fill = time))+
+  scale_fill_manual(values = time_col)+
+  guides(fill = guide_legend(title = "Time"))+
+  theme_custom()+
+  xlab(" ")+
+  ylab("logFC")+
+  theme_custom()+
+  ggtitle("LogFC for t144 DEGs Across Conditions")
+
+#now put the names of these graphs to print them
+filt_toptable_dxr_t0
+filt_toptable_dxr_t24
+filt_toptable_dxr_t144
+
+
+```
+
+
+# RUVs Correction
+
+Correct for unwanted variation using RUVs, which uses a set of replicates to correct for variation.
+
+## Set Up Data Workflow
+
+```{r RUVs Correction Data Setup, fig.height=6, fig.width=8}
+
+filt_gene_list <- rownames(filcpm_matrix)
+#14319 genes as usual
+
+#in order to make this match with annot later down the line, change the col names for counts_raw_matrix to match final_sample_names in annot
+
+#i'll also want to make sure I keep the replicate for this set
+
+colnames(counts_raw_matrix) <- Metadata$Final_sample_name
+
+RUV_filt_counts <- counts_raw_matrix %>% 
+  as.data.frame() %>% 
+  dplyr::filter(., row.names(.)%in% filt_gene_list)
+# saveRDS(RUV_filt_counts, "data/DE/RUV_filt_counts.RDS")
+
+#add in the annotation files
+ind_num <- readRDS("data/QC/ind_num.RDS")
+annot <- read.csv("data/QC/Metadata_update.csv")
+#same as Metadata
+
+
+#  counts need to be integer values and in a numeric matrix
+# note: the log transformation needs to be accounted for in the isLog argument in RUVs function.
+counts <- as.matrix(RUV_filt_counts)
+  
+# saveRDS(counts, "data/new/RUV/filt_counts_matrix.RDS")
+
+# Create a DataFrame for the phenoData
+phenoData <- DataFrame(annot)
+
+# Now create the RangedSummarizedExperiment necessary for RUVs input
+# looks like it did need both the phenodata and the counts.
+set <- SummarizedExperiment(assays =  counts, metadata = phenoData)
+
+# Generate a background matrix
+# The column "Cond" holds the comparisons that you actually want to make. DOX_24, DMSO_24,5FU_24, DOX_3,etc.
+scIdx <- RUVSeq::makeGroups(phenoData$Cond)
+scIdx
+
+#now I've made all of the data I need for this - they are located in each section for k values
+
+#DO NOT USE THESE COUNTS FOR LINEAR MODELING
+
+#colors for all of the plots
+# txtime_col
+# ind_col
+# time_col
+# tx_col
+
+# before ruv (counts PCA)
+prcomp_res_counts <- prcomp(t(counts), scale. = FALSE, center = TRUE)
+annot_prcomp_res <- prcomp_res_counts$x %>% cbind(., annot)
+
+group_2 <- annot$Cond
+
+#now plot my PCA for filtered counts
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_counts, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4, 
+                  x = 1, 
+                  y = 2) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression("PCA of Filtered Counts")) +
+  theme_custom()
+
+####PC2/PC3####
+ggplot2::autoplot(prcomp_res_counts, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4, 
+                  x = 2, 
+                  y = 3) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression("PCA of Filtered Counts")) +
+  theme_custom()
+
+#go ahead and plot PCA of log2cpm to compare (somewhat) later since the norm counts output isn't possible with these data since they don't undergo correction
+
+prcomp_res_cpm <- prcomp(t(filcpm_matrix %>% as.matrix()), center =  TRUE)
+
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_cpm, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4, 
+                  x = 1, 
+                  y = 2) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression("PCA of log2cpm no RUVs")) +
+  theme_custom()
+
+####PC2/PC3####
+ggplot2::autoplot(prcomp_res_cpm, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4, 
+                  x = 2, 
+                  y = 3) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression("PCA of log2cpm no RUVs")) +
+  theme_custom()
+
+```
+
+## RUVs k=1, 1 factor of unwanted variation
+
+```{r RUVs k1, fig.height=6, fig.width=8}
+#Apply RUVs function from RUVSeq
+#"k" can be iteratively adjusted over time depending on PCA.
+set1 <- RUVSeq::RUVs(x = counts, k =1, scIdx = scIdx, isLog = FALSE)
+# saveRDS(set1, "data/DE/set1.RDS")
+#get the ruv weights to put into the linear model. n weights = k.
+#k=1
+RUV_df1 <- set1$W %>% as.data.frame()
+RUV_df1$Names <- rownames(RUV_df1)
+
+#Check that the names match
+#k=1
+RUV_df_rm1 <- RUV_df1[RUV_df1$Names %in% annot$Final_sample_name, ] 
+RUV_1 <-  RUV_df_rm1$W_1
+
+# saveRDS(RUV_df_rm1, "data/DE/RUV_df_rm1.RDS")
+# saveRDS(RUV_1, "data/DE/RUV_1.RDS")
+
+#PCA checks
+#k=1
+prcomp_res_1 <- prcomp(t(set1$normalizedCounts), scale. = FALSE, center = TRUE)
+annot_prcomp_res_1 <- prcomp_res_1$x %>% cbind(., annot)
+
+ggplot2::autoplot(prcomp_res_1, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size =4, 
+                  x = 1, 
+                  y = 2)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
+  ggtitle("RUVs Correction k=1 NormCounts")
+
+ggplot2::autoplot(prcomp_res_1, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4, 
+                  x = 2,
+                  y = 3)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
+  ggtitle("RUVs Correction k=1 NormCounts")
+
+#also try by converting these values to log2cpm
+
+RUV_df_rm1_cpm <- cpm(set1$normalizedCounts, log = TRUE)
+
+prcomp_res_1_cpm <- prcomp(t(RUV_df_rm1_cpm), scale. = FALSE, center = TRUE)
+annot_prcomp_res_1_cpm <- prcomp_res_1_cpm$x %>% cbind(., annot)
+
+##PC1/2
+ggplot2::autoplot(prcomp_res_1_cpm, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4,
+                  x = 1,
+                  y = 2)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 50)+
+  ggtitle("RUVs Correction k=1 log2cpm")
+
+
+###PC2/3
+ggplot2::autoplot(prcomp_res_1_cpm, 
+                  data = annot, 
+                  colour = "Cond", 
+                  shape = "Time", 
+                  size = 4, 
+                  x = 2, 
+                  y = 3)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
+  ggtitle("RUVs Correction k=1 log2cpm")
+
+```
+
+
+## Spearman Correlation Heatmaps RUVs
+
+```{r RUVs HM Spearman, fig.height=10, fig.width=12}
+#Now that I've put together the PCA plots for both normalized counts and log2cpm
+#I want to make these into heatmaps
+
+#first change your Metadata to have the new names for my supp figures
+# Metadata <- Metadata %>% 
+#    mutate(
+#     # Map time labels to standard timepoints
+#     Timepoint = case_when(
+#       Time == "24T" ~ "t0",
+#       Time == "24R" ~ "t24",
+#       Time == "144R" ~ "t144",
+#       TRUE ~ NA_character_
+#     ),
+#     
+#     # Map drug labels to treatment shorthand
+#     Treatment = case_when(
+#       Drug == "DOX" ~ "DOX",
+#       Drug == "DMSO" ~ "VEH",
+#       TRUE ~ NA_character_
+#     ),
+#     
+#     # Combine them into a unified condition string
+#     Condition = paste(Treatment, Timepoint, Ind, sep = "_")
+#   ) %>%
+#   mutate(
+#     # Factorize Ind, Timepoint, Treatment, and Condition for plotting consistency
+#     Ind = factor(Ind, 
+#                  levels = c("1", "2", "3", "4", "5", "6", "6R"), 
+#                  ordered = TRUE),
+#     Timepoint = factor(Timepoint, levels = c("t0", "t24", "t144"),
+#                        ordered = TRUE),
+#     Treatment = factor(Treatment, levels = c("DOX", "VEH"),
+#                        ordered = TRUE),
+#     Condition = factor(
+#       Condition,
+#       levels = expand.grid(
+#         Treatment = levels(Treatment),
+#         Timepoint = levels(Timepoint),
+#         Ind = levels(Ind)
+#       ) %>%
+#         transmute(Condition = paste(Treatment, Timepoint, Ind, sep = "_")) %>%
+#         pull(Condition),
+#       ordered = TRUE
+#     )
+#   )
+#also change Ind 1 to Ind4 to keep all F and all M together
+# line_to_ind <- c(
+#   "87-1"  = "Ind1",   #originally Ind2
+#   "78-1"  = "Ind2",   #originally Ind3
+#   "75-1"  = "Ind3",   #originally Ind4
+#   "84-1"  = "Ind4",   #renamed from Ind1 to Ind4
+#   "17-3"  = "Ind5",   #unchanged
+#   "90-1"  = "Ind6",   #unchanged
+#   "90-1REP" = "Ind6R"   #unchanged
+# )
+
+# Update Ind column in Metadata
+# Metadata$Old_Ind <- Metadata$Ind
+
+# Metadata$Ind <- line_to_ind[Metadata$Line]
+# Metadata$Ind <- gsub("Ind", "", Metadata$Ind)
+
+#update sample names columns in csv
+
+# saveRDS(Metadata, "data/Metadata_update.RDS")
+# write.csv(Metadata, "data/Metadata_update.csv")
+# Metadata <- read.csv("data/Metadata_update.csv")
+
+Metadata <- read.csv("data/QC/Metadata_update.csv")
+set1 <- readRDS("data/DE/set1.RDS")
+RUV_filt_counts <- readRDS("data/DE/RUV_filt_counts.RDS")
+
+####RUVs k=1
+#check to make sure that the column names are correct
+dim(RUV_filt_counts)
+dim(set1$normalizedCounts)
+
+#take the normalized counts from k=1 and put together a dataframe with the correct columns
+normcounts_k0 <- RUV_filt_counts
+normcounts_k1 <- set1$normalizedCounts %>% as.data.frame()
+
+#do the same with the log2cpm conversion
+cpm_k0 <- cpm(normcounts_k0, log = TRUE) %>% as.data.frame()
+cpm_k1 <- cpm(set1$normalizedCounts, log = TRUE) %>% as.data.frame()
+
+#compute the correlation matrices for RUVs 1-3 with normalized counts
+#k=0
+cor_matrix_spmn_k0 <- cor(normcounts_k0,
+                          y = NULL,
+                          use = "everything", 
+                          method = "spearman")
+#k=1
+cor_matrix_spmn_k1 <- cor(normcounts_k1,
+                           y = NULL,
+                           use = "everything",
+                           method = "spearman")
+
+
+#Do the same with the log2cpm converted versions
+#k=0
+cor_matrix_spmn_k0_cpm <- cor(cpm_k0,
+                           y = NULL,
+                           use = "everything",
+                           method = "spearman")
+
+#k=1
+cor_matrix_spmn_k1_cpm <- cor(cpm_k1,
+                           y = NULL,
+                           use = "everything",
+                           method = "spearman")
+
+#extract metadata columns
+Individual <- as.character(Metadata$Ind)
+Time <- as.character(Metadata$Time)
+Treatment <- as.character(Metadata$Treatment)
+
+#Define color palettes for annotations
+annot_col_cor = list(Treatment = c("DOX" = "#499FBD", 
+                               "VEH" = "#BBBBBC"),
+                     Individual = c("1" = "#FFA364", 
+                                     "2" = "#78EFDE", 
+                                     "3" = "#A4D177", 
+                                     "4" = "#EAD050", 
+                                     "5" = "#A68AC0", 
+                                     "6" = "#F16F90", 
+                                     "6R" = "#C61E4E"),
+                     Timepoint = c("t0" = "#005A4C",
+                                    "t24" = "#328477", 
+                                    "t144" = "#8FB9B1"))
+
+tx_colors <- c("DOX" = "#499FBD",
+                 "VEH" = "#BBBBBC")
+ind_colors <- c("1" = "#FFA364",
+                "2" = "#78EFDE",
+                "3" = "#A4D177",
+                "4" = "#EAD050",
+                "5" = "#A68AC0",
+                "6" = "#F16F90",
+                "6R" = "#C61E4E")
+time_colors <- c("t0" = "#005A4C",
+                 "t24" = "#328477",
+                 "t144" = "#8FB9B1")
+
+
+# Create annotations
+top_annotation <- HeatmapAnnotation(
+  Individual = Individual, 
+  Timepoint = Time,
+  Treatment = Treatment,
+  col = list(
+    Individual = ind_colors, 
+    Time = time_colors,
+    Treatment = tx_colors
+  )
+)
+
+####ANNOTATED HEATMAPS####
+###Spearman Heatmap k=0 ####
+heatmap_spmn_k0 <- Heatmap(cor_matrix_spmn_k0,
+                           name = "Spearman",
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = "Filtered Counts no RUVs")
+
+# Draw the heatmap k=0
+draw(heatmap_spmn_k0)
+
+####Spearman Heatmap k=1 ####
+heatmap_spmn_k1 <- Heatmap(cor_matrix_spmn_k1,
+                           name = "Spearman",
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = "Normalized Counts k=1")
+
+# Draw the heatmap k=1
+draw(heatmap_spmn_k1)
+
+
+####Spearman Heatmap k=0 log2cpm####
+heatmap_spmn_k0_cpm <- Heatmap(cor_matrix_spmn_k0_cpm,
+                           name = "Spearman",
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = "log2cpm of Filtered Counts no RUVs")
+
+# Draw the heatmap k=0 log2cpm
+draw(heatmap_spmn_k0_cpm)
+
+####Spearman Heatmap k=1 log2cpm####
+heatmap_spmn_k1_cpm <- Heatmap(cor_matrix_spmn_k1_cpm,
+                           name = "Spearman",
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = "log2cpm of Normalized Counts k=1")
+
+#draw the heatmap k=1 log2cpm
+draw(heatmap_spmn_k1_cpm)
+
+#find the median for all comparisons and also do a sign test to see significance
+#remove diagonal (self-correlations) and get lower triangle only
+spearman_vals <- cor_matrix_spmn_k1_cpm[lower.tri(cor_matrix_spmn_k1_cpm, diag = FALSE)]
+
+#median of Spearman correlation coefficients
+median_spearman <- median(spearman_vals, na.rm = TRUE)
+
+#sign test: number of positive vs negative correlations
+#H0: median = 0, HA: median > 0 (one-sided test)
+
+#count number of positive and negative values
+n_pos <- sum(spearman_vals > 0, na.rm = TRUE)
+n_neg <- sum(spearman_vals < 0, na.rm = TRUE)
+n_total <- n_pos + n_neg
+
+#perform a binomial test (sign test)
+sign_test <- binom.test(x = n_pos, n = n_total, p = 0.5, alternative = "greater")
+
+#output results
+cat("Median Spearman correlation:", median_spearman, "\n")
+cat("Sign test p-value (greater than 0):", sign_test$p.value, "\n")
+
+#Median Spearman correlation: 0.9547968 
+#Sign test p-value (greater than 0): 6.503898e-260 
+
+#now I want to test correlations by timepoint with DOX vs DMSO
+#list your timepoints
+cor_time_sp <- c("t0", "t24", "t144")
+
+for (tp in cor_time_sp) {
+  
+  #match DOX and DMSO samples at this timepoint
+  dox_samples <- grep(paste0("^DOX_", tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
+  dmso_samples <- grep(paste0("^VEH_", tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
+  
+  #extract Spearman correlations between DOX and DMSO at this timepoint
+  cor_vals <- as.vector(cor_matrix_spmn_k1_cpm[dox_samples, dmso_samples])
+  
+  #calculate median
+  median_cor <- median(cor_vals, na.rm = TRUE)
+  
+  #sign test (are most correlations > 0?)
+  n_pos <- sum(cor_vals > 0, na.rm = TRUE)
+  n_neg <- sum(cor_vals < 0, na.rm = TRUE)
+  n_total <- n_pos + n_neg
+  
+  #perform binomial test if valid
+  if (n_total > 0) {
+    sign_test <- binom.test(x = n_pos, n = n_total, p = 0.5,
+                            alternative = "greater")
+    p_val <- sign_test$p.value
+  } else {
+    p_val <- NA
+  }
+  
+  #output
+  cat("====", tp, "====\n")
+  cat("Median Spearman correlation (DOX vs VEH):", round(median_cor, 4), "\n")
+  cat("Sign test p-value:", p_val, "\n\n")
+}
+
+# output
+# t0
+# Median Spearman correlation (DOX vs VEH): 0.8899 
+# Sign test p-value: 1.776357e-15 
+# 
+# t24
+# Median Spearman correlation (DOX vs VEH): 0.9347 
+# Sign test p-value: 1.776357e-15 
+# 
+# t144
+# Median Spearman correlation (DOX vs VEH): 0.9767 
+# Sign test p-value: 1.776357e-15 
+
+#this means that my DOX and VEH are highly similar and significant according to P values
+
+```
+
+
+# Supplementary Figure 3 - Spearman Correlation Heatmap RUVs log2cpm
+
+```{r Supp Fig 3 Spearman Cor HM, fig.height=10, fig.width=12}
+
+heatmap_spmn_k1_cpm <- Heatmap(cor_matrix_spmn_k1_cpm,
+                           name = "Spearman",
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = "log2cpm of Normalized Counts k=1")
+
+draw(heatmap_spmn_k1_cpm)
+
+```
+
+## Top 5 DEGs RUVs
+
+```{r RUV Top5 DEGs}
+#use your three toptables so I can pull out top 5 genes from each based on adj. p val
+
+Toptable_RUV_24T <- read.csv("data/DE/Toptable_RUV_24T_final.csv")
+Toptable_RUV_24R <- read.csv("data/DE/Toptable_RUV_24R_final.csv")
+Toptable_RUV_144R <- read.csv("data/DE/Toptable_RUV_144R_final.csv")
+
+top5_D24T_1 <- Toptable_RUV_24T[order(Toptable_RUV_24T$adj.P.Val), ][1:5,] 
+top5_D24R_1 <- Toptable_RUV_24R[order(Toptable_RUV_24R$adj.P.Val), ][1:5,] 
+top5_D144R_1 <- Toptable_RUV_144R[order(Toptable_RUV_144R$adj.P.Val), ][1:5,]
+
+#now that I've pulled the top 5 DEGs from each, make a list to pull them from my log2cpm data
+
+boxplot1 <- readRDS("data/QC/filcpm_matrix_genes.RDS") %>% 
+  as.data.frame()
+
+#Define gene list
+#these are the top 5 genes pulled from my toptables
+top5_D24T_geneslist_1 <- c(top5_D24T_1$Entrez_ID)
+top5_D24R_geneslist_1 <- c(top5_D24R_1$Entrez_ID)
+top5_D144R_geneslist_1 <- c(top5_D144R_1$Entrez_ID)
+#Add more gene symbols as needed or add more categories
+
+#now pull these from my log2cpm matrix
+top5_D24T_genes_1 <- boxplot1[boxplot1$Entrez_ID %in% top5_D24T_geneslist_1,]
+dim(top5_D24T_genes_1)
+#5 genes in 44 cols
+top5_D24R_genes_1 <- boxplot1[boxplot1$Entrez_ID %in% top5_D24R_geneslist_1,]
+dim(top5_D24R_genes_1)
+#5 genes in 44 cols
+top5_D144R_genes_1 <- boxplot1[boxplot1$Entrez_ID %in% top5_D144R_geneslist_1,]
+dim(top5_D144R_genes_1)
+#5 genes in 44 cols
+
+#Now put in the function I want to use to generate boxplots of genes
+#####D24T#####
+process_top5_D24T_1 <- function(gene) {
+  gene_data <- top5_D24T_genes_1 %>% filter(Entrez_ID == gene)
+  long_data <- gene_data %>%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = "Sample", values_to = "log2cpm") %>%
+    mutate(
+      Drug = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("DMSO", Sample) ~ "DMSO",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("_24T_", Sample) ~ "24T",
+        grepl("_24R_", Sample) ~ "24R",
+        grepl("_144R_", Sample) ~ "144R",
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl("Ind1$", Sample) ~ "1",
+        grepl("Ind2$", Sample) ~ "2",
+        grepl("Ind3$", Sample) ~ "3",
+        grepl("Ind4$", Sample) ~ "4",
+        grepl("Ind5$", Sample) ~ "5",
+        grepl("Ind6$", Sample) ~ "6",
+        grepl("Ind6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = "_")
+    )
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c(
+      "DOX_24T", 
+      "DMSO_24T", 
+      "DOX_24R", 
+      "DMSO_24R", 
+      "DOX_144R", 
+      "DMSO_144R"
+    )
+  )
+  return(long_data)
+}
+
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in top5_D24T_geneslist_1) {
+  gene_data <- process_top5_D24T_1(gene)
+  p <- ggplot(gene_data, aes(x = Condition, y = log2cpm, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")) +
+    ggtitle(paste("Log2cpm", gene, "top5DEGs D24T RUVs")) +
+    labs(x = "Treatment", y = "log2cpm") +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90, hjust = 1)
+    )
+  print(p)
+}
+
+#####D24R#####
+process_top5_D24R_1 <- function(gene) {
+  gene_data <- top5_D24R_genes_1 %>% filter(Entrez_ID == gene)
+  long_data <- gene_data %>%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = "Sample", values_to = "log2cpm") %>%
+    mutate(
+      Drug = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("DMSO", Sample) ~ "DMSO",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("_24T_", Sample) ~ "24T",
+        grepl("_24R_", Sample) ~ "24R",
+        grepl("_144R_", Sample) ~ "144R",
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl("Ind1$", Sample) ~ "1",
+        grepl("Ind2$", Sample) ~ "2",
+        grepl("Ind3$", Sample) ~ "3",
+        grepl("Ind4$", Sample) ~ "4",
+        grepl("Ind5$", Sample) ~ "5",
+        grepl("Ind6$", Sample) ~ "6",
+        grepl("Ind6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = "_")
+    )
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c(
+      "DOX_24T", 
+      "DMSO_24T", 
+      "DOX_24R", 
+      "DMSO_24R", 
+      "DOX_144R", 
+      "DMSO_144R"
+    )
+  )
+  return(long_data)
+}
+
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in top5_D24R_geneslist_1) {
+  gene_data <- process_top5_D24R_1(gene)
+  p <- ggplot(gene_data, aes(x = Condition, y = log2cpm, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")) +
+    ggtitle(paste("Log2cpm", gene, "top5DEGs D24R RUVs")) +
+    labs(x = "Treatment", y = "log2cpm") +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90, hjust = 1)
+    )
+  print(p)
+}
+
+#####D144R#####
+process_top5_D144R_1 <- function(gene) {
+  gene_data <- top5_D144R_genes_1 %>% filter(Entrez_ID == gene)
+  long_data <- gene_data %>%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = "Sample", values_to = "log2cpm") %>%
+    mutate(
+      Drug = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("DMSO", Sample) ~ "DMSO",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("_24T_", Sample) ~ "24T",
+        grepl("_24R_", Sample) ~ "24R",
+        grepl("_144R_", Sample) ~ "144R",
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl("Ind1$", Sample) ~ "1",
+        grepl("Ind2$", Sample) ~ "2",
+        grepl("Ind3$", Sample) ~ "3",
+        grepl("Ind4$", Sample) ~ "4",
+        grepl("Ind5$", Sample) ~ "5",
+        grepl("Ind6$", Sample) ~ "6",
+        grepl("Ind6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = "_")
+    )
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c(
+      "DOX_24T", 
+      "DMSO_24T", 
+      "DOX_24R", 
+      "DMSO_24R", 
+      "DOX_144R", 
+      "DMSO_144R"
+    )
+  )
+  return(long_data)
+}
+
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in top5_D144R_geneslist_1) {
+  gene_data <- process_top5_D144R_1(gene)
+  p <- ggplot(gene_data, aes(x = Condition, y = log2cpm, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")) +
+    ggtitle(paste("Log2cpm", gene, "top5DEGs D144R RUVs")) +
+    labs(x = "Treatment", y = "log2cpm") +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90, hjust = 1)
+    )
+  print(p)
+}
+
+
+```
+

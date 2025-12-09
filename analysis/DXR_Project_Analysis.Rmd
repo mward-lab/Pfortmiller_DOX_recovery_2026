@@ -282,6 +282,12 @@ dim(counts_raw_matrix)
 #I also want to save this as an R object so I don't have to run the counts every time
 # saveRDS(counts_raw_matrix, "data/new/counts_raw_matrix.RDS")
 
+#I also want to change the names of the columns for my metadata sheet
+# colnames(counts_raw_matrix) <- colnames(filcpm_matrix) 
+# counts_raw_matrix_rename <- counts_raw_matrix
+
+# write.csv(counts_raw_matrix_rename, "C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/counts_raw_matrix_rename_EMP_251205.csv")
+
 ```
 ###Include colors and factors for analysis
 ```{r Colors + Factors}
@@ -731,7 +737,7 @@ We have triple checked this dataset to ensure that columns are in order
 #Check my Response Genes in log2cpm format
 ```{r Check Response Genes log2cpm}
 #Load in my count matrix
-boxplot1 <- readRDS("data/new/filcpm_matrix_genes.RDS")
+boxplot1 <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/filcpm_matrix_genes.RDS")
 #this is the corrected individual!
 # filcpm_matrix <- readRDS("data/new/filcpm_final_matrix_newind.RDS")
 

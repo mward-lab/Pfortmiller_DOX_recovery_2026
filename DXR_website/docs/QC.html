@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>QC.knit</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DXR Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="index.html">Analysis</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/emmapfort/DXR_Project">
+    <span class="fab fa-github"></span>
+     
+    Source Code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-12-09
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>DXR_website/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251201code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251201)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251201code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251201)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree70e5e86228f273de6c19c3dba25b1a3ed2ba9990targetblank70e5e86a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/emmapfort/DXR_Project/tree/70e5e86228f273de6c19c3dba25b1a3ed2ba9990" target="_blank">70e5e86</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree70e5e86228f273de6c19c3dba25b1a3ed2ba9990targetblank70e5e86a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/emmapfort/DXR_Project/tree/70e5e86228f273de6c19c3dba25b1a3ed2ba9990" target="_blank">70e5e86</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    DXR_website/analysis/figure/
+    Ignored:    DXR_website/data/
+    Ignored:    code/Flow_Purity_Stressor_Boxplots_EMP_250226.R
+    Ignored:    data/CDKN1A_geneplot_Dox.RDS
+    Ignored:    data/Cormotif_dox.RDS
+    Ignored:    data/Cormotif_prob_gene_list.RDS
+    Ignored:    data/Cormotif_prob_gene_list_doxonly.RDS
+    Ignored:    data/Counts_RNA_EMPfortmiller.txt
+    Ignored:    data/DMSO_TNN13_plot.RDS
+    Ignored:    data/DOX_TNN13_plot.RDS
+    Ignored:    data/DOXgeneplots.RDS
+    Ignored:    data/ExpressionMatrix_EMP.csv
+    Ignored:    data/Ind1_DOX_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_list.csv
+    Ignored:    data/Ind6REP_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_set.csv
+    Ignored:    data/Ind6_Spearman_plot.RDS
+    Ignored:    data/MDM2_geneplot_Dox.RDS
+    Ignored:    data/Master_summary_75-1_EMP_250811_final.csv
+    Ignored:    data/Master_summary_87-1_EMP_250811_final.csv
+    Ignored:    data/Metadata.csv
+    Ignored:    data/Metadata_2_norep_update.RDS
+    Ignored:    data/Metadata_update.csv
+    Ignored:    data/QC/
+    Ignored:    data/Recovery_flow_purity.csv
+    Ignored:    data/SIRT1_geneplot_Dox.RDS
+    Ignored:    data/Sample_annotated.csv
+    Ignored:    data/SpearmanHeatmapMatrix_EMP
+    Ignored:    data/VolcanoPlot_D144R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24T_original_EMP_250623.png
+    Ignored:    data/annot_dox.RDS
+    Ignored:    data/annot_list_hm.csv
+    Ignored:    data/cormotif_dxr_1.RDS
+    Ignored:    data/cormotif_dxr_2.RDS
+    Ignored:    data/counts/
+    Ignored:    data/counts_DE_df_dox.RDS
+    Ignored:    data/counts_DE_raw_data.RDS
+    Ignored:    data/counts_raw_filt.RDS
+    Ignored:    data/counts_raw_matrix.RDS
+    Ignored:    data/counts_raw_matrix_EMP_250514.csv
+    Ignored:    data/d24_Spearman_plot.RDS
+    Ignored:    data/dge_calc_dxr.RDS
+    Ignored:    data/dge_calc_matrix.RDS
+    Ignored:    data/ensembl_backup_dox.RDS
+    Ignored:    data/fC_AllCounts.RDS
+    Ignored:    data/fC_DOXCounts.RDS
+    Ignored:    data/featureCounts_Concat_Matrix_DOXSamples_EMP_250430.csv
+    Ignored:    data/featureCounts_DOXdata_updatedind.RDS
+    Ignored:    data/filcpm_colnames_matrix.csv
+    Ignored:    data/filcpm_matrix.csv
+    Ignored:    data/filt_gene_list_dox.RDS
+    Ignored:    data/filter_gene_list_final.RDS
+    Ignored:    data/final_data/
+    Ignored:    data/gene_clustlike_motif.RDS
+    Ignored:    data/gene_postprob_motif.RDS
+    Ignored:    data/genedf_dxr.RDS
+    Ignored:    data/genematrix_dox.RDS
+    Ignored:    data/genematrix_dxr.RDS
+    Ignored:    data/heartgenes.csv
+    Ignored:    data/heartgenes_dox.csv
+    Ignored:    data/image_intensity_stats_all_conditions.csv
+    Ignored:    data/image_level_stats_all_conditions.csv
+    Ignored:    data/image_level_summary_yH2AX_quant.csv
+    Ignored:    data/ind_num_dox.RDS
+    Ignored:    data/ind_num_dxr.RDS
+    Ignored:    data/initial_cormotif.RDS
+    Ignored:    data/initial_cormotif_dox.RDS
+    Ignored:    data/low_nuclei_samples.csv
+    Ignored:    data/low_veh_samples.csv
+    Ignored:    data/new/
+    Ignored:    data/new_cormotif_dox.RDS
+    Ignored:    data/perc_mean_all_10X.png
+    Ignored:    data/perc_mean_all_20X.png
+    Ignored:    data/perc_mean_all_40X.png
+    Ignored:    data/perc_mean_consistent_10X.png
+    Ignored:    data/perc_mean_consistent_20X.png
+    Ignored:    data/perc_mean_consistent_40X.png
+    Ignored:    data/perc_median_all_10X.png
+    Ignored:    data/perc_median_all_20X.png
+    Ignored:    data/perc_median_all_40X.png
+    Ignored:    data/perc_median_consistent_10X.png
+    Ignored:    data/perc_median_consistent_20X.png
+    Ignored:    data/perc_median_consistent_40X.png
+    Ignored:    data/plot_leg_d.RDS
+    Ignored:    data/plot_leg_d_horizontal.RDS
+    Ignored:    data/plot_leg_d_vertical.RDS
+    Ignored:    data/plot_theme_custom.RDS
+    Ignored:    data/process_gene_data_funct.RDS
+    Ignored:    data/raw_mean_all_10X.png
+    Ignored:    data/raw_mean_all_20X.png
+    Ignored:    data/raw_mean_all_40X.png
+    Ignored:    data/raw_mean_consistent_10X.png
+    Ignored:    data/raw_mean_consistent_20X.png
+    Ignored:    data/raw_mean_consistent_40X.png
+    Ignored:    data/raw_median_all_10X.png
+    Ignored:    data/raw_median_all_20X.png
+    Ignored:    data/raw_median_all_40X.png
+    Ignored:    data/raw_median_consistent_10X.png
+    Ignored:    data/raw_median_consistent_20X.png
+    Ignored:    data/raw_median_consistent_40X.png
+    Ignored:    data/ruv/
+    Ignored:    data/summary_all_IF_ROI.RDS
+    Ignored:    data/tableED_GOBP.RDS
+    Ignored:    data/tableESR_GOBP_postprob.RDS
+    Ignored:    data/tableLD_GOBP.RDS
+    Ignored:    data/tableLR_GOBP_postprob.RDS
+    Ignored:    data/tableNR_GOBP.RDS
+    Ignored:    data/tableNR_GOBP_postprob.RDS
+    Ignored:    data/table_incsus_genes_GOBP_RUV.RDS
+    Ignored:    data/table_motif1_GOBP_d.RDS
+    Ignored:    data/table_motif1_genes_GOBP.RDS
+    Ignored:    data/table_motif2_GOBP_d.RDS
+    Ignored:    data/table_motif3_genes_GOBP.RDS
+    Ignored:    data/thing.R
+    Ignored:    data/top.table_V.D144r_dox.RDS
+    Ignored:    data/top.table_V.D24_dox.RDS
+    Ignored:    data/top.table_V.D24r_dox.RDS
+    Ignored:    data/yH2AX_75-1_EMP_250811.csv
+    Ignored:    data/yH2AX_87-1_EMP_250811.csv
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_Quant_10X_EMP_250817.png
+    Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
+    Ignored:    data/yh2ax_all_df_EMP_250812.csv
+
+Untracked files:
+    Untracked:  DXR_website/analysis/RUVs.Rmd
+
+Unstaged changes:
+    Modified:   DXR_website/analysis/QC.Rmd
+    Deleted:    DXR_website/analysis/Supp1.Rmd
+    Modified:   DXR_website/analysis/index.Rmd
+    Modified:   analysis/DXR_Project_Analysis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>DXR_website/analysis/QC.Rmd</code>) and
+HTML (<code>DXR_website/docs/QC.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/da1f69c853f759ba93c7ef927d5a4183661e64dd/DXR_website/analysis/QC.Rmd" target="_blank">da1f69c</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-02
+</td>
+<td>
+updated analysis 12/02/25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+</style>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<p>Load necessary libraries for analysis.</p>
+<pre class="r"><code>library(tidyverse)
+library(readr)
+library(readxl)
+library(edgeR)
+library(ggfortify)
+library(ComplexHeatmap)
+library(ggrepel)</code></pre>
+<p>Define my custom plot theme</p>
+<pre class="r"><code># Define the custom theme
+# plot_theme_custom &lt;- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = &quot;black&quot;),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, &quot;in&quot;),
+# 
+#       #text and font
+#       axis.text = element_text(color = &quot;black&quot;,
+#                                family = &quot;Arial&quot;,
+#                                size = 7),
+#       axis.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 9),
+#       legend.text = element_text(color = &quot;black&quot;,
+#                                  family = &quot;Arial&quot;,
+#                                  size = 7),
+#       legend.title = element_text(color = &quot;black&quot;,
+#                                   family = &quot;Arial&quot;,
+#                                   size = 9),
+#       plot.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = &quot;grey80&quot;, linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = &quot;grey90&quot;, linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
+
+theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
+<p>Define a function to save plots as .pdf and .png</p>
+<pre class="r"><code>save_plot &lt;- function(plot, filename, 
+                      folder = &quot;.&quot;, 
+                      width = 8, 
+                      height = 6, 
+                      units = &quot;in&quot;, 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop(&quot;Please provide a filename (without extension) for the plot.&quot;)
+
+  date_str &lt;- if (add_date) paste0(&quot;_&quot;, format(Sys.Date(), &quot;%y%m%d&quot;)) else &quot;&quot;
+  pdf_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.pdf&quot;))
+  png_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.png&quot;))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = &quot;transparent&quot;)
+  ggsave(filename = png_file, plot = plot, device = &quot;png&quot;, width = width, height = height, units = units, dpi = dpi, bg = &quot;transparent&quot;)
+  message(&quot;Saved plot as Cairo PDF: &quot;, pdf_file)
+  message(&quot;Saved plot as PNG: &quot;, png_file)
+}
+
+output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height</code></pre>
+</div>
+<div id="initial-dataframes" class="section level1">
+<h1>Initial Dataframes</h1>
+<p>Create the initial dataframes from counts files needed to start
+analysis.</p>
+<div id="read-in-counts-files-from-featurecounts"
+class="section level2">
+<h2>Read in Counts Files from FeatureCounts</h2>
+<pre class="r"><code>#load in libraries needed
+#these counts files are from featureCounts, all saved as RDS objects
+
+#prev Ind1 84-1 is now Ind4
+
+# ####Individual 1 - 87-1####
+# Counts_87_DOX_24 &lt;- readRDS(&quot;data/QC/Counts_87_DOX_24.RDS&quot;)
+# Counts_87_DMSO_24 &lt;- readRDS(&quot;data/QC/Counts_87_DMSO_24.RDS&quot;)
+# Counts_87_DOX_24rec &lt;- readRDS(&quot;data/QC/Counts_87_DOX_24rec.RDS&quot;)
+# Counts_87_DMSO_24rec &lt;- readRDS(&quot;data/QC/Counts_87_DMSO_24rec.RDS&quot;)
+# Counts_87_DOX_144rec &lt;- readRDS(&quot;data/QC/Counts_87_DOX_144rec.RDS&quot;)
+# Counts_87_DMSO_144rec &lt;- readRDS(&quot;data/QC/Counts_87_DMSO_144rec.RDS&quot;)
+# 
+# ####Individual 2 - 78-1####
+# Counts_78_DOX_24 &lt;- readRDS(&quot;data/QC/Counts_78_DOX_24.RDS&quot;)
+# Counts_78_DMSO_24 &lt;- readRDS(&quot;data/QC/Counts_78_DMSO_24.RDS&quot;)
+# Counts_78_DOX_24rec &lt;- readRDS(&quot;data/QC/Counts_78_DOX_24rec.RDS&quot;)
+# Counts_78_DMSO_24rec &lt;- readRDS(&quot;data/QC/Counts_78_DMSO_24rec.RDS&quot;)
+# Counts_78_DOX_144rec &lt;- readRDS(&quot;data/QC/Counts_78_DOX_144rec.RDS&quot;)
+# Counts_78_DMSO_144rec &lt;- readRDS(&quot;data/QC/Counts_78_DMSO_144rec.RDS&quot;)
+# 
+# ####Individual 3 - 75-1####
+# Counts_75_DOX_24 &lt;- readRDS(&quot;data/QC/Counts_75_DOX_24.RDS&quot;)
+# Counts_75_DMSO_24 &lt;- readRDS(&quot;data/QC/Counts_75_DMSO_24.RDS&quot;)
+# Counts_75_DOX_24rec &lt;- readRDS(&quot;data/QC/Counts_75_DOX_24rec.RDS&quot;)
+# Counts_75_DMSO_24rec &lt;- readRDS(&quot;data/QC/Counts_75_DMSO_24rec.RDS&quot;)
+# Counts_75_DOX_144rec &lt;- readRDS(&quot;data/QC/Counts_75_DOX_144rec.RDS&quot;)
+# Counts_75_DMSO_144rec &lt;- readRDS(&quot;data/QC/Counts_75_DMSO_144rec.RDS&quot;)
+# 
+# ####Individual 4 - 84-1####
+# Counts_84_DOX_24 &lt;- readRDS(&quot;data/QC/Counts_84_DOX_24.RDS&quot;)
+# Counts_84_DMSO_24 &lt;- readRDS(&quot;data/QC/Counts_84_DMSO_24.RDS&quot;)
+# Counts_84_DOX_24rec &lt;- readRDS(&quot;data/QC/Counts_84_DOX_24rec.RDS&quot;)
+# Counts_84_DMSO_24rec &lt;- readRDS(&quot;data/QC/Counts_84_DMSO_24rec.RDS&quot;)
+# Counts_84_DOX_144rec &lt;- readRDS(&quot;data/QC/Counts_84_DOX_144rec.RDS&quot;)
+# Counts_84_DMSO_144rec &lt;- readRDS(&quot;data/QC/Counts_84_DMSO_144rec.RDS&quot;)
+# 
+# ####Individual 5 - 17-3####
+# Counts_17_DOX_24 &lt;- readRDS(&quot;data/QC/Counts_17_DOX_24.RDS&quot;)
+# Counts_17_DMSO_24 &lt;- readRDS(&quot;data/QC/Counts_17_DMSO_24.RDS&quot;)
+# Counts_17_DOX_24rec &lt;- readRDS(&quot;data/QC/Counts_17_DOX_24rec.RDS&quot;)
+# Counts_17_DMSO_24rec &lt;- readRDS(&quot;data/QC/Counts_17_DMSO_24rec.RDS&quot;)
+# Counts_17_DOX_144rec &lt;- readRDS(&quot;data/QC/Counts_17_DOX_144rec.RDS&quot;)
+# Counts_17_DMSO_144rec &lt;- readRDS(&quot;data/QC/Counts_17_DMSO_144rec.RDS&quot;)
+# 
+# ####Individual 6 - 90-1####
+# Counts_90_DOX_24 &lt;- readRDS(&quot;data/QC/Counts_90_DOX_24.RDS&quot;)
+# Counts_90_DMSO_24 &lt;- readRDS(&quot;data/QC/Counts_90_DMSO_24.RDS&quot;)
+# Counts_90_DOX_24rec &lt;- readRDS(&quot;data/QC/Counts_90_DOX_24rec.RDS&quot;)
+# Counts_90_DMSO_24rec &lt;- readRDS(&quot;data/QC/Counts_90_DMSO_24rec.RDS&quot;)
+# Counts_90_DOX_144rec &lt;- readRDS(&quot;data/QC/Counts_90_DOX_144rec.RDS&quot;)
+# Counts_90_DMSO_144rec &lt;- readRDS(&quot;data/QC/Counts_90_DMSO_144rec.RDS&quot;)
+# 
+# ####Individual 7 - 90-1REP####
+# Counts_90REP_DOX_24 &lt;- readRDS(&quot;data/QC/Counts_90REP_DOX_24.RDS&quot;)
+# Counts_90REP_DMSO_24 &lt;- readRDS(&quot;data/QC/Counts_90REP_DMSO_24.RDS&quot;)
+# Counts_90REP_DOX_24rec &lt;- readRDS(&quot;data/QC/Counts_90REP_DOX_24rec.RDS&quot;)
+# Counts_90REP_DMSO_24rec &lt;- readRDS(&quot;data/QC/Counts_90REP_DMSO_24rec.RDS&quot;)
+# Counts_90REP_DOX_144rec &lt;- readRDS(&quot;data/QC/Counts_90REP_DOX_144rec.RDS&quot;)
+# Counts_90REP_DMSO_144rec &lt;- readRDS(&quot;data/QC/Counts_90REP_DMSO_144rec.RDS&quot;)</code></pre>
+</div>
+<div id="create-my-dataframe-from-counts-files" class="section level2">
+<h2>Create my Dataframe from Counts Files</h2>
+<p>Combine all of my counts files above into one dataframe, then convert
+to a matrix for further analysis.</p>
+<pre class="r"><code>#change 84-1 to Ind4 now
+
+# counts_raw_df &lt;-
+#    data.frame(
+#      Counts_87_DOX_24,
+#      Counts_87_DMSO_24$MCW_EMP_JT_R38_R1.bam,
+#      Counts_87_DOX_24rec$MCW_EMP_JT_R39_R1.bam,
+#      Counts_87_DMSO_24rec$MCW_EMP_JT_R41_R1.bam,
+#      Counts_87_DOX_144rec$MCW_EMP_JT_R42_R1.bam,
+#      Counts_87_DMSO_144rec$MCW_EMP_JT_R44_R1.bam,
+#      Counts_78_DOX_24$MCW_EMP_JT_R45_R1.bam,
+#      Counts_78_DMSO_24$MCW_EMP_JT_R47_R1.bam,
+#      Counts_78_DOX_24rec$MCW_EMP_JT_R48_R1.bam,
+#      Counts_78_DMSO_24rec$MCW_EMP_JT_R50_R1.bam,
+#      Counts_78_DOX_144rec$MCW_EMP_JT_R51_R1.bam,
+#      Counts_78_DMSO_144rec$MCW_EMP_JT_R53_R1.bam,
+#      Counts_75_DOX_24$MCW_EMP_JT_R54_R1.bam,
+#      Counts_75_DMSO_24$MCW_EMP_JT_R56_R1.bam,
+#      Counts_75_DOX_24rec$MCW_EMP_JT_R57_R1.bam,
+#      Counts_75_DMSO_24rec$MCW_EMP_JT_R59_R1.bam,
+#      Counts_75_DOX_144rec$MCW_EMP_JT_R60_R1.bam,
+#      Counts_75_DMSO_144rec$MCW_EMP_JT_R62_R1.bam,
+#      Counts_84_DOX_24$MCW_EMP_JT_R27_R1.bam,
+#      Counts_84_DMSO_24$MCW_EMP_JT_R29_R1.bam,
+#      Counts_84_DOX_24rec$MCW_EMP_JT_R30_R1.bam,
+#      Counts_84_DMSO_24rec$MCW_EMP_JT_R32_R1.bam,
+#      Counts_84_DOX_144rec$MCW_EMP_JT_R33_R1.bam,
+#      Counts_84_DMSO_144rec$MCW_EMP_JT_R35_R1.bam,
+#      Counts_17_DOX_24$MCW_EMP_JT_R63_R1.bam,
+#      Counts_17_DMSO_24$MCW_EMP_JT_R65_R1.bam,
+#      Counts_17_DOX_24rec$MCW_EMP_JT_R66_R1.bam,
+#      Counts_17_DMSO_24rec$MCW_EMP_JT_R68_R1.bam,
+#      Counts_17_DOX_144rec$MCW_EMP_JT_R69_R1.bam,
+#      Counts_17_DMSO_144rec$MCW_EMP_JT_R71_R1.bam,
+#      Counts_90_DOX_24$MCW_EMP_JT_R72_R1.bam,
+#      Counts_90_DMSO_24$MCW_EMP_JT_R74_R1.bam,
+#      Counts_90_DOX_24rec$MCW_EMP_JT_R75_R1.bam,
+#      Counts_90_DMSO_24rec$MCW_EMP_JT_R77_R1.bam,
+#      Counts_90_DOX_144rec$MCW_EMP_JT_R78_R1.bam,
+#      Counts_90_DMSO_144rec$MCW_EMP_JT_R80_R1.bam,
+#      Counts_90REP_DOX_24$MCW_EMP_JT_R81_R1.bam,
+#      Counts_90REP_DMSO_24$MCW_EMP_JT_R83_R1.bam,
+#      Counts_90REP_DOX_24rec$MCW_EMP_JT_R84_R1.bam,
+#      Counts_90REP_DMSO_24rec$MCW_EMP_JT_R86_R1.bam,
+#      Counts_90REP_DOX_144rec$MCW_EMP_JT_R87_R1.bam,
+#      Counts_90REP_DMSO_144rec$MCW_EMP_JT_R89_R1.bam
+#    )
+
+# saveRDS(counts_raw_df, &quot;data/QC/counts_raw_df.RDS&quot;)
+
+#now convert this into a matrix
+# counts_raw_matrix &lt;- counts_raw_df %&gt;% column_to_rownames(var = &quot;X&quot;) %&gt;% as.matrix()
+
+#write this to a csv so I can save it for later
+# write.csv(counts_raw_matrix, &quot;data/QC/counts_raw_matrix.csv&quot;)
+
+#I also want to save this as an R object so I don&#39;t have to run the counts every time
+# saveRDS(counts_raw_matrix, &quot;data/QC/counts_raw_matrix.RDS&quot;)
+
+counts_raw_matrix &lt;- readRDS(&quot;data/QC/counts_raw_matrix.RDS&quot;)
+
+dim(counts_raw_matrix)</code></pre>
+<pre><code>[1] 28395    42</code></pre>
+<pre class="r"><code>#28395 is my initial amount of genes prior to filtering</code></pre>
+</div>
+<div id="factors-and-colors" class="section level2">
+<h2>Factors and Colors</h2>
+<p>Include each of the factors for these experiments as well as their
+color schemes.</p>
+<pre class="r"><code>####Colors####
+
+# txtime_col_old &lt;- list(
+#   &quot;DOX_24T&quot; = &quot;#263CA5&quot;,
+#   &quot;VEH_24T&quot; = &quot;#444343&quot;,
+#   &quot;DOX_24R&quot; = &quot;#5B8FD1&quot;,
+#   &quot;VEH_24R&quot; = &quot;#757575&quot;,
+#   &quot;DOX_144R&quot; = &quot;#89C5E5&quot;,
+#   &quot;VEH_144R&quot; = &quot;#AAAAAA&quot;
+# )
+
+#updated colors and factors:
+ind_col &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;,
+  &quot;6R&quot; = &quot;#C61E4E&quot;
+)
+
+ind_col_nr &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;
+)
+
+time_col &lt;- list(
+  &quot;t0&quot; = &quot;#005A4C&quot;,
+  &quot;t24&quot; = &quot;#328477&quot;,
+  &quot;t144&quot; = &quot;#8FB9B1&quot;)
+
+tx_col &lt;- list(
+  &quot;DOX&quot; = &quot;#499FBD&quot;, 
+  &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+
+txtime_col &lt;- list(
+  &quot;DOX_t0&quot; = &quot;#263CA5&quot;,
+  &quot;VEH_t0&quot; = &quot;#444343&quot;,
+  &quot;DOX_t24&quot; = &quot;#5B8FD1&quot;,
+  &quot;VEH_t24&quot; = &quot;#757575&quot;,
+  &quot;DOX_t144&quot; = &quot;#89C5E5&quot;,
+  &quot;VEH_t144&quot; = &quot;#AAAAAA&quot;
+)</code></pre>
+</div>
+</div>
+<div id="qc-mapping-plots" class="section level1">
+<h1>QC Mapping Plots</h1>
+<p>Assess the alignment of each sample to hg38 as performed in command
+line previously.</p>
+<div id="set-up-initial-dataframe" class="section level2">
+<h2>Set up initial dataframe</h2>
+<pre class="r"><code>#this dataframe contains my alignment percentages from featureCounts
+
+#I originally had fC_DOXCounts which contained the individuals prior to their final order - here is the code that I used to change it
+
+#I want to change these to reflect the final order of samples
+# fC_DOXCounts &lt;- fC_DOXCounts %&gt;%
+#   mutate(
+#     Ind = case_when(
+#       Line == &quot;87-1&quot; ~ &quot;1&quot;,
+#       Line == &quot;78-1&quot; ~ &quot;2&quot;,
+#       Line == &quot;75-1&quot; ~ &quot;3&quot;,
+#       Line == &quot;84-1&quot; ~ &quot;4&quot;,
+#       Line == &quot;17-3&quot; ~ &quot;5&quot;,
+#       Line == &quot;90-1&quot; ~ &quot;6&quot;,
+#       Line == &quot;90-1REP&quot; ~ &quot;6R&quot;,
+#       TRUE ~ NA_character_
+#     ),
+#   Tx = ifelse(Treatment == &quot;DMSO&quot;, &quot;VEH&quot;, &quot;DOX&quot;),
+#   Timepoint = case_when(
+#     Time == &quot;24&quot; ~ &quot;t0&quot;,
+#     Time == &quot;24rec&quot; ~ &quot;t24&quot;,
+#     Time == &quot;144rec&quot; ~ &quot;t144&quot;,
+#     TRUE ~ NA_character_
+#                      ),
+#     Condition = paste0(Tx, &quot;_&quot;, Timepoint, &quot;_&quot;, Ind)
+#   )
+# 
+# #factor individual
+# fC_DOXCounts &lt;- fC_DOXCounts %&gt;%
+#   mutate(
+#     Ind = factor(Ind, levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;6R&quot;),
+#                  ordered = TRUE)
+#   )
+# 
+# 
+# fC_DOXCounts &lt;- fC_DOXCounts %&gt;%
+#   mutate(
+#     Ind = factor(Ind, levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;6R&quot;),
+#                  ordered = TRUE),
+#         Timepoint = factor(Timepoint, levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;),
+#                        ordered = TRUE),
+#         Tx = factor(Tx, levels = c(&quot;DOX&quot;, &quot;VEH&quot;),
+#                     ordered = TRUE)
+#   ) %&gt;%
+#   mutate(
+#     Condition = factor(
+#       Condition,
+#       levels = expand.grid(
+#         Tx = levels(Tx),
+#         Timepoint = levels(Timepoint),
+#         Ind = levels(Ind)
+#       ) %&gt;%
+#         transmute(Condition = paste(Tx, Timepoint, Ind, sep = &quot;_&quot;)) %&gt;%
+#         pull(Condition),
+#       ordered = TRUE
+#     )
+#   )
+
+# saveRDS(fC_DOXCounts, &quot;data/QC/featureCounts_DOXdata_updatedind.RDS&quot;)
+
+
+fC_DOXCounts &lt;- readRDS(&quot;data/QC/featureCounts_DOXdata_updatedind.RDS&quot;)
+
+#Now I want to plot these values out</code></pre>
+</div>
+<div id="total-fragments-plots" class="section level2">
+<h2>Total Fragments Plots</h2>
+<p>Assess the total number of fragments for each sample (paired-end
+reads)</p>
+<pre class="r"><code>####By Sample####
+reads_by_sample &lt;- c(&quot;DOX&quot; = &quot;#499FBD&quot;, &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+
+fC_DOXCounts %&gt;% 
+  ggplot(., aes (x = Condition, 
+                 y = Total_Align, 
+                 fill = Tx, 
+                 group_by = Ind))+
+  geom_col()+
+  geom_hline(aes(yintercept = 20000000))+
+  scale_fill_manual(values = reads_by_sample)+
+  ggtitle(expression(&quot;Total fragments by sample&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_custom()+
+  theme(plot.title = element_text(size = rel(2), hjust = 0.5),
+        axis.title = element_text(size = 15, color = &quot;black&quot;),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.text.y = element_text(size =10, color = &quot;black&quot;, angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(size =10, color = &quot;black&quot;, angle = 90, hjust = 1, vjust = 0.2),
+        strip.text.y = element_text(color = &quot;white&quot;))</code></pre>
+<pre><code>Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family
+not found in Windows font database
+Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family
+not found in Windows font database
+Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family
+not found in Windows font database
+Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family
+not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family
+not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>####By Treatment####
+fC_DOXCounts %&gt;% 
+  ggplot(., aes (x = Tx, y= Total_Align, fill = Tx))+
+  geom_boxplot()+
+ scale_fill_manual(values=reads_by_sample)+
+  ggtitle(expression(&quot;Total fragments by treatment&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_bw()+
+  
+  theme(plot.title = element_text(size = rel(2), hjust = 0.5),
+        axis.title = element_text(size = 15, color = &quot;black&quot;),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.text.y = element_text(size =10, color = &quot;black&quot;, angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(size =10, color = &quot;black&quot;, angle = 90, hjust = 1, vjust = 0.2),
+        #strip.text.x = element_text(size = 15, color = &quot;black&quot;, face = &quot;bold&quot;),
+        strip.text.y = element_text(color = &quot;white&quot;))</code></pre>
+<p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>####By Individual####
+fC_DOXCounts %&gt;% 
+  ggplot(., aes (x =as.factor(Ind), y=Total_Align))+
+  geom_boxplot(aes(fill=as.factor(Ind)))+
+ scale_fill_brewer(palette = &quot;Dark2&quot;, name = &quot;Individual&quot;)+
+  ggtitle(expression(&quot;Total fragments by individual&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_bw()+
+
+  theme(plot.title = element_text(size = rel(2), hjust = 0.5),
+        axis.title = element_text(size = 15, color = &quot;black&quot;),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.text.y = element_text(size =10, color = &quot;black&quot;, angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(size =10, color = &quot;black&quot;, angle = 0, hjust = 1),
+        #strip.text.x = element_text(size = 15, color = &quot;black&quot;, face = &quot;bold&quot;),
+        strip.text.y = element_text(color = &quot;white&quot;))</code></pre>
+<p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>####By Timepoint####
+reads_by_time &lt;- c(&quot;t0&quot; = &quot;#005A4C&quot;,
+                 &quot;t24&quot; = &quot;#328477&quot;,
+                 &quot;t144&quot; = &quot;#8FB9B1&quot;)
+
+fC_DOXCounts$Time &lt;- factor(fC_DOXCounts$Time, 
+                            levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;))
+
+total_by_time &lt;- fC_DOXCounts %&gt;% 
+  ggplot(., aes (x = Condition, y = Total_Align, 
+                 fill = Timepoint, group_by = Ind))+
+  geom_col()+
+ geom_hline(aes(yintercept=20000000))+
+ scale_fill_manual(values=reads_by_time)+
+  ggtitle(expression(&quot;Total fragments by timepoint&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_custom()+
+  theme(
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.text.y = element_text(angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
+        strip.text.y = element_text(color = &quot;white&quot;))
+
+
+####By Individual####
+fC_DOXCounts %&gt;% 
+  ggplot(., aes (x =as.factor(Ind), y=Total_Align))+
+  geom_boxplot(aes(fill=as.factor(Ind)))+
+ scale_fill_brewer(palette = &quot;Dark2&quot;, name = &quot;Individual&quot;)+
+  ggtitle(expression(&quot;Total number of mapped reads by individual&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_bw()+
+
+  theme(plot.title = element_text(size = rel(2), hjust = 0.5),
+        axis.title = element_text(size = 15, color = &quot;black&quot;),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.text.y = element_text(size =10, color = &quot;black&quot;, angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(size =10, color = &quot;black&quot;, angle = 0, hjust = 1),
+        #strip.text.x = element_text(size = 15, color = &quot;black&quot;, face = &quot;bold&quot;),
+        strip.text.y = element_text(color = &quot;white&quot;))</code></pre>
+<p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-4.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="mapped-fragments" class="section level1">
+<h1>Mapped Fragments</h1>
+<p>Assess the number of fragments that were mapped.</p>
+<div id="supplementary-figure-1a-mapped-fragments-by-sample"
+class="section level2">
+<h2>Supplementary Figure 1A: Mapped fragments by sample</h2>
+<pre class="r"><code>reads_by_sample &lt;- c(&quot;DOX&quot; = &quot;#5B8FD1&quot;, &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+map_sample_plot &lt;- fC_DOXCounts %&gt;% 
+  ggplot(., aes (x = Condition, y = Assigned_Align, fill = Tx,
+                 group_by = Ind))+
+  geom_col()+
+ geom_hline(aes(yintercept=20000000))+
+ scale_fill_manual(values=reads_by_sample)+
+  ggtitle(expression(&quot;Mapped fragments by sample&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_custom()+
+  theme(
+        axis.text.y = element_text(angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
+        strip.text.y = element_text(color = &quot;white&quot;))
+
+# save_plot(
+#   plot = map_sample_plot,
+#   filename = &quot;MappedReads_Sample_Supp1A_EMP_&quot;,
+#   folder = output_folder,
+#   height = 5,
+#   width = 8
+# )</code></pre>
+</div>
+<div id="supplementary-figure-1b-mapped-fragments-by-treatment"
+class="section level2">
+<h2>Supplementary Figure 1B: Mapped Fragments by Treatment</h2>
+<pre class="r"><code>map_tx_bp &lt;- fC_DOXCounts %&gt;% 
+  ggplot(., aes (x =Tx, y= Assigned_Align, fill = Tx))+
+  geom_boxplot()+
+ scale_fill_manual(values=reads_by_sample)+
+  ggtitle(expression(&quot;Mapped fragments by treatment&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_custom()+
+  theme(axis.text.y = element_text(angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
+        strip.text.y = element_text(color = &quot;white&quot;))
+
+# save_plot(plot = map_tx_bp,
+#           filename = &quot;MappedReads_Treatment_Supp1B_EMP_&quot;,
+#           folder = output_folder)</code></pre>
+</div>
+<div id="supplementary-figure-1c-mapped-fragments-by-timepoint"
+class="section level2">
+<h2>Supplementary Figure 1C: Mapped Fragments by Timepoint</h2>
+<pre class="r"><code>reads_by_time &lt;- c(&quot;t0&quot; = &quot;#005A4C&quot;,
+                 &quot;t24&quot; = &quot;#328477&quot;,
+                 &quot;t144&quot; = &quot;#8FB9B1&quot;)
+
+
+map_time_box &lt;- fC_DOXCounts %&gt;% 
+  ggplot(., aes (x = Timepoint, y= Assigned_Align, fill = Timepoint))+
+  geom_boxplot()+
+ scale_fill_manual(values=reads_by_time)+
+  ggtitle(expression(&quot;Mapped fragments by timepoint&quot;))+
+  xlab(&quot;&quot;)+
+  ylab(expression(&quot;RNA-sequencing reads&quot;))+
+  theme_custom()+
+  theme(axis.ticks = element_line(linewidth = 1),
+        axis.text.y = element_text(angle = 0, hjust = 0.8, vjust = 0.5),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
+        strip.text.y = element_text(color = &quot;white&quot;))
+
+# save_plot(plot = map_time_box,
+          # filename = &quot;MappedReads_Boxplot_Supp1C_EMP_&quot;,
+          # folder = output_folder)</code></pre>
+</div>
+</div>
+<div id="filter-dataframe" class="section level1">
+<h1>Filter Dataframe</h1>
+<p>Filter my dataframe by converting to log2cpm and filtering out lowly
+expressed genes.</p>
+<pre class="r"><code>#transform counts to cpm as a first step
+counts_cpm_unfilt &lt;- cpm(counts_raw_matrix, log = TRUE)
+dim(counts_cpm_unfilt)</code></pre>
+<pre><code>[1] 28395    42</code></pre>
+<pre class="r"><code>#I should have 28395 genes here since this is unfiltered
+
+hist(counts_cpm_unfilt,  
+     main = &quot;Histogram of Unfiltered Counts&quot;, 
+     xlab = expression(&quot;Log&quot;[2]*&quot; counts-per-million&quot;), 
+     col = 4)</code></pre>
+<p><img src="figure/QC.Rmd/Dataframe%20Filtering-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>###filter my data by rowMeans &gt; 0 to exclude lowly expressed genes
+
+filcpm_matrix &lt;- subset(counts_cpm_unfilt, (rowMeans(counts_cpm_unfilt) &gt; 0))
+dim(filcpm_matrix)</code></pre>
+<pre><code>[1] 14319    42</code></pre>
+<pre class="r"><code>#I should have 14319 genes here
+
+#now let&#39;s make a histogram of this to check the difference
+hist(filcpm_matrix,  
+     main = &quot;Histogram of Filtered Counts by rowMeans &gt; 0&quot;, 
+     xlab = expression(&quot;Log&quot;[2]*&quot; counts-per-million&quot;), 
+     col = 2)</code></pre>
+<p><img src="figure/QC.Rmd/Dataframe%20Filtering-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#change the column names to match my samples - make sure that they are in the right order
+#Individual 1 = 87-1 (F)
+#Individual 2 = 78-1 (F)
+#Individual 3 = 75-1 (F)
+#Individual 4 = 84-1 (M)
+#Individual 5 = 17-3 (M)
+#Individual 6 = 90-1 (M)
+#Individual 6REP = 90-1REP (M)
+
+#Treatment/time should follow this order:
+#DOX24tx
+#DMSO24tx
+#DOX24rec
+#DMSO24rec
+#DOX144rec
+#DMSO144rec
+
+# colnames(filcpm_matrix) &lt;- c(&quot;DOX_24T_Ind1&quot;,
+#                                 &quot;DMSO_24T_Ind1&quot;,
+#                                 &quot;DOX_24R_Ind1&quot;,
+#                                 &quot;DMSO_24R_Ind1&quot;,
+#                                 &quot;DOX_144R_Ind1&quot;,
+#                                 &quot;DMSO_144R_Ind1&quot;,
+#                                 &quot;DOX_24T_Ind2&quot;,
+#                                 &quot;DMSO_24T_Ind2&quot;,
+#                                 &quot;DOX_24R_Ind2&quot;,
+#                                 &quot;DMSO_24R_Ind2&quot;,
+#                                 &quot;DOX_144R_Ind2&quot;,
+#                                 &quot;DMSO_144R_Ind2&quot;,
+#                                 &quot;DOX_24T_Ind3&quot;,
+#                                 &quot;DMSO_24T_Ind3&quot;,
+#                                 &quot;DOX_24R_Ind3&quot;,
+#                                 &quot;DMSO_24R_Ind3&quot;,
+#                                 &quot;DOX_144R_Ind3&quot;,
+#                                 &quot;DMSO_144R_Ind3&quot;,
+#                                 &quot;DOX_24T_Ind4&quot;,
+#                                 &quot;DMSO_24T_Ind4&quot;,
+#                                 &quot;DOX_24R_Ind4&quot;,
+#                                 &quot;DMSO_24R_Ind4&quot;,
+#                                 &quot;DOX_144R_Ind4&quot;,
+#                                 &quot;DMSO_144R_Ind4&quot;,
+#                                 &quot;DOX_24T_Ind5&quot;,
+#                                 &quot;DMSO_24T_Ind5&quot;,
+#                                 &quot;DOX_24R_Ind5&quot;,
+#                                 &quot;DMSO_24R_Ind5&quot;,
+#                                 &quot;DOX_144R_Ind5&quot;,
+#                                 &quot;DMSO_144R_Ind5&quot;,
+#                                 &quot;DOX_24T_Ind6&quot;,
+#                                 &quot;DMSO_24T_Ind6&quot;,
+#                                 &quot;DOX_24R_Ind6&quot;,
+#                                 &quot;DMSO_24R_Ind6&quot;,
+#                                 &quot;DOX_144R_Ind6&quot;,
+#                                 &quot;DMSO_144R_Ind6&quot;,
+#                                 &quot;DOX_24T_Ind6REP&quot;,
+#                                 &quot;DMSO_24T_Ind6REP&quot;,
+#                                 &quot;DOX_24R_Ind6REP&quot;,
+#                                 &quot;DMSO_24R_Ind6REP&quot;,
+#                                 &quot;DOX_144R_Ind6REP&quot;,
+#                                 &quot;DMSO_144R_Ind6REP&quot;)
+
+#export this as a csv
+# write.csv(filcpm_matrix, &quot;data/QC/filcpm_final_matrix.csv&quot;)
+
+# saveRDS(filcpm_matrix, &quot;data/QC/filcpm_final_matrix_newind.RDS&quot;)
+filcpm_matrix &lt;- readRDS(&quot;data/QC/filcpm_final_matrix_newind.RDS&quot;)</code></pre>
+<div id="boxplots-of-filtered-data" class="section level2">
+<h2>Boxplots of Filtered Data</h2>
+<pre class="r"><code>#make boxplots of all counts vs log2cpm filtered counts
+
+#set the margins so the x axis isn&#39;t cut off
+##I don&#39;t mind if this one is partially cut off since all you need is the library number and not the whole name
+par(mar = c(8,4,2,2))
+#boxplot of unfiltered cpm matrix
+boxplot(counts_cpm_unfilt, 
+        main = &quot;Boxplots of Unfiltered log2cpm&quot;, 
+        names = colnames(counts_cpm_unfilt), 
+        adj=1, las = 2, cex.axis = 0.7)</code></pre>
+<p><img src="figure/QC.Rmd/QC%20Filtering%20Boxplots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#set the margins so the x axis isn&#39;t cut off
+par(mar = c(8,4,2,2))
+#boxplot of filtered cpm matrix
+boxplot(filcpm_matrix, 
+        main = &quot;Boxplots of Filtered log2cpm (rowMeans &gt; 0)&quot;, 
+        names = colnames(filcpm_matrix), 
+        adj=1, las = 2, cex.axis = 0.7)</code></pre>
+<p><img src="figure/QC.Rmd/QC%20Filtering%20Boxplots-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="add-hgnc-symbol-to-final-dataframe" class="section level2">
+<h2>Add HGNC SYMBOL to final dataframe</h2>
+<pre class="r"><code>##I did this earlier so don&#39;t run again, I put the list into the filcpm_final_matrix.csv (also already changed 84-1 to 4)
+
+#load in my data
+# sample_data &lt;- read.csv(&quot;data/new/filcpm_final_matrix.csv&quot;)
+#ensure Entrez_ID is present and in character Format 
+# Check column names
+# print(colnames(sample_data))
+# # Rename if needed (adjust if the column name is not exactly &#39;Entrez_ID&#39;)
+# sample_data &lt;- sample_data %&gt;% dplyr::rename(Entrez_ID = &quot;X&quot;)
+# # Convert Entrez_ID to character
+# sample_data &lt;- sample_data %&gt;%
+#   mutate(Entrez_ID = as.character(Entrez_ID))
+# ----------------- Map Entrez_ID to Gene Symbol -----------------
+# gene_symbols &lt;- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = sample_data$Entrez_ID,
+#   columns = c(&quot;SYMBOL&quot;),
+#   keytype = &quot;ENTREZID&quot;
+# )
+# ----------------- Join Back to Main Data -----------------
+# sample_annotated &lt;- left_join(sample_data, gene_symbols, by = c(&quot;Entrez_ID&quot; = &quot;ENTREZID&quot;))
+# ----------------- Save Annotated Output -----------------
+# write_csv(sample_annotated, &quot;data/Sample_annotated.csv&quot;)
+
+#Since I ran this before, Sample_annotated.csv columns of EntrezID and Symbol have been copied into my final matrix boxplot1 - so disregard this file except for record-keeping
+
+# saveRDS(boxplot1, &quot;data/QC/filcpm_matrix_genes.RDS&quot;)</code></pre>
+</div>
+</div>
+<div id="check-response-genes-log2cpm" class="section level1">
+<h1>Check Response Genes log2cpm</h1>
+<pre class="r"><code>#get object from above that is now boxplot1
+boxplot1 &lt;- readRDS(&quot;data/QC/filcpm_matrix_genes.RDS&quot;)
+
+#Define gene list(s)
+initial_test_genes &lt;- c(&quot;CDKN1A&quot;, &quot;MDM2&quot;, &quot;BAX&quot;, &quot;RARG&quot;, &quot;TP53&quot;, &quot;TOP2B&quot;)  
+#Add more gene symbols as needed or add more categories
+
+#Now put in the function I want to use to generate boxplots of genes
+process_gene_data &lt;- function(gene) {
+  gene_data &lt;- boxplot1 %&gt;% filter(SYMBOL == gene)
+  long_data &lt;- gene_data %&gt;%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = &quot;Sample&quot;, values_to = &quot;log2CPM&quot;) %&gt;%
+    mutate(
+      Drug = case_when(
+        grepl(&quot;DOX&quot;, Sample) ~ &quot;DOX&quot;,
+        grepl(&quot;DMSO&quot;, Sample) ~ &quot;VEH&quot;,
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl(&quot;_24T_&quot;, Sample) ~ &quot;t0&quot;,
+        grepl(&quot;_24R_&quot;, Sample) ~ &quot;t24&quot;,
+        grepl(&quot;_144R_&quot;, Sample) ~ &quot;t144&quot;,
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl(&quot;Ind1$&quot;, Sample) ~ &quot;1&quot;,
+        grepl(&quot;Ind2$&quot;, Sample) ~ &quot;2&quot;,
+        grepl(&quot;Ind3$&quot;, Sample) ~ &quot;3&quot;,
+        grepl(&quot;Ind4$&quot;, Sample) ~ &quot;4&quot;,
+        grepl(&quot;Ind5$&quot;, Sample) ~ &quot;5&quot;,
+        grepl(&quot;Ind6$&quot;, Sample) ~ &quot;6&quot;,
+        grepl(&quot;Ind6REP$&quot;, Sample) ~ &quot;6R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = &quot;_&quot;)
+    )
+  long_data$Condition &lt;- factor(
+    long_data$Condition,
+    levels = c(
+      &quot;DOX_t0&quot;, 
+      &quot;VEH_t0&quot;, 
+      &quot;DOX_t24&quot;, 
+      &quot;VEH_t24&quot;, 
+      &quot;DOX_t144&quot;, 
+      &quot;VEH_t144&quot;
+    )
+  )
+  return(long_data)
+}
+
+#this function is saved under process_gene_data so I will save as an R object
+
+# saveRDS(process_gene_data, &quot;data/funct/process_gene_data_funct.RDS&quot;)
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in initial_test_genes) {
+  gene_data &lt;- process_gene_data(gene)
+  gene_plots &lt;- ggplot(gene_data, aes(x = Condition, y = log2CPM, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.7, position = position_identity()) +
+    scale_fill_manual(values = c(&quot;DOX&quot; = &quot;#499FBD&quot;, &quot;DMSO&quot; = &quot;#BBBBBC&quot;)) +
+    scale_color_manual(values = ind_col) +
+    ggtitle(paste(&quot;Log2CPM Expression of&quot;, gene)) +
+    labs(x = &quot;Treatment&quot;, y = &quot;log2CPM&quot;) +
+    theme_custom() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = &quot;black&quot;),
+      axis.text.x = element_text(size = 10, color = &quot;black&quot;, angle = 90, hjust = 1)
+    )
+  print(gene_plots)
+}</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database
+Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
+family not found in Windows font database</code></pre>
+<pre><code>Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database
+Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
+font family not found in Windows font database</code></pre>
+<p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-6.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22000)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] ggrepel_0.9.6         ComplexHeatmap_2.22.0 ggfortify_0.4.17     
+ [4] edgeR_4.4.0           limma_3.62.1          readxl_1.4.5         
+ [7] lubridate_1.9.4       forcats_1.0.0         stringr_1.5.1        
+[10] dplyr_1.1.4           purrr_1.0.4           readr_2.1.5          
+[13] tidyr_1.3.1           tibble_3.2.1          ggplot2_3.5.2        
+[16] tidyverse_2.0.0       workflowr_1.7.1      
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1    farver_2.1.2        fastmap_1.2.0      
+ [4] promises_1.3.2      digest_0.6.37       timechange_0.3.0   
+ [7] lifecycle_1.0.4     cluster_2.1.6       statmod_1.5.0      
+[10] processx_3.8.6      magrittr_2.0.3      compiler_4.4.2     
+[13] rlang_1.1.6         sass_0.4.10         tools_4.4.2        
+[16] yaml_2.3.10         knitr_1.50          labeling_0.4.3     
+[19] RColorBrewer_1.1-3  withr_3.0.2         BiocGenerics_0.52.0
+[22] stats4_4.4.2        git2r_0.36.2        colorspace_2.1-1   
+[25] scales_1.4.0        iterators_1.0.14    cli_3.6.3          
+[28] rmarkdown_2.29      crayon_1.5.3        generics_0.1.4     
+[31] rstudioapi_0.17.1   httr_1.4.7          tzdb_0.5.0         
+[34] rjson_0.2.23        cachem_1.1.0        parallel_4.4.2     
+[37] cellranger_1.1.0    matrixStats_1.5.0   vctrs_0.6.5        
+[40] jsonlite_2.0.0      callr_3.7.6         IRanges_2.40.0     
+[43] hms_1.1.3           GetoptLong_1.0.5    S4Vectors_0.44.0   
+[46] clue_0.3-66         locfit_1.5-9.12     foreach_1.5.2      
+[49] jquerylib_0.1.4     glue_1.8.0          codetools_0.2-20   
+[52] ps_1.9.1            stringi_1.8.7       gtable_0.3.6       
+[55] shape_1.4.6.1       later_1.4.2         pillar_1.10.2      
+[58] htmltools_0.5.8.1   circlize_0.4.16     R6_2.6.1           
+[61] doParallel_1.0.17   rprojroot_2.0.4     evaluate_1.0.3     
+[64] lattice_0.22-6      png_0.1-8           httpuv_1.6.16      
+[67] bslib_0.9.0         Rcpp_1.0.14         gridExtra_2.3      
+[70] whisker_0.4.1       xfun_0.52           fs_1.6.6           
+[73] getPass_0.2-4       pkgconfig_2.0.3     GlobalOptions_0.1.2</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

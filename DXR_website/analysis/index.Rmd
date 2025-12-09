@@ -10,26 +10,19 @@ editor_options:
 
 # Welcome
 
-This website contains the analysis behind each figure. Click below to view my code for pieces of each figure.
+This website contains the analysis leading up to and behind each figure. Click below to view my code and see my workflow.
 
-## Main Figures
+## Flow Cytometry, Dose-response, yH2AX IF
 
 - [Figure 1](Figure1.html)
-- [Figure 2]
-- [Figure 3]
-- [Figure 4]
-- [Figure 5]
-- [Figure 6]
-- [Figure 7]
 
-## Supplementary Figures
+## RNA-seq Analysis Workflow
 
-- [Supp Figure 1]
-- [Supp Figure 2]
-- [Supp Figure 3]
-- [Supp Figure 4]
-- [Supp Figure 5]
-- [Supp Figure 6]
-- [Supp Figure 7]
-- [Supp Figure 8]
-- [Supp Figure 9]
+- [Quality Control: Fig S1](QC.html)
+- [RUVs Correction: Figs S2, S3](RUVs.html)
+- [Differential Expression (RUVs Corrected): Figs 2, S4](Figure2.html)
+- [Cormotif Analysis: Figs S5, 3, S6](Figure3.html)
+- [TOP2i Comparisons: Figs S7, 4](Figure4.html)
+- [DOX-induced Cardiotoxicity (DIC) Genes: Figs 5, S8](Figure5.html)
+- [Characterize Chronic Response: Fig 6](Figure6.html)
+- [DIC Genes in Chronic Response: Fig 7](Figure7.html)
