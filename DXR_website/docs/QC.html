@@ -364,7 +364,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -375,8 +375,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -389,9 +389,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>DXR_website/</code> <span
@@ -414,21 +414,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -519,15 +516,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree70e5e86228f273de6c19c3dba25b1a3ed2ba9990targetblank70e5e86a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee05f0cc44784f852eddd06c60dd1e65328242899targetblanke05f0cca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/emmapfort/DXR_Project/tree/70e5e86228f273de6c19c3dba25b1a3ed2ba9990" target="_blank">70e5e86</a>
+<a href="https://github.com/emmapfort/DXR_Project/tree/e05f0cc44784f852eddd06c60dd1e65328242899" target="_blank">e05f0cc</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree70e5e86228f273de6c19c3dba25b1a3ed2ba9990targetblank70e5e86a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee05f0cc44784f852eddd06c60dd1e65328242899targetblanke05f0cca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -537,7 +534,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/emmapfort/DXR_Project/tree/70e5e86228f273de6c19c3dba25b1a3ed2ba9990" target="_blank">70e5e86</a>.
+<a href="https://github.com/emmapfort/DXR_Project/tree/e05f0cc44784f852eddd06c60dd1e65328242899" target="_blank">e05f0cc</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -554,7 +551,6 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    DXR_website/analysis/figure/
     Ignored:    DXR_website/data/
     Ignored:    code/Flow_Purity_Stressor_Boxplots_EMP_250226.R
     Ignored:    data/CDKN1A_geneplot_Dox.RDS
@@ -685,15 +681,6 @@ Ignored files:
     Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
     Ignored:    data/yh2ax_all_df_EMP_250812.csv
 
-Untracked files:
-    Untracked:  DXR_website/analysis/RUVs.Rmd
-
-Unstaged changes:
-    Modified:   DXR_website/analysis/QC.Rmd
-    Deleted:    DXR_website/analysis/Supp1.Rmd
-    Modified:   DXR_website/analysis/index.Rmd
-    Modified:   analysis/DXR_Project_Analysis.Rmd
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -737,6 +724,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/analysis/QC.Rmd" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/QC.html" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1337,6 +1358,44 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-Mapping-Plots-Total-Fragments-1">
+Past versions of "QC Mapping Plots Total Fragments-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-QC-Mapping-Plots-Total-Fragments-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/QC Mapping Plots Total Fragments-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####By Treatment####
 fC_DOXCounts %&gt;% 
   ggplot(., aes (x = Tx, y= Total_Align, fill = Tx))+
@@ -1355,6 +1414,44 @@ fC_DOXCounts %&gt;%
         #strip.text.x = element_text(size = 15, color = &quot;black&quot;, face = &quot;bold&quot;),
         strip.text.y = element_text(color = &quot;white&quot;))</code></pre>
 <p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-Mapping-Plots-Total-Fragments-2">
+Past versions of "QC Mapping Plots Total Fragments-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-QC-Mapping-Plots-Total-Fragments-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/QC Mapping Plots Total Fragments-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####By Individual####
 fC_DOXCounts %&gt;% 
   ggplot(., aes (x =as.factor(Ind), y=Total_Align))+
@@ -1373,6 +1470,44 @@ fC_DOXCounts %&gt;%
         #strip.text.x = element_text(size = 15, color = &quot;black&quot;, face = &quot;bold&quot;),
         strip.text.y = element_text(color = &quot;white&quot;))</code></pre>
 <p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-Mapping-Plots-Total-Fragments-3">
+Past versions of "QC Mapping Plots Total Fragments-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-QC-Mapping-Plots-Total-Fragments-3"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/QC Mapping Plots Total Fragments-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####By Timepoint####
 reads_by_time &lt;- c(&quot;t0&quot; = &quot;#005A4C&quot;,
                  &quot;t24&quot; = &quot;#328477&quot;,
@@ -1416,6 +1551,44 @@ fC_DOXCounts %&gt;%
         #strip.text.x = element_text(size = 15, color = &quot;black&quot;, face = &quot;bold&quot;),
         strip.text.y = element_text(color = &quot;white&quot;))</code></pre>
 <p><img src="figure/QC.Rmd/QC%20Mapping%20Plots%20Total%20Fragments-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-Mapping-Plots-Total-Fragments-4">
+Past versions of "QC Mapping Plots Total Fragments-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-QC-Mapping-Plots-Total-Fragments-4"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/QC Mapping Plots Total Fragments-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="mapped-fragments" class="section level1">
@@ -1501,13 +1674,51 @@ expressed genes.</p>
 counts_cpm_unfilt &lt;- cpm(counts_raw_matrix, log = TRUE)
 dim(counts_cpm_unfilt)</code></pre>
 <pre><code>[1] 28395    42</code></pre>
-<pre class="r"><code>#I should have 28395 genes here since this is unfiltered
+<pre class="r"><code># saveRDS(counts_cpm_unfilt, &quot;data/QC/counts_cpm_unfilt.RDS&quot;)
+#I should have 28395 genes here since this is unfiltered
 
 hist(counts_cpm_unfilt,  
      main = &quot;Histogram of Unfiltered Counts&quot;, 
      xlab = expression(&quot;Log&quot;[2]*&quot; counts-per-million&quot;), 
      col = 4)</code></pre>
 <p><img src="figure/QC.Rmd/Dataframe%20Filtering-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Dataframe-Filtering-1">
+Past versions of "Dataframe Filtering-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Dataframe-Filtering-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Dataframe Filtering-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>###filter my data by rowMeans &gt; 0 to exclude lowly expressed genes
 
 filcpm_matrix &lt;- subset(counts_cpm_unfilt, (rowMeans(counts_cpm_unfilt) &gt; 0))
@@ -1521,6 +1732,43 @@ hist(filcpm_matrix,
      xlab = expression(&quot;Log&quot;[2]*&quot; counts-per-million&quot;), 
      col = 2)</code></pre>
 <p><img src="figure/QC.Rmd/Dataframe%20Filtering-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Dataframe-Filtering-2">
+Past versions of "Dataframe Filtering-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Dataframe-Filtering-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Dataframe Filtering-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#change the column names to match my samples - make sure that they are in the right order
 #Individual 1 = 87-1 (F)
 #Individual 2 = 78-1 (F)
@@ -1599,6 +1847,43 @@ boxplot(counts_cpm_unfilt,
         names = colnames(counts_cpm_unfilt), 
         adj=1, las = 2, cex.axis = 0.7)</code></pre>
 <p><img src="figure/QC.Rmd/QC%20Filtering%20Boxplots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-Filtering-Boxplots-1">
+Past versions of "QC Filtering Boxplots-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-QC-Filtering-Boxplots-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/QC Filtering Boxplots-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#set the margins so the x axis isn&#39;t cut off
 par(mar = c(8,4,2,2))
 #boxplot of filtered cpm matrix
@@ -1607,6 +1892,43 @@ boxplot(filcpm_matrix,
         names = colnames(filcpm_matrix), 
         adj=1, las = 2, cex.axis = 0.7)</code></pre>
 <p><img src="figure/QC.Rmd/QC%20Filtering%20Boxplots-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-QC-Filtering-Boxplots-2">
+Past versions of "QC Filtering Boxplots-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-QC-Filtering-Boxplots-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/QC Filtering Boxplots-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="add-hgnc-symbol-to-final-dataframe" class="section level2">
 <h2>Add HGNC SYMBOL to final dataframe</h2>
@@ -1770,6 +2092,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Check-Response-Genes-log2cpm-1">
+Past versions of "Check Response Genes log2cpm-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Check-Response-Genes-log2cpm-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Check Response Genes log2cpm-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 family not found in Windows font database</code></pre>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
@@ -1827,6 +2186,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Check-Response-Genes-log2cpm-2">
+Past versions of "Check Response Genes log2cpm-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Check-Response-Genes-log2cpm-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Check Response Genes log2cpm-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 family not found in Windows font database</code></pre>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
@@ -1884,6 +2280,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Check-Response-Genes-log2cpm-3">
+Past versions of "Check Response Genes log2cpm-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-Check-Response-Genes-log2cpm-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Check Response Genes log2cpm-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 family not found in Windows font database</code></pre>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
@@ -1941,6 +2374,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Check-Response-Genes-log2cpm-4">
+Past versions of "Check Response Genes log2cpm-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-Check-Response-Genes-log2cpm-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Check Response Genes log2cpm-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 family not found in Windows font database</code></pre>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
@@ -1998,6 +2468,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Check-Response-Genes-log2cpm-5">
+Past versions of "Check Response Genes log2cpm-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-Check-Response-Genes-log2cpm-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Check Response Genes log2cpm-5.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 family not found in Windows font database</code></pre>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
@@ -2055,6 +2562,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/QC.Rmd/Check%20Response%20Genes%20log2cpm-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Check-Response-Genes-log2cpm-6">
+Past versions of "Check Response Genes log2cpm-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-Check-Response-Genes-log2cpm-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/QC.Rmd/Check Response Genes log2cpm-6.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
