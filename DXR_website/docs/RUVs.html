@@ -365,7 +365,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -376,8 +376,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -390,9 +390,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>DXR_website/</code> <span
@@ -415,21 +415,18 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
-changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges"
+<div id="strongRMarkdownfilestronguptodate"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
-<code>wflow_publish</code> to commit the R Markdown file and build the
-HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
@@ -520,15 +517,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree70e5e86228f273de6c19c3dba25b1a3ed2ba9990targetblank70e5e86a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee05f0cc44784f852eddd06c60dd1e65328242899targetblanke05f0cca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/emmapfort/DXR_Project/tree/70e5e86228f273de6c19c3dba25b1a3ed2ba9990" target="_blank">70e5e86</a>
+<a href="https://github.com/emmapfort/DXR_Project/tree/e05f0cc44784f852eddd06c60dd1e65328242899" target="_blank">e05f0cc</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree70e5e86228f273de6c19c3dba25b1a3ed2ba9990targetblank70e5e86a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee05f0cc44784f852eddd06c60dd1e65328242899targetblanke05f0cca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -538,7 +535,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/emmapfort/DXR_Project/tree/70e5e86228f273de6c19c3dba25b1a3ed2ba9990" target="_blank">70e5e86</a>.
+<a href="https://github.com/emmapfort/DXR_Project/tree/e05f0cc44784f852eddd06c60dd1e65328242899" target="_blank">e05f0cc</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -685,17 +682,6 @@ Ignored files:
     Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
     Ignored:    data/yh2ax_all_df_EMP_250812.csv
 
-Untracked files:
-    Untracked:  DXR_website/analysis/RUVs.Rmd
-
-Unstaged changes:
-    Modified:   DXR_website/analysis/Figure2.Rmd
-    Modified:   DXR_website/analysis/Figure3.Rmd
-    Modified:   DXR_website/analysis/QC.Rmd
-    Deleted:    DXR_website/analysis/Supp1.Rmd
-    Modified:   DXR_website/analysis/index.Rmd
-    Modified:   analysis/DXR_Project_Analysis.Rmd
-
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -710,9 +696,72 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>DXR_website/analysis/RUVs.Rmd</code>) and
+HTML (<code>DXR_website/docs/RUVs.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/analysis/RUVs.Rmd" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/RUVs.html" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -959,6 +1008,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-1">
+Past versions of "PCA Analysis S2-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####PC2/PC3####
 ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = &quot;Cond&quot;
                   , shape = &quot;Time&quot;, size =4, x=2, y=3) +
@@ -1011,6 +1097,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-2">
+Past versions of "PCA Analysis S2-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####PC3/PC4####
 ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=3, y=4) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
@@ -1062,6 +1185,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-3">
+Past versions of "PCA Analysis S2-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#Now plot my PCA for filtered log2cpm
 ####PC1/PC2####
 ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=1, y=2) +
@@ -1114,6 +1274,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-4">
+Past versions of "PCA Analysis S2-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=1, y=2) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
   scale_color_manual(values=txtime_col) +
@@ -1164,6 +1361,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-5">
+Past versions of "PCA Analysis S2-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-5.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####PC2/PC3####
 ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=2, y=3) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
@@ -1215,6 +1449,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-6">
+Past versions of "PCA Analysis S2-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-6.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####PC3/PC4####
 ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=3, y=4) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
@@ -1266,6 +1537,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-7">
+Past versions of "PCA Analysis S2-7.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-7.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=1, y=2) +
   ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
   scale_color_manual(values=txtime_col) +
@@ -1316,6 +1624,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-8">
+Past versions of "PCA Analysis S2-8.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-8.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#now make a version for supplementary figure 2
 autoplot(prcomp_res_filt,
          data = Metadata,
@@ -1361,6 +1706,43 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-9">
+Past versions of "PCA Analysis S2-9.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-9.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#save for figure generation
 
 # ggsave(&quot;SuppFig2_pca_6x8_EMP.pdf&quot;, width = 8, height = 6, device = cairo_pdf,dpi = 300, path = output_folder)</code></pre>
@@ -1438,6 +1820,43 @@ heatmap_pearson &lt;- Heatmap(cor_matrix_pearson,
 # Draw the heatmap
 draw(heatmap_pearson)</code></pre>
 <p><img src="figure/RUVs.Rmd/Correlation%20Heatmaps-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Correlation-Heatmaps-1">
+Past versions of "Correlation Heatmaps-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Correlation-Heatmaps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####Spearman Heatmap####
 heatmap_spearman &lt;- Heatmap(cor_matrix_spearman,
                            name = &quot;Spearman&quot;,
@@ -1451,6 +1870,43 @@ heatmap_spearman &lt;- Heatmap(cor_matrix_spearman,
 # Draw the heatmap
 draw(heatmap_spearman)</code></pre>
 <p><img src="figure/RUVs.Rmd/Correlation%20Heatmaps-2.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Correlation-Heatmaps-2">
+Past versions of "Correlation Heatmaps-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Correlation-Heatmaps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="filtered-gene-list" class="section level1">
 <h1>Filtered Gene List</h1>
@@ -1607,6 +2063,55 @@ corfit &lt;- duplicateCorrelation(object = dge$counts, design = design, block = 
 #voom transformation and plot
 v &lt;- voom(dge, design, block = Metadata_2$Ind, correlation = corfit$consensus.correlation, plot = TRUE)</code></pre>
 <p><img src="figure/RUVs.Rmd/Differential%20Expression%20Analysis-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Analysis-1">
+Past versions of "Differential Expression Analysis-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Differential-Expression-Analysis-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#fit my linear model
 fit &lt;- lmFit(v, design, block = Metadata_2$Ind, correlation = corfit$consensus.correlation)
 
@@ -1625,6 +2130,55 @@ fit2 &lt;- eBayes(fit2)
 #plot the mean-variance trend
 plotSA(fit2, main = &quot;Final model: Mean-Variance trend&quot;)</code></pre>
 <p><img src="figure/RUVs.Rmd/Differential%20Expression%20Analysis-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Analysis-2">
+Past versions of "Differential Expression Analysis-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Differential-Expression-Analysis-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#look at the summary of your results
 ##this tells you the number of DEGs in each condition
 results_summary &lt;- decideTests(fit2, adjust.method = &quot;BH&quot;, p.value = 0.05)
@@ -1774,6 +2328,55 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/DOX24T%20DEGs%20logFC%20all%20Conditions-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-1">
+Past versions of "DOX24T DEGs logFC all Conditions-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>filt_toptable_dxr_t24</code></pre>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 family not found in Windows font database</code></pre>
@@ -1796,6 +2399,55 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/DOX24T%20DEGs%20logFC%20all%20Conditions-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-2">
+Past versions of "DOX24T DEGs logFC all Conditions-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>filt_toptable_dxr_t144</code></pre>
 <pre><code>Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
 family not found in Windows font database</code></pre>
@@ -1818,6 +2470,55 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/DOX24T%20DEGs%20logFC%20all%20Conditions-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-3">
+Past versions of "DOX24T DEGs logFC all Conditions-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-3"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="ruvs-correction" class="section level1">
@@ -1930,6 +2631,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-1">
+Past versions of "RUVs Correction Data Setup-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####PC2/PC3####
 ggplot2::autoplot(prcomp_res_counts, 
                   data = annot, 
@@ -1973,6 +2722,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-2">
+Past versions of "RUVs Correction Data Setup-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#go ahead and plot PCA of log2cpm to compare (somewhat) later since the norm counts output isn&#39;t possible with these data since they don&#39;t undergo correction
 
 prcomp_res_cpm &lt;- prcomp(t(filcpm_matrix %&gt;% as.matrix()), center =  TRUE)
@@ -2020,6 +2817,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-3.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-3">
+Past versions of "RUVs Correction Data Setup-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####PC2/PC3####
 ggplot2::autoplot(prcomp_res_cpm, 
                   data = annot, 
@@ -2063,6 +2908,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-4">
+Past versions of "RUVs Correction Data Setup-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="ruvs-k1-1-factor-of-unwanted-variation" class="section level2">
 <h2>RUVs k=1, 1 factor of unwanted variation</h2>
@@ -2130,6 +3023,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20k1-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-1">
+Past versions of "RUVs k1-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot2::autoplot(prcomp_res_1, 
                   data = annot, 
                   colour = &quot;Cond&quot;, 
@@ -2172,6 +3113,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20k1-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-2">
+Past versions of "RUVs k1-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#also try by converting these values to log2cpm
 
 RUV_df_rm1_cpm &lt;- cpm(set1$normalizedCounts, log = TRUE)
@@ -2222,6 +3211,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20k1-3.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-3">
+Past versions of "RUVs k1-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>###PC2/3
 ggplot2::autoplot(prcomp_res_1_cpm, 
                   data = annot, 
@@ -2265,6 +3302,54 @@ font family not found in Windows font database
 Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
 font family not found in Windows font database</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20k1-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-4">
+Past versions of "RUVs k1-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="spearman-correlation-heatmaps-ruvs" class="section level2">
 <h2>Spearman Correlation Heatmaps RUVs</h2>
@@ -2440,6 +3525,54 @@ heatmap_spmn_k0 &lt;- Heatmap(cor_matrix_spmn_k0,
 # Draw the heatmap k=0
 draw(heatmap_spmn_k0)</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-1">
+Past versions of "RUVs HM Spearman-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####Spearman Heatmap k=1 ####
 heatmap_spmn_k1 &lt;- Heatmap(cor_matrix_spmn_k1,
                            name = &quot;Spearman&quot;,
@@ -2454,6 +3587,54 @@ heatmap_spmn_k1 &lt;- Heatmap(cor_matrix_spmn_k1,
 # Draw the heatmap k=1
 draw(heatmap_spmn_k1)</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-2.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-2">
+Past versions of "RUVs HM Spearman-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####Spearman Heatmap k=0 log2cpm####
 heatmap_spmn_k0_cpm &lt;- Heatmap(cor_matrix_spmn_k0_cpm,
                            name = &quot;Spearman&quot;,
@@ -2468,6 +3649,54 @@ heatmap_spmn_k0_cpm &lt;- Heatmap(cor_matrix_spmn_k0_cpm,
 # Draw the heatmap k=0 log2cpm
 draw(heatmap_spmn_k0_cpm)</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-3.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-3">
+Past versions of "RUVs HM Spearman-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>####Spearman Heatmap k=1 log2cpm####
 heatmap_spmn_k1_cpm &lt;- Heatmap(cor_matrix_spmn_k1_cpm,
                            name = &quot;Spearman&quot;,
@@ -2482,6 +3711,54 @@ heatmap_spmn_k1_cpm &lt;- Heatmap(cor_matrix_spmn_k1_cpm,
 #draw the heatmap k=1 log2cpm
 draw(heatmap_spmn_k1_cpm)</code></pre>
 <p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-4.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-4">
+Past versions of "RUVs HM Spearman-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#find the median for all comparisons and also do a sign test to see significance
 #remove diagonal (self-correlations) and get lower triangle only
 spearman_vals &lt;- cor_matrix_spmn_k1_cpm[lower.tri(cor_matrix_spmn_k1_cpm, diag = FALSE)]
@@ -2587,6 +3864,54 @@ log2cpm</h1>
 
 draw(heatmap_spmn_k1_cpm)</code></pre>
 <p><img src="figure/RUVs.Rmd/Supp%20Fig%203%20Spearman%20Cor%20HM-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Supp-Fig-3-Spearman-Cor-HM-1">
+Past versions of "Supp Fig 3 Spearman Cor HM-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Supp-Fig-3-Spearman-Cor-HM-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/Supp Fig 3 Spearman Cor HM-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Supp Fig 3 Spearman Cor HM-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="top-5-degs-ruvs" class="section level2">
 <h2>Top 5 DEGs RUVs</h2>
 <pre class="r"><code>#use your three toptables so I can pull out top 5 genes from each based on adj. p val
@@ -2687,7 +4012,251 @@ for (gene in top5_D24T_geneslist_1) {
     )
   print(p)
 }</code></pre>
-<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-1">
+Past versions of "RUV Top5 DEGs-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-2">
+Past versions of "RUV Top5 DEGs-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-3">
+Past versions of "RUV Top5 DEGs-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-4">
+Past versions of "RUV Top5 DEGs-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-5">
+Past versions of "RUV Top5 DEGs-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-5.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-5.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#####D24R#####
 process_top5_D24R_1 &lt;- function(gene) {
   gene_data &lt;- top5_D24R_genes_1 %&gt;% filter(Entrez_ID == gene)
@@ -2749,7 +4318,251 @@ for (gene in top5_D24R_geneslist_1) {
     )
   print(p)
 }</code></pre>
-<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-6">
+Past versions of "RUV Top5 DEGs-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-6.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-6.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-7">
+Past versions of "RUV Top5 DEGs-7.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-7.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-7.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-8">
+Past versions of "RUV Top5 DEGs-8.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-8.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-8.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-9">
+Past versions of "RUV Top5 DEGs-9.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-9.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-9.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-10">
+Past versions of "RUV Top5 DEGs-10.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-10.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-10.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#####D144R#####
 process_top5_D144R_1 &lt;- function(gene) {
   gene_data &lt;- top5_D144R_genes_1 %&gt;% filter(Entrez_ID == gene)
@@ -2811,7 +4624,251 @@ for (gene in top5_D144R_geneslist_1) {
     )
   print(p)
 }</code></pre>
-<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-11">
+Past versions of "RUV Top5 DEGs-11.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-11.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-11.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-12">
+Past versions of "RUV Top5 DEGs-12.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-12.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-12.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-13">
+Past versions of "RUV Top5 DEGs-13.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-13.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-13.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-14">
+Past versions of "RUV Top5 DEGs-14.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-14.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-14.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-15">
+Past versions of "RUV Top5 DEGs-15.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-15.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-15.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
