@@ -289,7 +289,7 @@ $(document).ready(function () {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -300,8 +300,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -314,9 +314,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 1
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>DXR_website/</code> <span
@@ -339,33 +339,36 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree726995895da07377481afe21910418eb6fd13a61targetblank7269958a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreec3ccfea6cee1cba2c2ff20ebfebb00937fd2e172targetblankc3ccfeaa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/emmapfort/DXR_Project/tree/726995895da07377481afe21910418eb6fd13a61" target="_blank">7269958</a>
+<a href="https://github.com/emmapfort/DXR_Project/tree/c3ccfea6cee1cba2c2ff20ebfebb00937fd2e172" target="_blank">c3ccfea</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree726995895da07377481afe21910418eb6fd13a61targetblank7269958a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreec3ccfea6cee1cba2c2ff20ebfebb00937fd2e172targetblankc3ccfeaa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -375,7 +378,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/emmapfort/DXR_Project/tree/726995895da07377481afe21910418eb6fd13a61" target="_blank">7269958</a>.
+<a href="https://github.com/emmapfort/DXR_Project/tree/c3ccfea6cee1cba2c2ff20ebfebb00937fd2e172" target="_blank">c3ccfea</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -522,6 +525,9 @@ Ignored files:
     Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
     Ignored:    data/yh2ax_all_df_EMP_250812.csv
 
+Unstaged changes:
+    Modified:   DXR_website/analysis/index.Rmd
+
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -565,6 +571,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/c3ccfea6cee1cba2c2ff20ebfebb00937fd2e172/DXR_website/docs/index.html" target="_blank">c3ccfea</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -743,9 +766,11 @@ Updated Analysis 12/01/25
 </div>
 </div>
 <div id="welcome" class="section level1">
-<h1>Welcome</h1>
+<h1>Welcome!</h1>
 <p>This website contains the analysis leading up to and behind each
-figure. Click below to view my code and see my workflow.</p>
+figure. Click below to view my code and see my workflow. Main figures
+and supplementary figures are ordered chronologically with each piece
+labelled in the table of contents.</p>
 <div id="flow-cytometry-dose-response-yh2ax-if" class="section level2">
 <h2>Flow Cytometry, Dose-response, yH2AX IF</h2>
 <ul>

@@ -8,9 +8,9 @@ editor_options:
   chunk_output_type: inline
 ---
 
-# Welcome
+# Welcome!
 
-This website contains the analysis leading up to and behind each figure. Click below to view my code and see my workflow.
+This website contains the analysis leading up to and behind each figure. Click below to view my code and see my workflow. Main figures and supplementary figures are ordered chronologically with each piece labelled in the table of contents.
 
 ## Flow Cytometry, Dose-response, yH2AX IF
 
