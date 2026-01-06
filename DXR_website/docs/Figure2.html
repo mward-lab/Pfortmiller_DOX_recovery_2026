@@ -386,7 +386,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-12-09
+<strong>Last updated:</strong> 2026-01-05
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -517,15 +517,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee05f0cc44784f852eddd06c60dd1e65328242899targetblanke05f0cca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314targetblank49fa865a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/emmapfort/DXR_Project/tree/e05f0cc44784f852eddd06c60dd1e65328242899" target="_blank">e05f0cc</a>
+<a href="https://github.com/emmapfort/DXR_Project/tree/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314" target="_blank">49fa865</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee05f0cc44784f852eddd06c60dd1e65328242899targetblanke05f0cca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314targetblank49fa865a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -535,7 +535,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/emmapfort/DXR_Project/tree/e05f0cc44784f852eddd06c60dd1e65328242899" target="_blank">e05f0cc</a>.
+<a href="https://github.com/emmapfort/DXR_Project/tree/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314" target="_blank">49fa865</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -682,6 +682,9 @@ Ignored files:
     Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
     Ignored:    data/yh2ax_all_df_EMP_250812.csv
 
+Unstaged changes:
+    Modified:   analysis/DXR_Project_Analysis.Rmd
+
 </code></pre>
 <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not
@@ -725,6 +728,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314/DXR_website/analysis/Figure2.Rmd" target="_blank">49fa865</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+<td>
+Final Updates to Website EMP 01/05/26
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/Figure2.html" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+website updates
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -820,15 +857,13 @@ library(readxl)
 library(readr)
 library(ggrepel)
 library(ggfortify)
-library(ComplexHeatmap)
 library(RUVSeq)
 library(patchwork)
 library(eulerr)
 library(org.Hs.eg.db)
 library(AnnotationDbi)
 library(ggVennDiagram)
-library(ggrastr
-)</code></pre>
+library(ggrastr)</code></pre>
 <p>Define my custom plot theme</p>
 <pre class="r"><code># Define the custom theme
 # plot_theme_custom &lt;- function() {
@@ -1931,6 +1966,14 @@ emmapfort
 <pre class="r"><code>#Load DEGs Data
 #make a list of all of the genes in this set so I can plot the logFC in other sets
 
+# Load DEGs Data (already read in above)
+# DOX_t0 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24T_final.csv&quot;,
+#                    col_select = -1)
+# DOX_t24 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;, 
+#                     col_select = -1)
+# DOX_t144 &lt;- read_csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;, 
+#                      col_select = -1)
+
 DOX_24T_R &lt;- read_csv(&quot;data/DE/Toptable_RUV_24T.csv&quot;)</code></pre>
 <pre><code>Rows: 14319 Columns: 8
 ── Column specification ────────────────────────────────────────────────────────
@@ -1959,17 +2002,17 @@ Rows: 14319 Columns: 9
 Specify the column types or set `show_col_types = FALSE` to quiet this message.
 • `` -&gt; `...1`</code></pre>
 <pre class="r"><code>#plot those full gene sets in logFC
-D24T_DEGs_R &lt;- DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val &lt; 0.05]
+D24T_DEGs_R &lt;- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val &lt; 0.05]
 length(D24T_DEGs_R)</code></pre>
 <pre><code>[1] 9420</code></pre>
 <pre class="r"><code>#9420 DEGs
 
-D24R_DEGs_R &lt;- DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val &lt; 0.05]
+D24R_DEGs_R &lt;- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val &lt; 0.05]
 length(D24R_DEGs_R)</code></pre>
 <pre><code>[1] 7212</code></pre>
 <pre class="r"><code>#7168 DEGs
 
-D144R_DEGs_R &lt;- DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val &lt; 0.05]
+D144R_DEGs_R &lt;- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val &lt; 0.05]
 length(D144R_DEGs_R)</code></pre>
 <pre><code>[1] 660</code></pre>
 <pre class="r"><code>#660 DEGs
@@ -2186,28 +2229,39 @@ generate_volcano_plot_RUV &lt;- function(toptable, title) {
   toptable$Significance[toptable$logFC &gt; 0 &amp; toptable$adj.P.Val &lt; 0.05] &lt;- &quot;Upregulated&quot;
   toptable$Significance[toptable$logFC &lt; 0 &amp; toptable$adj.P.Val &lt; 0.05] &lt;- &quot;Downregulated&quot;
   
+  #enforce correct factor order
+  toptable$Significance &lt;- factor(
+    toptable$Significance,
+    levels = c(&quot;Downregulated&quot;, &quot;Not Significant&quot;, &quot;Upregulated&quot;)
+  )
+  
   #add number of genes for each significance label
-  upgenes &lt;- toptable %&gt;% filter(Significance == &quot;Upregulated&quot;) %&gt;% nrow()
-  nsgenes &lt;- toptable %&gt;% filter(Significance == &quot;Not Significant&quot;) %&gt;% nrow()
-  downgenes &lt;- toptable %&gt;% filter(Significance == &quot;Downregulated&quot;) %&gt;% nrow()
+  upgenes &lt;- toptable %&gt;% 
+    filter(Significance == &quot;Upregulated&quot;) %&gt;%
+    nrow()
+  nsgenes &lt;- toptable %&gt;% 
+    filter(Significance == &quot;Not Significant&quot;) %&gt;% 
+    nrow()
+  downgenes &lt;- toptable %&gt;% 
+    filter(Significance == &quot;Downregulated&quot;) %&gt;% 
+    nrow()
 
-  #make legend labels for no of genes
+  #FIX: correct legend labels
   legend_lab &lt;- c(
-    str_c(&quot;up = &quot;, upgenes),
-    str_c(&quot;ns = &quot;, nsgenes),
-    str_c(&quot;down = &quot;, downgenes)
+    &quot;Upregulated&quot; = paste0(&quot;up = &quot;, upgenes),
+    &quot;Not Significant&quot; = paste0(&quot;ns = &quot;, nsgenes),
+    &quot;Downregulated&quot; = paste0(&quot;down = &quot;, downgenes)
   )
   
-  #specify the colors for the legend
+  #FIX: correct legend colors
   legend_col &lt;- c(
-    str_c(&quot;up = &quot; = &quot;blue&quot;),
-    str_c(&quot;ns = &quot; = &quot;gray&quot;),
-    str_c(&quot;down = &quot; = &quot;red&quot;)
+    &quot;Upregulated&quot; = &quot;blue&quot;,
+    &quot;Not Significant&quot; = &quot;gray&quot;,
+    &quot;Downregulated&quot; = &quot;red&quot;
   )
-  
   
   #generate volcano plot w/ legend
- p &lt;- ggplot(toptable, aes(x = logFC, 
+  p &lt;- ggplot(toptable, aes(x = logFC, 
                             y = -log10(P.Value), 
                             color = Significance)) +
     geom_point_rast(alpha = 0.6, size = 2) +  #rasterize
@@ -2363,12 +2417,12 @@ for (plot_name in names(volcano_plots_RUV)) {
     folder = output_folder
   )
 }</code></pre>
-<pre><code>Saved plot as Cairo PDF: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_1_EMP_EMP.pdf_251209.pdf</code></pre>
-<pre><code>Saved plot as PNG: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_1_EMP_EMP.pdf_251209.png</code></pre>
-<pre><code>Saved plot as Cairo PDF: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_2_EMP_EMP.pdf_251209.pdf</code></pre>
-<pre><code>Saved plot as PNG: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_2_EMP_EMP.pdf_251209.png</code></pre>
-<pre><code>Saved plot as Cairo PDF: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_3_EMP_EMP.pdf_251209.pdf</code></pre>
-<pre><code>Saved plot as PNG: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_3_EMP_EMP.pdf_251209.png</code></pre>
+<pre><code>Saved plot as Cairo PDF: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_1_EMP_EMP.pdf_260105.pdf</code></pre>
+<pre><code>Saved plot as PNG: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_1_EMP_EMP.pdf_260105.png</code></pre>
+<pre><code>Saved plot as Cairo PDF: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_2_EMP_EMP.pdf_260105.pdf</code></pre>
+<pre><code>Saved plot as PNG: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_2_EMP_EMP.pdf_260105.png</code></pre>
+<pre><code>Saved plot as Cairo PDF: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_3_EMP_EMP.pdf_260105.pdf</code></pre>
+<pre><code>Saved plot as PNG: C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs/Volcano_Supp4_3_EMP_EMP.pdf_260105.png</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -2396,8 +2450,8 @@ time zone: America/Chicago
 tzcode source: internal
 
 attached base packages:
-[1] stats4    grid      stats     graphics  grDevices utils     datasets 
-[8] methods   base     
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
 
 other attached packages:
  [1] ggrastr_1.0.2               ggVennDiagram_1.5.2        
@@ -2412,58 +2466,56 @@ other attached packages:
 [19] GenomeInfoDb_1.42.3         XVector_0.46.0             
 [21] IRanges_2.40.0              S4Vectors_0.44.0           
 [23] BiocParallel_1.40.0         Biobase_2.66.0             
-[25] BiocGenerics_0.52.0         ComplexHeatmap_2.22.0      
-[27] ggfortify_0.4.17            ggrepel_0.9.6              
-[29] readxl_1.4.5                lubridate_1.9.4            
-[31] forcats_1.0.0               stringr_1.5.1              
-[33] dplyr_1.1.4                 purrr_1.0.4                
-[35] readr_2.1.5                 tidyr_1.3.1                
-[37] tibble_3.2.1                ggplot2_3.5.2              
-[39] tidyverse_2.0.0             workflowr_1.7.1            
+[25] BiocGenerics_0.52.0         ggfortify_0.4.17           
+[27] ggrepel_0.9.6               readxl_1.4.5               
+[29] lubridate_1.9.4             forcats_1.0.0              
+[31] stringr_1.5.1               dplyr_1.1.4                
+[33] purrr_1.0.4                 readr_2.1.5                
+[35] tidyr_1.3.1                 tibble_3.2.1               
+[37] ggplot2_3.5.2               tidyverse_2.0.0            
+[39] workflowr_1.7.1            
 
 loaded via a namespace (and not attached):
   [1] splines_4.4.2           later_1.4.2             BiocIO_1.16.0          
   [4] bitops_1.0-9            filelock_1.0.3          R.oo_1.27.1            
   [7] cellranger_1.1.0        polyclip_1.10-7         XML_3.99-0.18          
  [10] lifecycle_1.0.4         httr2_1.1.2             pwalign_1.2.0          
- [13] doParallel_1.0.17       rprojroot_2.0.4         vroom_1.6.5            
- [16] processx_3.8.6          lattice_0.22-6          MASS_7.3-61            
- [19] magrittr_2.0.3          sass_0.4.10             rmarkdown_2.29         
- [22] jquerylib_0.1.4         yaml_2.3.10             httpuv_1.6.16          
- [25] DBI_1.2.3               RColorBrewer_1.1-3      abind_1.4-8            
- [28] zlibbioc_1.52.0         R.utils_2.13.0          RCurl_1.98-1.17        
- [31] rappdirs_0.3.3          git2r_0.36.2            circlize_0.4.16        
- [34] GenomeInfoDbData_1.2.13 codetools_0.2-20        DelayedArray_0.32.0    
- [37] xml2_1.3.8              tidyselect_1.2.1        shape_1.4.6.1          
- [40] UCSC.utils_1.2.0        farver_2.1.2            BiocFileCache_2.14.0   
- [43] jsonlite_2.0.0          GetoptLong_1.0.5        iterators_1.0.14       
- [46] systemfonts_1.2.2       polylabelr_0.3.0        foreach_1.5.2          
- [49] tools_4.4.2             progress_1.2.3          ragg_1.4.0             
- [52] Rcpp_1.0.14             glue_1.8.0              gridExtra_2.3          
- [55] SparseArray_1.6.0       mgcv_1.9-1              xfun_0.52              
- [58] withr_3.0.2             fastmap_1.2.0           latticeExtra_0.6-30    
- [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
- [64] R6_2.6.1                textshaping_1.0.1       colorspace_2.1-1       
- [67] Cairo_1.6-5             jpeg_0.1-11             biomaRt_2.62.1         
- [70] RSQLite_2.3.9           R.methodsS3_1.8.2       generics_0.1.4         
- [73] rtracklayer_1.66.0      prettyunits_1.2.0       httr_1.4.7             
- [76] S4Arrays_1.6.0          whisker_0.4.1           pkgconfig_2.0.3        
- [79] gtable_0.3.6            blob_1.2.4              hwriter_1.3.2.1        
- [82] htmltools_0.5.8.1       clue_0.3-66             scales_1.4.0           
- [85] png_0.1-8               knitr_1.50              rstudioapi_0.17.1      
- [88] tzdb_0.5.0              rjson_0.2.23            nlme_3.1-166           
- [91] curl_6.0.1              cachem_1.1.0            GlobalOptions_0.1.2    
- [94] parallel_4.4.2          vipor_0.4.7             restfulr_0.0.15        
- [97] pillar_1.10.2           vctrs_0.6.5             promises_1.3.2         
-[100] dbplyr_2.5.0            cluster_2.1.6           beeswarm_0.4.0         
-[103] evaluate_1.0.3          GenomicFeatures_1.58.0  cli_3.6.3              
-[106] locfit_1.5-9.12         compiler_4.4.2          rlang_1.1.6            
-[109] crayon_1.5.3            labeling_0.4.3          interp_1.1-6           
-[112] aroma.light_3.36.0      ps_1.9.1                getPass_0.2-4          
-[115] fs_1.6.6                ggbeeswarm_0.7.2        stringi_1.8.7          
-[118] deldir_2.0-4            Matrix_1.7-1            hms_1.1.3              
-[121] bit64_4.5.2             KEGGREST_1.46.0         statmod_1.5.0          
-[124] memoise_2.0.1           bslib_0.9.0             bit_4.5.0              </code></pre>
+ [13] rprojroot_2.0.4         processx_3.8.6          lattice_0.22-6         
+ [16] vroom_1.6.5             MASS_7.3-61             magrittr_2.0.3         
+ [19] sass_0.4.10             rmarkdown_2.29          jquerylib_0.1.4        
+ [22] yaml_2.3.10             httpuv_1.6.16           DBI_1.2.3              
+ [25] RColorBrewer_1.1-3      abind_1.4-8             zlibbioc_1.52.0        
+ [28] R.utils_2.13.0          RCurl_1.98-1.17         rappdirs_0.3.3         
+ [31] git2r_0.36.2            GenomeInfoDbData_1.2.13 codetools_0.2-20       
+ [34] DelayedArray_0.32.0     xml2_1.3.8              tidyselect_1.2.1       
+ [37] UCSC.utils_1.2.0        farver_2.1.2            BiocFileCache_2.14.0   
+ [40] jsonlite_2.0.0          systemfonts_1.2.2       polylabelr_0.3.0       
+ [43] tools_4.4.2             progress_1.2.3          ragg_1.4.0             
+ [46] Rcpp_1.0.14             glue_1.8.0              gridExtra_2.3          
+ [49] SparseArray_1.6.0       xfun_0.52               mgcv_1.9-1             
+ [52] withr_3.0.2             fastmap_1.2.0           latticeExtra_0.6-30    
+ [55] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [58] R6_2.6.1                textshaping_1.0.1       colorspace_2.1-1       
+ [61] Cairo_1.6-5             jpeg_0.1-11             biomaRt_2.62.1         
+ [64] RSQLite_2.3.9           R.methodsS3_1.8.2       generics_0.1.4         
+ [67] rtracklayer_1.66.0      prettyunits_1.2.0       httr_1.4.7             
+ [70] S4Arrays_1.6.0          whisker_0.4.1           pkgconfig_2.0.3        
+ [73] gtable_0.3.6            blob_1.2.4              hwriter_1.3.2.1        
+ [76] htmltools_0.5.8.1       scales_1.4.0            png_0.1-8              
+ [79] knitr_1.50              rstudioapi_0.17.1       tzdb_0.5.0             
+ [82] rjson_0.2.23            nlme_3.1-166            curl_6.0.1             
+ [85] cachem_1.1.0            parallel_4.4.2          vipor_0.4.7            
+ [88] restfulr_0.0.15         pillar_1.10.2           grid_4.4.2             
+ [91] vctrs_0.6.5             promises_1.3.2          dbplyr_2.5.0           
+ [94] beeswarm_0.4.0          evaluate_1.0.3          GenomicFeatures_1.58.0 
+ [97] cli_3.6.3               locfit_1.5-9.12         compiler_4.4.2         
+[100] rlang_1.1.6             crayon_1.5.3            labeling_0.4.3         
+[103] interp_1.1-6            aroma.light_3.36.0      ps_1.9.1               
+[106] getPass_0.2-4           fs_1.6.6                ggbeeswarm_0.7.2       
+[109] stringi_1.8.7           deldir_2.0-4            Matrix_1.7-1           
+[112] hms_1.1.3               bit64_4.5.2             KEGGREST_1.46.0        
+[115] statmod_1.5.0           memoise_2.0.1           bslib_0.9.0            
+[118] bit_4.5.0              </code></pre>
 </div>
 </div>
 </div>

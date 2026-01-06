@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Figure 5 Analysis</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DXR Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="index.html">Analysis</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/emmapfort/DXR_Project">
+    <span class="fab fa-github"></span>
+     
+    Source Code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 5 Analysis</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-01-05
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>DXR_website/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251201code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251201)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251201code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251201)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314targetblank49fa865a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/emmapfort/DXR_Project/tree/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314" target="_blank">49fa865</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttree49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314targetblank49fa865a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/emmapfort/DXR_Project/tree/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314" target="_blank">49fa865</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    DXR_website/data/
+    Ignored:    code/Flow_Purity_Stressor_Boxplots_EMP_250226.R
+    Ignored:    data/CDKN1A_geneplot_Dox.RDS
+    Ignored:    data/Cormotif_dox.RDS
+    Ignored:    data/Cormotif_prob_gene_list.RDS
+    Ignored:    data/Cormotif_prob_gene_list_doxonly.RDS
+    Ignored:    data/Counts_RNA_EMPfortmiller.txt
+    Ignored:    data/DMSO_TNN13_plot.RDS
+    Ignored:    data/DOX_TNN13_plot.RDS
+    Ignored:    data/DOXgeneplots.RDS
+    Ignored:    data/ExpressionMatrix_EMP.csv
+    Ignored:    data/Ind1_DOX_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_list.csv
+    Ignored:    data/Ind6REP_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_set.csv
+    Ignored:    data/Ind6_Spearman_plot.RDS
+    Ignored:    data/MDM2_geneplot_Dox.RDS
+    Ignored:    data/Master_summary_75-1_EMP_250811_final.csv
+    Ignored:    data/Master_summary_87-1_EMP_250811_final.csv
+    Ignored:    data/Metadata.csv
+    Ignored:    data/Metadata_2_norep_update.RDS
+    Ignored:    data/Metadata_update.csv
+    Ignored:    data/QC/
+    Ignored:    data/Recovery_flow_purity.csv
+    Ignored:    data/SIRT1_geneplot_Dox.RDS
+    Ignored:    data/Sample_annotated.csv
+    Ignored:    data/SpearmanHeatmapMatrix_EMP
+    Ignored:    data/VolcanoPlot_D144R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24T_original_EMP_250623.png
+    Ignored:    data/annot_dox.RDS
+    Ignored:    data/annot_list_hm.csv
+    Ignored:    data/cormotif_dxr_1.RDS
+    Ignored:    data/cormotif_dxr_2.RDS
+    Ignored:    data/counts/
+    Ignored:    data/counts_DE_df_dox.RDS
+    Ignored:    data/counts_DE_raw_data.RDS
+    Ignored:    data/counts_raw_filt.RDS
+    Ignored:    data/counts_raw_matrix.RDS
+    Ignored:    data/counts_raw_matrix_EMP_250514.csv
+    Ignored:    data/d24_Spearman_plot.RDS
+    Ignored:    data/dge_calc_dxr.RDS
+    Ignored:    data/dge_calc_matrix.RDS
+    Ignored:    data/ensembl_backup_dox.RDS
+    Ignored:    data/fC_AllCounts.RDS
+    Ignored:    data/fC_DOXCounts.RDS
+    Ignored:    data/featureCounts_Concat_Matrix_DOXSamples_EMP_250430.csv
+    Ignored:    data/featureCounts_DOXdata_updatedind.RDS
+    Ignored:    data/filcpm_colnames_matrix.csv
+    Ignored:    data/filcpm_matrix.csv
+    Ignored:    data/filt_gene_list_dox.RDS
+    Ignored:    data/filter_gene_list_final.RDS
+    Ignored:    data/final_data/
+    Ignored:    data/gene_clustlike_motif.RDS
+    Ignored:    data/gene_postprob_motif.RDS
+    Ignored:    data/genedf_dxr.RDS
+    Ignored:    data/genematrix_dox.RDS
+    Ignored:    data/genematrix_dxr.RDS
+    Ignored:    data/heartgenes.csv
+    Ignored:    data/heartgenes_dox.csv
+    Ignored:    data/image_intensity_stats_all_conditions.csv
+    Ignored:    data/image_level_stats_all_conditions.csv
+    Ignored:    data/image_level_summary_yH2AX_quant.csv
+    Ignored:    data/ind_num_dox.RDS
+    Ignored:    data/ind_num_dxr.RDS
+    Ignored:    data/initial_cormotif.RDS
+    Ignored:    data/initial_cormotif_dox.RDS
+    Ignored:    data/low_nuclei_samples.csv
+    Ignored:    data/low_veh_samples.csv
+    Ignored:    data/new/
+    Ignored:    data/new_cormotif_dox.RDS
+    Ignored:    data/perc_mean_all_10X.png
+    Ignored:    data/perc_mean_all_20X.png
+    Ignored:    data/perc_mean_all_40X.png
+    Ignored:    data/perc_mean_consistent_10X.png
+    Ignored:    data/perc_mean_consistent_20X.png
+    Ignored:    data/perc_mean_consistent_40X.png
+    Ignored:    data/perc_median_all_10X.png
+    Ignored:    data/perc_median_all_20X.png
+    Ignored:    data/perc_median_all_40X.png
+    Ignored:    data/perc_median_consistent_10X.png
+    Ignored:    data/perc_median_consistent_20X.png
+    Ignored:    data/perc_median_consistent_40X.png
+    Ignored:    data/plot_leg_d.RDS
+    Ignored:    data/plot_leg_d_horizontal.RDS
+    Ignored:    data/plot_leg_d_vertical.RDS
+    Ignored:    data/plot_theme_custom.RDS
+    Ignored:    data/process_gene_data_funct.RDS
+    Ignored:    data/raw_mean_all_10X.png
+    Ignored:    data/raw_mean_all_20X.png
+    Ignored:    data/raw_mean_all_40X.png
+    Ignored:    data/raw_mean_consistent_10X.png
+    Ignored:    data/raw_mean_consistent_20X.png
+    Ignored:    data/raw_mean_consistent_40X.png
+    Ignored:    data/raw_median_all_10X.png
+    Ignored:    data/raw_median_all_20X.png
+    Ignored:    data/raw_median_all_40X.png
+    Ignored:    data/raw_median_consistent_10X.png
+    Ignored:    data/raw_median_consistent_20X.png
+    Ignored:    data/raw_median_consistent_40X.png
+    Ignored:    data/ruv/
+    Ignored:    data/summary_all_IF_ROI.RDS
+    Ignored:    data/tableED_GOBP.RDS
+    Ignored:    data/tableESR_GOBP_postprob.RDS
+    Ignored:    data/tableLD_GOBP.RDS
+    Ignored:    data/tableLR_GOBP_postprob.RDS
+    Ignored:    data/tableNR_GOBP.RDS
+    Ignored:    data/tableNR_GOBP_postprob.RDS
+    Ignored:    data/table_incsus_genes_GOBP_RUV.RDS
+    Ignored:    data/table_motif1_GOBP_d.RDS
+    Ignored:    data/table_motif1_genes_GOBP.RDS
+    Ignored:    data/table_motif2_GOBP_d.RDS
+    Ignored:    data/table_motif3_genes_GOBP.RDS
+    Ignored:    data/thing.R
+    Ignored:    data/top.table_V.D144r_dox.RDS
+    Ignored:    data/top.table_V.D24_dox.RDS
+    Ignored:    data/top.table_V.D24r_dox.RDS
+    Ignored:    data/yH2AX_75-1_EMP_250811.csv
+    Ignored:    data/yH2AX_87-1_EMP_250811.csv
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_Quant_10X_EMP_250817.png
+    Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
+    Ignored:    data/yh2ax_all_df_EMP_250812.csv
+
+Unstaged changes:
+    Modified:   analysis/DXR_Project_Analysis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>DXR_website/analysis/Figure5.Rmd</code>)
+and HTML (<code>DXR_website/docs/Figure5.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314/DXR_website/analysis/Figure5.Rmd" target="_blank">49fa865</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+<td>
+Final Updates to Website EMP 01/05/26
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/da1f69c853f759ba93c7ef927d5a4183661e64dd/DXR_website/analysis/Figure5.Rmd" target="_blank">da1f69c</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-02
+</td>
+<td>
+updated analysis 12/02/25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+</style>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<p>Load necessary libraries for analysis.</p>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(readr)
+library(ComplexHeatmap)
+library(reshape2)
+library(circlize)
+library(grid)
+library(stringr)
+library(org.Hs.eg.db)
+library(AnnotationDbi)</code></pre>
+<p>Define my custom plot theme</p>
+<pre class="r"><code># Define the custom theme
+# plot_theme_custom &lt;- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = &quot;black&quot;),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, &quot;in&quot;),
+# 
+#       #text and font
+#       axis.text = element_text(color = &quot;black&quot;,
+#                                family = &quot;Arial&quot;,
+#                                size = 7),
+#       axis.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 9),
+#       legend.text = element_text(color = &quot;black&quot;,
+#                                  family = &quot;Arial&quot;,
+#                                  size = 7),
+#       legend.title = element_text(color = &quot;black&quot;,
+#                                   family = &quot;Arial&quot;,
+#                                   size = 9),
+#       plot.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = &quot;grey80&quot;, linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = &quot;grey90&quot;, linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
+
+theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
+<p>Define a function to save plots as .pdf and .png</p>
+<pre class="r"><code>save_plot &lt;- function(plot, filename, 
+                      folder = &quot;.&quot;, 
+                      width = 8, 
+                      height = 6, 
+                      units = &quot;in&quot;, 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop(&quot;Please provide a filename (without extension) for the plot.&quot;)
+
+  date_str &lt;- if (add_date) paste0(&quot;_&quot;, format(Sys.Date(), &quot;%y%m%d&quot;)) else &quot;&quot;
+  pdf_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.pdf&quot;))
+  png_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.png&quot;))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = &quot;transparent&quot;)
+  ggsave(filename = png_file, plot = plot, device = &quot;png&quot;, width = width, height = height, units = units, dpi = dpi, bg = &quot;transparent&quot;)
+  message(&quot;Saved plot as Cairo PDF: &quot;, pdf_file)
+  message(&quot;Saved plot as PNG: &quot;, png_file)
+}
+
+output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height</code></pre>
+</div>
+<div id="read-in-gene-lists-from-literature" class="section level1">
+<h1>Read in Gene Lists from Literature</h1>
+<p>I utilized gene sets from two additional studies - a p53 target gene
+set (Fischer, M., Census and evaluation of p53 target genes. Oncogene,
+2017. 36(28): p. 3943-3956) and a DNA damage response (DDR) gene set
+(Liberzon, A., et al., The Molecular Signatures Database (MSigDB)
+hallmark gene set collection. Cell Syst, 2015. 1(6): p. 417-425).</p>
+<pre class="r"><code>#DDR gene set from Liberzon et al.
+
+#read in my DDR gene set
+DNA_damage &lt;- readRDS(&quot;data/Fig5/DNA_damage_response_genes.RDS&quot;)
+
+#pull out only the unique values that are not NA (there aren&#39;t any)
+ddr_set &lt;- unique(na.omit(DNA_damage))
+#pull out the entrez ids
+entrezids_DDR_R &lt;- unname(DNA_damage)
+#calculate the total length of my gene set for proportion analysis
+total_ddr_genes &lt;- length(ddr_set)
+cat(&quot;Total DNA damage genes:&quot;, total_ddr_genes, &quot;\n&quot;)</code></pre>
+<pre><code>Total DNA damage genes: 65 </code></pre>
+<pre class="r"><code>#should be 65 total genes
+
+
+#p53 target genes from Fischer et al.
+p53_target_genes &lt;- readRDS(&quot;data/Fig5/p53_target_genes_list.RDS&quot;)
+
+#pull out only the unique values that are not NA (there aren&#39;t any)
+p53_set &lt;- unique(na.omit(p53_target_genes))
+#pull out the entrez ids
+entrezids_p53 &lt;- unname(p53_set)
+#calculate the total length of my gene set for proportion analysis
+total_p53_genes &lt;- length(p53_set)
+cat(&quot;Total p53 Target genes:&quot;, total_p53_genes, &quot;\n&quot;)</code></pre>
+<pre><code>Total p53 Target genes: 300 </code></pre>
+</div>
+<div id="figure-5a---forest-plot-of-odds-ratios" class="section level1">
+<h1>Figure 5A - Forest Plot of Odds Ratios</h1>
+<pre class="r"><code>#define my gene clusters
+
+final_genes_1_RUV &lt;- readRDS(&quot;data/Fig3/final_genes_1_RUV.RDS&quot;)
+final_genes_2_RUV &lt;- readRDS(&quot;data/Fig3/final_genes_2_RUV.RDS&quot;)
+
+motifs &lt;- list(
+  acute = final_genes_1_RUV,
+  chronic = final_genes_2_RUV
+)
+
+#define the gene sets from above to test with a Fisher&#39;s exact test between clusters
+gene_sets &lt;- list(
+  DDR = ddr_set,
+  P53 = p53_set
+)
+
+#all tested genes as background
+all_genes &lt;- readRDS(&quot;data/DE/all_genes.RDS&quot;)
+
+#compare between motif clusters for acute and chronic
+compare_motifs &lt;- function(acute, chronic, gene_set, gene_set_name) {
+  in_chronic &lt;- sum(chronic %in% gene_set)
+  out_chronic &lt;- length(chronic) - in_chronic
+  in_acute &lt;- sum(acute %in% gene_set)
+  out_acute &lt;- length(acute) - in_acute
+  
+  mat &lt;- matrix(c(in_chronic, out_chronic, in_acute, out_acute), nrow = 2, byrow = TRUE)
+  rownames(mat) &lt;- c(&quot;Chronic&quot;, &quot;Acute&quot;)
+  colnames(mat) &lt;- c(&quot;In_Set&quot;, &quot;Not_In_Set&quot;)
+  
+  test &lt;- fisher.test(mat)
+  
+  tibble(
+    Gene_Set = gene_set_name,
+    Motif_Comparison = &quot;Chronic_vs_Acute&quot;,
+    In_Set_Chronic = in_chronic,
+    In_Set_Acute = in_acute,
+    Odds_Ratio = as.numeric(test$estimate),
+    CI_Low = test$conf.int[1],
+    CI_High = test$conf.int[2],
+    P_Value = test$p.value
+  )
+}
+
+#apply for each gene set
+comparison_results &lt;- map_dfr(names(gene_sets), function(gs_name) {
+  compare_motifs(final_genes_1_RUV, final_genes_2_RUV, gene_sets[[gs_name]], gs_name)
+})
+
+print(comparison_results)</code></pre>
+<pre><code># A tibble: 2 × 8
+  Gene_Set Motif_Comparison In_Set_Chronic In_Set_Acute Odds_Ratio CI_Low
+  &lt;chr&gt;    &lt;chr&gt;                     &lt;int&gt;        &lt;int&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+1 DDR      Chronic_vs_Acute             16           24      10.4    5.13
+2 P53      Chronic_vs_Acute             28          170       2.59   1.65
+# ℹ 2 more variables: CI_High &lt;dbl&gt;, P_Value &lt;dbl&gt;</code></pre>
+<pre class="r"><code>#add sigificance and percent overlap
+comparison_results &lt;- comparison_results %&gt;%
+  mutate(
+    Perc_Chronic = round((In_Set_Chronic / length(final_genes_2_RUV)) * 100, 2),
+    Perc_Acute = round((In_Set_Acute / length(final_genes_1_RUV)) * 100, 2),
+    Significance = case_when(
+      P_Value &lt; 0.001 ~ &quot;***&quot;,
+      P_Value &lt; 0.01  ~ &quot;**&quot;,
+      P_Value &lt; 0.05  ~ &quot;*&quot;,
+      TRUE ~ &quot;&quot;
+    ),
+    Odds_Ratio = round(Odds_Ratio, 3),
+    CI_Low = round(CI_Low, 3),
+    CI_High = round(CI_High, 3),
+    P_Value = signif(P_Value, 3)
+  )
+
+#create a final summary table
+summary_table &lt;- comparison_results %&gt;%
+  dplyr::select(
+    Gene_Set,
+    In_Set_Chronic, Perc_Chronic,
+    In_Set_Acute, Perc_Acute,
+    Odds_Ratio, CI_Low, CI_High, P_Value, Significance
+  )
+
+cat(&quot;\n--- Chronic vs Acute Enrichment Summary ---\n&quot;)</code></pre>
+<pre><code>
+--- Chronic vs Acute Enrichment Summary ---</code></pre>
+<pre class="r"><code>print(summary_table)</code></pre>
+<pre><code># A tibble: 2 × 10
+  Gene_Set In_Set_Chronic Perc_Chronic In_Set_Acute Perc_Acute Odds_Ratio CI_Low
+  &lt;chr&gt;             &lt;int&gt;        &lt;dbl&gt;        &lt;int&gt;      &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+1 DDR                  16         3.19           24       0.32      10.4    5.13
+2 P53                  28         5.59          170       2.24       2.59   1.65
+# ℹ 3 more variables: CI_High &lt;dbl&gt;, P_Value &lt;dbl&gt;, Significance &lt;chr&gt;</code></pre>
+<pre class="r"><code>#now create a forest plot
+p_comparison &lt;- ggplot(comparison_results,
+                   aes(y = Gene_Set, x = Odds_Ratio,
+                       xmin = CI_Low, xmax = CI_High)) +
+  geom_point(size = 4) +
+  geom_errorbarh(height = 0.1, size = 1, color = &quot;black&quot;) + 
+  geom_text(aes(label = Significance),
+            position = position_nudge(y = 0.2),
+            color = &quot;black&quot;, fontface = &quot;bold&quot;, size = 5) +
+  geom_vline(xintercept = 1, linetype = &quot;dashed&quot;, color = &quot;red&quot;) +
+  scale_x_log10(limits = c(1, 30), 
+                breaks = c(1, 10, 20)) +
+  labs(
+    x = &quot;log odds ratio (95% confidence interval)&quot;,
+    y = NULL,
+    title = &quot;Enrichment of DDR + p53 target genes Chronic vs Acute&quot;,
+  ) +
+  theme_custom()
+
+print(p_comparison)</code></pre>
+<p><img src="figure/Figure5.Rmd/Figure%205A-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="figure-5b---log2fc-heatmap-ddr-tx144-degs"
+class="section level1">
+<h1>Figure 5B - log2FC Heatmap DDR tx+144 DEGs</h1>
+<pre class="r"><code>#load in DEGs for all timepoints 
+DOX_24T_R &lt;- read.csv(&quot;data/DE/Toptable_RUV_24T_final.csv&quot;) %&gt;% 
+  dplyr::select(-(X))
+DOX_24R_R &lt;- read.csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;) %&gt;% 
+  dplyr::select(-(X))
+DOX_144R_R &lt;- read.csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;) %&gt;% 
+  dplyr::select(-(X))
+
+#extract Significant DEGs from these lists
+DEGs_24T_R &lt;- DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val &lt; 0.05]
+DEGs_24R_R &lt;- DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val &lt; 0.05]
+DEGs_144R_R &lt;- DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val &lt; 0.05]
+
+
+#DDR Entrez_ID and categories
+entrez_category_DDR &lt;- tribble(
+  ~ENTREZID, ~Category,
+  317, &quot;Apoptosis&quot;, 355, &quot;Apoptosis&quot;, 581, &quot;Apoptosis&quot;, 637, &quot;Apoptosis&quot;,
+  836, &quot;Apoptosis&quot;, 841, &quot;Apoptosis&quot;, 842, &quot;Apoptosis&quot;, 27113, &quot;Apoptosis&quot;,
+  5366, &quot;Apoptosis&quot;, 54205, &quot;Apoptosis&quot;, 55367, &quot;Apoptosis&quot;, 8795, &quot;Apoptosis&quot;,
+  1026, &quot;Cell Cycle / Checkpoint&quot;, 1027, &quot;Cell Cycle / Checkpoint&quot;, 595, &quot;Cell Cycle / Checkpoint&quot;,
+  894, &quot;Cell Cycle / Checkpoint&quot;, 896, &quot;Cell Cycle / Checkpoint&quot;, 898, &quot;Cell Cycle / Checkpoint&quot;,
+  9133, &quot;Cell Cycle / Checkpoint&quot;, 9134, &quot;Cell Cycle / Checkpoint&quot;, 891, &quot;Cell Cycle / Checkpoint&quot;,
+  983, &quot;Cell Cycle / Checkpoint&quot;, 1017, &quot;Cell Cycle / Checkpoint&quot;, 1019, &quot;Cell Cycle / Checkpoint&quot;,
+  1020, &quot;Cell Cycle / Checkpoint&quot;, 1021, &quot;Cell Cycle / Checkpoint&quot;, 993, &quot;Cell Cycle / Checkpoint&quot;,
+  995, &quot;Cell Cycle / Checkpoint&quot;, 1869, &quot;Cell Cycle / Checkpoint&quot;, 4609, &quot;Cell Cycle / Checkpoint&quot;,
+  5925, &quot;Cell Cycle / Checkpoint&quot;, 9874, &quot;Cell Cycle / Checkpoint&quot;, 11011, &quot;Cell Cycle / Checkpoint&quot;,
+  1385, &quot;Cell Cycle / Checkpoint&quot;,
+  472, &quot;Damage Sensors / Signal Transducers&quot;, 545, &quot;Damage Sensors / Signal Transducers&quot;,
+  5591, &quot;Damage Sensors / Signal Transducers&quot;, 5810, &quot;Damage Sensors / Signal Transducers&quot;,
+  5883, &quot;Damage Sensors / Signal Transducers&quot;, 5884, &quot;Damage Sensors / Signal Transducers&quot;,
+  6118, &quot;Damage Sensors / Signal Transducers&quot;, 4361, &quot;Damage Sensors / Signal Transducers&quot;,
+  10111, &quot;Damage Sensors / Signal Transducers&quot;, 4683, &quot;Damage Sensors / Signal Transducers&quot;,
+  84126, &quot;Damage Sensors / Signal Transducers&quot;, 3014, &quot;Damage Sensors / Signal Transducers&quot;,
+  672, &quot;DNA Repair&quot;, 2177, &quot;DNA Repair&quot;, 5888, &quot;DNA Repair&quot;, 5893, &quot;DNA Repair&quot;,
+  1647, &quot;DNA Repair&quot;, 4616, &quot;DNA Repair&quot;, 10912, &quot;DNA Repair&quot;, 1111, &quot;DNA Repair&quot;,
+  11200, &quot;DNA Repair&quot;, 1643, &quot;DNA Repair&quot;, 8243, &quot;DNA Repair&quot;, 5981, &quot;DNA Repair&quot;,
+  7157, &quot;p53 Regulators / Targets&quot;, 4193, &quot;p53 Regulators / Targets&quot;, 5371, &quot;p53 Regulators / Targets&quot;,
+  27244, &quot;p53 Regulators / Targets&quot;, 50484, &quot;p53 Regulators / Targets&quot;,
+  207, &quot;Miscellaneous / Broad&quot;, 25, &quot;Miscellaneous / Broad&quot;
+)
+
+entrez_ids_DDR_R &lt;- entrez_category_DDR$ENTREZID
+
+
+#function to extract relevant data
+extract_data_DDR_RUV &lt;- function(df, name) {
+  df %&gt;%
+    filter(Entrez_ID %in% entrez_ids_DDR_R) %&gt;%
+    mutate(Gene = mapIds(org.Hs.eg.db, 
+                         as.character(Entrez_ID),
+                         column = &quot;SYMBOL&quot;, 
+                         keytype = &quot;ENTREZID&quot;, 
+                         multiVals = &quot;first&quot;),
+           Condition = name,
+           Signif = ifelse(adj.P.Val &lt; 0.05, &quot;*&quot;, &quot;&quot;))
+}
+
+
+#DEG list
+deg_list_RUV &lt;- list(&quot;t0&quot; = DOX_24T_R, 
+                 &quot;t24&quot; = DOX_24R_R, 
+                 &quot;t144&quot; = DOX_144R_R
+)
+
+#combine all DEGs and annotate
+all_data_DDR_RUV &lt;- bind_rows(mapply(extract_data_DDR_RUV, deg_list_RUV, names(deg_list_RUV), SIMPLIFY = FALSE)) 
+
+#now make a filtering step to only include DEGs at tx+144
+sig_genes_t144 &lt;- all_data_DDR_RUV %&gt;% 
+  dplyr::filter(Condition == &quot;t144&quot;, adj.P.Val &lt; 0.05) %&gt;% 
+  pull(Gene) %&gt;% 
+  unique()
+
+filt_DDR_data_t144 &lt;- all_data_DDR_RUV %&gt;% 
+  dplyr::filter(Gene %in% sig_genes_t144)
+
+#create matrices
+logFC_mat_DDR_RUV &lt;- acast(filt_DDR_data_t144, Gene ~ Condition, value.var = &quot;logFC&quot;)
+signif_mat_DDR_RUV &lt;- acast(filt_DDR_data_t144, Gene ~ Condition, value.var = &quot;Signif&quot;)
+
+#desired column order
+desired_order &lt;- c(&quot;t0&quot;,
+                   &quot;t24&quot;,
+                   &quot;t144&quot;)
+
+logFC_mat_DDR_RUV &lt;- logFC_mat_DDR_RUV[, desired_order]
+signif_mat_DDR_RUV &lt;- signif_mat_DDR_RUV[, desired_order]
+
+#column annotation
+meta_DDR_RUV &lt;- str_split_fixed(colnames(logFC_mat_DDR_RUV), &quot;_&quot;, 2)
+timepoint_annot &lt;- colnames(logFC_mat_DDR_RUV)
+col_annot_DDR_RUV &lt;- HeatmapAnnotation(
+  Timepoint = timepoint_annot,
+  col = list(
+    Timepoint = c(&quot;t0&quot; = &quot;#005A4C&quot;, 
+                  &quot;t24&quot; = &quot;#328477&quot;, 
+                  &quot;t144&quot; = &quot;#8FB9B1&quot;)
+  ),
+  annotation_height = unit(c(1, 1, 1), &quot;cm&quot;),
+  annotation_legend_param = list(
+    Timepoint = list(
+      at = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;)
+    )
+  )
+)
+
+#draw heatmap
+ddr_hm_5b &lt;- Heatmap(logFC_mat_DDR_RUV,
+        name = &quot;log2FC&quot;,
+        top_annotation = col_annot_DDR_RUV,
+        cluster_columns = FALSE,
+        cluster_rows = FALSE,
+        show_row_names = TRUE,
+        row_names_gp = gpar(fontsize = 7),
+        show_column_names = FALSE,
+        column_names_gp = gpar(fontsize = 7), 
+        rect_gp = gpar(col = &quot;black&quot;, lwd = 0.5), 
+        border = gpar(col = &quot;black&quot;),
+        layer_fun = function(j, i, x, y, width, height, fill) {
+          grid.text(signif_mat_DDR_RUV[cbind(i, j)], x, y, gp = gpar(fontsize = 12))
+        },
+        column_title = &quot;DDR gene response (Liberzon et al.)&quot;,
+        column_title_gp = gpar(fontsize = 9, fontface = &quot;plain&quot;),
+        heatmap_legend_param = list(
+          title_gp = gpar(fontsize = 8, fontface = &quot;plain&quot;),
+          labels_gp = gpar(fontsize = 7, fontface = &quot;plain&quot;)
+  )
+)
+
+print(ddr_hm_5b)</code></pre>
+<p><img src="figure/Figure5.Rmd/Figure%205B-1.png" width="576" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#make a function to save complex heatmaps
+save_complex_heatmap &lt;- function(plot, filename, folder, width = 6, height = 8) {
+  if (!dir.exists(folder)) dir.create(folder, recursive = TRUE)
+    path &lt;- file.path(folder, filename)
+    pdf(path, width = width, height = height)
+    draw(plot, heatmap_legend_side = &quot;right&quot;)
+    dev.off()
+  message(&quot;Saved heatmap to: &quot;, path)
+}
+
+#save to PDF in your output folder
+# save_complex_heatmap(
+#   plot = ddr_hm_5b,
+#   filename = &quot;Fig5B_logFCHM_RUV_DDR_EMP.pdf&quot;,
+#   folder = output_folder,
+#   width = 8,
+#   height = 7
+# )</code></pre>
+</div>
+<div id="figure-5c---p53-target-genes-logfc-heatmap"
+class="section level1">
+<h1>Figure 5C - p53 Target Genes logFC Heatmap</h1>
+<pre class="r"><code>#use DEGs above
+
+#p53 target Entrez_ID
+entrez_ids_p53 &lt;- c(1026,50484,4193,9766,9518,7832,1643,1647,1263,57103,51065,8795,51499,64393,581,
+                5228,5429,8493,55959,7508,64782,282991,355,53836,4814,10769,9050,27244,9540,94241,
+                26154,57763,900,26999,55332,26263,23479,23612,29950,9618,10346,8824,134147,55294,
+                22824,4254,6560,467,27113,60492,8444,60401,1969,220965,2232,3976,55191,84284,93129,
+                5564,7803,83667,7779,132671,7039,51768,137695,93134,7633,10973,340485,307,27350,
+                23245,3732,29965,1363,1435,196513,8507,8061,2517,51278,53354,54858,23228,5366,5912,
+                6236,51222,26152,59,1907,50650,91012,780,9249,11072,144455,64787,116151,27165,2876,
+                57822,55733,57722,121457,375449,85377,4851,5875,127544,29901,84958,8797,8793,441631,
+                220001,54541,5889,5054,25816,25987,5111,98,317,598,604,10904,1294,80315,53944,
+                1606,2770,3628,3675,3985,4035,4163,84552,29085,55367,5371,5791,54884,5980,8794,
+                1462,50808,220,583,694,1056,9076,10978,54677,1612,55040,114907,2274,127707,4000,
+                8079,4646,4747,27445,5143,80055,79156,5360,5364,23654,5565,5613,5625,10076,56963,
+                6004,390,255488,6326,6330,23513,7869,283130,204962,83959,6548,6774,9263,10228,
+                22954,10475,85363,494514,10142,79714,1006,8446,9648,79828,5507,55240,63874,25841,
+                9289,84883,154810,51321,421,8553,655,119032,84280,10950,824,839,57828,857,8812,
+                8837,94027,113189,22837,132864,10898,3300,81704,1847,1849,1947,9538,24139,5168,
+                147965,115548,9873,23768,2632,2817,3280,3265,23308,3490,51477,182,3856,8844,144811,
+                9404,4043,9848,2872,23041,740,343263,4638,26509,4792,22861,57523,55214,80025,164091,
+                57060,64065,51090,5453,8496,333926,55671,5900,55544,23179,8601,389,6223,55800,6385,
+                4088,6643,122809,257397,285343,7011,54790,374618,55362,51754,7157,9537,22906,7205,
+                80705,219699,55245,83719,7748,25946,118738)
+
+
+#function to extract relevant data
+extract_data_p53_RUV &lt;- function(df, name) {
+  df %&gt;%
+    filter(Entrez_ID %in% entrez_ids_p53) %&gt;%
+    mutate(Gene = mapIds(org.Hs.eg.db, 
+                         as.character(Entrez_ID),
+                         column = &quot;SYMBOL&quot;, 
+                         keytype = &quot;ENTREZID&quot;, 
+                         multiVals = &quot;first&quot;),
+           Condition = name,
+           Signif = ifelse(adj.P.Val &lt; 0.05, &quot;*&quot;, &quot;&quot;))
+}
+
+#DEG list
+deg_list_RUV &lt;- list(&quot;t0&quot; = DOX_24T_R, 
+                 &quot;t24&quot; = DOX_24R_R, 
+                 &quot;t144&quot; = DOX_144R_R
+)
+
+#combine all DEGs and annotate
+all_data_p53_RUV &lt;- bind_rows(mapply(extract_data_p53_RUV, deg_list_RUV, 
+                                     names(deg_list_RUV), SIMPLIFY = FALSE)) 
+
+#now make a filtering step to only include DEGs at tx+144
+sig_genes_t144 &lt;- all_data_p53_RUV %&gt;% 
+  dplyr::filter(Condition == &quot;t144&quot;, adj.P.Val &lt; 0.05) %&gt;% 
+  pull(Gene) %&gt;% 
+  unique()
+
+filt_p53_data_t144 &lt;- all_data_p53_RUV %&gt;% 
+  dplyr::filter(Gene %in% sig_genes_t144)
+
+#create matrices
+logFC_mat53_RUV &lt;- acast(filt_p53_data_t144, Gene ~ Condition, value.var = &quot;logFC&quot;)
+signif_mat53_RUV &lt;- acast(filt_p53_data_t144, Gene ~ Condition, value.var = &quot;Signif&quot;)
+
+#desired column order
+desired_order &lt;- c(&quot;t0&quot;,
+                   &quot;t24&quot;,
+                   &quot;t144&quot;)
+
+logFC_mat_p53_RUV &lt;- logFC_mat53_RUV[, desired_order]
+signif_mat_p53_RUV &lt;- signif_mat53_RUV[, desired_order]
+
+#column annotation
+timepoint_annot &lt;- colnames(logFC_mat_p53_RUV)
+
+col_annot_p53_RUV &lt;- HeatmapAnnotation(
+  Timepoint = timepoint_annot,
+  col = list(
+    Timepoint = c(&quot;t0&quot; = &quot;#005A4C&quot;, 
+             &quot;t24&quot; = &quot;#328477&quot;, 
+             &quot;t144&quot; = &quot;#8FB9B1&quot;)
+  ),
+  annotation_height = unit(c(1, 1, 1), &quot;cm&quot;),
+  annotation_legend_param = list(
+    Timepoint = list(
+      at = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;)
+    )
+  )
+)
+
+#draw heatmap
+p53_hm_5c &lt;- Heatmap(
+  logFC_mat_p53_RUV,
+  name = &quot;log2FC&quot;,
+  top_annotation = col_annot_p53_RUV,
+  cluster_columns = FALSE,
+  cluster_rows = TRUE,
+  show_row_names = TRUE,
+  row_names_gp = gpar(fontsize = 7),
+  show_column_names = FALSE,
+  column_names_gp = gpar(fontsize = 7), 
+  rect_gp = gpar(col = &quot;black&quot;, lwd = 0.5),   
+  border = &quot;black&quot;,
+  layer_fun = function(j, i, x, y, width, height, fill) {
+    grid.text(signif_mat_p53_RUV[cbind(i, j)], x, y, gp = gpar(fontsize = 12))
+  },
+  column_title = &quot;p53 gene response (Fischer et al.)&quot;,
+  column_title_gp = gpar(fontsize = 9, fontface = &quot;plain&quot;),
+  heatmap_legend_param = list(
+          title_gp = gpar(fontsize = 8, fontface = &quot;plain&quot;),
+          labels_gp = gpar(fontsize = 7)
+  )
+)
+
+print(p53_hm_5c)</code></pre>
+<p><img src="figure/Figure5.Rmd/Fig%205C-1.png" width="576" style="display: block; margin: auto;" /></p>
+</div>
+<div
+id="supplementary-figure-8a---ddr-target-gene-enrichment-in-degs-vs-nondegs"
+class="section level1">
+<h1>Supplementary Figure 8A - DDR target gene enrichment in DEGs vs
+nonDEGs</h1>
+<pre class="r"><code>#DEGs list
+timepoint_DEGs_ddr &lt;- list(
+  &quot;t0&quot;   = DEGs_24T_R,
+  &quot;t24&quot;   = DEGs_24R_R,
+  &quot;t144&quot;  = DEGs_144R_R
+)
+
+#calculate proportions, odds ratios, and Fisher&#39;s test results per timepoint
+proportion_data_ddr &lt;- purrr::map_dfr(names(timepoint_DEGs_ddr), function(tp_ddr) {
+  degs_ddr &lt;- unique(timepoint_DEGs_ddr[[tp_ddr]])
+  nondegs_ddr &lt;- setdiff(all_genes, degs_ddr)
+  
+  in_deg_ddr &lt;- sum(degs_ddr %in% ddr_set)
+  in_deg_nonddr &lt;- length(degs_ddr) - in_deg_ddr
+  
+  in_nondeg_ddr &lt;- sum(nondegs_ddr %in% ddr_set)
+  in_nondeg_nonddr &lt;- length(nondegs_ddr) - in_nondeg_ddr
+  
+  contingency_degs_ddr &lt;- matrix(c(in_deg_ddr, in_deg_nonddr,
+                                   in_nondeg_ddr, in_nondeg_nonddr),
+                                 nrow = 2, byrow = TRUE)
+  
+  fisher_res_ddr &lt;- fisher.test(contingency_degs_ddr)
+  
+  p_val_ddr &lt;- fisher_res_ddr$p.value
+  odds_ratio_ddr &lt;- unname(fisher_res_ddr$estimate)
+  ci_low_ddr &lt;- fisher_res_ddr$conf.int[1]
+  ci_high_ddr &lt;- fisher_res_ddr$conf.int[2]
+  
+  tibble(
+    Timepoint = tp_ddr,
+    Odds_Ratio = odds_ratio_ddr,
+    CI_low = ci_low_ddr,
+    CI_high = ci_high_ddr,
+    P_Value = p_val_ddr,
+    Significant = p_val_ddr &lt; 0.05
+  )
+})
+
+# Format Timepoint factor and add significance label/color
+proportion_data_ddr &lt;- proportion_data_ddr %&gt;%
+  mutate(
+    Timepoint = factor(Timepoint, levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;)),
+    Sig_Label = ifelse(Significant, &quot;Significant&quot;, &quot;Not Significant&quot;)
+  )
+
+#plot horizontal forest plot
+supp8_forest_ddr_A &lt;- ggplot(proportion_data_ddr, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.3) +
+  geom_vline(xintercept = 1, linetype = &quot;dashed&quot;, color = &quot;gray50&quot;) +
+  scale_color_manual(values = c(&quot;Significant&quot; = &quot;black&quot;, &quot;Not Significant&quot; = &quot;pink&quot;)) +
+  scale_x_log10() +
+  labs(
+    title = &quot;Odds Ratios of DDR Gene Enrichment by Timepoint&quot;,
+    y = &quot;Timepoint&quot;,
+    x = &quot;Odds Ratio (log scale)&quot;,
+    color = &quot;Significance&quot;
+  ) +
+  scale_y_discrete(limits = rev(levels(proportion_data_ddr$Timepoint)))+
+  theme_custom()
+
+print(supp8_forest_ddr_A)</code></pre>
+<p><img src="figure/Figure5.Rmd/Supp8A-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># save_plot( 
+#   plot = supp8_forest_ddr_A,
+#   filename = &quot;Supp8_ForestDDR_EMP&quot;,
+#   folder = output_folder,
+#   height = 4,
+#   width = 6)</code></pre>
+</div>
+<div
+id="supplementary-figure-8b---p53-target-gene-enrichment-in-degs-vs-nondegs"
+class="section level1">
+<h1>Supplementary Figure 8B - p53 target gene enrichment in DEGs vs
+nonDEGs</h1>
+<pre class="r"><code>timepoint_DEGs_p53 &lt;- list(
+  &quot;t0&quot;   = DEGs_24T_R,
+  &quot;t24&quot;   = DEGs_24R_R,
+  &quot;t144&quot;  = DEGs_144R_R
+)
+
+proportion_data_p53 &lt;- purrr::map_dfr(names(timepoint_DEGs_p53), function(tp_p53) {
+  degs_p53 &lt;- unique(timepoint_DEGs_p53[[tp_p53]])
+  nondegs_p53 &lt;- setdiff(all_genes, degs_p53)
+  
+  in_deg_p53 &lt;- sum(degs_p53 %in% p53_set)
+  in_deg_nonp53 &lt;- length(degs_p53) - in_deg_p53
+  
+  in_nondeg_p53 &lt;- sum(nondegs_p53 %in% p53_set)
+  in_nondeg_nonp53 &lt;- length(nondegs_p53) - in_nondeg_p53
+  
+  contingency_degs_p53 &lt;- matrix(c(in_deg_p53, in_deg_nonp53,
+                                   in_nondeg_p53, in_nondeg_nonp53),
+                                 nrow = 2, byrow = TRUE)
+  
+  fisher_res_p53 &lt;- fisher.test(contingency_degs_p53)
+  
+  p_val_p53 &lt;- fisher_res_p53$p.value
+  odds_ratio_p53 &lt;- unname(fisher_res_p53$estimate)
+  ci_low_p53 &lt;- fisher_res_p53$conf.int[1]
+  ci_high_p53 &lt;- fisher_res_p53$conf.int[2]
+  
+  tibble(
+    Timepoint = tp_p53,
+    Odds_Ratio = odds_ratio_p53,
+    CI_low = ci_low_p53,
+    CI_high = ci_high_p53,
+    P_Value = p_val_p53,
+    Significant = p_val_p53 &lt; 0.01
+  )
+})
+
+# Format Timepoint factor and add significance label/color
+proportion_data_p53 &lt;- proportion_data_p53 %&gt;%
+  mutate(
+    Timepoint = factor(Timepoint, levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;)),
+    Sig_Label = ifelse(Significant, &quot;Significant&quot;, &quot;Not Significant&quot;)
+  )
+
+#plot horizontal forest plot with color by significance
+supp8_forest_p53_B &lt;- ggplot(proportion_data_p53, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.3) +
+  geom_vline(xintercept = 1, linetype = &quot;dashed&quot;, color = &quot;gray50&quot;) +
+  scale_color_manual(values = c(&quot;Significant&quot; = &quot;black&quot;, &quot;Not Significant&quot; = &quot;pink&quot;)) +
+  scale_x_log10() +
+  labs(
+    title = &quot;Odds Ratios of p53 Gene Enrichment by Timepoint&quot;,
+    y = &quot;Timepoint&quot;,
+    x = &quot;Odds Ratio (log scale)&quot;,
+    color = &quot;Significance&quot;
+  ) +
+  scale_y_discrete(limits = rev(levels(proportion_data_p53$Timepoint)))+
+  theme_custom()
+
+
+print(supp8_forest_p53_B)</code></pre>
+<p><img src="figure/Figure5.Rmd/Supp%208B-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># save_plot(
+#   plot = supp8_forest_p53_B,
+#   filename = &quot;Supp8B_Forestp53_EMP&quot;,
+#   folder = output_folder,
+#   height = 4,
+#   width = 6)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22000)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats4    grid      stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] org.Hs.eg.db_3.20.0   AnnotationDbi_1.68.0  IRanges_2.40.0       
+ [4] S4Vectors_0.44.0      Biobase_2.66.0        BiocGenerics_0.52.0  
+ [7] circlize_0.4.16       reshape2_1.4.4        ComplexHeatmap_2.22.0
+[10] readxl_1.4.5          lubridate_1.9.4       forcats_1.0.0        
+[13] stringr_1.5.1         dplyr_1.1.4           purrr_1.0.4          
+[16] readr_2.1.5           tidyr_1.3.1           tibble_3.2.1         
+[19] ggplot2_3.5.2         tidyverse_2.0.0       workflowr_1.7.1      
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1        blob_1.2.4              farver_2.1.2           
+ [4] Biostrings_2.74.0       fastmap_1.2.0           promises_1.3.2         
+ [7] digest_0.6.37           timechange_0.3.0        lifecycle_1.0.4        
+[10] cluster_2.1.6           Cairo_1.6-5             KEGGREST_1.46.0        
+[13] processx_3.8.6          RSQLite_2.3.9           magrittr_2.0.3         
+[16] compiler_4.4.2          rlang_1.1.6             sass_0.4.10            
+[19] tools_4.4.2             utf8_1.2.5              yaml_2.3.10            
+[22] knitr_1.50              bit_4.5.0               plyr_1.8.9             
+[25] RColorBrewer_1.1-3      withr_3.0.2             git2r_0.36.2           
+[28] colorspace_2.1-1        scales_1.4.0            iterators_1.0.14       
+[31] cli_3.6.3               rmarkdown_2.29          crayon_1.5.3           
+[34] generics_0.1.4          rstudioapi_0.17.1       httr_1.4.7             
+[37] tzdb_0.5.0              rjson_0.2.23            DBI_1.2.3              
+[40] cachem_1.1.0            zlibbioc_1.52.0         parallel_4.4.2         
+[43] XVector_0.46.0          cellranger_1.1.0        matrixStats_1.5.0      
+[46] vctrs_0.6.5             jsonlite_2.0.0          callr_3.7.6            
+[49] hms_1.1.3               GetoptLong_1.0.5        bit64_4.5.2            
+[52] clue_0.3-66             magick_2.9.0            foreach_1.5.2          
+[55] jquerylib_0.1.4         glue_1.8.0              codetools_0.2-20       
+[58] ps_1.9.1                stringi_1.8.7           gtable_0.3.6           
+[61] shape_1.4.6.1           GenomeInfoDb_1.42.3     later_1.4.2            
+[64] UCSC.utils_1.2.0        pillar_1.10.2           htmltools_0.5.8.1      
+[67] GenomeInfoDbData_1.2.13 R6_2.6.1                doParallel_1.0.17      
+[70] rprojroot_2.0.4         evaluate_1.0.3          png_0.1-8              
+[73] memoise_2.0.1           httpuv_1.6.16           bslib_0.9.0            
+[76] Rcpp_1.0.14             whisker_0.4.1           xfun_0.52              
+[79] fs_1.6.6                getPass_0.2-4           pkgconfig_2.0.3        
+[82] GlobalOptions_0.1.2    </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
