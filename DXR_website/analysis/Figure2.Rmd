@@ -38,15 +38,13 @@ library(readxl)
 library(readr)
 library(ggrepel)
 library(ggfortify)
-library(ComplexHeatmap)
 library(RUVSeq)
 library(patchwork)
 library(eulerr)
 library(org.Hs.eg.db)
 library(AnnotationDbi)
 library(ggVennDiagram)
-library(ggrastr
-)
+library(ggrastr)
 ```
 
 Define my custom plot theme
@@ -698,20 +696,28 @@ plot(venn_prop_RUV,
 #Load DEGs Data
 #make a list of all of the genes in this set so I can plot the logFC in other sets
 
+# Load DEGs Data (already read in above)
+# DOX_t0 <- read_csv("data/DE/Toptable_RUV_24T_final.csv",
+#                    col_select = -1)
+# DOX_t24 <- read_csv("data/DE/Toptable_RUV_24R_final.csv", 
+#                     col_select = -1)
+# DOX_t144 <- read_csv("data/DE/Toptable_RUV_144R_final.csv", 
+#                      col_select = -1)
+
 DOX_24T_R <- read_csv("data/DE/Toptable_RUV_24T.csv")
 DOX_24R_R <- read_csv("data/DE/Toptable_RUV_24R_final.csv")
 DOX_144R_R <- read_csv("data/DE/Toptable_RUV_144R_final.csv")
 
 #plot those full gene sets in logFC
-D24T_DEGs_R <- DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05]
+D24T_DEGs_R <- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val < 0.05]
 length(D24T_DEGs_R)
 #9420 DEGs
 
-D24R_DEGs_R <- DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05]
+D24R_DEGs_R <- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val < 0.05]
 length(D24R_DEGs_R)
 #7168 DEGs
 
-D144R_DEGs_R <- DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
+D144R_DEGs_R <- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val < 0.05]
 length(D144R_DEGs_R)
 #660 DEGs
 #now that I have the full list of genes, I want to plot the logFC across conditions
@@ -852,28 +858,39 @@ generate_volcano_plot_RUV <- function(toptable, title) {
   toptable$Significance[toptable$logFC > 0 & toptable$adj.P.Val < 0.05] <- "Upregulated"
   toptable$Significance[toptable$logFC < 0 & toptable$adj.P.Val < 0.05] <- "Downregulated"
   
+  #enforce correct factor order
+  toptable$Significance <- factor(
+    toptable$Significance,
+    levels = c("Downregulated", "Not Significant", "Upregulated")
+  )
+  
   #add number of genes for each significance label
-  upgenes <- toptable %>% filter(Significance == "Upregulated") %>% nrow()
-  nsgenes <- toptable %>% filter(Significance == "Not Significant") %>% nrow()
-  downgenes <- toptable %>% filter(Significance == "Downregulated") %>% nrow()
+  upgenes <- toptable %>% 
+    filter(Significance == "Upregulated") %>%
+    nrow()
+  nsgenes <- toptable %>% 
+    filter(Significance == "Not Significant") %>% 
+    nrow()
+  downgenes <- toptable %>% 
+    filter(Significance == "Downregulated") %>% 
+    nrow()
 
-  #make legend labels for no of genes
+  #FIX: correct legend labels
   legend_lab <- c(
-    str_c("up = ", upgenes),
-    str_c("ns = ", nsgenes),
-    str_c("down = ", downgenes)
+    "Upregulated" = paste0("up = ", upgenes),
+    "Not Significant" = paste0("ns = ", nsgenes),
+    "Downregulated" = paste0("down = ", downgenes)
   )
   
-  #specify the colors for the legend
+  #FIX: correct legend colors
   legend_col <- c(
-    str_c("up = " = "blue"),
-    str_c("ns = " = "gray"),
-    str_c("down = " = "red")
+    "Upregulated" = "blue",
+    "Not Significant" = "gray",
+    "Downregulated" = "red"
   )
-  
   
   #generate volcano plot w/ legend
- p <- ggplot(toptable, aes(x = logFC, 
+  p <- ggplot(toptable, aes(x = logFC, 
                             y = -log10(P.Value), 
                             color = Significance)) +
     geom_point_rast(alpha = 0.6, size = 2) +  #rasterize

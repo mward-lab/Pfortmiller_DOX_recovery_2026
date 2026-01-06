@@ -121,6 +121,562 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 #to use: just define the plot name, filename_base, width, height
 ```
 
-# Figure 4A - 
+# Compare Response Clusters to Known TOP2i Treatments
 
-## 
+## Read in TOP2i DEGs from Matthews et al., Paul et al.
+
+```{r TOP2i DEG Lists}
+
+#These gene lists were obtained from:
+#Matthews ER, Johnson OD, Horn KJ, Gutiérrez JA, Powell SR, et al. (2024) Anthracyclines induce cardiotoxicity through a shared gene expression response signature. PLOS Genetics 20(2): e1011164. https://doi.org/10.1371/journal.pgen.1011164
+
+DEGs_RM_list <- readRDS("data/Fig4/DEGs_TOP2i_RM.RDS")
+
+#only keep the conditions that I want to compare to
+keep_conditions <- c("sigVDA24", "sigVDX24", "sigVEP24", "sigVMT24")
+
+DEGs_RM_24 <- DEGs_RM_list[keep_conditions]
+
+#change the first column to Entrez_ID for all sets
+DEGs_RM_24 <- lapply(DEGs_RM_24, function(df) {
+  # Rename the first column to Entrez_ID, regardless of current name
+  colnames(df)[1] <- "Entrez_ID"
+  return(df)
+})
+
+#DOX
+DOX_RM_DEGs <- DEGs_RM_24$sigVDX24 %>% 
+  as.data.frame()
+
+dim(DOX_RM_DEGs)
+#6645 genes
+
+#DNR
+DNR_RM_DEGs <- DEGs_RM_24$sigVDA24 %>% 
+  as.data.frame()
+
+dim(DNR_RM_DEGs)
+#7017 genes
+
+#EPI
+EPI_RM_DEGs <- DEGs_RM_24$sigVEP24 %>% 
+  as.data.frame()
+
+dim(EPI_RM_DEGs)
+#6328 genes
+
+#MTX
+MTX_RM_DEGs <- DEGs_RM_24$sigVMT24 %>% 
+  as.data.frame()
+
+dim(MTX_RM_DEGs)
+#1115 genes
+
+#now combine these all into one dataframe for later
+
+DEGs_RM_24_df <- dplyr::bind_rows(
+  # DOX_RM_DEGs %>% mutate(Drug = "DOX_RM"),
+  DNR_RM_DEGs %>% mutate(Drug = "DAUN_RM"),
+  EPI_RM_DEGs %>% mutate(Drug = "EPI_RM"),
+  MTX_RM_DEGs %>% mutate(Drug = "MITO_RM"),
+)
+
+
+#These gene lists were obtained from: 
+#Topoisomerase II inhibitors CX-5461 and Doxorubicin differ in their cardiotoxicity profiles
+#Sayan Paul, José A. Gutiérrez, Alyssa R. Bogar, Michelle C. Ward
+#bioRxiv 2025.07.20.665626; doi: https://doi.org/10.1101/2025.07.20.665626
+
+
+#CX 0.5 24hr
+CX_SP_24 <- read.csv("data/Fig4/Toptable_CX_0.5_24.csv")
+
+dim(CX_SP_24)
+#14279 genes, make sure to now filter this for significance
+
+#DOX 0.5 24hr
+DOX_SP_24 <- read.csv("data/Fig4/Toptable_DOX_0.5_24.csv")
+dim(DOX_SP_24)
+#14279 genes, filter for significance
+
+#filter both above for adj.P.Val < 0.05
+
+DEGs_SP_sig <- list(
+  "CX_SP" = CX_SP_24$Entrez_ID[CX_SP_24$adj.P.Val < 0.05],
+  "DOX_SP" = DOX_SP_24$Entrez_ID[DOX_SP_24$adj.P.Val < 0.05]
+)
+
+#now make dataframes and place them with RM's data to complete my Top2i comparative dataframe
+
+CX_SP_DEGs <- CX_SP_24 %>%
+  filter(adj.P.Val < 0.05) %>%
+  as.data.frame() 
+
+dim(CX_SP_DEGs)
+#278 genes
+
+DOX_SP_DEGs <- DOX_SP_24 %>%
+  filter(adj.P.Val < 0.05) %>%
+  as.data.frame()
+
+dim(DOX_SP_DEGs)
+#9828 genes
+
+#since SP's data has Entrez_ID as an integer rather than a character, coerce these to character in order for bind_rows to work properly
+
+# CX_SP_DEGs$Entrez_ID <- as.character(CX_SP_DEGs$Entrez_ID)
+# DOX_SP_DEGs$Entrez_ID <- as.character(DOX_SP_DEGs$Entrez_ID)
+
+#these two also don't have a SYMBOL column so let's add that in
+
+#CX df
+# CX_SP_DEGs <- CX_SP_DEGs %>%
+#   mutate(
+#     SYMBOL = mapIds(
+#       org.Hs.eg.db,
+#       keys = Entrez_ID,
+#       column = "SYMBOL",
+#       keytype = "ENTREZID",
+#       multiVals = "first"
+#     )
+#   ) %>%
+#   dplyr::select(Entrez_ID, SYMBOL, everything())  # move SYMBOL to second column
+
+# Same for df6
+# DOX_SP_DEGs <- DOX_SP_DEGs %>%
+#   mutate(
+#     SYMBOL = mapIds(
+#       org.Hs.eg.db,
+#       keys = Entrez_ID,
+#       column = "SYMBOL",
+#       keytype = "ENTREZID",
+#       multiVals = "first"
+#     )
+#   ) %>%
+#   dplyr::select(Entrez_ID, SYMBOL, everything())
+
+
+# DEGs_Top2i_24_df <- dplyr::bind_rows(
+#   DOX_RM_DEGs %>% mutate(Treatment = "DOX_RM"),
+#   DNR_RM_DEGs %>% mutate(Treatment = "DAUN_RM"),
+#   EPI_RM_DEGs %>% mutate(Treatment = "EPI_RM"),
+#   MTX_RM_DEGs %>% mutate(Treatment = "MITO_RM"),
+#   CX_SP_DEGs %>% mutate(Treatment = "CX_SP"),
+#   DOX_SP_DEGs %>% mutate(Treatment = "DOX_SP")
+# ) 
+  
+#now this table has all columns consistently named and in the same formats
+
+# saveRDS(DEGs_Top2i_24_df, "data/Fig4/DEGlist_Top2i_SP_RM.RDS")
+
+DEGs_Top2i_24_df <- readRDS("data/Fig4/DEGlist_Top2i_SP_RM.RDS")
+
+#also make a list version just in case
+
+# DEGs_Top2i_24_list <- list(
+#   "DOX_RM" = DOX_RM_DEGs, #6645 DEGs
+#   "DNR_RM" = DNR_RM_DEGs, #7017 DEGs
+#   "EPI_RM" = EPI_RM_DEGs, #6328 DEGs
+#   "MTX_RM" = MTX_RM_DEGs, #1115 DEGs
+#   "CX_SP" = CX_SP_DEGs, #278 DEGs
+#   "DOX_SP" = DOX_SP_DEGs #9828 DEGs
+# )
+
+#total 10,106 DEGs from SP
+#total 21,105 DEGs from RM
+
+# saveRDS(DEGs_Top2i_24_list, "data/Fig4/DEGs_Top2i_RM_SP_list.RDS")
+
+DEGs_Top2i_24_list <- readRDS("data/Fig4/DEGs_Top2i_RM_SP_list.RDS")
+
+```
+
+
+# Figure 4A - Percentage of TOP2i DEGs in tx+0 DEGs
+
+Proportion barplots with permutation testing to ascertain whether DEGs shared between DOX and other TOP2i treatments are more likely than chance to be in both groups.
+
+```{r Fig4 Barplots Permutation Testing, message=FALSE, warning=FALSE}
+
+#read in my DEGs
+DOX_24T_R <- read.csv("data/DE/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24R_R <- read.csv("data/DE/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
+DOX_144R_R <- read.csv("data/DE/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
+
+deg_list <- list(
+  "t0"   = DOX_24T_R$Entrez_ID[DOX_24T_R$adj.P.Val < 0.05],
+  "t24"   = DOX_24R_R$Entrez_ID[DOX_24R_R$adj.P.Val < 0.05],
+  "t144"  = DOX_144R_R$Entrez_ID[DOX_144R_R$adj.P.Val < 0.05]
+)
+
+#reference set - t0
+t0_set <- unique(na.omit(as.character(deg_list$"t0")))
+cat("Total t0 DEGs:", length(t0_set), "\n")
+
+#background set - all genes tested
+all_genes <- readRDS("data/DE/all_genes.RDS")
+cat("Total background genes:", length(all_genes), "\n")
+
+
+#define TOP2i treatment DEG sets from literature
+comparison_DEGs <- list(
+  DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
+  DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
+  EPI_RM = as.character(EPI_RM_DEGs$Entrez_ID),
+  MTX_RM = as.character(MTX_RM_DEGs$Entrez_ID),
+  CX_SP  = as.character(CX_SP_DEGs$Entrez_ID),
+  DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
+)
+
+#build data for a stacked barplot with percentages
+
+plot_df <- purrr::map_dfr(names(comparison_DEGs), function(name) {
+  comp_DEGs <- unique(comparison_DEGs[[name]])
+  
+  overlap <- sum(t0_set %in% comp_DEGs)
+  non_overlap <- length(t0_set) - overlap
+  
+  tibble(
+    Treatment = name,
+    Category = c("DEG", "nonDEG"),
+    Count = c(overlap, non_overlap),
+    Total = length(t0_set),
+    Fraction = c(overlap, non_overlap)/length(t0_set)
+  )
+})
+
+plot_df <- plot_df %>%
+  mutate(
+    Treatment = factor(Treatment, levels = names(comparison_DEGs)),
+    Category = factor(Category, levels = c("DEG", "nonDEG"))
+  )
+
+#legend labels (with n counts)
+legend_labels <- plot_df %>%
+  filter(Category == "DEG Status") %>%
+  mutate(Label = paste0(Category, " (n=", Count, ")")) %>%
+  dplyr::select(Treatment, Label) %>%
+  deframe()
+
+#perform permutation testing for enrichment
+perm_test_overlap <- function(gene_set, t0_genes, gene_universe, n_perm = 10000) {
+  observed <- length(intersect(t0_genes, gene_set))
+  
+  perm_overlaps <- replicate(n_perm, {
+    random_genes <- sample(gene_universe, length(t0_genes))
+    length(intersect(random_genes, gene_set))
+  })
+  
+  p_val <- mean(perm_overlaps >= observed)
+  enrichment <- observed / mean(perm_overlaps)
+  
+  return(list(observed = observed,
+              mean_perm = mean(perm_overlaps),
+              enrichment = enrichment,
+              p_value = p_val))
+}
+
+perm_results <- lapply(comparison_DEGs, 
+                       perm_test_overlap,
+                       t0_genes = t0_set,
+                       gene_universe = all_genes,
+                       n_perm = 10000)
+
+#summary stats table
+perm_summary_df <- map_dfr(names(perm_results), function(name) {
+  res <- perm_results[[name]]
+  tibble(
+    Treatment = name,
+    Observed = res$observed,
+    MeanPerm = res$mean_perm,
+    Enrichment = res$enrichment,
+    PValue = res$p_value
+  )
+}) %>%
+  mutate(FDR = p.adjust(PValue, method = "BH"),
+         Significant = case_when(
+           FDR < 0.001 ~ "***",
+           FDR < 0.01  ~ "**",
+           FDR < 0.05  ~ "*",
+           TRUE ~ "ns"
+         ))
+
+#show summary stats table
+print(perm_summary_df)
+
+#label positions
+#inside overlap bars: percentages
+overlap_labels <- plot_df %>%
+  filter(Category == "Overlap") %>%
+  left_join(perm_summary_df %>% dplyr::select(Treatment, Significant), by = "Treatment") %>%
+  mutate(
+    Label = paste0(round(Fraction*100, 1), ""),
+    y_pos = 0.5   #fixed position at 50%
+  )
+
+#above bars: significance stars
+label_positions <- plot_df %>%
+  group_by(Treatment) %>%
+  summarise(y_pos = 1.0, .groups = "drop") %>%
+  left_join(perm_summary_df %>% dplyr::select(Treatment, Significant), by = "Treatment")
+
+
+#plot final barplot
+TOP2i_Combined <- ggplot(plot_df, aes(x = Treatment, y = Fraction, fill = Category)) +
+  geom_bar(stat = "identity", position = "stack", width = 0.6) +
+  
+  #percentages inside overlap bars (fixed position)
+  geom_text(
+    data = overlap_labels,
+    aes(x = Treatment, y = y_pos, label = Label),
+    inherit.aes = FALSE,
+    color = "white",
+    fontface = "bold",
+    size = 4
+  ) +
+  
+  #significance stars above bars
+  geom_text(
+    data = label_positions,
+    aes(x = Treatment, y = y_pos, label = Significant),
+    inherit.aes = FALSE,
+    size = 4,
+    fontface = "bold",
+    color = "black"
+  ) +
+  
+  scale_y_continuous(labels = c(0, 100)) +
+  scale_fill_manual(values = c("Yes" = "#e41a1c", "No" = "#377eb8"),
+                    labels = legend_labels) +
+  labs(
+    title = "Proportion of TOP2i DEGs in tx+0 DEGs",
+    x = "TOP2i Treatment",
+    y = "Percentage of DOX tx+0 DEGs (%)",
+    fill = "TOP2i DEGs"
+  ) +
+  theme_custom()
+
+# save_plot(
+#   plot = TOP2i_Combined,
+#   folder = output_folder,
+#   filename = "TOP2i_Barplot_Combined_Fig4_EMP",
+#   height = 6,
+#   width = 8
+# )
+
+```
+
+
+# Supplementary Figure 7 - TOP2i DEGs Acute vs Chronic Clusters
+
+```{r Sup Fig 7 Barplots, message=FALSE, warning=FALSE}
+
+#read in my chronic and acute cluster gene lists
+final_genes_1_RUV <- readRDS("data/Fig3/final_genes_1_RUV.RDS")
+final_genes_2_RUV <- readRDS("data/Fig3/final_genes_2_RUV.RDS")
+
+acute_set <- unique(na.omit(final_genes_1_RUV))
+chronic_set <- unique(na.omit(final_genes_2_RUV))
+
+all_genes
+
+comparison_DEGs <- list(
+  DOX_RM = as.character(DOX_RM_DEGs$Entrez_ID),
+  DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
+  EPI_RM = as.character(EPI_RM_DEGs$Entrez_ID),
+  MTX_RM = as.character(MTX_RM_DEGs$Entrez_ID),
+  CX_SP  = as.character(CX_SP_DEGs$Entrez_ID),
+  DOX_SP = as.character(DOX_SP_DEGs$Entrez_ID)
+)
+
+#fisher's exact test per treatment
+fisher_test_overlap <- function(acute, chronic, degs) {
+  a <- sum(acute %in% degs)
+  b <- length(acute) - a
+  c <- sum(chronic %in% degs)
+  d <- length(chronic) - c
+  
+  contingency <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE)
+  fisher_res <- fisher.test(contingency)
+  
+  list(
+    contingency = contingency,
+    p_value = fisher_res$p.value,
+    significant = case_when(
+      fisher_res$p.value < 0.001 ~ "***",
+      fisher_res$p.value < 0.01  ~ "**",
+      fisher_res$p.value < 0.05  ~ "*",
+      TRUE ~ ""
+    )
+  )
+}
+
+# Prepare summary table for plotting
+plot_summary <- map_dfr(names(comparison_DEGs), function(treat) {
+  degs <- comparison_DEGs[[treat]]
+  
+  # Fisher test
+  fisher_res <- fisher_test_overlap(acute_set, chronic_set, degs)
+  
+  # Counts for each motif
+  acute_overlap <- sum(acute_set %in% degs)
+  acute_nonoverlap <- length(acute_set) - acute_overlap
+  chronic_overlap <- sum(chronic_set %in% degs)
+  chronic_nonoverlap <- length(chronic_set) - chronic_overlap
+  
+  tibble(
+    Treatment = treat,
+    Motif = rep(c("Acute", "Chronic"), each = 2),
+    Category = rep(c("DEG", "nonDEG"), 2),
+    Count = c(acute_overlap, acute_nonoverlap, chronic_overlap, chronic_nonoverlap),
+    Fraction = c(acute_overlap, acute_nonoverlap, chronic_overlap, chronic_nonoverlap) /
+               c(length(acute_set), length(acute_set), length(chronic_set), length(chronic_set)),
+    Significant = rep(c(fisher_res$significant, ""), 2)  #only on DEG bars
+  )
+})
+
+#ensure correct order
+plot_summary$Category <- factor(plot_summary$Category, levels = c("DEG", "nonDEG"))
+
+#position stars at y = 1
+label_positions <- plot_summary %>%
+  filter(Category == "DEG") %>%
+  mutate(y_pos = 1)
+
+#plot
+top2i_barplot_motifs_supp7 <- ggplot(plot_summary, aes(x = Treatment, y = Fraction, fill = Category)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(data = label_positions %>% filter(Significant != ""),
+            aes(x = Treatment, y = y_pos, label = Significant),
+            inherit.aes = FALSE, size = 6, fontface = "bold", color = "black") +
+  geom_text(aes(label = paste0(round(Fraction*100,1), "")),
+            position = position_stack(vjust = 0.5), size = 5, color = "white") +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_fill_manual(values = c("DEG" = "blue", "nonDEG" = "red")) +
+  facet_wrap(~Motif) +
+  labs(
+    title = "Percentage of TOP2i DEGs (Matthews et al., Paul et al.) in Acute and Chronic response clusters",
+    x = "TOP2i Treatment",
+    y = "Overlap Percentage (%)",
+    fill = ""
+  ) +
+  theme_custom()
+
+print(top2i_barplot_motifs_supp7)
+
+# save_plot(
+#   plot = top2i_barplot_motifs_supp7,
+#   filename = "Supp7_TOP2i_Barplots_EMP",
+#   folder = output_folder,
+#   height = 5,
+#   width = 8.5
+# )
+
+#print percentages and p-values
+
+for(treat in names(comparison_DEGs)) {
+  degs <- comparison_DEGs[[treat]]
+  acute_overlap <- sum(acute_set %in% degs)
+  chronic_overlap <- sum(chronic_set %in% degs)
+  prop_ac <- acute_overlap / length(acute_set)
+  prop_ch <- chronic_overlap / length(chronic_set)
+  fisher_res <- fisher_test_overlap(acute_set, chronic_set, degs)
+  
+  cat(sprintf("%s - Acute: %.2f%% (%d/%d), Chronic: %.2f%% (%d/%d), Fisher p = %.5f\n",
+              treat, 100*prop_ac, acute_overlap, length(acute_set),
+              100*prop_ch, chronic_overlap, length(chronic_set),
+              fisher_res$p_value))
+}
+
+#significance stars are for likelihood of being in the Chronic cluster over the Acute cluster - stars are the same on both sides but only really count for Chronic
+
+```
+
+# Figure 4B - Enrichment of TOP2i DEGs in Chronic cluster relative to Acute
+
+```{r Fig 4b, message=FALSE, warning=FALSE}
+
+#use the workflow above to now plot forest plots of odds ratios for these comparisons
+#I am comparing sets of DEGs from other TOP2i against my motifs here
+#I want to use my fisher's exact test data
+
+#same inputs as before to preserve them
+# final_genes_1_RUV
+# final_genes_2_RUV
+
+# acute_set 
+# chronic_set
+
+#remove DOX and preserve order DNR EPI MTX CX
+comparison_DEGs_noDOX <- list(
+  DNR_RM = as.character(DNR_RM_DEGs$Entrez_ID),
+  EPI_RM = as.character(EPI_RM_DEGs$Entrez_ID),
+  MTX_RM = as.character(MTX_RM_DEGs$Entrez_ID),
+  CX_SP  = as.character(CX_SP_DEGs$Entrez_ID)
+)
+
+treatment_order <- c("DNR_RM", "EPI_RM", "MTX_RM", "CX_SP")
+
+fisher_test_overlap <- function(acute, chronic, degs) {
+  a <- sum(acute %in% degs)
+  b <- length(acute) - a
+  c <- sum(chronic %in% degs)
+  d <- length(chronic) - c
+  
+  contingency <- matrix(c(a, b, c, d), nrow = 2, byrow = TRUE)
+  fisher_res <- fisher.test(contingency)
+  
+  tibble(
+    OR = unname(fisher_res$estimate),
+    CI_low = fisher_res$conf.int[1],
+    CI_high = fisher_res$conf.int[2],
+    p_value = fisher_res$p.value,
+    Significant = case_when(
+      fisher_res$p.value < 0.001 ~ "***",
+      fisher_res$p.value < 0.01 ~ "**",
+      fisher_res$p.value < 0.05 ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+}
+
+
+#build a summary table for the results of fishers exact for the forest plots
+forest_summary <- map_dfr(names(comparison_DEGs_noDOX), function(treat) {
+  res <- fisher_test_overlap(chronic_set, acute_set, comparison_DEGs_noDOX[[treat]])
+  res %>% mutate(Treatment = treat)
+}) %>% 
+  mutate(Treatment = factor(Treatment, levels = rev(treatment_order)), #define order
+         Group = ifelse(grepl("_RM$", Treatment), "RM", "SP"))
+
+#create my combined plot
+forest_TOP2i <- ggplot(forest_summary, 
+                       aes(y = Treatment, x = OR, 
+                           xmin = CI_low, xmax = CI_high)) + 
+  geom_point(size = 4) +
+  geom_errorbarh(height = 0.2, linewidth = 0.5, color = "black") +
+  geom_text(aes(label = Significant), position = position_nudge(y = 0.1), 
+            color = "black", fontface = "bold", size = 5) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+  scale_x_log10(limits = c(0.1, 1000),
+                breaks = c(0.1, 1, 10, 100, 1000)) +
+  scale_color_manual(values = c("_" = "grey", "_" = "grey")) + #remove the groups this way even though it's not the best method
+  labs(
+    title = "Enrichment of TOP2i DEGs in Chronic response cluster relative to Acute response cluster",
+    x = "log odds ratio (95% confidence interval)",
+    y = ""
+  ) +
+  theme_custom()
+
+print(forest_TOP2i)
+
+#make a summary table
+
+forest_summary_TOP2i <- forest_summary
+
+View(forest_summary_TOP2i)
+
+
+
+```
+

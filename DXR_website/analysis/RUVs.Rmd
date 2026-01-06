@@ -967,9 +967,31 @@ ggplot2::autoplot(prcomp_res_1_cpm,
 
 #update sample names columns in csv
 
-# saveRDS(Metadata, "data/Metadata_update.RDS")
-# write.csv(Metadata, "data/Metadata_update.csv")
-# Metadata <- read.csv("data/Metadata_update.csv")
+#I am also going to add the final sample names for the plots with an updated Timepoint column
+
+# Metadata <- Metadata %>%
+#   mutate(
+#     # create new timepoint naming
+#     Timepoint = case_when(
+#       Time == "t0"   ~ "tx+0",
+#       Time == "t24"  ~ "tx+24",
+#       Time == "t144" ~ "tx+144",
+#       TRUE ~ as.character(Time)
+#     ),
+#     
+#     #create plot sample names
+#     Sample_name_plots = paste(
+#       Treatment,
+#       Timepoint,
+#       Ind,
+#       sep = "_"
+#     )
+#   )
+
+# saveRDS(Metadata, "data/QC/Metadata_update.RDS")
+# write.csv(Metadata, "data/QC/Metadata_update.csv")
+# Metadata <- read.csv("data/QC/Metadata_update.csv")
+
 
 Metadata <- read.csv("data/QC/Metadata_update.csv")
 set1 <- readRDS("data/DE/set1.RDS")
@@ -978,7 +1000,12 @@ RUV_filt_counts <- readRDS("data/DE/RUV_filt_counts.RDS")
 ####RUVs k=1
 #check to make sure that the column names are correct
 dim(RUV_filt_counts)
+
+colnames(RUV_filt_counts) <- Metadata$Sample_name_plots
+
 dim(set1$normalizedCounts)
+
+colnames(set1$normalizedCounts) <- Metadata$Sample_name_plots
 
 #take the normalized counts from k=1 and put together a dataframe with the correct columns
 normcounts_k0 <- RUV_filt_counts
@@ -1016,7 +1043,7 @@ cor_matrix_spmn_k1_cpm <- cor(cpm_k1,
 
 #extract metadata columns
 Individual <- as.character(Metadata$Ind)
-Time <- as.character(Metadata$Time)
+Timepoint <- as.character(Metadata$Timepoint)
 Treatment <- as.character(Metadata$Treatment)
 
 #Define color palettes for annotations
@@ -1029,9 +1056,9 @@ annot_col_cor = list(Treatment = c("DOX" = "#499FBD",
                                      "5" = "#A68AC0", 
                                      "6" = "#F16F90", 
                                      "6R" = "#C61E4E"),
-                     Timepoint = c("t0" = "#005A4C",
-                                    "t24" = "#328477", 
-                                    "t144" = "#8FB9B1"))
+                     Timepoint = c("tx+0" = "#005A4C",
+                                    "tx+24" = "#328477", 
+                                    "tx+144" = "#8FB9B1"))
 
 tx_colors <- c("DOX" = "#499FBD",
                  "VEH" = "#BBBBBC")
@@ -1042,19 +1069,19 @@ ind_colors <- c("1" = "#FFA364",
                 "5" = "#A68AC0",
                 "6" = "#F16F90",
                 "6R" = "#C61E4E")
-time_colors <- c("t0" = "#005A4C",
-                 "t24" = "#328477",
-                 "t144" = "#8FB9B1")
+time_colors <- c("tx+0" = "#005A4C",
+                 "tx+24" = "#328477",
+                 "tx+144" = "#8FB9B1")
 
 
 # Create annotations
 top_annotation <- HeatmapAnnotation(
   Individual = Individual, 
-  Timepoint = Time,
+  Timepoint = Timepoint,
   Treatment = Treatment,
   col = list(
     Individual = ind_colors, 
-    Time = time_colors,
+    Timepoint = time_colors,
     Treatment = tx_colors
   )
 )
@@ -1144,7 +1171,7 @@ cat("Sign test p-value (greater than 0):", sign_test$p.value, "\n")
 
 #now I want to test correlations by timepoint with DOX vs DMSO
 #list your timepoints
-cor_time_sp <- c("t0", "t24", "t144")
+cor_time_sp <- c("tx+0", "tx+24", "tx+144")
 
 for (tp in cor_time_sp) {
   
@@ -1200,18 +1227,72 @@ for (tp in cor_time_sp) {
 
 ```{r Supp Fig 3 Spearman Cor HM, fig.height=10, fig.width=12}
 
-heatmap_spmn_k1_cpm <- Heatmap(cor_matrix_spmn_k1_cpm,
-                           name = "Spearman",
-                           top_annotation = top_annotation,
-                           show_row_names = TRUE,
-                           show_column_names = TRUE,
-                           cluster_rows = TRUE,
-                           cluster_columns = TRUE,
-                           border = TRUE, 
-                           column_title = "log2cpm of Normalized Counts k=1")
+#Make your supplement heatmap 
 
-draw(heatmap_spmn_k1_cpm)
+#rename your columns for your matrix cpm_k1 to be correct
+# I RENAMED THESE EARLIER 
+# new_colname <- colnames(cpm_k1) %>%
+#   gsub("t0", "tx+0", .) %>%
+#   gsub("t24", "tx+24", .) %>%
+#   gsub("t144", "tx+144", .) %>%
+#   gsub("DMSO", "VEH", .)
 
+# cpm_k1_rename <- cpm_k1
+
+# colnames(cpm_k1_rename) <- new_colname
+
+# cpm_k1 <- cpm_k1_rename
+
+# saveRDS(cpm_k1, "data/QC/cpm_k1_renamedcols.RDS")
+
+cor_matrix_spmn_k1_cpm_new <- cor(cpm_k1,
+                           y = NULL,
+                           use = "everything",
+                           method = "spearman")
+
+#create ComplexHeatmap
+heatmap_spmn_supp <- Heatmap(
+  cor_matrix_spmn_k1_cpm,
+  name = "Spearman",
+  top_annotation = top_annotation,
+  show_row_names = TRUE,
+  show_column_names = TRUE,
+  cluster_rows = TRUE,
+  cluster_columns = TRUE, 
+  show_row_dend = FALSE,
+  show_column_dend = TRUE,
+  row_names_gp = gpar(fontsize = 7),
+  column_names_gp = gpar(fontsize = 7),
+  column_names_centered = FALSE,
+  row_names_centered = FALSE,
+  rect_gp = gpar(col = "black", lwd = 0.5), 
+  border = gpar(col = "black", lwd = 1),
+  column_title = "log2cpm of normalized counts RUVs corrected",
+  column_title_gp = gpar(fontsize = 10, fontface = "plain"),
+  heatmap_legend_param = list(
+    title_gp = gpar(fontsize = 9, fontface = "plain"),
+    labels_gp = gpar(fontsize = 8)
+  )
+)
+
+#make a function to save complex heatmaps
+save_complex_heatmap <- function(plot, filename, folder, width = 6, height = 8) {
+  if (!dir.exists(folder)) dir.create(folder, recursive = TRUE)
+    path <- file.path(folder, filename)
+    pdf(path, width = width, height = height)
+    draw(plot, heatmap_legend_side = "right")
+    dev.off()
+  message("Saved heatmap to: ", path)
+}
+
+# Save to PDF in your output folder
+save_complex_heatmap(
+  plot = heatmap_spmn_supp,
+  filename = "SuppFig3_SpearmanCorHM_RUV_log2cpm_EMP.pdf",
+  folder = output_folder,
+  width = 8,
+  height = 7
+)
 ```
 
 ## Top 5 DEGs RUVs
