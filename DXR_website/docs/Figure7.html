@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Figure 7 Analysis</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DXR Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="index.html">Analysis</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/emmapfort/DXR_Project">
+    <span class="fab fa-github"></span>
+     
+    Source Code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 7 Analysis</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-01-06
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>DXR_website/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251201code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251201)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251201code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251201)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreecd535e91c1466858501e22b6a24f6a6326256e21targetblankcd535e9a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/emmapfort/DXR_Project/tree/cd535e91c1466858501e22b6a24f6a6326256e21" target="_blank">cd535e9</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreecd535e91c1466858501e22b6a24f6a6326256e21targetblankcd535e9a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/emmapfort/DXR_Project/tree/cd535e91c1466858501e22b6a24f6a6326256e21" target="_blank">cd535e9</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    DXR_website/data/
+    Ignored:    code/Flow_Purity_Stressor_Boxplots_EMP_250226.R
+    Ignored:    data/CDKN1A_geneplot_Dox.RDS
+    Ignored:    data/Cormotif_dox.RDS
+    Ignored:    data/Cormotif_prob_gene_list.RDS
+    Ignored:    data/Cormotif_prob_gene_list_doxonly.RDS
+    Ignored:    data/Counts_RNA_EMPfortmiller.txt
+    Ignored:    data/DMSO_TNN13_plot.RDS
+    Ignored:    data/DOX_TNN13_plot.RDS
+    Ignored:    data/DOXgeneplots.RDS
+    Ignored:    data/ExpressionMatrix_EMP.csv
+    Ignored:    data/Ind1_DOX_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_list.csv
+    Ignored:    data/Ind6REP_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_set.csv
+    Ignored:    data/Ind6_Spearman_plot.RDS
+    Ignored:    data/MDM2_geneplot_Dox.RDS
+    Ignored:    data/Master_summary_75-1_EMP_250811_final.csv
+    Ignored:    data/Master_summary_87-1_EMP_250811_final.csv
+    Ignored:    data/Metadata.csv
+    Ignored:    data/Metadata_2_norep_update.RDS
+    Ignored:    data/Metadata_update.csv
+    Ignored:    data/QC/
+    Ignored:    data/Recovery_flow_purity.csv
+    Ignored:    data/SIRT1_geneplot_Dox.RDS
+    Ignored:    data/Sample_annotated.csv
+    Ignored:    data/SpearmanHeatmapMatrix_EMP
+    Ignored:    data/VolcanoPlot_D144R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24T_original_EMP_250623.png
+    Ignored:    data/annot_dox.RDS
+    Ignored:    data/annot_list_hm.csv
+    Ignored:    data/cormotif_dxr_1.RDS
+    Ignored:    data/cormotif_dxr_2.RDS
+    Ignored:    data/counts/
+    Ignored:    data/counts_DE_df_dox.RDS
+    Ignored:    data/counts_DE_raw_data.RDS
+    Ignored:    data/counts_raw_filt.RDS
+    Ignored:    data/counts_raw_matrix.RDS
+    Ignored:    data/counts_raw_matrix_EMP_250514.csv
+    Ignored:    data/d24_Spearman_plot.RDS
+    Ignored:    data/dge_calc_dxr.RDS
+    Ignored:    data/dge_calc_matrix.RDS
+    Ignored:    data/ensembl_backup_dox.RDS
+    Ignored:    data/fC_AllCounts.RDS
+    Ignored:    data/fC_DOXCounts.RDS
+    Ignored:    data/featureCounts_Concat_Matrix_DOXSamples_EMP_250430.csv
+    Ignored:    data/featureCounts_DOXdata_updatedind.RDS
+    Ignored:    data/filcpm_colnames_matrix.csv
+    Ignored:    data/filcpm_matrix.csv
+    Ignored:    data/filt_gene_list_dox.RDS
+    Ignored:    data/filter_gene_list_final.RDS
+    Ignored:    data/final_data/
+    Ignored:    data/gene_clustlike_motif.RDS
+    Ignored:    data/gene_postprob_motif.RDS
+    Ignored:    data/genedf_dxr.RDS
+    Ignored:    data/genematrix_dox.RDS
+    Ignored:    data/genematrix_dxr.RDS
+    Ignored:    data/heartgenes.csv
+    Ignored:    data/heartgenes_dox.csv
+    Ignored:    data/image_intensity_stats_all_conditions.csv
+    Ignored:    data/image_level_stats_all_conditions.csv
+    Ignored:    data/image_level_summary_yH2AX_quant.csv
+    Ignored:    data/ind_num_dox.RDS
+    Ignored:    data/ind_num_dxr.RDS
+    Ignored:    data/initial_cormotif.RDS
+    Ignored:    data/initial_cormotif_dox.RDS
+    Ignored:    data/low_nuclei_samples.csv
+    Ignored:    data/low_veh_samples.csv
+    Ignored:    data/new/
+    Ignored:    data/new_cormotif_dox.RDS
+    Ignored:    data/perc_mean_all_10X.png
+    Ignored:    data/perc_mean_all_20X.png
+    Ignored:    data/perc_mean_all_40X.png
+    Ignored:    data/perc_mean_consistent_10X.png
+    Ignored:    data/perc_mean_consistent_20X.png
+    Ignored:    data/perc_mean_consistent_40X.png
+    Ignored:    data/perc_median_all_10X.png
+    Ignored:    data/perc_median_all_20X.png
+    Ignored:    data/perc_median_all_40X.png
+    Ignored:    data/perc_median_consistent_10X.png
+    Ignored:    data/perc_median_consistent_20X.png
+    Ignored:    data/perc_median_consistent_40X.png
+    Ignored:    data/plot_leg_d.RDS
+    Ignored:    data/plot_leg_d_horizontal.RDS
+    Ignored:    data/plot_leg_d_vertical.RDS
+    Ignored:    data/plot_theme_custom.RDS
+    Ignored:    data/process_gene_data_funct.RDS
+    Ignored:    data/raw_mean_all_10X.png
+    Ignored:    data/raw_mean_all_20X.png
+    Ignored:    data/raw_mean_all_40X.png
+    Ignored:    data/raw_mean_consistent_10X.png
+    Ignored:    data/raw_mean_consistent_20X.png
+    Ignored:    data/raw_mean_consistent_40X.png
+    Ignored:    data/raw_median_all_10X.png
+    Ignored:    data/raw_median_all_20X.png
+    Ignored:    data/raw_median_all_40X.png
+    Ignored:    data/raw_median_consistent_10X.png
+    Ignored:    data/raw_median_consistent_20X.png
+    Ignored:    data/raw_median_consistent_40X.png
+    Ignored:    data/ruv/
+    Ignored:    data/summary_all_IF_ROI.RDS
+    Ignored:    data/tableED_GOBP.RDS
+    Ignored:    data/tableESR_GOBP_postprob.RDS
+    Ignored:    data/tableLD_GOBP.RDS
+    Ignored:    data/tableLR_GOBP_postprob.RDS
+    Ignored:    data/tableNR_GOBP.RDS
+    Ignored:    data/tableNR_GOBP_postprob.RDS
+    Ignored:    data/table_incsus_genes_GOBP_RUV.RDS
+    Ignored:    data/table_motif1_GOBP_d.RDS
+    Ignored:    data/table_motif1_genes_GOBP.RDS
+    Ignored:    data/table_motif2_GOBP_d.RDS
+    Ignored:    data/table_motif3_genes_GOBP.RDS
+    Ignored:    data/thing.R
+    Ignored:    data/top.table_V.D144r_dox.RDS
+    Ignored:    data/top.table_V.D24_dox.RDS
+    Ignored:    data/top.table_V.D24r_dox.RDS
+    Ignored:    data/yH2AX_75-1_EMP_250811.csv
+    Ignored:    data/yH2AX_87-1_EMP_250811.csv
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_Quant_10X_EMP_250817.png
+    Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
+    Ignored:    data/yh2ax_all_df_EMP_250812.csv
+
+Unstaged changes:
+    Modified:   analysis/DXR_Project_Analysis.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>DXR_website/analysis/Figure7.Rmd</code>)
+and HTML (<code>DXR_website/docs/Figure7.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/cd535e91c1466858501e22b6a24f6a6326256e21/DXR_website/analysis/Figure7.Rmd" target="_blank">cd535e9</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-06
+</td>
+<td>
+Final Website Touches 01/06/25 EMP
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+</style>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<p>Load necessary libraries for analysis.</p>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(readr)
+library(reshape2)
+library(circlize)
+library(grid)
+library(stringr)
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+library(gprofiler2)
+library(purrr)
+library(ggVennDiagram)
+library(eulerr)</code></pre>
+<p>Define my custom plot theme</p>
+<pre class="r"><code># Define the custom theme
+# plot_theme_custom &lt;- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = &quot;black&quot;),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, &quot;in&quot;),
+# 
+#       #text and font
+#       axis.text = element_text(color = &quot;black&quot;,
+#                                family = &quot;Arial&quot;,
+#                                size = 7),
+#       axis.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 9),
+#       legend.text = element_text(color = &quot;black&quot;,
+#                                  family = &quot;Arial&quot;,
+#                                  size = 7),
+#       legend.title = element_text(color = &quot;black&quot;,
+#                                   family = &quot;Arial&quot;,
+#                                   size = 9),
+#       plot.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = &quot;grey80&quot;, linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = &quot;grey90&quot;, linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
+
+theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
+<p>Define a function to save plots as .pdf and .png</p>
+<pre class="r"><code>save_plot &lt;- function(plot, filename, 
+                      folder = &quot;.&quot;, 
+                      width = 8, 
+                      height = 6, 
+                      units = &quot;in&quot;, 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop(&quot;Please provide a filename (without extension) for the plot.&quot;)
+
+  date_str &lt;- if (add_date) paste0(&quot;_&quot;, format(Sys.Date(), &quot;%y%m%d&quot;)) else &quot;&quot;
+  pdf_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.pdf&quot;))
+  png_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.png&quot;))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = &quot;transparent&quot;)
+  ggsave(filename = png_file, plot = plot, device = &quot;png&quot;, width = width, height = height, units = units, dpi = dpi, bg = &quot;transparent&quot;)
+  message(&quot;Saved plot as Cairo PDF: &quot;, pdf_file)
+  message(&quot;Saved plot as PNG: &quot;, png_file)
+}
+
+output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height</code></pre>
+</div>
+<div id="identify-genes-associated-with-dox-cardiotoxicity"
+class="section level1">
+<h1>Identify genes associated with DOX cardiotoxicity</h1>
+<p>We utilized three studies which identified DOX-induced cardiotoxicity
+genes (DIC):</p>
+<p>Liu, C., et al., CRISPRi/a screens in human iPSC-cardiomyocytes
+identify glycolytic activation as a druggable target for
+doxorubicin-induced cardiotoxicity. Cell Stem Cell, 2024. 31(12):
+p. 1760-1776. e9.</p>
+<p>Sapp, V., et al., Genome-wide CRISPR/Cas9 screening in human iPS
+derived cardiomyocytes uncovers novel mediators of doxorubicin
+cardiotoxicity. Sci Rep, 2021. 11(1): p. 13866.</p>
+<p>Fonoudi, H., et al., Functional Validation of Doxorubicin-Induced
+Cardiotoxicity-Related Genes. JACC CardioOncol, 2024. 6(1):
+p. 38-50.</p>
+<pre class="r"><code>#read in the three DOX response gene sets from literature
+liu_ids &lt;- readRDS(&quot;data/Fig7/liu_ids.RDS&quot;)
+sapp_ids &lt;- readRDS(&quot;data/Fig7/sapp_ids.RDS&quot;)
+fonoudi_ids &lt;- readRDS(&quot;data/Fig7/fonoudi_ids.RDS&quot;)
+
+#combine these into a DIC gene set
+DIC_genes &lt;- unique(c(fonoudi_ids, sapp_ids, liu_ids))
+length(DIC_genes)</code></pre>
+<pre><code>[1] 201</code></pre>
+<pre class="r"><code>#read in your cluster gene sets
+final_genes_1_RUV &lt;- readRDS(&quot;data/Fig3/final_genes_1_RUV.RDS&quot;)
+final_genes_2_RUV &lt;- readRDS(&quot;data/Fig3/final_genes_2_RUV.RDS&quot;)
+
+#read in your progressively Chronic genes and non-ProChronic genes
+proChronic_gene_list &lt;- readRDS(&quot;data/Fig6/proChronic_gene_list.RDS&quot;)
+nonproChronic_gene_list &lt;- readRDS(&quot;data/Fig6/non-proChronic_gene_list.RDS&quot;)</code></pre>
+</div>
+<div
+id="figure-7a---overlap-of-response-genes-with-dox-cardiotoxicity-genes"
+class="section level1">
+<h1>Figure 7A - Overlap of response genes with DOX cardiotoxicity
+genes</h1>
+<pre class="r"><code>venn_proChronic_list &lt;- list(
+  &quot;DIC&quot; = as.character(DIC_genes),
+  &quot;Acute&quot; = as.character(final_genes_1_RUV),
+  &quot;ProChronic&quot; = as.character(proChronic_gene_list),
+  &quot;non-ProChronic&quot; = as.character(nonproChronic_gene_list)
+)
+
+
+venn_proChronic_DIC &lt;- ggVennDiagram(
+  venn_proChronic_list,
+  category.names = c(&quot;DIC \n (n = 201)&quot;, 
+                     &quot;Acute \n (n = 7602)&quot;, 
+                     &quot;ProChronic \n (n = 163)&quot;, 
+                     &quot;non-ProChronic \n (n = 338)&quot;)
+) +
+  ggtitle(&quot;Overlap of response genes with DOX cardiotoxicity genes \n(Fonoudi et al., Sapp et al., Liu et al.)&quot;) +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = &quot;#F9F9F9&quot;, high = &quot;#4B9CD3&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;none&quot;)
+
+
+print(venn_proChronic_DIC)</code></pre>
+<p><img src="figure/Figure7.Rmd/Venn%20Diagram%20DIC%20genes-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#I am interested in the gene that is overlapping in my ProChronic with the DIC gene set
+#POLQ</code></pre>
+</div>
+<div id="figure-7b---overlapping-gene-from-prochronic-and-dic-polq"
+class="section level1">
+<h1>Figure 7B - Overlapping gene from ProChronic and DIC (POLQ)</h1>
+<pre class="r"><code>#proChronic_gene_list
+#DIC_genes
+
+#there are 5 total genes to investigate based on the Venn diagram of overlap with CT genes
+#1 overlap with ProChronic
+#4 overlap with non-ProChronic
+
+intersect(proChronic_gene_list, DIC_genes)</code></pre>
+<pre><code>[1] &quot;10721&quot;</code></pre>
+<pre class="r"><code>proChronic_overlap &lt;- proChronic_gene_list[proChronic_gene_list %in% DIC_genes]
+#these give the same results
+#10721 Entrez_ID 
+
+intersect(nonproChronic_gene_list, DIC_genes)</code></pre>
+<pre><code>[1] &quot;8407&quot;   &quot;129607&quot; &quot;30811&quot;  &quot;1310&quot;  </code></pre>
+<pre class="r"><code>nonproChronic_overlap &lt;- nonproChronic_gene_list[nonproChronic_gene_list %in% DIC_genes]
+#these give the same results
+#8407, 129607, 30811, 1310 Entrez_ID =
+#8407 = 
+#129607 
+
+DIC_cats &lt;- list( 
+  &quot;Fonoudi et al.&quot; = fonoudi_ids,
+  &quot;Liu et al.&quot; = liu_ids,
+  &quot;Sapp et al.&quot; = sapp_ids
+)
+
+
+#pull the gene symbol so I can plot log2cpm data
+dic_genes_df &lt;- map_dfr(names(DIC_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(DIC_genes, DIC_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(dic_genes_df)</code></pre>
+<pre><code>[1] 202   2</code></pre>
+<pre class="r"><code>#202 genes overall from all categories
+
+#filter overlaps for proSus
+proChronic_overlap &lt;- dic_genes_df %&gt;%
+  filter(Entrez_ID %in% proChronic_gene_list)
+#1 gene - from Sapp et al
+
+#filter overlaps for recSus
+nonproChronic_overlap &lt;- dic_genes_df %&gt;%
+  filter(Entrez_ID %in% nonproChronic_gene_list)
+#4 genes - from Sapp et al
+
+#also sanity check that these genes are DEGs that overlap with proSus recSus
+set_for_overlap &lt;- list(
+  ProChronic = proChronic_overlap$Entrez_ID,
+  nonproChronic = nonproChronic_overlap$Entrez_ID,
+  geneSets = unique(unlist(DIC_genes))
+)
+
+#read in my factors
+#add in colors and factors
+txtime_col &lt;- list(
+  &quot;DOX_t0&quot; = &quot;#263CA5&quot;,
+  &quot;VEH_t0&quot; = &quot;#444343&quot;,
+  &quot;DOX_t24&quot; = &quot;#5B8FD1&quot;,
+  &quot;VEH_t24&quot; = &quot;#757575&quot;,
+  &quot;DOX_t144&quot; = &quot;#89C5E5&quot;,
+  &quot;VEH_t144&quot; = &quot;#AAAAAA&quot;
+)
+
+ind_col &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;,
+  &quot;6R&quot; = &quot;#C61E4E&quot;
+)
+
+time_col &lt;- list(
+  &quot;t0&quot; = &quot;#005A4C&quot;,
+  &quot;t24&quot; = &quot;#328477&quot;,
+  &quot;t144&quot; = &quot;#8FB9B1&quot;)
+
+tx_col &lt;- list(
+  &quot;DOX&quot; = &quot;#499FBD&quot;, 
+  &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+
+#read in my deg_wide dataframe
+deg_wide &lt;- readRDS(&quot;data/DE/DEGs_overlap_wide_dataframe.RDS&quot;)
+
+proChronic_degs &lt;- deg_wide %&gt;% 
+  dplyr::filter(Entrez_ID %in% proChronic_overlap$Entrez_ID)
+
+nonproChronic_degs &lt;- deg_wide %&gt;% 
+  dplyr::filter(Entrez_ID %in% nonproChronic_overlap$Entrez_ID)
+
+#check whether the assumptions are stil the same that the absFC is t0 &lt; t144
+
+#ProChronic
+proChronic_pattern &lt;- proChronic_degs %&gt;%
+  mutate(correct_pattern = absFC_t0 &lt; absFC_t24 &amp; absFC_t24 &lt; absFC_t144)
+
+proChronic_summary &lt;- proChronic_pattern %&gt;%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+proChronic_summary </code></pre>
+<pre><code># A tibble: 1 × 3
+  total_genes n_correct percent_correct
+        &lt;int&gt;     &lt;int&gt;           &lt;dbl&gt;
+1           1         1             100</code></pre>
+<pre class="r"><code>#find gene symbols
+proChronic_overlap &lt;- proChronic_overlap %&gt;%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = &quot;SYMBOL&quot;,
+      keytype = &quot;ENTREZID&quot;,
+      multiVals = &quot;first&quot;
+    )
+  )
+
+nonproChronic_overlap &lt;- nonproChronic_overlap %&gt;%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = &quot;SYMBOL&quot;,
+      keytype = &quot;ENTREZID&quot;,
+      multiVals = &quot;first&quot;
+    )
+  )
+
+#now plot these example genes for each
+
+boxplot_new &lt;- readRDS(&quot;data/DE/boxplot_updated.RDS&quot;)
+
+#process the cpm data
+process_cpm_data_cormotif &lt;- function(gene_id, expr_df) {
+  gene_data &lt;- expr_df %&gt;% filter(Entrez_ID == gene_id)
+  
+  long_data &lt;- gene_data %&gt;%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = &quot;Sample&quot;,
+      values_to = &quot;log2CPM&quot;
+    ) %&gt;%
+    mutate(
+      Treatment = case_when(
+        grepl(&quot;DOX&quot;, Sample) ~ &quot;DOX&quot;,
+        grepl(&quot;VEH&quot;, Sample) ~ &quot;VEH&quot;,
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl(&quot;t0&quot;, Sample) ~ &quot;t0&quot;,
+        grepl(&quot;t24&quot;, Sample) ~ &quot;t24&quot;,
+        grepl(&quot;t144&quot;, Sample) ~ &quot;t144&quot;,
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl(&quot;1$&quot;, Sample) ~ &quot;1&quot;,
+        grepl(&quot;2$&quot;, Sample) ~ &quot;2&quot;,
+        grepl(&quot;3$&quot;, Sample) ~ &quot;3&quot;,
+        grepl(&quot;4$&quot;, Sample) ~ &quot;4&quot;,
+        grepl(&quot;5$&quot;, Sample) ~ &quot;5&quot;,
+        grepl(&quot;6$&quot;, Sample) ~ &quot;6&quot;,
+        grepl(&quot;6R$&quot;, Sample) ~ &quot;6R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = &quot;_&quot;)
+    )
+  
+  # Set factor levels for plotting order
+  long_data$Condition &lt;- factor(
+    long_data$Condition,
+    levels = c(&quot;DOX_t0&quot;, &quot;VEH_t0&quot;, 
+               &quot;DOX_t24&quot;, &quot;VEH_t24&quot;, 
+               &quot;DOX_t144&quot;, &quot;VEH_t144&quot;)
+  )
+  
+  return(long_data)
+}
+
+# Function to generate plots for a set of genes
+generate_overlap_plots_cormotif &lt;- function(overlap_df, expr_df, comparison_label) {
+  plots &lt;- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data &lt;- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol &lt;- unique(gene_data$SYMBOL)
+    gene_categories &lt;- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories &lt;- paste(unique(gene_categories), collapse = &quot;, &quot;)
+    
+    p &lt;- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     &quot; (&quot;, comparison_label, &quot; in &quot;, gene_categories, &quot;) &quot;)) +
+      labs(x = &quot;Condition&quot;, y = &quot;log2cpm&quot;) +
+      theme_custom()
+    
+    #use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name &lt;- paste0(gene_symbol, &quot;_&quot;, gene_id, &quot;_&quot;, comparison_label)
+    plots[[plot_name]] &lt;- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for both (most interested in proChronic overlap with DIC genes)
+proChronic_plots &lt;- generate_overlap_plots_cormotif(proChronic_overlap, 
+                                                    boxplot_new, &quot;ProChronic&quot;)
+nonproChronic_plots &lt;- generate_overlap_plots_cormotif(nonproChronic_overlap, 
+                                                       boxplot_new, &quot;non-ProChronic&quot;)
+
+#preview all plots
+for (p in c(proChronic_plots, nonproChronic_plots)) print(p)</code></pre>
+<p><img src="figure/Figure7.Rmd/Example%20genes%20log2cpm%20for%20ProChronic-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Figure7.Rmd/Example%20genes%20log2cpm%20for%20ProChronic-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/Figure7.Rmd/Example%20genes%20log2cpm%20for%20ProChronic-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Figure7.Rmd/Example%20genes%20log2cpm%20for%20ProChronic-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/Figure7.Rmd/Example%20genes%20log2cpm%20for%20ProChronic-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#save all of these plots with unique names
+# for (plot_name in names(proSus_plots)) {
+#   save_plot(proSus_plots[[plot_name]],
+#             filename = paste0(&quot;ExGene_proSus_&quot;, plot_name, &quot;_EMP&quot;),
+#             folder = output_folder)
+# }
+# 
+# for (plot_name in names(notproSus_plots)) {
+#   save_plot(notproSus_plots[[plot_name]],
+#             filename = paste0(&quot;ExGene_notproSus_&quot;, plot_name, &quot;_EMP&quot;),
+#             folder = output_folder)
+# }
+
+
+#POLQ is the gene that is overlapping between DIC and ProChronic</code></pre>
+</div>
+<div
+id="figure-7c---overlap-of-response-genes-with-heart-failure-risk-genes"
+class="section level1">
+<h1>Figure 7C - Overlap of response genes with heart failure risk
+genes</h1>
+<p>We pulled the associations for heart failure (HF) from the GWAS
+catalogue for this analysis.</p>
+<pre class="r"><code>#read in the HF GWAS gene set from the GWAS catalog
+
+hf_gwas_genes &lt;- readRDS(&quot;data/Fig7/HF_gwas_genelist.RDS&quot;)
+hf_gwas_genes_list &lt;- hf_gwas_genes$Entrez_ID
+
+venn_proChronic_list_HF &lt;- list(
+  HF = as.character(hf_gwas_genes_list),
+  Acute = as.character(final_genes_1_RUV),
+  ProChronic = as.character(proChronic_gene_list),
+  nonProChronic = as.character(nonproChronic_gene_list)
+)
+
+venn_proChronic_HF &lt;- ggVennDiagram(
+  venn_proChronic_list_HF,
+  category.names = c(&quot;HF GWAS\n (n = 299)&quot;, 
+                     &quot;Acute \n (n = 7602)&quot;, 
+                     &quot;ProChronic \n (n = 163)&quot;, 
+                     &quot;non-ProChronic \n (n = 338)&quot;)
+) +
+  ggtitle(&quot;Overlap of response genes with heart failure risk genes \n(Cerezo et al.)&quot;) +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = &quot;#F9F9F9&quot;, high = &quot;#4B9CD3&quot;) +
+  theme_custom() +
+  theme(legend.position = &quot;none&quot;)
+
+
+print(venn_proChronic_HF)</code></pre>
+<p><img src="figure/Figure7.Rmd/Venn%20Diagram%20HF%20GWAS%20genes%20proSus-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># save_plot(
+#   plot = venn_proSus_HF,
+#   filename = &quot;Venn_HF_proSus_EMP&quot;,
+#   folder = output_folder,
+#   height = 6,
+#   width = 8
+# )</code></pre>
+</div>
+<div id="figure-7d---overlap-of-hf-risk-genes-with-non-prochronic-tirap"
+class="section level1">
+<h1>Figure 7D - Overlap of HF risk genes with non-ProChronic
+(TIRAP)</h1>
+<pre class="r"><code>#there are 4 total genes to investigate based on the Venn diagram of overlap with HF GWAS Genes
+#4 overlap with non-ProChronic
+
+nonproChronic_overlap &lt;- nonproChronic_gene_list[nonproChronic_gene_list %in% hf_gwas_genes_list]
+#Entrez_IDs - 11113, 26154, 10293, 1026
+
+HF_cats &lt;- list( 
+  &quot;HF GWAS&quot; = hf_gwas_genes_list
+)
+
+hf_gwas_cats &lt;- list( 
+  &quot;HF GWAS Genes&quot; = unique(na.omit(hf_gwas_genes_list))
+)
+
+#pull the gene symbol so I can plot log2cpm data
+hf_genes_df &lt;- map_dfr(names(HF_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(hf_gwas_genes_list, HF_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(hf_genes_df)</code></pre>
+<pre><code>[1] 299   2</code></pre>
+<pre class="r"><code>#filter overlaps for notproSus
+nonproChronic_overlap_hf &lt;- hf_genes_df %&gt;%
+  filter(Entrez_ID %in% nonproChronic_gene_list)
+#4 genes
+
+#read in my dataframe for plotting log2cpm genes
+deg_wide &lt;- readRDS(&quot;data/DE/DEGs_overlap_wide_dataframe.RDS&quot;)
+
+nonproChronic_degs &lt;- deg_wide %&gt;% 
+  dplyr::filter(Entrez_ID %in% nonproChronic_overlap_hf$Entrez_ID)
+
+#check whether the assumptions are stil the same that the absFC is t0 &lt; t144
+
+#find gene symbols
+
+nonproChronic_overlap_hf &lt;- nonproChronic_overlap_hf %&gt;%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = &quot;SYMBOL&quot;,
+      keytype = &quot;ENTREZID&quot;,
+      multiVals = &quot;first&quot;
+    )
+  )
+
+#now plot these example genes for each
+boxplot_new &lt;- readRDS(&quot;data/DE/boxplot_updated.RDS&quot;)
+
+#process the cpm data
+process_cpm_data_cormotif &lt;- function(gene_id, expr_df) {
+  gene_data &lt;- expr_df %&gt;% filter(Entrez_ID == gene_id)
+  
+  long_data &lt;- gene_data %&gt;%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = &quot;Sample&quot;,
+      values_to = &quot;log2CPM&quot;
+    ) %&gt;%
+    mutate(
+      Treatment = case_when(
+        grepl(&quot;DOX&quot;, Sample) ~ &quot;DOX&quot;,
+        grepl(&quot;VEH&quot;, Sample) ~ &quot;VEH&quot;,
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl(&quot;t0&quot;, Sample) ~ &quot;t0&quot;,
+        grepl(&quot;t24&quot;, Sample) ~ &quot;t24&quot;,
+        grepl(&quot;t144&quot;, Sample) ~ &quot;t144&quot;,
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl(&quot;1$&quot;, Sample) ~ &quot;1&quot;,
+        grepl(&quot;2$&quot;, Sample) ~ &quot;2&quot;,
+        grepl(&quot;3$&quot;, Sample) ~ &quot;3&quot;,
+        grepl(&quot;4$&quot;, Sample) ~ &quot;4&quot;,
+        grepl(&quot;5$&quot;, Sample) ~ &quot;5&quot;,
+        grepl(&quot;6$&quot;, Sample) ~ &quot;6&quot;,
+        grepl(&quot;6R$&quot;, Sample) ~ &quot;6R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = &quot;_&quot;)
+    )
+  
+  #set factor levels for plotting order
+  long_data$Condition &lt;- factor(
+    long_data$Condition,
+    levels = c(&quot;DOX_t0&quot;, &quot;VEH_t0&quot;, 
+               &quot;DOX_t24&quot;, &quot;VEH_t24&quot;, 
+               &quot;DOX_t144&quot;, &quot;VEH_t144&quot;)
+  )
+  
+  return(long_data)
+}
+
+#function to generate plots for a set of genes
+generate_overlap_plots_cormotif &lt;- function(overlap_df, expr_df, comparison_label) {
+  plots &lt;- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data &lt;- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol &lt;- unique(gene_data$SYMBOL)
+    gene_categories &lt;- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories &lt;- paste(unique(gene_categories), collapse = &quot;, &quot;)
+    
+    p &lt;- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     &quot; (&quot;, comparison_label, &quot; in &quot;, gene_categories, &quot;) &quot;)) +
+      labs(x = &quot;Condition&quot;, y = &quot;log2cpm&quot;) +
+      theme_custom()
+    
+    #use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name &lt;- paste0(gene_symbol, &quot;_&quot;, gene_id, &quot;_&quot;, comparison_label)
+    plots[[plot_name]] &lt;- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for notproSus overlap genes
+nonproChronic_plots_hf &lt;- generate_overlap_plots_cormotif(nonproChronic_overlap_hf, 
+                                                          boxplot_new, &quot;non-ProChronic&quot;)
+
+#preview all plots
+for (p in c(nonproChronic_plots_hf)) print(p)</code></pre>
+<p><img src="figure/Figure7.Rmd/Overlap%20log2cpm%20Genes%20non-ProChronic-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Figure7.Rmd/Overlap%20log2cpm%20Genes%20non-ProChronic-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/Figure7.Rmd/Overlap%20log2cpm%20Genes%20non-ProChronic-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Figure7.Rmd/Overlap%20log2cpm%20Genes%20non-ProChronic-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#save all of these plots with unique names
+# for (plot_name in names(nonproChronic_plots_hf)) {
+#   save_plot(nonproChronic_plots_hf[[plot_name]],
+#             filename = paste0(&quot;ExGene_HF_nonproChronic_&quot;, plot_name, &quot;_EMP&quot;),
+#             folder = output_folder)
+# }
+
+#I plotted TIRAP as an example of a gene that overlaps with non-proChronic in the HF GWAS set</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22000)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats4    grid      stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] eulerr_7.0.2         ggVennDiagram_1.5.2  gprofiler2_0.2.3    
+ [4] org.Hs.eg.db_3.20.0  AnnotationDbi_1.68.0 IRanges_2.40.0      
+ [7] S4Vectors_0.44.0     Biobase_2.66.0       BiocGenerics_0.52.0 
+[10] circlize_0.4.16      reshape2_1.4.4       readxl_1.4.5        
+[13] lubridate_1.9.4      forcats_1.0.0        stringr_1.5.1       
+[16] dplyr_1.1.4          purrr_1.0.4          readr_2.1.5         
+[19] tidyr_1.3.1          tibble_3.2.1         ggplot2_3.5.2       
+[22] tidyverse_2.0.0      workflowr_1.7.1     
+
+loaded via a namespace (and not attached):
+ [1] tidyselect_1.2.1        viridisLite_0.4.2       farver_2.1.2           
+ [4] blob_1.2.4              Biostrings_2.74.0       lazyeval_0.2.2         
+ [7] fastmap_1.2.0           promises_1.3.2          digest_0.6.37          
+[10] timechange_0.3.0        lifecycle_1.0.4         processx_3.8.6         
+[13] KEGGREST_1.46.0         RSQLite_2.3.9           magrittr_2.0.3         
+[16] compiler_4.4.2          rlang_1.1.6             sass_0.4.10            
+[19] tools_4.4.2             yaml_2.3.10             data.table_1.17.0      
+[22] knitr_1.50              labeling_0.4.3          htmlwidgets_1.6.4      
+[25] bit_4.5.0               plyr_1.8.9              RColorBrewer_1.1-3     
+[28] withr_3.0.2             git2r_0.36.2            colorspace_2.1-1       
+[31] scales_1.4.0            cli_3.6.3               rmarkdown_2.29         
+[34] crayon_1.5.3            generics_0.1.4          rstudioapi_0.17.1      
+[37] httr_1.4.7              tzdb_0.5.0              DBI_1.2.3              
+[40] cachem_1.1.0            zlibbioc_1.52.0         cellranger_1.1.0       
+[43] XVector_0.46.0          vctrs_0.6.5             jsonlite_2.0.0         
+[46] callr_3.7.6             hms_1.1.3               bit64_4.5.2            
+[49] plotly_4.10.4           jquerylib_0.1.4         glue_1.8.0             
+[52] ps_1.9.1                stringi_1.8.7           shape_1.4.6.1          
+[55] gtable_0.3.6            later_1.4.2             GenomeInfoDb_1.42.3    
+[58] UCSC.utils_1.2.0        pillar_1.10.2           htmltools_0.5.8.1      
+[61] GenomeInfoDbData_1.2.13 R6_2.6.1                rprojroot_2.0.4        
+[64] evaluate_1.0.3          png_0.1-8               memoise_2.0.1          
+[67] httpuv_1.6.16           bslib_0.9.0             Rcpp_1.0.14            
+[70] whisker_0.4.1           xfun_0.52               fs_1.6.6               
+[73] getPass_0.2-4           pkgconfig_2.0.3         GlobalOptions_0.1.2    </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
