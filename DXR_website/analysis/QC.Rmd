@@ -132,7 +132,7 @@ Create the initial dataframes from counts files needed to start analysis.
 
 ## Read in Counts Files from FeatureCounts
 
-```{r Create My Dataframe With All Counts Files}
+```{r Create My Dataframe With All Counts Files, message=FALSE, warning=FALSE}
 #load in libraries needed
 #these counts files are from featureCounts, all saved as RDS objects
 
@@ -200,7 +200,7 @@ Create the initial dataframes from counts files needed to start analysis.
 
 Combine all of my counts files above into one dataframe, then convert to a matrix for further analysis.
 
-```{r Put Counts Together Into Dataframe}
+```{r Put Counts Together Into Dataframe, message=FALSE, warning=FALSE}
 #change 84-1 to Ind4 now
 
 # counts_raw_df <-
@@ -271,7 +271,7 @@ dim(counts_raw_matrix)
 
 Include each of the factors for these experiments as well as their color schemes.
 
-```{r Colors + Factors}
+```{r Colors + Factors, message=FALSE, warning=FALSE}
 
 ####Colors####
 
@@ -332,7 +332,7 @@ Assess the alignment of each sample to hg38 as performed in command line previou
 
 ## Set up initial dataframe 
 
-```{r QC Alignment Setup}
+```{r QC Alignment Setup, message=FALSE, warning=FALSE}
 #this dataframe contains my alignment percentages from featureCounts
 
 #I originally had fC_DOXCounts which contained the individuals prior to their final order - here is the code that I used to change it
@@ -404,7 +404,7 @@ fC_DOXCounts <- readRDS("data/QC/featureCounts_DOXdata_updatedind.RDS")
 
 Assess the total number of fragments for each sample (paired-end reads)
 
-```{r QC Mapping Plots Total Fragments}
+```{r QC Mapping Plots Total Fragments, message=FALSE, warning=FALSE}
 
 ####By Sample####
 reads_by_sample <- c("DOX" = "#499FBD", "VEH" = "#BBBBBC")
@@ -519,7 +519,7 @@ Assess the number of fragments that were mapped.
 
 ## Supplementary Figure 1A: Mapped fragments by sample
 
-```{r QC Mapped Fragments S1A}
+```{r QC Mapped Fragments S1A, message=FALSE, warning=FALSE}
 
 reads_by_sample <- c("DOX" = "#5B8FD1", "VEH" = "#BBBBBC")
 map_sample_plot <- fC_DOXCounts %>% 
@@ -550,7 +550,7 @@ map_sample_plot <- fC_DOXCounts %>%
 
 ## Supplementary Figure 1B: Mapped Fragments by Treatment
 
-```{r QC Mapped Fragments S1B}
+```{r QC Mapped Fragments S1B, message=FALSE, warning=FALSE}
 
 map_tx_bp <- fC_DOXCounts %>% 
   ggplot(., aes (x =Tx, y= Assigned_Align, fill = Tx))+
@@ -573,7 +573,7 @@ map_tx_bp <- fC_DOXCounts %>%
 
 ## Supplementary Figure 1C: Mapped Fragments by Timepoint
 
-```{r QC Mapped Fragments S1C}
+```{r QC Mapped Fragments S1C, message=FALSE, warning=FALSE}
 
 reads_by_time <- c("t0" = "#005A4C",
                  "t24" = "#328477",
@@ -604,7 +604,7 @@ map_time_box <- fC_DOXCounts %>%
 
 Filter my dataframe by converting to log2cpm and filtering out lowly expressed genes.
 
-```{r Dataframe Filtering}
+```{r Dataframe Filtering, message=FALSE, warning=FALSE}
 
 #transform counts to cpm as a first step
 counts_cpm_unfilt <- cpm(counts_raw_matrix, log = TRUE)
@@ -699,7 +699,7 @@ filcpm_matrix <- readRDS("data/QC/filcpm_final_matrix_newind.RDS")
 
 ## Boxplots of Filtered Data
 
-```{r QC Filtering Boxplots}
+```{r QC Filtering Boxplots, message=FALSE, warning=FALSE}
 #make boxplots of all counts vs log2cpm filtered counts
 
 #set the margins so the x axis isn't cut off
@@ -725,7 +725,7 @@ boxplot(filcpm_matrix,
 
 ## Add HGNC SYMBOL to final dataframe
 
-```{r Put Together My Data for Filtered Gene List}
+```{r Put Together My Data for Filtered Gene List, message=FALSE, warning=FALSE}
 ##I did this earlier so don't run again, I put the list into the filcpm_final_matrix.csv (also already changed 84-1 to 4)
 
 #load in my data
@@ -760,7 +760,7 @@ boxplot(filcpm_matrix,
 
 # Check Response Genes log2cpm
 
-```{r Check Response Genes log2cpm}
+```{r Check Response Genes log2cpm, message=FALSE, warning=FALSE}
 
 #get object from above that is now boxplot1
 boxplot1 <- readRDS("data/QC/filcpm_matrix_genes.RDS")

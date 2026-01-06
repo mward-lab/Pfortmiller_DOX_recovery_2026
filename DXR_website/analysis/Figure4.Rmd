@@ -32,11 +32,10 @@ pre[class] {
 
 Load necessary libraries for analysis.
 
-```{r Necessary Libraries, message=FALSE, warning=FALSE}
+```{r Necessary Libraries, message=FALSE, warning=FALSE, echo=TRUE}
 library(tidyverse)
 library(readxl)
 library(readr)
-
 ```
 
 Define my custom plot theme
@@ -125,7 +124,14 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 
 ## Read in TOP2i DEGs from Matthews et al., Paul et al.
 
-```{r TOP2i DEG Lists}
+Matthews ER, Johnson OD, Horn KJ, Gutiérrez JA, Powell SR, et al. (2024) Anthracyclines induce cardiotoxicity through a shared gene expression response signature. PLOS Genetics 20(2): e1011164. https://doi.org/10.1371/journal.pgen.1011164
+
+
+Topoisomerase II inhibitors CX-5461 and Doxorubicin differ in their cardiotoxicity profiles
+Sayan Paul, José A. Gutiérrez, Alyssa R. Bogar, Michelle C. Ward. bioRxiv 2025.07.20.665626; doi: https://doi.org/10.1101/2025.07.20.665626
+
+
+```{r TOP2i DEG Lists, message=FALSE, warning=FALSE}
 
 #These gene lists were obtained from:
 #Matthews ER, Johnson OD, Horn KJ, Gutiérrez JA, Powell SR, et al. (2024) Anthracyclines induce cardiotoxicity through a shared gene expression response signature. PLOS Genetics 20(2): e1011164. https://doi.org/10.1371/journal.pgen.1011164

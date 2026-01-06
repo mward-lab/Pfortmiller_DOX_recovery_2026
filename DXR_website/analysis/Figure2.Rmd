@@ -100,7 +100,7 @@ theme_custom <- readRDS("data/plot_theme_custom.RDS")
 ```
 
 
-```{r Colors + Factors}
+```{r Colors + Factors, message=FALSE, warning=FALSE}
 
 ####Colors####
 
@@ -189,7 +189,7 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 
 Principal component analysis of RNAseq data following RUVs correction.
 
-```{r Figure 2A PCA Plot, warning=FALSE, fig.height=8, fig.width=8}
+```{r Figure 2A PCA Plot, warning=FALSE, fig.height=8, fig.width=8, message=FALSE}
 
 #read in dataframe after cpm transformation and k=1 RUVs correction
 #add in the annotation files
@@ -233,7 +233,7 @@ print(fig2a)
 # Differential Expression Analysis - RUVs Corrected
 
 #Perform Differential Expression Analysis with k = 1 RUVs Correction
-```{r DE RUVs k1, warning=FALSE}
+```{r DE RUVs k1, warning=FALSE, message=FALSE}
 #same DGEList object as before
 dge <- readRDS("data/DE/dge_matrix.RDS")
 Metadata_2 <- readRDS("data/QC/Metadata_2_norep_update.RDS")
@@ -319,7 +319,7 @@ summary(results_summary1)
 ## Toptables
 
 ##Generate Toptables RUVs
-```{r TopTables DE RUV, warning=FALSE}
+```{r TopTables DE RUV, warning=FALSE, message=FALSE}
 # Generate Top Table for Specific Comparisons
 x <- readRDS("data/DE/x_dge_counts_allind_updated.RDS")
 
@@ -453,7 +453,7 @@ Toptable_list_RUVk1_symbols <- readRDS("data/DE/Toptable_list_RUVk1_Symbols.RDS"
 
 
 ###Proportion of DEGs in Gene Set RUVs corrected
-```{r Proportion of DEGs, warning=FALSE}
+```{r Proportion of DEGs, warning=FALSE, message=FALSE}
 #check the proportion of my genes in my gene set that are DEGs by timepoint
 
 #make this into a pie chart or a bar graph
@@ -642,7 +642,7 @@ print(barplot_deg_perc)
 # Figure 2C - Venn Diagram of DEG Overlap
 
 ##Venn Diagrams of DEG Overlap after RUVs Correction k=1
-```{r RUVs Overlap of DEGs, warning=FALSE}
+```{r RUVs Overlap of DEGs, warning=FALSE, message=FALSE}
 #plot a venn diagram with all of your conditions from your toptables
 
 # Load DEGs Data (already read in above)
@@ -692,7 +692,7 @@ plot(venn_prop_RUV,
 
 ## Load in DEGs
 
-```{r Load in DEGs RUVs, warning=FALSE}
+```{r Load in DEGs RUVs, warning=FALSE, message=FALSE}
 #Load DEGs Data
 #make a list of all of the genes in this set so I can plot the logFC in other sets
 
@@ -746,7 +746,7 @@ combined_toptables_dxr_RUV <- bind_rows(
 
 # Figure 2D - Scatterplots logFC Timepoint Comparisons
 
-```{r Scatterplots Timepoint Comparisons, warning=FALSE}
+```{r Scatterplots Timepoint Comparisons, warning=FALSE, message=FALSE}
 
 # Define the timepoints from your data
 timepoints <- c("t0", "t24", "t144")
@@ -848,7 +848,7 @@ scatterplot_fig2d_tall
 
 # Supplementary Figure 4 - Volcano Plots of RUVs DEGs
 
-```{r Volcano Plots RUVs Corrected k1, warning=FALSE}
+```{r Volcano Plots RUVs Corrected k1, warning=FALSE, message=FALSE}
 #make a function to generate volcano plots + add gene numbers
 #ensure the gene symbols are in a col so I can plot names of top 15
 generate_volcano_plot_RUV <- function(toptable, title) {

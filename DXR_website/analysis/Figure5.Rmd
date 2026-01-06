@@ -32,7 +32,7 @@ pre[class] {
 
 Load necessary libraries for analysis.
 
-```{r Necessary Libraries, message=FALSE, warning=FALSE}
+```{r Necessary Libraries, message=FALSE, warning=FALSE, echo=TRUE}
 library(tidyverse)
 library(readxl)
 library(readr)

@@ -25,4 +25,4 @@ This website contains the analysis leading up to and behind each figure. Click b
 - [TOP2i Comparisons: Figs S7, 4](Figure4.html)
 - [DOX-induced Cardiotoxicity (DIC) Genes: Figs 5, S8](Figure5.html)
 - [Characterize Chronic Response: Fig 6](Figure6.html)
-- [DIC Genes in Chronic Response: Fig 7](Figure7.html)
+- [Risk Genes in Chronic Response: Fig 7](Figure7.html)

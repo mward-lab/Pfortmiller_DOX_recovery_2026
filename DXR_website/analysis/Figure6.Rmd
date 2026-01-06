@@ -800,7 +800,7 @@ print(plot_proChronic_fin_summary)
 
 ## Assess proChronic Genes Directionality
 
-```{r Assess Directionality of proChronic}
+```{r Assess Directionality of proChronic, message=FALSE, warning=FALSE}
 #I want to take my set of proSus genes and stratify by response direction
 
 #pull the proSus genes from the df

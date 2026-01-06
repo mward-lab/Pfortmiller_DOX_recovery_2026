@@ -99,7 +99,7 @@ theme_custom <- readRDS("data/plot_theme_custom.RDS")
 
 Include each of the factors for these experiments as well as their color schemes.
 
-```{r Colors + Factors}
+```{r Colors + Factors, message=FALSE, warning=FALSE}
 
 ####Colors####
 
@@ -188,7 +188,7 @@ output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig p
 
 Identify principal components contributing to variation in the data.
 
-```{r PCA Analysis S2}
+```{r PCA Analysis S2, message=FALSE, warning=FALSE}
 #Now I want to check if my data is as expected on a PCA plot
 counts_cpm_unfilt <- readRDS("data/QC/counts_cpm_unfilt.RDS")
 filcpm_matrix <- readRDS("data/QC/filcpm_final_matrix_newind.RDS")
@@ -306,7 +306,7 @@ autoplot(prcomp_res_filt,
 
 # Correlation Heatmaps
 
-```{r Correlation Heatmaps, fig.width=12, fig.height=10}
+```{r Correlation Heatmaps, fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
 
 #check to make sure that the column names are correct
 lcpm_2 <- filcpm_matrix
@@ -397,7 +397,7 @@ draw(heatmap_spearman)
 
 # Filtered Gene List
 
-```{r Make Filtered Gene List}
+```{r Make Filtered Gene List, message=FALSE, warning=FALSE}
 #Now I want to make a filtered gene list (my rownames)
 ##I will use this to filter my counts for limma (+ Cormotif later on)
 
@@ -413,7 +413,7 @@ filt_gene_list <- readRDS("data/QC/filt_gene_list.RDS")
 
 Perform preliminary DE analysis on non-corrected data to get a baseline for RUVs correction.
 
-```{r Filter Counts for DE}
+```{r Filter Counts for DE, message=FALSE, warning=FALSE}
 # counts_raw_matrix <- readRDS("data/QC/counts_raw_matrix.RDS")
 #change column names to match samples for my raw counts matrix
 #update them to the new nomenclature so I can have everything match up with Metadata new
@@ -496,7 +496,7 @@ Metadata_2 <- readRDS("data/QC/Metadata_2_norep_update.RDS")
 
 # Perform DE Analysis
 
-```{r Differential Expression Analysis}
+```{r Differential Expression Analysis, message=FALSE, warning=FALSE}
 
 #create DGEList object
 dge <- DGEList(counts = x_norep)
@@ -555,7 +555,7 @@ summary(results_summary)
 
 These toptables will not be used later as they need to be corrected, but let's look at what the data looks like before RUVs correction.
 
-```{r Make Toptables of DEGs}
+```{r Make Toptables of DEGs, message=FALSE, warning=FALSE}
 
 # Generate Top Table for Specific Comparisons
 
@@ -581,7 +581,7 @@ Toptable_list_noRUV <- readRDS("data/DE/Toptable_list_noRUV.RDS")
 
 ## logFC Boxplots of DE by Timepoint
 
-```{r DOX24T DEGs logFC all Conditions}
+```{r DOX24T DEGs logFC all Conditions, message=FALSE, warning=FALSE}
 
 # Load DEGs Data
 DOX_24T <- read.csv("data/DE/Toptable_V.D24T_noRUV.csv", row.names = 1)
@@ -683,7 +683,7 @@ Correct for unwanted variation using RUVs, which uses a set of replicates to cor
 
 ## Set Up Data Workflow
 
-```{r RUVs Correction Data Setup, fig.height=6, fig.width=8}
+```{r RUVs Correction Data Setup, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
 
 filt_gene_list <- rownames(filcpm_matrix)
 #14319 genes as usual
@@ -808,7 +808,7 @@ ggplot2::autoplot(prcomp_res_cpm,
 
 ## RUVs k=1, 1 factor of unwanted variation
 
-```{r RUVs k1, fig.height=6, fig.width=8}
+```{r RUVs k1, fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
 #Apply RUVs function from RUVSeq
 #"k" can be iteratively adjusted over time depending on PCA.
 set1 <- RUVSeq::RUVs(x = counts, k =1, scIdx = scIdx, isLog = FALSE)
@@ -902,7 +902,7 @@ ggplot2::autoplot(prcomp_res_1_cpm,
 
 ## Spearman Correlation Heatmaps RUVs
 
-```{r RUVs HM Spearman, fig.height=10, fig.width=12}
+```{r RUVs HM Spearman, fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
 #Now that I've put together the PCA plots for both normalized counts and log2cpm
 #I want to make these into heatmaps
 
@@ -1225,7 +1225,7 @@ for (tp in cor_time_sp) {
 
 # Supplementary Figure 3 - Spearman Correlation Heatmap RUVs log2cpm
 
-```{r Supp Fig 3 Spearman Cor HM, fig.height=10, fig.width=12}
+```{r Supp Fig 3 Spearman Cor HM, fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
 
 #Make your supplement heatmap 
 
@@ -1297,7 +1297,7 @@ save_complex_heatmap(
 
 ## Top 5 DEGs RUVs
 
-```{r RUV Top5 DEGs}
+```{r RUV Top5 DEGs, message=FALSE, warning=FALSE}
 #use your three toptables so I can pull out top 5 genes from each based on adj. p val
 
 Toptable_RUV_24T <- read.csv("data/DE/Toptable_RUV_24T_final.csv")
