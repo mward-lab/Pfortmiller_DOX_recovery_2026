@@ -2397,7 +2397,11 @@ for (tp in cor_time_sp) {
 #   gsub("144R", "t144", .) %>%
 #   gsub("DMSO", "VEH", .)
 
+# cpm_k1_rename <- cpm_k1
+
 # colnames(cpm_k1_rename) <- new_colname
+
+cpm_k1 <- cpm_k1_rename
 
 cor_matrix_spmn_k1_cpm_new <- cor(cpm_k1,
                            y = NULL,
@@ -7412,7 +7416,7 @@ supp8_forest_ddr_A <- ggplot(proportion_data_ddr, aes(y = Timepoint, x = Odds_Ra
   geom_point(size = 5) +
   geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.3) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
-  scale_color_manual(values = c("Significant" = "black", "Not Significant" = "black")) +
+  scale_color_manual(values = c("Significant" = "black", "Not Significant" = "pink")) +
   scale_x_log10() +
   labs(
     title = "Odds Ratios of DDR Gene Enrichment by Timepoint",
@@ -7423,12 +7427,12 @@ supp8_forest_ddr_A <- ggplot(proportion_data_ddr, aes(y = Timepoint, x = Odds_Ra
   scale_y_discrete(limits = rev(levels(proportion_data_ddr$Timepoint)))+
   theme_custom()
 
-save_plot( 
-  plot = supp8_forest_ddr_A,
-  filename = "Supp8_ForestDDR_EMP",
-  folder = output_folder,
-  height = 4,
-  width = 6)
+# save_plot( 
+#   plot = supp8_forest_ddr_A,
+#   filename = "Supp8_ForestDDR_EMP",
+#   folder = output_folder,
+#   height = 4,
+#   width = 6)
 
 
 ```
@@ -7778,7 +7782,7 @@ print(forest_plot)
 #  - ddr_set: vector of DNA damage response gene Entrez IDs
 
 #read in my DDR gene set
-DNA_damage <- readRDS("data/new/RUV/DDR_genes_entrezid.RDS")
+DNA_damage <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/DDR_genes_entrezid.RDS")
 
 #pull out only the unique values that are not NA (there aren't any anyways)
 ddr_set <- unique(na.omit(DNA_damage))
@@ -8503,7 +8507,7 @@ aic_directionality <- filt_toptable_dic_RUV %>%
 #  - p53_set: vector of DNA damage response gene Entrez IDs
 
 #read in my gene set
-p53_target_genes <- readRDS("data/new/RUV/p53_targetgenes_entrezid.RDS")
+p53_target_genes <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/p53_targetgenes_entrezid.RDS")
 
 #pull out only the unique values that are not NA (there aren't any anyways)
 p53_set <- unique(na.omit(p53_target_genes))
@@ -8606,11 +8610,18 @@ ggplot(proportion_data_p53, aes(x = Group_Label, y = Fraction, fill = Category))
     plot.title = element_text(size = 16, hjust = 0.5)
   )
 
+proportion_data_p53 <- proportion_data_p53 %>%
+  mutate(
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+    Sig_Label = ifelse(Significant, "Significant", "Not Significant")
+  )
+
+
 supp8_forest_p53_B <- ggplot(proportion_data_p53, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
   geom_point(size = 5) +
   geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.3) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
-  scale_color_manual(values = c("Significant" = "black", "Not Significant" = "black")) +
+  scale_color_manual(values = c("Significant" = "black", "Not Significant" = "pink")) +
   scale_x_log10() +
   labs(
     title = "Odds Ratios of DDR Gene Enrichment by Timepoint",
@@ -8618,18 +8629,87 @@ supp8_forest_p53_B <- ggplot(proportion_data_p53, aes(y = Timepoint, x = Odds_Ra
     x = "Odds Ratio (log scale)",
     color = "Significance"
   ) +
-  scale_y_discrete(limits = rev(levels(proportion_data_ddr$Timepoint)))+
+  scale_y_discrete(limits = rev(levels(proportion_data_p53$Timepoint)))+
   theme_custom()
 
-save_plot( 
-  plot = supp8_forest_ddr_A,
-  filename = "Supp8_ForestDDR_EMP",
-  folder = output_folder,
-  height = 4,
-  width = 6)
+# save_plot( 
+#   plot = supp8_forest_ddr_A,
+#   filename = "Supp8_ForestDDR_EMP",
+#   folder = output_folder,
+#   height = 4,
+#   width = 6)
 
 
 ```
+
+```{r Forest Plot p53 redo Supp8B}
+
+proportion_data_p53 <- purrr::map_dfr(names(timepoint_DEGs_p53), function(tp_p53) {
+  degs_p53 <- unique(timepoint_DEGs_p53[[tp_p53]])
+  nondegs_p53 <- setdiff(all_genes, degs_p53)
+  
+  in_deg_p53 <- sum(degs_p53 %in% p53_set)
+  in_deg_nonp53 <- length(degs_p53) - in_deg_p53
+  
+  in_nondeg_p53 <- sum(nondegs_p53 %in% p53_set)
+  in_nondeg_nonp53 <- length(nondegs_p53) - in_nondeg_p53
+  
+  contingency_degs_p53 <- matrix(c(in_deg_p53, in_deg_nonp53,
+                                   in_nondeg_p53, in_nondeg_nonp53),
+                                 nrow = 2, byrow = TRUE)
+  
+  fisher_res_p53 <- fisher.test(contingency_degs_p53)
+  
+  p_val_p53 <- fisher_res_p53$p.value
+  odds_ratio_p53 <- unname(fisher_res_p53$estimate)
+  ci_low_p53 <- fisher_res_p53$conf.int[1]
+  ci_high_p53 <- fisher_res_p53$conf.int[2]
+  
+  tibble(
+    Timepoint = tp_p53,
+    Odds_Ratio = odds_ratio_p53,
+    CI_low = ci_low_p53,
+    CI_high = ci_high_p53,
+    P_Value = p_val_p53,
+    Significant = p_val_p53 < 0.01
+  )
+})
+
+# Format Timepoint factor and add significance label/color
+proportion_data_p53 <- proportion_data_p53 %>%
+  mutate(
+    Timepoint = factor(Timepoint, levels = c("24T", "24R", "144R")),
+    Sig_Label = ifelse(Significant, "Significant", "Not Significant")
+  )
+
+# Plot horizontal forest plot with color by significance
+supp8_forest_p53_B <- ggplot(proportion_data_p53, aes(y = Timepoint, x = Odds_Ratio, color = Sig_Label)) +
+  geom_point(size = 5) +
+  geom_errorbarh(aes(xmin = CI_low, xmax = CI_high), height = 0.3) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+  scale_color_manual(values = c("Significant" = "black", "Not Significant" = "pink")) +
+  scale_x_log10() +
+  labs(
+    title = "Odds Ratios of p53 Gene Enrichment by Timepoint",
+    y = "Timepoint",
+    x = "Odds Ratio (log scale)",
+    color = "Significance"
+  ) +
+  scale_y_discrete(limits = rev(levels(proportion_data_p53$Timepoint)))+
+  theme_custom()
+
+# save_plot(
+#   plot = supp8_forest_p53_B,
+#   filename = "Supp8B_Forestp53_EMP",
+#   folder = output_folder,
+#   height = 4,
+#   width = 6)
+
+
+```
+
+
+
 #Forest Plots and Proportion Barplots All Gene Sets
 ```{r Forest and Barplot All Gene Sets}
 
@@ -15101,7 +15181,7 @@ summary_table <- comparison_results %>%
     Odds_Ratio, CI_Low, CI_High, P_value, Significance
   )
 
-write.csv(summary_table, file.path(outdir, "Motif2_vs_Motif1_summary.csv"), row.names = FALSE)
+# write.csv(summary_table, file.path(outdir, "Motif2_vs_Motif1_summary.csv"), row.names = FALSE)
 cat("\n--- Motif2 vs Motif1 Summary ---\n")
 print(summary_table)
 
@@ -18001,8 +18081,6 @@ forest_summary_TOP2i <- forest_summary
 
 # liu_set <- c("UGT1A9","PPP2R2B","SPINK6","HPGDS","SCMH1","CA12","ERBB2","HADHA","DUSP14","DGKH", "DHODH","MYLK3","TRAPPC4","ESRRG","CALY","MAPKBP1","DPEP1","ME3","PRSS1","SLC7A11","FNTA")
 
-# length(liu_set)
-
 # sapp_set <- c("EDC4","GALNT18","C1QTNF2","EIF1AD","PALMD","XRN2","TMEM189","MANEAL","C11orf49","ARL6IP4", "GUCY2C","GLIPR1L2","F10","MRS2","MYC","SLCO1A2","TFPT","MATR3","ENTHD2","CAB39L","EXOSC10","KDM3B","C11orf57","KIAA1033","CYP3A7","C5orf51","RRAS","BUD13","ZNHIT3","PRRG3","GGT6","FUNDC2","SLCO1B3","GLRX3","POU6F1","TEX36","PLEKHO1","TGFA","DUSP15","COX5B","IFT81","ZNF474","MSANTD4","DGCR8","OSBPL9","MPDU1","KCNJ14","INF2","TSSC1","STT3A","GRAMD4","GTDC1","CORO1B","CCDC61","ING1","SLC25A6","GH2","STEAP4","POM121","POLQ","DNAJC10","ARTN","CRYGB","NUCB2","SLC25A51","DGCR2","CCDC85C","TOMM40","TNNC2","SHD","CMPK2","ARHGAP32","CDC14A","OR8G5","ZNF559","ENPP3","HOXA10","TAGLN2","CABYR","BST2","NAT1","PDE1B","COL19A1","COL4A2","ATPAF2","HIRIP3","RNF13","CD163","SERPINC1","SMPDL3B","OR52N4","BCAN","H1F0","EPS8","TECPR1","NAA25","KIAA1161","PTPN13","C6orf165","IL18BP","LTB4R","SLC2A2","CYCS","KLHL30","LYPD3","ABCD1","PUS3","GKN2","FAM169B","MBD3L2","OR10P1","SDR9C7","ACTBL2","ZNF630","ATP13A3","VPS29","ARSG","TTC39C","HUNK","C14orf93","SLC1A3","NPY1R","ZNF883","DLGAP3","MKLN1","UNK","HES1","PAGE2B","DCAF17","NDFIP1","HAUS5","DSCR3","CBLL1","PITPNM1","SLC16A9","SNAP47","SLC10A6","C15orf56","CLPSL2","RASAL3","C19orf25","ITGAE","KRT38","ADAM19","TMEM53","PYURF","SREBF2","RPL17","ATXN7L1","IL15RA","LYRM5","MPV17","KRTAP3-1","TMEM170B","SLC35G2","PPP1R16A","SH3TC2","LGALS8","DDX28","HERPUD2","CAMTA2","DERL1","OR5D16","DDX17","COPZ2","KRT10", "KIAA1024","NINL","SMARCAD1")
 # 
 # length(sapp_set)
@@ -19329,7 +19407,7 @@ final_genes_2_RUV <- readRDS("data/new/RUV/CMF/final_genes_2_RUV.RDS")
 
 
 #define DE gene sets
-DOX_t0_RUV <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") %>% dplyr::select(-X)
+DOX_24T_R <- read.csv("data/new/DEGs/Toptable_RUV_24T_final.csv") 
 DOX_24R_R <- read.csv("data/new/DEGs/Toptable_RUV_24R_final.csv") %>% dplyr::select(-X)
 DOX_144R_R <- read.csv("data/new/DEGs/Toptable_RUV_144R_final.csv") %>% dplyr::select(-X)
 
@@ -20049,7 +20127,7 @@ save_plot(
 ```
 
 
-##Venn Diagram for Figure 6D
+##Venn Diagram for Figure7 OLD
 ```{r Venn Diagram Gene Set Overlap Motifs}
 #instead of having a barplot for sustained vs recovered, make this into a venn diagram
 
@@ -20465,7 +20543,7 @@ combined_toptables_dxr_RUV <- list(
   "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
 )
 
-all_DEGs_dxr <- lapply(combined_toptables_dxr, function(df) {
+all_DEGs_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
   df %>%
     # dplyr::filter(adj.P.Val < 0.05) %>%
     mutate(absFC = abs(logFC))
@@ -21921,7 +21999,7 @@ notproSus_gene_list
 proSus_df_all
 
 #create a toptable with all of the genes for proSus
-filt_toptable_proSus_RUV <- combined_toptables_dxr_RUV %>% 
+filt_toptable_proSus_RUV <- combined_toptables_dxr_RUV_df %>% 
   mutate(proSus = case_when(
     Entrez_ID %in% proSus_gene_list ~ "proSus",
     TRUE ~ NA_character_
@@ -21971,7 +22049,7 @@ plot_proSus_logFC <- ggplot() +
             aes(x = Time, 
                 y = logFC, 
                 group = Entrez_ID),
-            color = "#59754A",
+            color = "#A06FA8",
             alpha = 0.4, 
             linewidth = 0.9) +
   geom_line(data = medians_proSus_RUV,
@@ -21983,15 +22061,15 @@ plot_proSus_logFC <- ggplot() +
             ) +
   scale_color_manual(
     breaks = c("median"), 
-    values = c("median" = "#83C67C"),
+    values = c("median" = "#7B4F82"),
     labels = c(
       median = labs_logFC_proSus),
     name = NULL
     ) +
-  labs(title = "logFC — proSus Genes (n = 163)",
+  labs(title = "logFC — proChron Genes (n = 163)",
        y = "logFC", x = "Timepoint") +
-  scale_y_continuous(breaks = c(-5, 0, 5), 
-                     limits = c(-5, 5),
+  scale_y_continuous(breaks = c(-10, -5, 0, 5, 10), 
+                     limits = c(-10, 10),
                      expand = c(0,0)) +
   scale_x_discrete(breaks = c("t0", "t24", "t144"),
                      expand = c(0, 0)) +
@@ -22040,7 +22118,7 @@ proSus_directionality <- filt_toptable_proSus_RUV %>%
 
 #now make it so that it only counts those that are increasingly negative or increasingly positive across time
 
-filt_toptable_notproSus_RUV <- combined_toptables_dxr_RUV %>% 
+filt_toptable_notproSus_RUV <- combined_toptables_dxr_RUV_df %>% 
   mutate(notproSus = case_when(
     Entrez_ID %in% notproSus_gene_list ~ "notproSus",
     TRUE ~ NA_character_
@@ -22089,7 +22167,7 @@ plot_notproSus_logFC <- ggplot() +
             aes(x = Time, 
                 y = logFC, 
                 group = Entrez_ID),
-            color = "#B1D8A9",
+            color = "#E1B9E3",
             alpha = 0.4, 
             linewidth = 0.9) +
   geom_line(data = medians_notproSus_RUV,
@@ -22101,15 +22179,15 @@ plot_notproSus_logFC <- ggplot() +
             ) +
   scale_color_manual(
     breaks = c("median"), 
-    values = c("median" = "#83C67C"),
+    values = c("median" = "#A06FA8"),
     labels = c(
       median = labs_logFC_notproSus),
     name = NULL
     ) +
   labs(title = "logFC — notproSus Genes (n = 338)",
        y = "logFC", x = "Timepoint") +
-  scale_y_continuous(breaks = c(-5, 0, 5), 
-                     limits = c(-5, 5),
+  scale_y_continuous(breaks = c(-10, -5, 0, 5, 10), 
+                     limits = c(-10, 10),
                      expand = c(0,0)) +
   scale_x_discrete(breaks = c("t0", "t24", "t144"),
                      expand = c(0, 0)) +
@@ -22155,7 +22233,7 @@ print(plot_notproSus_absFC)
 
 # save_plot(
 #   plot = plot_proSus_logFC,
-#   filename = "Lineplot_proSus_logFC_EMP_251112",
+#   filename = "Lineplot_proSus_logFC_EMP_251211",
 #   folder = output_folder,
 #   height = 4,
 #   width = 5
@@ -24065,9 +24143,9 @@ saveWorkbook(wb,
 
 #I want to go ahead and look at which genes are involved in each term that I have and compare them to my gene sets - are any of these genes involved in certain terms?
 
-liu_ids <- readRDS("data/new/RUV/liu_dataset_entrez.RDS")
-sapp_ids <- readRDS("data/new/RUV/sapp_dataset_entrez.RDS")
-fonoudi_ids <- readRDS("data/new/RUV/fonoudi_dataset_entrez.RDS") #prev DIC
+liu_ids <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/liu_dataset_entrez.RDS")
+sapp_ids <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/sapp_dataset_entrez.RDS")
+fonoudi_ids <- readRDS("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/RUV/fonoudi_dataset_entrez.RDS") #prev DIC
 CT_genes <- unique(c(fonoudi_ids, sapp_ids, liu_ids)) #201 genes total
 
 AIC_genes <- readRDS("data/new/RUV/AIC_genes_entrezid.RDS") #this is now DIC
@@ -24277,7 +24355,79 @@ print(all_plots)
 
 
 
+```{r Check DEGs for Figures}
+#I want to grab a group of genes of interest and see whether or not they are DEGs at each timepoint
+
+fig_genes <- c(
+  "ZMYND8", "CCNB2", "CACNA2D3", "POLQ", "TRAIP"
+)
+
+combined_toptables_dxr_RUV <- list(
+  "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
+  "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
+  "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
+)
+
+DEGs_dxr <- lapply(combined_toptables_dxr_RUV, function(df) {
+  df %>%
+    dplyr::filter(adj.P.Val < 0.05) %>%
+    mutate(absFC = abs(logFC))
+})
+
+deg_t0_sub <- DOX_24T_R %>%
+  filter(adj.P.Val < 0.05) %>% 
+  filter(SYMBOL %in% fig_genes) %>%
+  mutate(Time = "t0", DEG_status = "DEG")
+
+deg_t24_sub <- DOX_24R_R %>%
+  filter(adj.P.Val < 0.05) %>%
+  filter(SYMBOL %in% fig_genes) %>%
+  mutate(Time = "t24", DEG_status = "DEG")
+
+deg_t144_sub <- DOX_144R_R %>%
+  filter(adj.P.Val < 0.05) %>% 
+  filter(SYMBOL %in% fig_genes) %>%
+  mutate(Time = "t144", DEG_status = "DEG")
+
+genes_deg_long <- bind_rows(
+  deg_t0_sub,
+  deg_t24_sub,
+  deg_t144_sub
+)
+
+genes_complete <- expand_grid(
+  SYMBOL = fig_genes,
+  Time = c("t0", "t24", "t144")
+) %>%
+  left_join(
+    genes_deg_long,
+    by = c("SYMBOL", "Time")
+  ) %>%
+  mutate(
+    DEG_status = ifelse(is.na(DEG_status), "Not DEG", DEG_status)
+  )
+
+genes_DEG_table <- genes_complete %>%
+  mutate(Time = factor(Time, levels = c("t0", "t24", "t144"))) %>%
+  pivot_wider(
+    names_from = Time,
+    values_from = c(logFC, adj.P.Val, DEG_status),
+    names_sep = "_"
+  ) %>%
+  arrange(SYMBOL) %>% 
+  dplyr::select(-...1)
+
+genes_DEG_status_compact <- genes_complete %>%
+  mutate(DEG_status = ifelse(DEG_status == "Not DEG", NA, "DEG")) %>%
+  dplyr::select(SYMBOL, Time, DEG_status) %>%
+  pivot_wider(
+    names_from = Time,
+    values_from = DEG_status
+  ) %>%
+  arrange(SYMBOL)
 
 
 
+
+```
 
