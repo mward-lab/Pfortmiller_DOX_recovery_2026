@@ -14,7 +14,7 @@ This website contains the analysis leading up to and behind each figure. Click b
 
 ## Flow Cytometry, Dose-response, yH2AX IF
 
-- [Figure 1](Figure1.html)
+- [Initial Experiments: Figure 1](Figure1.html)
 
 ## RNA-seq Analysis Workflow
 
