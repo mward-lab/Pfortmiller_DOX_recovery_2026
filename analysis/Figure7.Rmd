@@ -1,0 +1,650 @@
+---
+title: "Figure 7 Analysis"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: flatly
+    highlight: textmate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+```
+
+
+# Libraries
+
+Load necessary libraries for analysis.
+
+```{r Necessary Libraries, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readxl)
+library(readr)
+library(reshape2)
+library(circlize)
+library(grid)
+library(stringr)
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+library(gprofiler2)
+library(purrr)
+library(ggVennDiagram)
+library(eulerr)
+```
+
+Define my custom plot theme
+
+```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
+
+# Define the custom theme
+# plot_theme_custom <- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = "black"),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, "in"),
+# 
+#       #text and font
+#       axis.text = element_text(color = "black",
+#                                family = "Arial",
+#                                size = 7),
+#       axis.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 9),
+#       legend.text = element_text(color = "black",
+#                                  family = "Arial",
+#                                  size = 7),
+#       legend.title = element_text(color = "black",
+#                                   family = "Arial",
+#                                   size = 9),
+#       plot.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = "grey80", linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = "grey90", linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, "data/plot_theme_custom.RDS")
+
+theme_custom <- readRDS("data/plot_theme_custom.RDS")
+
+```
+
+
+Define a function to save plots as .pdf and .png
+
+```{r pdf png saving function, echo=TRUE, message=FALSE, warning=FALSE}
+
+save_plot <- function(plot, filename, 
+                      folder = ".", 
+                      width = 8, 
+                      height = 6, 
+                      units = "in", 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop("Please provide a filename (without extension) for the plot.")
+
+  date_str <- if (add_date) paste0("_", format(Sys.Date(), "%y%m%d")) else ""
+  pdf_file <- file.path(folder, paste0(filename, date_str, ".pdf"))
+  png_file <- file.path(folder, paste0(filename, date_str, ".png"))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = "transparent")
+  ggsave(filename = png_file, plot = plot, device = "png", width = width, height = height, units = units, dpi = dpi, bg = "transparent")
+  message("Saved plot as Cairo PDF: ", pdf_file)
+  message("Saved plot as PNG: ", png_file)
+}
+
+output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height
+```
+
+
+# Identify genes associated with DOX cardiotoxicity
+
+We utilized three studies which identified DOX-induced cardiotoxicity genes (DIC):
+
+Liu, C., et al., CRISPRi/a screens in human iPSC-cardiomyocytes identify glycolytic activation as a druggable target for doxorubicin-induced cardiotoxicity. Cell Stem Cell, 2024. 31(12): p. 1760-1776. e9.
+
+Sapp, V., et al., Genome-wide CRISPR/Cas9 screening in human iPS derived cardiomyocytes uncovers novel mediators of doxorubicin cardiotoxicity. Sci Rep, 2021. 11(1): p. 13866.
+
+Fonoudi, H., et al., Functional Validation of Doxorubicin-Induced Cardiotoxicity-Related Genes. JACC CardioOncol, 2024. 6(1): p. 38-50.
+
+
+```{r Read in gene sets, warning=FALSE, message=FALSE}
+
+#read in the three DOX response gene sets from literature
+liu_ids <- readRDS("data/Fig7/liu_ids.RDS")
+sapp_ids <- readRDS("data/Fig7/sapp_ids.RDS")
+fonoudi_ids <- readRDS("data/Fig7/fonoudi_ids.RDS")
+
+#combine these into a DIC gene set
+DIC_genes <- unique(c(fonoudi_ids, sapp_ids, liu_ids))
+length(DIC_genes)
+
+#read in your cluster gene sets
+final_genes_1_RUV <- readRDS("data/Fig3/final_genes_1_RUV.RDS")
+final_genes_2_RUV <- readRDS("data/Fig3/final_genes_2_RUV.RDS")
+
+#read in your progressively Chronic genes and non-ProChronic genes
+proChronic_gene_list <- readRDS("data/Fig6/proChronic_gene_list.RDS")
+nonproChronic_gene_list <- readRDS("data/Fig6/non-proChronic_gene_list.RDS")
+
+
+```
+
+
+# Figure 7A - Overlap of response genes with DOX cardiotoxicity genes
+
+
+```{r Venn Diagram DIC genes, warning=FALSE, message=FALSE, fig.height=6, fig.width=8}
+
+venn_proChronic_list <- list(
+  "DIC" = as.character(DIC_genes),
+  "Acute" = as.character(final_genes_1_RUV),
+  "ProChronic" = as.character(proChronic_gene_list),
+  "non-ProChronic" = as.character(nonproChronic_gene_list)
+)
+
+
+venn_proChronic_DIC <- ggVennDiagram(
+  venn_proChronic_list,
+  category.names = c("DIC \n (n = 201)", 
+                     "Acute \n (n = 7602)", 
+                     "ProChronic \n (n = 163)", 
+                     "non-ProChronic \n (n = 338)")
+) +
+  ggtitle("Overlap of response genes with DOX cardiotoxicity genes \n(Fonoudi et al., Sapp et al., Liu et al.)") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = "#F9F9F9", high = "#4B9CD3") +
+  theme_custom() +
+  theme(legend.position = "none")
+
+
+print(venn_proChronic_DIC)
+
+#I am interested in the gene that is overlapping in my ProChronic with the DIC gene set
+#POLQ
+
+```
+
+
+# Figure 7B - Overlapping gene from ProChronic and DIC (POLQ)
+
+```{r Example genes log2cpm for ProChronic, message=FALSE, warning=FALSE}
+#proChronic_gene_list
+#DIC_genes
+
+#there are 5 total genes to investigate based on the Venn diagram of overlap with CT genes
+#1 overlap with ProChronic
+#4 overlap with non-ProChronic
+
+intersect(proChronic_gene_list, DIC_genes)
+proChronic_overlap <- proChronic_gene_list[proChronic_gene_list %in% DIC_genes]
+#these give the same results
+#10721 Entrez_ID 
+
+intersect(nonproChronic_gene_list, DIC_genes)
+nonproChronic_overlap <- nonproChronic_gene_list[nonproChronic_gene_list %in% DIC_genes]
+#these give the same results
+#8407, 129607, 30811, 1310 Entrez_ID =
+#8407 = 
+#129607 
+
+DIC_cats <- list( 
+  "Fonoudi et al." = fonoudi_ids,
+  "Liu et al." = liu_ids,
+  "Sapp et al." = sapp_ids
+)
+
+
+#pull the gene symbol so I can plot log2cpm data
+dic_genes_df <- map_dfr(names(DIC_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(DIC_genes, DIC_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(dic_genes_df)
+#202 genes overall from all categories
+
+#filter overlaps for proSus
+proChronic_overlap <- dic_genes_df %>%
+  filter(Entrez_ID %in% proChronic_gene_list)
+#1 gene - from Sapp et al
+
+#filter overlaps for recSus
+nonproChronic_overlap <- dic_genes_df %>%
+  filter(Entrez_ID %in% nonproChronic_gene_list)
+#4 genes - from Sapp et al
+
+#also sanity check that these genes are DEGs that overlap with proSus recSus
+set_for_overlap <- list(
+  ProChronic = proChronic_overlap$Entrez_ID,
+  nonproChronic = nonproChronic_overlap$Entrez_ID,
+  geneSets = unique(unlist(DIC_genes))
+)
+
+#read in my factors
+#add in colors and factors
+txtime_col <- list(
+  "DOX_t0" = "#263CA5",
+  "VEH_t0" = "#444343",
+  "DOX_t24" = "#5B8FD1",
+  "VEH_t24" = "#757575",
+  "DOX_t144" = "#89C5E5",
+  "VEH_t144" = "#AAAAAA"
+)
+
+ind_col <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90",
+  "6R" = "#C61E4E"
+)
+
+time_col <- list(
+  "t0" = "#005A4C",
+  "t24" = "#328477",
+  "t144" = "#8FB9B1")
+
+tx_col <- list(
+  "DOX" = "#499FBD", 
+  "VEH" = "#BBBBBC")
+
+#read in my deg_wide dataframe
+deg_wide <- readRDS("data/DE/DEGs_overlap_wide_dataframe.RDS")
+
+proChronic_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% proChronic_overlap$Entrez_ID)
+
+nonproChronic_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% nonproChronic_overlap$Entrez_ID)
+
+#check whether the assumptions are stil the same that the absFC is t0 < t144
+
+#ProChronic
+proChronic_pattern <- proChronic_degs %>%
+  mutate(correct_pattern = absFC_t0 < absFC_t24 & absFC_t24 < absFC_t144)
+
+proChronic_summary <- proChronic_pattern %>%
+  summarise(
+    total_genes = n(),
+    n_correct = sum(correct_pattern, na.rm = TRUE),
+    percent_correct = 100 * n_correct / total_genes
+  )
+
+proChronic_summary 
+
+#find gene symbols
+proChronic_overlap <- proChronic_overlap %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+nonproChronic_overlap <- nonproChronic_overlap %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+#now plot these example genes for each
+
+boxplot_new <- readRDS("data/DE/boxplot_updated.RDS")
+
+#process the cpm data
+process_cpm_data_cormotif <- function(gene_id, expr_df) {
+  gene_data <- expr_df %>% filter(Entrez_ID == gene_id)
+  
+  long_data <- gene_data %>%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = "Sample",
+      values_to = "log2CPM"
+    ) %>%
+    mutate(
+      Treatment = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("VEH", Sample) ~ "VEH",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("t0", Sample) ~ "t0",
+        grepl("t24", Sample) ~ "t24",
+        grepl("t144", Sample) ~ "t144",
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl("1$", Sample) ~ "1",
+        grepl("2$", Sample) ~ "2",
+        grepl("3$", Sample) ~ "3",
+        grepl("4$", Sample) ~ "4",
+        grepl("5$", Sample) ~ "5",
+        grepl("6$", Sample) ~ "6",
+        grepl("6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = "_")
+    )
+  
+  # Set factor levels for plotting order
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c("DOX_t0", "VEH_t0", 
+               "DOX_t24", "VEH_t24", 
+               "DOX_t144", "VEH_t144")
+  )
+  
+  return(long_data)
+}
+
+# Function to generate plots for a set of genes
+generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_label) {
+  plots <- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data <- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol <- unique(gene_data$SYMBOL)
+    gene_categories <- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories <- paste(unique(gene_categories), collapse = ", ")
+    
+    p <- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     " (", comparison_label, " in ", gene_categories, ") ")) +
+      labs(x = "Condition", y = "log2cpm") +
+      theme_custom()
+    
+    #use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name <- paste0(gene_symbol, "_", gene_id, "_", comparison_label)
+    plots[[plot_name]] <- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for both (most interested in proChronic overlap with DIC genes)
+proChronic_plots <- generate_overlap_plots_cormotif(proChronic_overlap, 
+                                                    boxplot_new, "ProChronic")
+nonproChronic_plots <- generate_overlap_plots_cormotif(nonproChronic_overlap, 
+                                                       boxplot_new, "non-ProChronic")
+
+#preview all plots
+for (p in c(proChronic_plots, nonproChronic_plots)) print(p)
+
+#save all of these plots with unique names
+# for (plot_name in names(proSus_plots)) {
+#   save_plot(proSus_plots[[plot_name]],
+#             filename = paste0("ExGene_proSus_", plot_name, "_EMP"),
+#             folder = output_folder)
+# }
+# 
+# for (plot_name in names(notproSus_plots)) {
+#   save_plot(notproSus_plots[[plot_name]],
+#             filename = paste0("ExGene_notproSus_", plot_name, "_EMP"),
+#             folder = output_folder)
+# }
+
+
+#POLQ is the gene that is overlapping between DIC and ProChronic
+
+```
+
+
+
+# Figure 7C - Overlap of response genes with heart failure risk genes
+
+We pulled the associations for heart failure (HF) from the GWAS catalogue for this analysis.
+
+
+```{r Venn Diagram HF GWAS genes proSus, warning=FALSE, message=FALSE, fig.height=6, fig.width=8}
+
+#read in the HF GWAS gene set from the GWAS catalog
+
+hf_gwas_genes <- readRDS("data/Fig7/HF_gwas_genelist.RDS")
+hf_gwas_genes_list <- hf_gwas_genes$Entrez_ID
+
+venn_proChronic_list_HF <- list(
+  HF = as.character(hf_gwas_genes_list),
+  Acute = as.character(final_genes_1_RUV),
+  ProChronic = as.character(proChronic_gene_list),
+  nonProChronic = as.character(nonproChronic_gene_list)
+)
+
+venn_proChronic_HF <- ggVennDiagram(
+  venn_proChronic_list_HF,
+  category.names = c("HF GWAS\n (n = 299)", 
+                     "Acute \n (n = 7602)", 
+                     "ProChronic \n (n = 163)", 
+                     "non-ProChronic \n (n = 338)")
+) +
+  ggtitle("Overlap of response genes with heart failure risk genes \n(Cerezo et al.)") +
+  labs(x = NULL, y = NULL) +
+  scale_fill_gradient(low = "#F9F9F9", high = "#4B9CD3") +
+  theme_custom() +
+  theme(legend.position = "none")
+
+
+print(venn_proChronic_HF)
+
+# save_plot(
+#   plot = venn_proSus_HF,
+#   filename = "Venn_HF_proSus_EMP",
+#   folder = output_folder,
+#   height = 6,
+#   width = 8
+# )
+
+```
+
+
+# Figure 7D - Overlap of HF risk genes with non-ProChronic (TIRAP)
+
+```{r Overlap log2cpm Genes non-ProChronic, message=FALSE, warning=FALSE}
+
+#there are 4 total genes to investigate based on the Venn diagram of overlap with HF GWAS Genes
+#4 overlap with non-ProChronic
+
+nonproChronic_overlap <- nonproChronic_gene_list[nonproChronic_gene_list %in% hf_gwas_genes_list]
+#Entrez_IDs - 11113, 26154, 10293, 1026
+
+HF_cats <- list( 
+  "HF GWAS" = hf_gwas_genes_list
+)
+
+hf_gwas_cats <- list( 
+  "HF GWAS Genes" = unique(na.omit(hf_gwas_genes_list))
+)
+
+#pull the gene symbol so I can plot log2cpm data
+hf_genes_df <- map_dfr(names(HF_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(hf_gwas_genes_list, HF_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(hf_genes_df)
+
+
+#filter overlaps for notproSus
+nonproChronic_overlap_hf <- hf_genes_df %>%
+  filter(Entrez_ID %in% nonproChronic_gene_list)
+#4 genes
+
+#read in my dataframe for plotting log2cpm genes
+deg_wide <- readRDS("data/DE/DEGs_overlap_wide_dataframe.RDS")
+
+nonproChronic_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% nonproChronic_overlap_hf$Entrez_ID)
+
+#check whether the assumptions are stil the same that the absFC is t0 < t144
+
+#find gene symbols
+
+nonproChronic_overlap_hf <- nonproChronic_overlap_hf %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+#now plot these example genes for each
+boxplot_new <- readRDS("data/DE/boxplot_updated.RDS")
+
+#process the cpm data
+process_cpm_data_cormotif <- function(gene_id, expr_df) {
+  gene_data <- expr_df %>% filter(Entrez_ID == gene_id)
+  
+  long_data <- gene_data %>%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = "Sample",
+      values_to = "log2CPM"
+    ) %>%
+    mutate(
+      Treatment = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("VEH", Sample) ~ "VEH",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("t0", Sample) ~ "t0",
+        grepl("t24", Sample) ~ "t24",
+        grepl("t144", Sample) ~ "t144",
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl("1$", Sample) ~ "1",
+        grepl("2$", Sample) ~ "2",
+        grepl("3$", Sample) ~ "3",
+        grepl("4$", Sample) ~ "4",
+        grepl("5$", Sample) ~ "5",
+        grepl("6$", Sample) ~ "6",
+        grepl("6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = "_")
+    )
+  
+  #set factor levels for plotting order
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c("DOX_t0", "VEH_t0", 
+               "DOX_t24", "VEH_t24", 
+               "DOX_t144", "VEH_t144")
+  )
+  
+  return(long_data)
+}
+
+#function to generate plots for a set of genes
+generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_label) {
+  plots <- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data <- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol <- unique(gene_data$SYMBOL)
+    gene_categories <- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories <- paste(unique(gene_categories), collapse = ", ")
+    
+    p <- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     " (", comparison_label, " in ", gene_categories, ") ")) +
+      labs(x = "Condition", y = "log2cpm") +
+      theme_custom()
+    
+    #use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name <- paste0(gene_symbol, "_", gene_id, "_", comparison_label)
+    plots[[plot_name]] <- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for notproSus overlap genes
+nonproChronic_plots_hf <- generate_overlap_plots_cormotif(nonproChronic_overlap_hf, 
+                                                          boxplot_new, "non-ProChronic")
+
+#preview all plots
+for (p in c(nonproChronic_plots_hf)) print(p)
+
+#save all of these plots with unique names
+# for (plot_name in names(nonproChronic_plots_hf)) {
+#   save_plot(nonproChronic_plots_hf[[plot_name]],
+#             filename = paste0("ExGene_HF_nonproChronic_", plot_name, "_EMP"),
+#             folder = output_folder)
+# }
+
+#I plotted TIRAP as an example of a gene that overlaps with non-proChronic in the HF GWAS set
+
+```

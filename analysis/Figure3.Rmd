@@ -1,0 +1,2005 @@
+---
+title: "Figure 3 Analysis"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: flatly
+    highlight: textmate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+```
+
+
+# Libraries
+
+Load necessary libraries for analysis.
+
+```{r Necessary Libraries, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readxl)
+library(readr)
+library(ggVennDiagram)
+library(ggrastr)
+library(eulerr)
+library(ggfortify)
+library(gprofiler2)
+library(edgeR)
+```
+
+Define my custom plot theme
+
+```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
+
+# Define the custom theme
+# plot_theme_custom <- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = "black"),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, "in"),
+# 
+#       #text and font
+#       axis.text = element_text(color = "black",
+#                                family = "Arial",
+#                                size = 7),
+#       axis.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 9),
+#       legend.text = element_text(color = "black",
+#                                  family = "Arial",
+#                                  size = 7),
+#       legend.title = element_text(color = "black",
+#                                   family = "Arial",
+#                                   size = 9),
+#       plot.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = "grey80", linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = "grey90", linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, "data/plot_theme_custom.RDS")
+
+theme_custom <- readRDS("data/plot_theme_custom.RDS")
+
+```
+
+
+Define a function to save plots as .pdf and .png
+
+```{r pdf png saving function, echo=TRUE, message=FALSE, warning=FALSE}
+
+save_plot <- function(plot, filename, 
+                      folder = ".", 
+                      width = 8, 
+                      height = 6, 
+                      units = "in", 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop("Please provide a filename (without extension) for the plot.")
+
+  date_str <- if (add_date) paste0("_", format(Sys.Date(), "%y%m%d")) else ""
+  pdf_file <- file.path(folder, paste0(filename, date_str, ".pdf"))
+  png_file <- file.path(folder, paste0(filename, date_str, ".png"))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = "transparent")
+  ggsave(filename = png_file, plot = plot, device = "png", width = width, height = height, units = units, dpi = dpi, bg = "transparent")
+  message("Saved plot as Cairo PDF: ", pdf_file)
+  message("Saved plot as PNG: ", png_file)
+}
+
+output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height
+```
+
+
+# Cormotif Function
+
+```{r Cormotif Function, message=FALSE, warning=FALSE}
+## Fit limma model using code as it is found in the original cormotif code. It has
+## only been modified to add names to the matrix of t values, as well as the
+## limma fits
+
+limmafit.default <- function(exprs,groupid,compid) {
+  limmafits  <- list()
+  compnum    <- nrow(compid)
+  genenum    <- nrow(exprs)
+  limmat     <- matrix(0,genenum,compnum)
+  limmas2    <- rep(0,compnum)
+  limmadf    <- rep(0,compnum)
+  limmav0    <- rep(0,compnum)
+  limmag1num <- rep(0,compnum)
+  limmag2num <- rep(0,compnum)
+
+  rownames(limmat)  <- rownames(exprs)
+  colnames(limmat)  <- rownames(compid)
+  names(limmas2)    <- rownames(compid)
+  names(limmadf)    <- rownames(compid)
+  names(limmav0)    <- rownames(compid)
+  names(limmag1num) <- rownames(compid)
+  names(limmag2num) <- rownames(compid)
+
+  for(i in 1:compnum) {
+    selid1 <- which(groupid == compid[i,1])
+    selid2 <- which(groupid == compid[i,2])
+    eset   <- new("ExpressionSet", exprs=cbind(exprs[,selid1],exprs[,selid2]))
+    g1num  <- length(selid1)
+    g2num  <- length(selid2)
+    designmat <- cbind(base=rep(1,(g1num+g2num)), delta=c(rep(0,g1num),rep(1,g2num)))
+    fit <- lmFit(eset,designmat)
+    fit <- eBayes(fit)
+    limmat[,i] <- fit$t[,2]
+    limmas2[i] <- fit$s2.prior
+    limmadf[i] <- fit$df.prior
+    limmav0[i] <- fit$var.prior[2]
+    limmag1num[i] <- g1num
+    limmag2num[i] <- g2num
+    limmafits[[i]] <- fit
+
+    # log odds
+    # w<-sqrt(1+fit$var.prior[2]/(1/g1num+1/g2num))
+    # log(0.99)+dt(fit$t[1,2],g1num+g2num-2+fit$df.prior,log=TRUE)-log(0.01)-dt(fit$t[1,2]/w, g1num+g2num-2+fit$df.prior, log=TRUE)+log(w)
+  }
+  names(limmafits) <- rownames(compid)
+  limmacompnum<-nrow(compid)
+  result<-list(t       = limmat,
+               v0      = limmav0,
+               df0     = limmadf,
+               s20     = limmas2,
+               g1num   = limmag1num,
+               g2num   = limmag2num,
+               compnum = limmacompnum,
+               fits    = limmafits)
+}
+
+limmafit.counts <-
+  function (exprs, groupid, compid, norm.factor.method = "TMM", voom.normalize.method = "none")
+  {
+    limmafits  <- list()
+    compnum    <- nrow(compid)
+    genenum    <- nrow(exprs)
+    limmat     <- matrix(NA,genenum,compnum)
+    limmas2    <- rep(0,compnum)
+    limmadf    <- rep(0,compnum)
+    limmav0    <- rep(0,compnum)
+    limmag1num <- rep(0,compnum)
+    limmag2num <- rep(0,compnum)
+
+    rownames(limmat)  <- rownames(exprs)
+    colnames(limmat)  <- rownames(compid)
+    names(limmas2)    <- rownames(compid)
+    names(limmadf)    <- rownames(compid)
+    names(limmav0)    <- rownames(compid)
+    names(limmag1num) <- rownames(compid)
+    names(limmag2num) <- rownames(compid)
+
+    for (i in 1:compnum) {
+      message(paste("Running limma for comparision",i,"/",compnum))
+      selid1 <- which(groupid == compid[i, 1])
+      selid2 <- which(groupid == compid[i, 2])
+      # make a new count data frame
+      counts <- cbind(exprs[, selid1], exprs[, selid2])
+
+      # remove NAs
+      not.nas <- which(apply(counts, 1, function(x) !any(is.na(x))) == TRUE)
+
+      # runn voom/limma
+      d <- DGEList(counts[not.nas,])
+      d <- calcNormFactors(d, method = norm.factor.method)
+      g1num <- length(selid1)
+      g2num <- length(selid2)
+      designmat <- cbind(base = rep(1, (g1num + g2num)), delta = c(rep(0,
+                                                                       g1num), rep(1, g2num)))
+
+      y <- voom(d, designmat, normalize.method = voom.normalize.method)
+      fit <- lmFit(y, designmat)
+      fit <- eBayes(fit)
+
+      limmafits[[i]] <- fit
+      limmat[not.nas, i] <- fit$t[, 2]
+      limmas2[i] <- fit$s2.prior
+      limmadf[i] <- fit$df.prior
+      limmav0[i] <- fit$var.prior[2]
+      limmag1num[i] <- g1num
+      limmag2num[i] <- g2num
+    }
+    limmacompnum <- nrow(compid)
+    names(limmafits) <- rownames(compid)
+    result <- list(t       = limmat,
+                   v0      = limmav0,
+                   df0     = limmadf,
+                   s20     = limmas2,
+                   g1num   = limmag1num,
+                   g2num   = limmag2num,
+                   compnum = limmacompnum,
+                   fits    = limmafits)
+  }
+
+limmafit.list <-
+  function (fitlist, cmp.idx=2)
+  {
+    compnum    <- length(fitlist)
+
+    genes <- c()
+    for (i in 1:compnum) genes <- unique(c(genes, rownames(fitlist[[i]])))
+
+    genenum    <- length(genes)
+    limmat     <- matrix(NA,genenum,compnum)
+    limmas2    <- rep(0,compnum)
+    limmadf    <- rep(0,compnum)
+    limmav0    <- rep(0,compnum)
+    limmag1num <- rep(0,compnum)
+    limmag2num <- rep(0,compnum)
+
+    rownames(limmat)  <- genes
+    colnames(limmat)  <- names(fitlist)
+    names(limmas2)    <- names(fitlist)
+    names(limmadf)    <- names(fitlist)
+    names(limmav0)    <- names(fitlist)
+    names(limmag1num) <- names(fitlist)
+    names(limmag2num) <- names(fitlist)
+
+    for (i in 1:compnum) {
+      this.t <- fitlist[[i]]$t[,cmp.idx]
+      limmat[names(this.t),i] <- this.t
+
+      limmas2[i]    <- fitlist[[i]]$s2.prior
+      limmadf[i]    <- fitlist[[i]]$df.prior
+      limmav0[i]    <- fitlist[[i]]$var.prior[cmp.idx]
+      limmag1num[i] <- sum(fitlist[[i]]$design[,cmp.idx]==0)
+      limmag2num[i] <- sum(fitlist[[i]]$design[,cmp.idx]==1)
+    }
+
+    limmacompnum <- compnum
+    result <- list(t       = limmat,
+                   v0      = limmav0,
+                   df0     = limmadf,
+                   s20     = limmas2,
+                   g1num   = limmag1num,
+                   g2num   = limmag2num,
+                   compnum = limmacompnum,
+                   fits    = limmafits)
+
+  }
+
+## Rank genes based on statistics
+generank<-function(x) {
+  xcol<-ncol(x)
+  xrow<-nrow(x)
+  result<-matrix(0,xrow,xcol)
+  z<-(1:1:xrow)
+  for(i in 1:xcol) {
+    y<-sort(x[,i],decreasing=TRUE,na.last=TRUE)
+    result[,i]<-match(x[,i],y)
+    result[,i]<-order(result[,i])
+  }
+  result
+}
+
+## Log-likelihood for moderated t under H0
+modt.f0.loglike<-function(x,df) {
+  a<-dt(x, df, log=TRUE)
+  result<-as.vector(a)
+  flag<-which(is.na(result)==TRUE)
+  result[flag]<-0
+  result
+}
+
+## Log-likelihood for moderated t under H1
+## param=c(df,g1num,g2num,v0)
+modt.f1.loglike<-function(x,param) {
+  df<-param[1]
+  g1num<-param[2]
+  g2num<-param[3]
+  v0<-param[4]
+  w<-sqrt(1+v0/(1/g1num+1/g2num))
+  dt(x/w, df, log=TRUE)-log(w)
+  a<-dt(x/w, df, log=TRUE)-log(w)
+  result<-as.vector(a)
+  flag<-which(is.na(result)==TRUE)
+  result[flag]<-0
+  result
+}
+
+## Correlation Motif Fit
+cmfit.X<-function(x, type, K=1, tol=1e-3, max.iter=100) {
+  ## initialize
+  xrow <- nrow(x)
+  xcol <- ncol(x)
+  loglike0 <- list()
+  loglike1 <- list()
+  p <- rep(1, K)/K
+  q <- matrix(runif(K * xcol), K, xcol)
+  q[1, ] <- rep(0.01, xcol)
+  for (i in 1:xcol) {
+    f0 <- type[[i]][[1]]
+    f0param <- type[[i]][[2]]
+    f1 <- type[[i]][[3]]
+    f1param <- type[[i]][[4]]
+    loglike0[[i]] <- f0(x[, i], f0param)
+    loglike1[[i]] <- f1(x[, i], f1param)
+  }
+  condlike <- list()
+  for (i in 1:xcol) {
+    condlike[[i]] <- matrix(0, xrow, K)
+  }
+  loglike.old <- -1e+10
+  for (i.iter in 1:max.iter) {
+    if ((i.iter%%50) == 0) {
+      print(paste("We have run the first ", i.iter, " iterations for K=",
+                  K, sep = ""))
+    }
+    err <- tol + 1
+    clustlike <- matrix(0, xrow, K)
+    #templike <- matrix(0, xrow, 2)
+    templike1 <- rep(0, xrow)
+    templike2 <- rep(0, xrow)
+    for (j in 1:K) {
+      for (i in 1:xcol) {
+        templike1 <- log(q[j, i]) + loglike1[[i]]
+        templike2 <- log(1 - q[j, i]) + loglike0[[i]]
+        tempmax <- Rfast::Pmax(templike1, templike2)
+
+        templike1 <- exp(templike1 - tempmax)
+        templike2 <- exp(templike2 - tempmax)
+
+        tempsum <- templike1 + templike2
+        clustlike[, j] <- clustlike[, j] + tempmax +
+          log(tempsum)
+        condlike[[i]][, j] <- templike1/tempsum
+      }
+      clustlike[, j] <- clustlike[, j] + log(p[j])
+    }
+    #tempmax <- apply(clustlike, 1, max)
+    tempmax <- Rfast::rowMaxs(clustlike, value=TRUE)
+    for (j in 1:K) {
+      clustlike[, j] <- exp(clustlike[, j] - tempmax)
+    }
+    #tempsum <- apply(clustlike, 1, sum)
+    tempsum <- Rfast::rowsums(clustlike)
+    for (j in 1:K) {
+      clustlike[, j] <- clustlike[, j]/tempsum
+    }
+    #p.new <- (apply(clustlike, 2, sum) + 1)/(xrow + K)
+    p.new <- (Rfast::colsums(clustlike) + 1)/(xrow + K)
+    q.new <- matrix(0, K, xcol)
+    for (j in 1:K) {
+      clustpsum <- sum(clustlike[, j])
+      for (i in 1:xcol) {
+        q.new[j, i] <- (sum(clustlike[, j] * condlike[[i]][,
+                                                           j]) + 1)/(clustpsum + 2)
+      }
+    }
+    err.p <- max(abs(p.new - p)/p)
+    err.q <- max(abs(q.new - q)/q)
+    err <- max(err.p, err.q)
+    loglike.new <- (sum(tempmax + log(tempsum)) + sum(log(p.new)) +
+                      sum(log(q.new) + log(1 - q.new)))/xrow
+    p <- p.new
+    q <- q.new
+    loglike.old <- loglike.new
+    if (err < tol) {
+      break
+    }
+  }
+  clustlike <- matrix(0, xrow, K)
+  for (j in 1:K) {
+    for (i in 1:xcol) {
+      templike1 <- log(q[j, i]) + loglike1[[i]]
+      templike2 <- log(1 - q[j, i]) + loglike0[[i]]
+      tempmax <- Rfast::Pmax(templike1, templike2)
+
+      templike1 <- exp(templike1 - tempmax)
+      templike2 <- exp(templike2 - tempmax)
+
+      tempsum <- templike1 + templike2
+      clustlike[, j] <- clustlike[, j] + tempmax + log(tempsum)
+      condlike[[i]][, j] <- templike1/tempsum
+    }
+    clustlike[, j] <- clustlike[, j] + log(p[j])
+  }
+  #tempmax <- apply(clustlike, 1, max)
+  tempmax <- Rfast::rowMaxs(clustlike, value=TRUE)
+  for (j in 1:K) {
+    clustlike[, j] <- exp(clustlike[, j] - tempmax)
+  }
+  #tempsum <- apply(clustlike, 1, sum)
+  tempsum <- Rfast::rowsums(clustlike)
+  for (j in 1:K) {
+    clustlike[, j] <- clustlike[, j]/tempsum
+  }
+  p.post <- matrix(0, xrow, xcol)
+  for (j in 1:K) {
+    for (i in 1:xcol) {
+      p.post[, i] <- p.post[, i] + clustlike[, j] * condlike[[i]][,
+                                                                  j]
+    }
+  }
+  loglike.old <- loglike.old - (sum(log(p)) + sum(log(q) +
+                                                    log(1 - q)))/xrow
+  loglike.old <- loglike.old * xrow
+  result <- list(p.post = p.post, motif.prior = p, motif.q = q,
+                 loglike = loglike.old, clustlike=clustlike, condlike=condlike)
+}
+
+## Fit using (0,0,...,0) and (1,1,...,1)
+cmfitall<-function(x, type, tol=1e-3, max.iter=100) {
+  ## initialize
+  xrow<-nrow(x)
+  xcol<-ncol(x)
+  loglike0<-list()
+  loglike1<-list()
+  p<-0.01
+
+  ## compute loglikelihood
+  L0<-matrix(0,xrow,1)
+  L1<-matrix(0,xrow,1)
+  for(i in 1:xcol) {
+    f0<-type[[i]][[1]]
+    f0param<-type[[i]][[2]]
+    f1<-type[[i]][[3]]
+    f1param<-type[[i]][[4]]
+    loglike0[[i]]<-f0(x[,i],f0param)
+    loglike1[[i]]<-f1(x[,i],f1param)
+    L0<-L0+loglike0[[i]]
+    L1<-L1+loglike1[[i]]
+  }
+
+
+  ## EM algorithm to get MLE of p and q
+  loglike.old <- -1e10
+  for(i.iter in 1:max.iter) {
+    if((i.iter%%50) == 0) {
+      print(paste("We have run the first ", i.iter, " iterations",sep=""))
+    }
+    err<-tol+1
+
+    ## compute posterior cluster membership
+    clustlike<-matrix(0,xrow,2)
+    clustlike[,1]<-log(1-p)+L0
+    clustlike[,2]<-log(p)+L1
+
+    tempmax<-apply(clustlike,1,max)
+    for(j in 1:2) {
+      clustlike[,j]<-exp(clustlike[,j]-tempmax)
+    }
+    tempsum<-apply(clustlike,1,sum)
+
+    ## update motif occurrence rate
+    for(j in 1:2) {
+      clustlike[,j]<-clustlike[,j]/tempsum
+    }
+
+    p.new<-(sum(clustlike[,2])+1)/(xrow+2)
+
+    ## evaluate convergence
+    err<-abs(p.new-p)/p
+
+    ## evaluate whether the log.likelihood increases
+    loglike.new<-(sum(tempmax+log(tempsum))+log(p.new)+log(1-p.new))/xrow
+
+    loglike.old<-loglike.new
+    p<-p.new
+
+    if(err<tol) {
+      break;
+    }
+  }
+
+  ## compute posterior p
+  clustlike<-matrix(0,xrow,2)
+  clustlike[,1]<-log(1-p)+L0
+  clustlike[,2]<-log(p)+L1
+
+  tempmax<-apply(clustlike,1,max)
+  for(j in 1:2) {
+    clustlike[,j]<-exp(clustlike[,j]-tempmax)
+  }
+  tempsum<-apply(clustlike,1,sum)
+
+  for(j in 1:2) {
+    clustlike[,j]<-clustlike[,j]/tempsum
+  }
+
+  p.post<-matrix(0,xrow,xcol)
+  for(i in 1:xcol) {
+    p.post[,i]<-clustlike[,2]
+  }
+
+  ## return
+
+  #calculate back loglikelihood
+  loglike.old<-loglike.old-(log(p)+log(1-p))/xrow
+  loglike.old<-loglike.old*xrow
+  result<-list(p.post=p.post, motif.prior=p, loglike=loglike.old)
+}
+
+## Fit each dataset separately
+cmfitsep<-function(x, type, tol=1e-3, max.iter=100) {
+  ## initialize
+  xrow<-nrow(x)
+  xcol<-ncol(x)
+  loglike0<-list()
+  loglike1<-list()
+  p<-0.01*rep(1,xcol)
+  loglike.final<-rep(0,xcol)
+
+  ## compute loglikelihood
+  for(i in 1:xcol) {
+    f0<-type[[i]][[1]]
+    f0param<-type[[i]][[2]]
+    f1<-type[[i]][[3]]
+    f1param<-type[[i]][[4]]
+    loglike0[[i]]<-f0(x[,i],f0param)
+    loglike1[[i]]<-f1(x[,i],f1param)
+  }
+
+  p.post<-matrix(0,xrow,xcol)
+
+  ## EM algorithm to get MLE of p
+  for(coli in 1:xcol) {
+    loglike.old <- -1e10
+    for(i.iter in 1:max.iter) {
+      if((i.iter%%50) == 0) {
+        print(paste("We have run the first ", i.iter, " iterations",sep=""))
+      }
+      err<-tol+1
+
+      ## compute posterior cluster membership
+      clustlike<-matrix(0,xrow,2)
+      clustlike[,1]<-log(1-p[coli])+loglike0[[coli]]
+      clustlike[,2]<-log(p[coli])+loglike1[[coli]]
+
+      tempmax<-apply(clustlike,1,max)
+      for(j in 1:2) {
+        clustlike[,j]<-exp(clustlike[,j]-tempmax)
+      }
+      tempsum<-apply(clustlike,1,sum)
+
+      ## evaluate whether the log.likelihood increases
+      loglike.new<-sum(tempmax+log(tempsum))/xrow
+
+      ## update motif occurrence rate
+      for(j in 1:2) {
+        clustlike[,j]<-clustlike[,j]/tempsum
+      }
+
+      p.new<-(sum(clustlike[,2]))/(xrow)
+
+      ## evaluate convergence
+      err<-abs(p.new-p[coli])/p[coli]
+      loglike.old<-loglike.new
+      p[coli]<-p.new
+
+      if(err<tol) {
+        break;
+      }
+    }
+
+    ## compute posterior p
+    clustlike<-matrix(0,xrow,2)
+    clustlike[,1]<-log(1-p[coli])+loglike0[[coli]]
+    clustlike[,2]<-log(p[coli])+loglike1[[coli]]
+
+    tempmax<-apply(clustlike,1,max)
+    for(j in 1:2) {
+      clustlike[,j]<-exp(clustlike[,j]-tempmax)
+    }
+    tempsum<-apply(clustlike,1,sum)
+
+    for(j in 1:2) {
+      clustlike[,j]<-clustlike[,j]/tempsum
+    }
+
+    p.post[,coli]<-clustlike[,2]
+    loglike.final[coli]<-loglike.old
+  }
+
+
+  ## return
+  loglike.final<-loglike.final*xrow
+  result<-list(p.post=p.post, motif.prior=p, loglike=loglike.final)
+}
+
+## Fit the full model
+cmfitfull<-function(x, type, tol=1e-3, max.iter=100) {
+  ## initialize
+  xrow<-nrow(x)
+  xcol<-ncol(x)
+  loglike0<-list()
+  loglike1<-list()
+  K<-2^xcol
+  p<-rep(1,K)/K
+  pattern<-rep(0,xcol)
+  patid<-matrix(0,K,xcol)
+
+  ## compute loglikelihood
+  for(i in 1:xcol) {
+    f0<-type[[i]][[1]]
+    f0param<-type[[i]][[2]]
+    f1<-type[[i]][[3]]
+    f1param<-type[[i]][[4]]
+    loglike0[[i]]<-f0(x[,i],f0param)
+    loglike1[[i]]<-f1(x[,i],f1param)
+  }
+  L<-matrix(0,xrow,K)
+  for(i in 1:K)
+  {
+    patid[i,]<-pattern
+    for(j in 1:xcol) {
+      if(pattern[j] < 0.5) {
+        L[,i]<-L[,i]+loglike0[[j]]
+      } else {
+        L[,i]<-L[,i]+loglike1[[j]]
+      }
+    }
+
+    if(i < K) {
+      pattern[xcol]<-pattern[xcol]+1
+      j<-xcol
+      while(pattern[j] > 1) {
+        pattern[j]<-0
+        j<-j-1
+        pattern[j]<-pattern[j]+1
+      }
+    }
+  }
+
+  ## EM algorithm to get MLE of p and q
+  loglike.old <- -1e10
+  for(i.iter in 1:max.iter) {
+    if((i.iter%%50) == 0) {
+      print(paste("We have run the first ", i.iter, " iterations",sep=""))
+    }
+    err<-tol+1
+
+    ## compute posterior cluster membership
+    clustlike<-matrix(0,xrow,K)
+    for(j in 1:K) {
+      clustlike[,j]<-log(p[j])+L[,j]
+    }
+
+    tempmax<-apply(clustlike,1,max)
+    for(j in 1:K) {
+      clustlike[,j]<-exp(clustlike[,j]-tempmax)
+    }
+    tempsum<-apply(clustlike,1,sum)
+
+    ## update motif occurrence rate
+    for(j in 1:K) {
+      clustlike[,j]<-clustlike[,j]/tempsum
+    }
+
+    p.new<-(apply(clustlike,2,sum)+1)/(xrow+K)
+
+    ## evaluate convergence
+    err<-max(abs(p.new-p)/p)
+
+    ## evaluate whether the log.likelihood increases
+    loglike.new<-(sum(tempmax+log(tempsum))+sum(log(p.new)))/xrow
+
+    loglike.old<-loglike.new
+    p<-p.new
+
+    if(err<tol) {
+      break;
+    }
+  }
+
+  ## compute posterior p
+  clustlike<-matrix(0,xrow,K)
+  for(j in 1:K) {
+    clustlike[,j]<-log(p[j])+L[,j]
+  }
+
+  tempmax<-apply(clustlike,1,max)
+  for(j in 1:K) {
+    clustlike[,j]<-exp(clustlike[,j]-tempmax)
+  }
+  tempsum<-apply(clustlike,1,sum)
+
+  for(j in 1:K) {
+    clustlike[,j]<-clustlike[,j]/tempsum
+  }
+
+  p.post<-matrix(0,xrow,xcol)
+  for(j in 1:K) {
+    for(i in 1:xcol) {
+      if(patid[j,i] > 0.5) {
+        p.post[,i]<-p.post[,i]+clustlike[,j]
+      }
+    }
+  }
+
+  ## return
+  #calculate back loglikelihood
+  loglike.old<-loglike.old-sum(log(p))/xrow
+  loglike.old<-loglike.old*xrow
+  result<-list(p.post=p.post, motif.prior=p, loglike=loglike.old)
+}
+
+generatetype<-function(limfitted)
+{
+  jtype<-list()
+  df<-limfitted$g1num+limfitted$g2num-2+limfitted$df0
+  for(j in 1:limfitted$compnum)
+  {
+    jtype[[j]]<-list(f0=modt.f0.loglike, f0.param=df[j], f1=modt.f1.loglike, f1.param=c(df[j],limfitted$g1num[j],limfitted$g2num[j],limfitted$v0[j]))
+  }
+  jtype
+}
+
+cormotiffit <- function(exprs, groupid=NULL, compid=NULL, K=1, tol=1e-3,
+                        max.iter=100, BIC=TRUE, norm.factor.method="TMM",
+                        voom.normalize.method = "none", runtype=c("logCPM","counts","limmafits"), each=3)
+{
+  # first I want to do some typechecking. Input can be either a normalized
+  # matrix, a count matrix, or a list of limma fits. Dispatch the correct
+  # limmafit accordingly.
+  # todo: add some typechecking here
+  limfitted <- list()
+  if (runtype=="counts") {DOX_24T_shared_DEGs
+    limfitted <- limmafit.counts(exprs,groupid,compid, norm.factor.method, voom.normalize.method)
+  } else if (runtype=="logCPM") {
+    limfitted <- limmafit.default(exprs,groupid,compid)
+  } else if (runtype=="limmafits") {
+    limfitted <- limmafit.list(exprs)
+  } else {
+    stop("runtype must be one of 'logCPM', 'counts', or 'limmafits'")
+  }
+
+
+  jtype<-generatetype(limfitted)
+  fitresult<-list()
+  ks <- rep(K, each = each)
+  fitresult <- bplapply(1:length(ks), function(i, x, type, ks, tol, max.iter) {
+    cmfit.X(x, type, K = ks[i], tol = tol, max.iter = max.iter)
+  }, x=limfitted$t, type=jtype, ks=ks, tol=tol, max.iter=max.iter)
+
+  best.fitresults <- list()
+  for (i in 1:length(K)) {
+    w.k <- which(ks==K[i])
+    this.bic <- c()
+    for (j in w.k) this.bic[j] <- -2 * fitresult[[j]]$loglike + (K[i] - 1 + K[i] * limfitted$compnum) * log(dim(limfitted$t)[1])
+    w.min <- which(this.bic == min(this.bic, na.rm = TRUE))[1]
+    best.fitresults[[i]] <- fitresult[[w.min]]
+  }
+  fitresult <- best.fitresults
+
+  bic <- rep(0, length(K))
+  aic <- rep(0, length(K))
+  loglike <- rep(0, length(K))
+  for (i in 1:length(K)) loglike[i] <- fitresult[[i]]$loglike
+  for (i in 1:length(K)) bic[i] <- -2 * fitresult[[i]]$loglike + (K[i] - 1 + K[i] * limfitted$compnum) * log(dim(limfitted$t)[1])
+  for (i in 1:length(K)) aic[i] <- -2 * fitresult[[i]]$loglike + 2 * (K[i] - 1 + K[i] * limfitted$compnum)
+  if(BIC==TRUE) {
+    bestflag=which(bic==min(bic))
+  }
+  else {
+    bestflag=which(aic==min(aic))
+  }
+  result<-list(bestmotif=fitresult[[bestflag]],bic=cbind(K,bic),
+               aic=cbind(K,aic),loglike=cbind(K,loglike), allmotifs=fitresult)
+
+}
+
+cormotiffitall<-function(exprs,groupid,compid, tol=1e-3, max.iter=100)
+{
+  limfitted<-limmafit(exprs,groupid,compid)
+  jtype<-generatetype(limfitted)
+  fitresult<-cmfitall(limfitted$t,type=jtype,tol=1e-3,max.iter=max.iter)
+}
+
+cormotiffitsep<-function(exprs,groupid,compid, tol=1e-3, max.iter=100)
+{
+  limfitted<-limmafit(exprs,groupid,compid)
+  jtype<-generatetype(limfitted)
+  fitresult<-cmfitsep(limfitted$t,type=jtype,tol=1e-3,max.iter=max.iter)
+}
+
+cormotiffitfull<-function(exprs,groupid,compid, tol=1e-3, max.iter=100)
+{
+  limfitted<-limmafit(exprs,groupid,compid)
+  jtype<-generatetype(limfitted)
+  fitresult<-cmfitfull(limfitted$t,type=jtype,tol=1e-3,max.iter=max.iter)
+}
+
+plotIC<-function(fitted_cormotif)
+{
+  oldpar<-par(mfrow=c(1,2))
+  plot(fitted_cormotif$bic[,1], fitted_cormotif$bic[,2], type="b",xlab="Motif Number", ylab="BIC", main="BIC")
+  plot(fitted_cormotif$aic[,1], fitted_cormotif$aic[,2], type="b",xlab="Motif Number", ylab="AIC", main="AIC")
+}
+
+plotMotif<-function(fitted_cormotif,title="")
+{
+  layout(matrix(1:2,ncol=2))
+  u<-1:dim(fitted_cormotif$bestmotif$motif.q)[2]
+  v<-1:dim(fitted_cormotif$bestmotif$motif.q)[1]
+  image(u,v,t(fitted_cormotif$bestmotif$motif.q),
+        col=gray(seq(from=1,to=0,by=-0.1)),xlab="Study",yaxt = "n",
+        ylab="Corr. Motifs",main=paste(title,"pattern",sep=" "))
+  axis(2,at=1:length(v))
+  for(i in 1:(length(u)+1))
+  {
+    abline(v=(i-0.5))
+  }
+  for(i in 1:(length(v)+1))
+  {
+    abline(h=(i-0.5))
+  }
+  Ng=10000
+  if(is.null(fitted_cormotif$bestmotif$p.post)!=TRUE)
+    Ng=nrow(fitted_cormotif$bestmotif$p.post)
+  genecount=floor(fitted_cormotif$bestmotif$motif.p*Ng)
+  NK=nrow(fitted_cormotif$bestmotif$motif.q)
+  plot(0,0.7,pch=".",xlim=c(0,1.2),ylim=c(0.75,NK+0.25),
+       frame.plot=FALSE,axes=FALSE,xlab="No. of genes",ylab="", main=paste(title,"frequency",sep=" "))
+  segments(0,0.7,fitted_cormotif$bestmotif$motif.p[1],0.7)
+  rect(0,1:NK-0.3,fitted_cormotif$bestmotif$motif.p,1:NK+0.3,
+       col="dark grey")
+  mtext(1:NK,at=1:NK,side=2,cex=0.8)
+  text(fitted_cormotif$bestmotif$motif.p+0.15,1:NK,
+       labels=floor(fitted_cormotif$bestmotif$motif.p*Ng))
+}
+
+```
+
+## Set Up Cormotif Data
+
+##Cormotif Log2cpm of Normalized Counts RUVs
+```{r RUVs Cormotif log2cpm norm counts, message=FALSE, warning=FALSE}
+
+#I am going to try this with the log2cpm of the normalized counts from RUVs
+
+set1 <- readRDS("data/Fig3/set1_normalizedcounts_k1.RDS")
+
+lognormcounts_CMF_rep <- as.matrix(set1$normalizedCounts)
+lognormcounts_CMF_cpm <- cpm(lognormcounts_CMF_rep + 1, log = TRUE)
+#add a pseudocount to ensure any values are not negative or zero
+
+#first want to cut out the replicate samples as not needed for Cormotif
+lognormcounts_CMF_cpm <- as.data.frame(lognormcounts_CMF_cpm) %>% 
+  dplyr::select(-(contains("6R"))) %>% 
+  as.matrix()
+#14319 genes in 36 cols
+
+write.csv(x = lognormcounts_CMF_cpm, file = "data/Fig3/Cormotif_log2normcounts_RUV_matrix.csv")
+
+lognormcounts_CMF_cpm <- read.csv("data/Fig3/Cormotif_log2normcounts_RUV_matrix.csv")
+
+#14319 genes in 36 columns, set up for plugging into Cormotif
+
+#now I need to set up my groupid and compid accordingly
+
+#put together my group id and comparison id to make the correct comparisons between experimental conditions
+
+#groupid tells which experimental conditions are grouped together
+#compid tells which experimental conditions should be compared against one another
+##ie DOX24T vs DMSO24T matched control
+
+groupid <- readRDS("data/Fig3/groupid.RDS")
+
+#now I have to make this into a vector (named vector)?
+
+compid <- data.frame(Cond1 = c(1, 2, 3), Cond2 = c(4, 5, 6))
+
+
+```
+
+## Cormotif with RUVs Normalized Counts
+
+```{r RUVs Run Cormotif log2cpm normcounts, message=FALSE, warning=FALSE}
+
+#set the seed the same as the previous one to ensure consistency
+
+#fit Cormotif model
+# set.seed(19191)
+#only set the seed ONCE
+
+# motif.fit_RUV_logNC <- cormotiffit(
+#   exprs = lognormcounts_CMF_cpm,
+#   groupid = groupid,
+#   compid = compid,
+#   K = 1:8,
+#   max.iter = 500,
+#   BIC = TRUE,
+#   runtype = "logCPM"
+# )
+
+# saveRDS(motif.fit_RUV_logNC_cpm, "data/Fig3/motif.fit_RUVnormcounts_log2cpm_250630.RDS")
+
+motif.fit_RUV_logNC_cpm <- readRDS("data/Fig3/motif.fit_RUVnormcounts_log2cpm_250630.RDS")
+
+```
+
+# Supplementary Figure 5 - AIC BIC Number of Clusters
+
+```{r Supp Fig 5 BIC AIC, message=FALSE, warning=FALSE}
+
+#plot the AIC and BIC (we're interested in the Bayesian most of all)
+plotIC(motif.fit_RUV_logNC_cpm)
+
+# bic_aic_file <- file.path(output_folder, "CMF_BIC_AIC_EMP_251022.pdf")
+# cairo_pdf(bic_aic_file, width = 6, height = 4)
+# plotIC(motif.fit_RUV_logNC_cpm)
+# dev.off()
+
+#visual check of the lowest BIC
+motif.fit_RUV_logNC_cpm$bic
+
+```
+
+
+# Figure 3A - Cormotif Clusters
+
+I performed gene cluster analysis with the Cormotif package to assess gene expression patterns within these RNAseq data.
+
+```{r Plot Cormotif Clusters Fig3A, message=FALSE, warning=FALSE}
+
+#plot the motifs
+plotMotif(motif.fit_RUV_logNC_cpm)
+
+#plot the probability legend
+myColors <-  rev(c("#FFFFFF", "#E6E6E6" ,"#CCCCCC", "#B3B3B3", "#999999", "#808080", "#666666","#4C4C4C", "#333333", "#191919","#000000"))
+
+plot.new()
+legend('bottomleft',fill=myColors, legend =rev(c("0", "0.1", "0.2", "0.3", "0.4",  "0.5", "0.6", "0.7", "0.8","0.9", "1")), box.col="white",title = "Probability\nlegend", horiz=FALSE,title.cex=.8)
+
+```
+
+
+# Extract posterior probabilities and cluster likelihood
+
+```{r Cormotif log2cpm Norm Counts clustlike + p.post, message=FALSE, warning=FALSE}
+
+#extract the posterior probability that these genes belong to motifs
+gene_prob_all_RUV <- motif.fit_RUV_logNC_cpm$bestmotif$p.post
+rownames(gene_prob_all_RUV) <- rownames(lognormcounts_CMF_cpm)
+
+#assign each gene to a motif with max post prob
+assigned_motifs_RUV <- apply(gene_prob_all_RUV, 1, which.max)
+max_probs_RUV <- apply(gene_prob_all_RUV, 1, max)
+
+#combine these into a dataframe - motif assigned genes (p.post)
+motif_assignment_df_RUV <- gene_prob_all_RUV %>%
+  as.data.frame() %>%
+  rownames_to_column("Gene") %>%
+  mutate(
+    Assigned_Motif = assigned_motifs_RUV[Gene],
+    Max_Probability = max_probs_RUV[Gene]
+  )
+
+
+#extract the cluster likelihood - which DEGs are most likely to be in this cluster
+motif_prob_RUV <- motif.fit_RUV_logNC_cpm$bestmotif$clustlike
+rownames(motif_prob_RUV) <- rownames(gene_prob_all_RUV)
+# write.csv(motif_prob_RUV,"data/Fig3/cormotif_probability_genelist_all_RUV_log2cpm_NormCounts.csv")
+
+```
+
+
+## Integrate P.post and clustlike for final gene sets
+
+```{r Use p.post and clustlike together, message=FALSE, warning=FALSE}
+#begin with the clustlike cutoffs and then overlay the p.post to check if the genes are present in both
+
+#these filters are the combination of the above analysis to get a gene set that fits in both p.post and clustlike
+
+####Motif 1 - Acute Cluster####
+#filter 1: clustlike
+clust1_genes_RUV <- 
+  motif_prob_RUV %>%
+  as.data.frame() %>%
+  filter(V1>0.8 & V2<0.5) %>% 
+  rownames
+length(clust1_genes_RUV)
+#13600 genes
+
+###filter 2: gene-level posterior pattern
+prob_filtered_genes_1_RUV <- rownames(gene_prob_all_RUV[(gene_prob_all_RUV[,1] >0.05 & gene_prob_all_RUV[,1] <0.5 & gene_prob_all_RUV[,2] <0.5 & gene_prob_all_RUV[,3] <0.5),])
+### Final intersection of both filters
+final_genes_1_RUV <- intersect(clust1_genes_RUV, prob_filtered_genes_1_RUV)
+cat("Number of genes passing both filters:", length(final_genes_1_RUV), "\n")
+#7602 genes pass both filters here
+
+####Motif 2 - Chronic Cluster####
+#filter 1: clustlike
+clust2_genes_RUV <- motif_prob_RUV %>%
+  as.data.frame() %>%
+  filter(V2>0.5 & V1<0.5) %>% 
+  rownames
+
+length(clust2_genes_RUV)
+#517 genes
+
+### Filter 2: Gene-level posterior pattern
+prob_filtered_genes_2_RUV <- rownames(gene_prob_all_RUV[(gene_prob_all_RUV[,1] >0.3 & gene_prob_all_RUV[,2] >0.5 & gene_prob_all_RUV[,3] >0.5),])
+### Final intersection of both filters
+final_genes_2_RUV <- intersect(clust2_genes_RUV, prob_filtered_genes_2_RUV)
+cat("Number of genes passing both filters:", length(final_genes_2_RUV), "\n")
+
+#501 genes pass both filters here
+
+#what is the proportion of my genes that are included?
+#p.post and clustlike together
+7602+501
+#8103
+(8103/14319)*100
+#56.59% of my genes are represented here out of the 14319 original
+
+#what is the proportion of my genes that are included?
+#clustlike only
+13600+517
+#14117
+(14117/14319)*100
+#98.6% of my genes are included with clustlike only
+#want to find out which genes are not assigned to motifs
+
+final_genes_list_RUV <- union(final_genes_1_RUV, final_genes_2_RUV)
+length(final_genes_list_RUV)
+#8103 genes as found above
+initial_genes_list_RUV <- rownames(lognormcounts_CMF_cpm)
+length(initial_genes_list_RUV)
+#14319 genes as usual
+
+unassigned_genes_list_RUV <- setdiff(initial_genes_list_RUV, final_genes_list_RUV)
+length(unassigned_genes_list_RUV)
+#6216 genes not assigned
+
+final_genes_list_clustlike_RUV <- union(clust1_genes_RUV, clust2_genes_RUV)
+length(final_genes_list_clustlike_RUV)
+#14117 genes as above with clustlike only
+
+unassigned_genes_list_RUV_clustlike <- setdiff(initial_genes_list_RUV, final_genes_list_clustlike_RUV)
+length(unassigned_genes_list_RUV_clustlike)
+#202 genes not assigned
+
+# saveRDS(unassigned_genes_list_RUV, "data/new/RUV/CMF/unassigned_genes_RUVlog2cpm_NormCounts_Cormotif.RDS")
+
+# saveRDS(unassigned_genes_list_RUV_clustlike, "data/new/RUV/CMF/unassigned_genes_clustlike_RUVslog2cpm_NormCounts_Cormotif.RDS")
+
+#now, ensure that none of these genes are shared amongst categories
+vennCor_final_RUV <- list(final_genes_1_RUV, final_genes_2_RUV)
+ggVennDiagram(
+  vennCor_final_RUV,
+  category.names = c("M1", "M2")
+) + ggtitle("Cormotif DEGs clustlike + p.post RUVs log2cpm NC")+
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),  # Increase title size
+    text = element_text(size = 16)  # Increase text size globally
+  )
+
+vennCor_final_RUV_clust <- list(clust1_genes_RUV, clust2_genes_RUV)
+ggVennDiagram(
+  vennCor_final_RUV_clust,
+  category.names = c("M1", "M2")
+) + ggtitle("Cormotif DEGs clustlike RUVs log2cpm NC")+
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),  # Increase title size
+    text = element_text(size = 16)  # Increase text size globally
+  )
+
+#no overlapping genes found in these gene sets
+
+clusterdata_dxr_fin_RUV <- data.frame(
+  Category = c("Motif 1", "Motif 2"), 
+  Value = c(length(final_genes_1_RUV), length(final_genes_2_RUV)
+))
+
+clusterdata_dxr_fin_RUV_clust <- data.frame(
+  Category = c("Motif 1", "Motif 2"), 
+  Value = c(length(clust1_genes_RUV), length(clust2_genes_RUV)
+))
+
+
+piecolors_dxr_fin <- c("Motif 1" = "#83C67C", 
+                       "Motif 2" = "#C499C6")
+
+#make this into a barplot
+clusterdata_dxr_fin_RUV <- clusterdata_dxr_fin_RUV %>%
+  mutate(Prop = Value / sum(Value) * 100)
+
+clusterdata_dxr_fin_RUV <- clusterdata_dxr_fin_RUV %>%
+  mutate(Category = factor(Category, levels = c("Motif 2", "Motif 1"))) %>%
+  mutate(Prop = Value / sum(Value) * 100)
+
+# stacked bar with no axes
+ggplot(clusterdata_dxr_fin_RUV, aes(x = "", y = Value, fill = Category)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_text(aes(label = paste0(Value, " (", round(Prop, 1), "%)")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "white") +
+  labs(title = "Distr of Gene Clusters Cormotif RUVs clustlike + p.post") +
+  scale_fill_manual(values = piecolors_dxr_fin) +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5))
+
+#make a piechart of these distributions
+clusterdata_dxr_fin_RUV %>% ggplot(aes(x = "", y = Value, fill = Category))+
+  geom_bar(width = 1, stat = "identity")+
+  coord_polar("y", start = 0)+
+  geom_text(aes(label = Value),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "black")+
+  labs(title = "Distr of Gene Clusters Cormotif RUVs clustlike + p.post", x = NULL, y = NULL)+
+  theme_void()+
+  scale_fill_manual(values = piecolors_dxr_fin)
+
+clusterdata_dxr_fin_RUV_clust %>% ggplot(aes(x = "", y = Value, fill = Category))+
+  geom_bar(width = 1, stat = "identity")+
+  coord_polar("y", start = 0)+
+  geom_text(aes(label = Value),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "black")+
+  labs(title = "Distr of Gene Clusters Cormotif RUVs clustlike", x = NULL, y = NULL)+
+  theme_void()+
+  scale_fill_manual(values = piecolors_dxr_fin)
+
+#now, continue by plotting the logFC of all of these gene sets per motif, as well as look at some random genes for log2cpm to see if the patterns are reflected in the example genes
+
+# saveRDS(final_genes_1_RUV, "data/Fig3/final_genes_1_RUV.RDS")
+# saveRDS(final_genes_2_RUV, "data/Fig3/final_genes_2_RUV.RDS")
+
+final_genes_1_RUV <- readRDS("data/Fig3/final_genes_1_RUV.RDS")
+final_genes_2_RUV <- readRDS("data/Fig3/final_genes_2_RUV.RDS")
+
+# write.csv(final_genes_1_RUV, "data/Fig3/Recovered_genes_RUV.csv")
+# write.csv(final_genes_2_RUV, "data/Fig3/Sustained_genes_RUV.csv")
+
+```
+
+
+## logFC Cormotif over time
+
+```{r logFC Cormotif log2cpm Norm Counts RUVs Plot, message=FALSE, warning=FALSE}
+####clustlike + p.post logFC of initial set####
+
+##motif 1
+length(final_genes_1_RUV)
+##motif 2 
+length(final_genes_2_RUV)
+
+time_col <- c(
+  "t0" = "#005A4C",
+  "t24" = "#328477",
+  "t144" = "#8FB9B1")
+
+
+#read in my toptables from pairwise analysis
+# Toptable_RUV_24T <- read.csv("data/DE/Toptable_RUV_24T_final.csv")
+# Toptable_RUV_24R <- read.csv("data/DE/Toptable_RUV_24R_final.csv")
+# Toptable_RUV_144R <- read.csv("data/DE/Toptable_RUV_144R_final.csv")
+
+#read in combined toptables
+combined_toptables_dxr_RUV <- readRDS("data/DE/combined_toptables_dxr_RUV.RDS")
+
+#Filter the data based on each motif
+filt_toptable_1_dxr_fin_RUV <- combined_toptables_dxr_RUV %>% 
+  dplyr::filter(Entrez_ID  %in% final_genes_1_RUV) %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), 
+                       labels = c("t0", "t24", "t144"))) %>% 
+  ggplot(., aes(x = time, y = logFC))+
+  geom_boxplot(aes(fill = time))+
+  scale_fill_manual(values = time_col)+
+  guides(fill = guide_legend(title = "Time"))+
+  theme_bw()+
+  xlab(" ")+
+  ylab("logFC")+
+  theme_bw()+
+  ggtitle("LogFC Acute RUVs clustlike + p.post (n=7602)")+
+  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+        axis.title = element_text(size = 15, colour = "black"),
+        strip.background = element_rect(fill = "#CAD899"),
+        axis.text.x = element_text(size = 8, colour = "white", angle = 15),
+        strip.text.x = element_text(size = 12, colour = "black", face = "bold"))
+
+#motif 2
+filt_toptable_2_dxr_fin_RUV <- combined_toptables_dxr_RUV %>% 
+  dplyr::filter(Entrez_ID  %in% final_genes_2_RUV) %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), 
+                       labels = c("t0", "t24", "t144"))) %>% 
+  ggplot(., aes(x = time, y = logFC))+
+  geom_boxplot(aes(fill = time))+
+  scale_fill_manual(values = time_col)+
+  guides(fill = guide_legend(title = "Time"))+
+  theme_bw()+
+  xlab(" ")+
+  ylab("logFC")+
+  theme_bw()+
+  ggtitle("LogFC Chronic RUVs clustlike + p.post (n=501)")+
+  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+        axis.title = element_text(size = 15, colour = "black"),
+        strip.background = element_rect(fill = "#CAD899"),
+        axis.text.x = element_text(size = 8, colour = "white", angle = 15),
+        strip.text.x = element_text(size = 12, colour = "black", face = "bold"))
+
+
+#plots
+filt_toptable_1_dxr_fin_RUV
+filt_toptable_2_dxr_fin_RUV 
+
+
+#now plot the abs logFC for each of these too
+filt_toptable_1_abs_fin_RUV <- combined_toptables_dxr_RUV %>% 
+  dplyr::filter(Entrez_ID  %in% final_genes_1_RUV) %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), 
+                       labels = c("t0", "t24", "t144"))) %>% 
+  ggplot(., aes(x = time, y = absFC))+
+  geom_boxplot(aes(fill = time))+
+  scale_fill_manual(values = time_col)+
+  guides(fill = guide_legend(title = "Time"))+
+  theme_bw()+
+  xlab(" ")+
+  ylab("|logFC|")+
+  theme_bw()+
+  ggtitle("AbslogFC Acute RUVs clustlike + p.post (n=7602)")+
+  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+        axis.title = element_text(size = 15, colour = "black"),
+        strip.background = element_rect(fill = "#CAD899"),
+        axis.text.x = element_text(size = 8, colour = "white", angle = 15),
+        strip.text.x = element_text(size = 12, colour = "black", face = "bold"))
+
+#motif 2
+filt_toptable_2_abs_fin_RUV <- combined_toptables_dxr_RUV %>% 
+  dplyr::filter(Entrez_ID  %in% final_genes_2_RUV) %>% 
+  mutate(absFC = abs(logFC)) %>% 
+  mutate(time = factor(Time, levels = c("t0", "t24", "t144"), 
+                       labels = c("t0", "t24", "t144"))) %>%  
+  ggplot(., aes(x = time, y = absFC))+
+  geom_boxplot(aes(fill = time))+
+  scale_fill_manual(values = time_col)+
+  guides(fill = guide_legend(title = "Time"))+
+  theme_bw()+
+  xlab(" ")+
+  ylab("|logFC|")+
+  theme_bw()+
+  ggtitle("AbslogFC Chronic RUVs clustlike + p.post (n=501)")+
+  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+        axis.title = element_text(size = 15, colour = "black"),
+        strip.background = element_rect(fill = "#CAD899"),
+        axis.text.x = element_text(size = 8, colour = "white", angle = 15),
+        strip.text.x = element_text(size = 12, colour = "black", face = "bold"))
+
+
+#plots
+filt_toptable_1_abs_fin_RUV
+filt_toptable_2_abs_fin_RUV
+
+```
+
+
+# Figure 3B - Top 100 line plot
+
+```{r M1 vs M2 cleaned up version of above, message=FALSE, warning=FALSE}
+
+#load clustlike matrix
+motif.fit_RUV_logNC_cpm <- readRDS("data/Fig3/motif.fit_RUVnormcounts_log2cpm_250630.RDS")
+clust_mat_100 <- motif.fit_RUV_logNC_cpm$bestmotif$clustlike
+
+#ensure row names match gene IDs
+row.names(clust_mat_100) <- row.names(lognormcounts_CMF_cpm)
+cmf_logNC_cpm <- clust_mat_100 %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column("Entrez_ID") %>%
+  dplyr::mutate(Entrez_ID = as.character(Entrez_ID))
+
+#Load combined toptables and classify genes
+# combined_toptables_dxr_RUV_1 <- dplyr::bind_rows(combined_toptables_dxr_RUV) %>%
+#   mutate(
+#     Entrez_ID = as.character(Entrez_ID),
+#     Time = case_when(
+#       Time == "24T"  ~ "t0",
+#       Time == "24R"  ~ "t24",
+#       Time == "144R" ~ "t144",
+#       TRUE ~ NA_character_
+#     )
+#   )
+
+# saveRDS(combined_toptables_dxr_RUV_df, "data/DE/combined_toptables_dxr_RUV_df.RDS")
+
+combined_toptables_dxr_RUV_df <- readRDS("data/DE/combined_toptables_dxr_RUV_df.RDS")
+
+#read in full gene universe as I don't want to filter by DEGs only
+filcpm_matrix <- readRDS("data/QC/filcpm_final_matrix_newind.RDS")
+all_genes <- rownames(filcpm_matrix)
+
+shared <- intersect(rownames(clust_mat_100), all_genes)
+
+clust_mat <- clust_mat_100[shared, , drop = FALSE]
+filcpm_mat <- filcpm_matrix[shared, , drop = FALSE]
+
+
+Sets_cmf_cpmNC <- combined_toptables_dxr_RUV_df %>%
+  dplyr::mutate(
+    motif = dplyr::case_when(
+      Entrez_ID %in% final_genes_1_RUV ~ "Acute",
+      Entrez_ID %in% final_genes_2_RUV ~ "Chronic",
+      TRUE ~ "not_assigned"
+    )
+  ) %>%
+  dplyr::filter(motif != "not_assigned") %>%
+  dplyr::left_join(., cmf_logNC_cpm, by = "Entrez_ID") %>%
+  dplyr::mutate(
+    Time = factor(Time, levels = c("t0", "t24", "t144")),
+    absFC = abs(logFC)
+  )
+
+#get top 100 unique genes per motif by clustlike
+gene_scores <- Sets_cmf_cpmNC %>%
+  dplyr::group_by(Entrez_ID, motif) %>%
+  dplyr::reframe(
+    score = ifelse(motif == "Acute", max(V1, na.rm = TRUE), max(V2, na.rm = TRUE)),
+    .groups = "drop"
+  )
+
+top100_M1 <- gene_scores %>%
+  dplyr::filter(motif == "Acute") %>%
+  dplyr::slice_max(order_by = score, n = 100)
+
+top100_M2 <- gene_scores %>%
+  dplyr::filter(motif == "Chronic") %>%
+  dplyr::slice_max(order_by = score, n = 100)
+
+#combine top 100 for plotting
+top100_all <- dplyr::bind_rows(top100_M1, top100_M2)
+
+#pull timepoint rows for top 100 genes
+plot_df_cpmNC <- Sets_cmf_cpmNC %>%
+  dplyr::semi_join(top100_all, by = c("Entrez_ID", "motif")) %>%
+  dplyr::mutate(
+    absFC = abs(logFC)
+  )
+
+#calculate median of all genes (not just top 100)
+median_allgenes_cpmNC <- Sets_cmf_cpmNC %>%
+  dplyr::group_by(motif, Time) %>%
+  dplyr::summarize(
+    median_logFC = median(logFC, na.rm = TRUE),
+    median_absFC = median(absFC, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+#plotting
+motif_cols <- c("Acute" = "#83C67C", "Chronic" = "#C499C6")
+
+#logFC
+p_logFC <- ggplot(plot_df_cpmNC, aes(x = Time, y = logFC, 
+                                     group = Entrez_ID, color = motif)) +
+  geom_line(alpha = 0.3) +
+  geom_line(
+    data = median_allgenes_cpmNC,
+    aes(x = Time, y = median_logFC, 
+        group = motif, color = motif),
+    linewidth = 1.2
+  ) +
+  scale_color_manual(values = motif_cols) +
+  facet_wrap(~motif, scales = "free_y") +
+  theme_custom() +
+  labs(title = "Top 100 motif genes with median - logFC", 
+       x = "Timepoint", y = "logFC") +
+  theme(
+  plot.margin = margin(10, 10, 10, 10),
+  axis.line = element_line(linewidth = 0.8, color = "black"),
+  axis.ticks.length = unit(0.05, "in"), 
+  legend.position = "right")
+
+# absFC
+p_absFC <- ggplot(plot_df_cpmNC, aes(x = Time, y = absFC, 
+                                     group = Entrez_ID, color = motif)) +
+  geom_line(alpha = 0.3) +
+  geom_line(
+    data = median_allgenes_cpmNC,
+    aes(x = Time, y = median_absFC,
+        group = motif, color = motif),
+    linewidth = 1.2
+  ) +
+  scale_color_manual(values = motif_cols) +
+  facet_wrap(~motif, scales = "free_y") +
+  theme_custom() +
+  labs(title = "Top 100 motif genes with median trajectory - absFC", 
+       x = "Timepoint", y = "absFC") +
+  theme(
+  plot.margin = margin(10, 10, 10, 10),
+  axis.line = element_line(linewidth = 0.8, color = "black"),
+  axis.ticks.length = unit(0.05, "in"), 
+  legend.position = "right")
+
+p_logFC
+p_absFC
+
+
+#modify the plots to be on the same thing now that I know they look correct - so no faceting
+```
+
+# Figure 3B - Top 100 Genes by Motif Cluster
+
+```{r logFC Line Plot Fig3B, message=FALSE, warning=FALSE}
+
+#Figure 3B
+plot_motifs100_logFC <- ggplot() +
+  #top 100 genes per motif
+  geom_line(data = plot_df_cpmNC,
+            aes(x = Time, y = logFC, 
+                group = Entrez_ID, color = motif),
+            alpha = 0.6, size = 1) +
+  #median lines for M1
+  geom_line(data = median_allgenes_cpmNC %>% 
+              dplyr::filter(motif == "Acute"),
+            aes(x = Time, y = median_logFC, group = motif),
+            color = "#2E8B57", size = 2) +
+  #median lines for M2
+  geom_line(data = median_allgenes_cpmNC %>% 
+              dplyr::filter(motif == "Chronic"),
+            aes(x = Time, y = median_logFC, group = motif),
+            color = "#7B3F9E", size = 2) +
+  scale_color_manual(values = motif_cols) +
+  labs(title = "log2FC Top 100 Genes by Motif",
+       y = "log2FC", x = "Time", color = "Motif") +
+  theme_custom() +
+  theme(
+  plot.margin = margin(10, 10, 10, 10),
+  axis.line = element_line(linewidth = 0.8, color = "black"),
+  axis.ticks.length = unit(0.05, "in"), 
+  legend.position = "right")
+
+plot_motifs100_logFC
+
+#combine top 100 genes and medians into one plot for absFC
+plot_motifs100_abslogFC <- ggplot() +
+  #top 100 genes per motif
+  geom_line(data = plot_df_cpmNC,
+            aes(x = Time, y = absFC, 
+                group = Entrez_ID, color = motif),
+            alpha = 0.4, size = 0.9) +
+  #median lines for M1
+  geom_line(data = median_allgenes_cpmNC %>%
+              dplyr::filter(motif == "Acute"),
+            aes(x = Time, y = median_absFC, group = motif),
+            color = "#2E8B57", size = 2) +
+  #median lines for M2
+  geom_line(data = median_allgenes_cpmNC %>% 
+              dplyr::filter(motif == "Chronic"),
+            aes(x = Time, y = median_absFC, group = motif),
+            color = "#7B3F9E", size = 2) +
+  scale_color_manual(values = motif_cols) +
+  labs(title = "|logFC| Top 100 Genes by Motif",
+       y = "|logFC|", x = "Time", color = "Motif") +
+  theme_custom() +
+  theme(
+  plot.margin = margin(10, 10, 10, 10),
+  axis.line = element_line(linewidth = 0.8, color = "black"),
+  axis.ticks.length = unit(0.05, "in"), 
+  legend.position = "right")
+
+plot_motifs100_abslogFC
+
+#simple summary table at the end to show the median logFCs
+median_summary_cpmNC <- median_allgenes_cpmNC %>%
+  dplyr::select(motif, Time, median_logFC, median_absFC) %>%
+  dplyr::arrange(motif, Time)
+
+# View table
+print(median_summary_cpmNC)
+
+#save the absFC plot as a pdf and a png for later
+# cairo_pdf("data/new/RUV/CMF/abslogFC_lineplot_motifs_clustlike_EMP_250915.pdf", width = 8, height = 6)
+# print(plot_motifs100_abslogFC)
+# dev.off()
+
+# cairo_pdf("data/new/RUV/CMF/logFC_lineplot_motifs_clustlike_EMP_250915.pdf", width = 8, height = 6)
+# print(plot_motifs100_logFC)
+# dev.off()
+
+#png file
+# ggsave("data/new/RUV/logFC_lineplot_motifs_clustlike_EMP_250915.png", p_logFC, width = 8, height = 6, dpi = 300)
+# ggsave("data/new/RUV/abslogFC_lineplot_motifs_clustlike_EMP_250915.png", p_absFC, width = 8, height = 6, dpi = 300)
+
+```
+
+
+
+
+# Supplementary Figure 6 - Chronic (n=501) Line Plot
+
+```{r logFC line plot Chronic, message=FALSE, warning=FALSE}
+#I want to plot all of the Chronic Cluster M2 genes in a line plot
+#No need to slice, include all 501 genes and the median
+
+#load in my combined toptables from limma
+combined_toptables_dxr_RUV <- readRDS("data/DE/combined_toptables_dxr_RUV.RDS") %>%
+  dplyr::select(-X)
+
+#create a toptable with all of the genes marked by motif 1 or motif 2
+filt_toptable_motifgenes_RUV <- combined_toptables_dxr_RUV %>% 
+  mutate(motif = case_when(
+    Entrez_ID %in% final_genes_1_RUV ~ "M1",
+    Entrez_ID %in% final_genes_2_RUV ~ "M2",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(motif)) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  mutate(time = factor(Time, 
+                       levels = c("t0", "t24", "t144"))) %>% 
+  mutate(absFC = abs(logFC))
+
+
+plot_M2_allgenes <- filt_toptable_motifgenes_RUV %>% 
+  dplyr::filter(motif == "M2")
+
+#calculate medians for ALL chronic genes across timepoints
+medians_motif2_RUV <- plot_M2_allgenes %>%
+  group_by(time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+# Label with median values
+labs_logFC_motif2 <- paste0(
+  "M2\nmedian logFC =\n",
+  paste0(medians_motif2_RUV$time, "=", round(medians_motif2_RUV$median_logFC, 2), collapse = "\n")
+)
+
+#plot all 501 lines for motif 2 genes
+plot_motif2_logFC <- ggplot() +
+  geom_line(data = plot_M2_allgenes,
+            aes(x = time, y = logFC, group = Entrez_ID),
+            color = "#C499C6", alpha = 0.4, linewidth = 0.9) +
+  geom_line(data = medians_motif2_RUV,
+            aes(x = time, y = median_logFC, group = 1),
+            color = "#7B3F9E", linewidth = 2) +
+  labs(title = "log2FC Chronic Genes (n = 501)",
+       y = "log2FC", x = "Time", color = "Motif") +
+  theme_custom() +
+  theme(legend.position = "right")
+
+plot_motif2_logFC
+
+# save_plot(plot = plot_motif2_logFC,
+#           filename = "Motif2_logFC_Supp_EMP",
+#           folder = output_folder,
+#           height = 3,
+#           width = 3)
+
+```
+
+
+# Figure 3C + D - Example genes by cluster
+
+```{r log2cpm Example Genes Cormotif log2cpm Norm Counts, message=FALSE, warning=FALSE}
+#use the final genes from cross-verifying with clustlike + p.post
+
+#Load in my count matrices
+#final_genes_1_RUV
+#final_genes_2_RUV
+
+#clust1_genes_RUV
+#clust2_genes_RUV
+
+#these are all the genes that are present in each category, make them into dataframes by filtering out the rest of the genes in my main boxplot df
+boxplots_cormotif <- readRDS("data/QC/filcpm_matrix_genes.RDS") %>% 
+  as.data.frame()
+
+motif1_genes_fin_RUV <- boxplots_cormotif[boxplots_cormotif$Entrez_ID %in% final_genes_1_RUV,]
+dim(motif1_genes_fin_RUV)
+#7602 genes in 44 cols
+motif2_genes_fin_RUV <- boxplots_cormotif[boxplots_cormotif$Entrez_ID %in% final_genes_2_RUV,]
+dim(motif2_genes_fin_RUV)
+#501 genes in 44 cols
+
+#pull out some random genes for each using sample
+
+m1_genes_fin_RUV <- motif1_genes_fin_RUV %>% dplyr::filter(SYMBOL == "ZMYND8")
+  
+  # motif1_genes_fin_RUV[sample(nrow(motif1_genes_fin_RUV), 3), , drop = FALSE]
+
+#define gene list(s)
+#these are the genes pulled out by m1_genes
+initial_test_genes1_fin_RUV <- c(m1_genes_fin_RUV$SYMBOL)  
+#Add more gene symbols as needed or add more categories
+
+#now put in the function I want to use to generate boxplots of genes
+process_gene_data_1_fin_RUV <- function(gene) {
+  gene_data <- m1_genes_fin_RUV %>% filter(SYMBOL == gene)
+  long_data <- gene_data %>%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = "Sample", values_to = "log2CPM") %>%
+    mutate(
+      Drug = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("DMSO", Sample) ~ "DMSO",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("_24T_", Sample) ~ "24T",
+        grepl("_24R_", Sample) ~ "24R",
+        grepl("_144R_", Sample) ~ "144R",
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl("Ind1$", Sample) ~ "1",
+        grepl("Ind2$", Sample) ~ "2",
+        grepl("Ind3$", Sample) ~ "3",
+        grepl("Ind4$", Sample) ~ "4",
+        grepl("Ind5$", Sample) ~ "5",
+        grepl("Ind6$", Sample) ~ "6",
+        grepl("Ind6REP$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = "_")
+    )
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c(
+      "DOX_24T", 
+      "DMSO_24T", 
+      "DOX_24R", 
+      "DMSO_24R", 
+      "DOX_144R", 
+      "DMSO_144R"
+    )
+  )
+  return(long_data)
+}
+
+#generate Boxplots from the above function using our gene list above
+for (gene in initial_test_genes1_fin_RUV) {
+  gene_data <- process_gene_data_1_fin_RUV(gene)
+  p <- ggplot(gene_data, aes(x = Condition, y = log2CPM, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")) +
+    ggtitle(paste("Log2CPM Expression", gene, "Motif 1 RUVs")) +
+    labs(x = "Treatment", y = "log2CPM") +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90, hjust = 1)
+    )
+  print(p)
+}
+
+#####motif 2#####
+
+m2_genes_fin_RUV <- motif2_genes_fin_RUV %>% dplyr::filter(SYMBOL == "CCNB2")
+  
+  
+# motif2_genes_fin_RUV[sample(nrow(motif2_genes_fin_RUV), 3), , drop = FALSE]
+
+#define gene list(s)
+#these are the genes pulled out by m1_genes
+initial_test_genes2_fin_RUV <- c(m2_genes_fin_RUV$SYMBOL)  
+#Add more gene symbols as needed or add more categories
+
+#now put in the function I want to use to generate boxplots of genes
+process_gene_datam2_fin_RUV <- function(gene) {
+  gene_data <- motif2_genes_fin_RUV %>% filter(SYMBOL == gene)
+  long_data <- gene_data %>%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = "Sample", values_to = "log2CPM") %>%
+    mutate(
+      Drug = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("DMSO", Sample) ~ "DMSO",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("_24T_", Sample) ~ "24T",
+        grepl("_24R_", Sample) ~ "24R",
+        grepl("_144R_", Sample) ~ "144R",
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl("Ind1$", Sample) ~ "1",
+        grepl("Ind2$", Sample) ~ "2",
+        grepl("Ind3$", Sample) ~ "3",
+        grepl("Ind4$", Sample) ~ "4",
+        grepl("Ind5$", Sample) ~ "5",
+        grepl("Ind6$", Sample) ~ "6",
+        grepl("Ind6REP$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = "_")
+    )
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c(
+      "DOX_24T", 
+      "DMSO_24T", 
+      "DOX_24R", 
+      "DMSO_24R", 
+      "DOX_144R", 
+      "DMSO_144R"
+    )
+  )
+  return(long_data)
+}
+
+#this function is saved under process_gene_data so I will save as an R object
+
+#saveRDS(process_gene_data, "data/new/process_gene_data_funct.RDS")
+
+#generate boxplots from the above function using our gene list above
+for (gene in initial_test_genes2_fin_RUV) {
+  gene_data <- process_gene_datam2_fin_RUV(gene)
+  p <- ggplot(gene_data, aes(x = Condition, y = log2CPM, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c("DOX" = "#499FBD", "DMSO" = "#BBBBBC")) +
+    ggtitle(paste("Log2CPM Expression", gene, "Motif 2 RUVs")) +
+    labs(x = "Treatment", y = "log2CPM") +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = "black"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90, hjust = 1)
+    )
+  print(p)
+}
+
+```
+
+
+# Figure 3E + F - GO KEGG analysis
+
+```{r Cormotif GO KEGG Final Genes, message=FALSE, warning=FALSE}
+#now take these final gene sets for each motif - clustlike + p.post consensus genes
+
+#define my background gene set
+all_genes
+
+#pull the gene sets from above for each motif after RUVs correction
+
+final_genes_1_RUV
+final_genes_2_RUV
+
+#Acute Cluster Genes
+
+# acute_genes_matrix <- as.matrix(final_genes_1_RUV)
+# colnames(acute_genes_matrix) <- c("Entrez_ID")
+
+# saveRDS(acute_genes_matrix, "data/Fig3/acute_genes_matrix.RDS")
+
+acute_genes_matrix <- readRDS("data/Fig3/acute_genes_matrix.RDS")
+length(acute_genes_matrix)
+#7602 genes in this set for my acute cluster (motif 1)
+
+motif1_mat_GOKEGG_RUV <- gost(query = acute_genes_matrix,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = TRUE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+motif1_GOKEGG_genes_RUV <- gostplot(motif1_mat_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+motif1_GOKEGG_genes_RUV
+
+table_motif1_GOKEGG_genes_RUV <- motif1_mat_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_motif1_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_motif1_genes_GOBP_RUV <- table_motif1_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+table_motif1_genes_GOBP_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point() +
+  ggtitle("M1 Enriched GO:BP Terms RUVs")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()
+
+#KEGG
+table_motif1_genes_KEGG_RUV <- table_motif1_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+table_motif1_genes_KEGG_RUV %>%
+  ggplot(aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("Recovered Enriched Biological Pathways") +
+  xlab(expression("-log"[10]~"p-value")) +
+  ylab("KEGG Term") +
+  scale_y_discrete(labels = scales::label_wrap(30)) +
+  theme_custom()
+  
+#Chronic Cluster Genes
+
+# chronic_genes_matrix <- as.matrix(final_genes_2_RUV)
+# colnames(chronic_genes_matrix) <- c("Entrez_ID")
+
+# saveRDS(chronic_genes_matrix, "data/Fig3/chronic_genes_matrix.RDS")
+
+chronic_genes_matrix <- readRDS("data/Fig3/chronic_genes_matrix.RDS")
+length(chronic_genes_matrix)
+#501 genes in the chronic cluster (motif2)
+
+motif2_mat_GOKEGG_RUV <- gost(query = chronic_genes_matrix,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = TRUE,
+                          user_threshold = 0.05,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+motif2_GOKEGG_genes_RUV <- gostplot(motif2_mat_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+motif2_GOKEGG_genes_RUV
+
+table_motif2_GOKEGG_genes_RUV <- motif2_mat_GOKEGG_RUV$result %>%
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_motif2_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_motif2_genes_GOBP_RUV <- table_motif2_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+table_motif2_genes_GOBP_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("M2 Enriched GO:BP Terms RUVs")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_bw()+
+  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+        axis.title = element_text(size = 15, colour = "black"),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.line = element_line(linewidth = 1.5),
+        axis.text = element_text(size = 10, colour = "black", angle = 0),
+        strip.text = element_text(size = 15, colour = "black", face = "bold"))
+
+#KEGG
+table_motif2_genes_KEGG_RUV <- table_motif2_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=20, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+table_motif2_genes_KEGG_RUV %>% ggplot(., aes(x = log_val, y = reorder(term_name, p_value), col= intersection_size)) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("M2 DEGs Enriched KEGG Terms RUVs")+
+  xlab(expression("-log"[10]~"p-value"))+
+  guides(col="none", size= guide_legend(title = "# of intersected \n terms"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom()+
+  theme(plot.title = element_text(size = rel(1.5), hjust = 0.5),
+        axis.title = element_text(size = 15, colour = "black"),
+        axis.ticks = element_line(linewidth = 1.5),
+        axis.line = element_line(linewidth = 1.5),
+        axis.text = element_text(size = 10, colour = "black", angle = 0),
+        strip.text = element_text(size = 15, colour = "black", face = "bold"))
+
+
+#after finalizing this analysis, plot Figure 3E + 3F
+
+kegg_m1_plot <- table_motif1_genes_KEGG_RUV %>%
+  ggplot(aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point() +
+  ggtitle("Enriched Pathways: Acute") +
+  xlab(expression("-log"[10]~"adj. p-value")) +
+  ylab("KEGG Term") +
+  scale_y_discrete(labels = scales::label_wrap(30)) +
+  theme_custom()+
+  theme(axis.line = element_blank(),
+        panel.border = element_rect(
+          color = "black",
+          fill = NA,
+          linewidth = 1
+        ),
+        axis.ticks = element_line(linewidth = .5),
+        legend.position = "none",
+        )
+
+
+kegg_m2_plot <- table_motif2_genes_KEGG_RUV %>%
+  ggplot(aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point() +
+  ggtitle("Enriched Pathways: Chronic") +
+  xlab(expression("-log"[10]~"adj. p-value")) +
+  ylab("KEGG Term") +
+  scale_y_discrete(labels = scales::label_wrap(30)) +
+  theme_custom()+
+  theme(axis.line = element_blank(),
+        panel.border = element_rect(
+          color = "black",
+          fill = NA,
+          linewidth = 1
+        ),
+        axis.ticks = element_line(linewidth = .5),
+        legend.position = "none",
+        )
+
+print(kegg_m1_plot)
+print(kegg_m2_plot)
+
+#now save these as pdfs
+#acute cluster (motif1)
+# cairo_pdf(
+#   file.path(output_folder, "KEGG_Recovered_UpdateFig3_EMP.pdf"),
+#   width = 6,
+#   height = 8
+# )
+# print(kegg_m1_plot)
+# dev.off()
+
+#chronic cluster (motif2)
+# cairo_pdf(
+#   file.path(output_folder, "KEGG_Sustained_UpdateFig3_EMP.pdf"),
+#   width = 6,
+#   height = 8
+# )
+# print(kegg_m2_plot)
+# dev.off()
+
+
+```

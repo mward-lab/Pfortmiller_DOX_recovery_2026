@@ -1,0 +1,1026 @@
+---
+title: "Figure 6 Analysis"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: flatly
+    highlight: textmate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+```
+
+
+# Libraries
+
+Load necessary libraries for analysis.
+
+```{r Necessary Libraries, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readxl)
+library(readr)
+library(reshape2)
+library(circlize)
+library(grid)
+library(stringr)
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+library(gprofiler2)
+library(purrr)
+```
+
+Define my custom plot theme
+
+```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
+
+# Define the custom theme
+# plot_theme_custom <- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = "black"),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, "in"),
+# 
+#       #text and font
+#       axis.text = element_text(color = "black",
+#                                family = "Arial",
+#                                size = 7),
+#       axis.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 9),
+#       legend.text = element_text(color = "black",
+#                                  family = "Arial",
+#                                  size = 7),
+#       legend.title = element_text(color = "black",
+#                                   family = "Arial",
+#                                   size = 9),
+#       plot.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = "grey80", linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = "grey90", linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, "data/plot_theme_custom.RDS")
+
+theme_custom <- readRDS("data/plot_theme_custom.RDS")
+
+```
+
+
+Define a function to save plots as .pdf and .png
+
+```{r pdf png saving function, echo=TRUE, message=FALSE, warning=FALSE}
+
+save_plot <- function(plot, filename, 
+                      folder = ".", 
+                      width = 8, 
+                      height = 6, 
+                      units = "in", 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop("Please provide a filename (without extension) for the plot.")
+
+  date_str <- if (add_date) paste0("_", format(Sys.Date(), "%y%m%d")) else ""
+  pdf_file <- file.path(folder, paste0(filename, date_str, ".pdf"))
+  png_file <- file.path(folder, paste0(filename, date_str, ".png"))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = "transparent")
+  ggsave(filename = png_file, plot = plot, device = "png", width = width, height = height, units = units, dpi = dpi, bg = "transparent")
+  message("Saved plot as Cairo PDF: ", pdf_file)
+  message("Saved plot as PNG: ", png_file)
+}
+
+output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height
+```
+
+
+# Characterize the Chronic response
+
+## Identify genes that are progressively Chronic over time
+
+We became interested in our Chronic gene cluster, and wanted to identify those genes that had an absolute fold change which increased over time (progressively Chronic: absFC tx+0 < tx+24 < tx+144). 
+
+```{r Define Progressively Chronic gene set, warning=FALSE, message=FALSE}
+
+#read in my gene set for my Chronic cluster
+final_genes_2_RUV <- readRDS("data/Fig3/final_genes_2_RUV.RDS")
+
+#read in my toptables
+DOX_24T_R <- read.csv("data/DE/Toptable_RUV_24T_final.csv") %>% 
+  dplyr::select(-(X))
+DOX_24R_R <- read.csv("data/DE/Toptable_RUV_24R_final.csv") %>% 
+  dplyr::select(-(X))
+DOX_144R_R <- read.csv("data/DE/Toptable_RUV_144R_final.csv") %>% 
+  dplyr::select(-(X))
+
+#add in the absolute fold change for each timepoint so I can define my set of progressively Chronic genes
+##we use absolute fold change to select genes that are progressively different over time regardless of response direction, so they may be increasingly upregulated or downregulated
+combined_toptables_RUV_dxr <- list(
+  "t0"   = DOX_24T_R %>% mutate(absFC = abs(logFC)),
+  "t24"  = DOX_24R_R %>% mutate(absFC = abs(logFC)),
+  "t144" = DOX_144R_R %>% mutate(absFC = abs(logFC))
+)
+
+#break these up by timepoint
+# t0_proChronic <- combined_toptables_RUV_dxr[["t0"]] %>%
+#   mutate(
+#     logFC_t0  = logFC,
+#     absFC_t0  = absFC,
+#     adjP_t0   = adj.P.Val,
+#     Sig_t0    = ifelse(adj.P.Val < 0.05, "DE", "nonDE")
+#   ) %>%
+#   dplyr::select(Entrez_ID, logFC_t0, absFC_t0, adjP_t0, Sig_t0)
+
+# t24_proChronic <- combined_toptables_RUV_dxr[["t24"]] %>%
+#   mutate(
+#     logFC_t24 = logFC,
+#     absFC_t24 = absFC,
+#     adjP_t24  = adj.P.Val,
+#     Sig_t24   = ifelse(adj.P.Val < 0.05, "DE", "nonDE")
+#   ) %>%
+#   dplyr::select(Entrez_ID, logFC_t24, absFC_t24, adjP_t24, Sig_t24)
+
+# t144_proChronic <- combined_toptables_RUV_dxr[["t144"]] %>%
+#   mutate(
+#     logFC_t144 = logFC,
+#     absFC_t144 = absFC,
+#     adjP_t144  = adj.P.Val,
+#     Sig_t144   = ifelse(adj.P.Val < 0.05, "DE", "nonDE")
+#   ) %>%
+#   dplyr::select(Entrez_ID, logFC_t144, absFC_t144, adjP_t144, Sig_t144)
+
+#merge into one central dataframe
+# proChronic_df <- t0_proChronic %>%
+#   dplyr::select(Entrez_ID, logFC_t0, absFC_t0, adjP_t0, Sig_t0) %>%
+#   left_join(t24_proChronic %>% 
+#               dplyr::select(Entrez_ID, logFC_t24, absFC_t24, adjP_t24, Sig_t24), by = "Entrez_ID") %>%
+#   left_join(t144_proChronic %>% 
+#               dplyr::select(Entrez_ID, logFC_t144, absFC_t144, adjP_t144, Sig_t144), by = "Entrez_ID")
+
+#classify genes by their absFC response
+
+# proChronic_df <- proChronic_df %>%
+#   dplyr::filter(Entrez_ID %in% final_genes_2_RUV) %>% 
+#   mutate(
+#     Cluster = "Chronic",
+#     Response = ifelse(absFC_t0 < absFC_t24 & absFC_t24 < absFC_t144,
+#                       "ProChronic",
+#                       "non-ProChronic")
+#   )
+
+#I used the absFC to determine whether they were Progressively Chronic
+#ie absFC t0 < t24 & t24 < t144 = ProChronic
+#all others are non-ProChronic (of the 501 Chronic genes)
+
+# saveRDS(proChronic_df, "data/Fig6/proChronic_df.RDS")
+
+#now I want to add in a SYMBOL category so I can see the names of the genes
+# symbol_map <- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = as.character(proChronic_df$Entrez_ID),
+#   columns = c("SYMBOL"),
+#   keytype = "ENTREZID"
+# )
+
+#ensure that they're the same type
+# proChronic_df$Entrez_ID <- as.character(proChronic_df$Entrez_ID)
+
+#remove any duplicates (if any)
+# symbol_map <- symbol_map[!duplicated(symbol_map$ENTREZID), ]
+
+# proChronic_df <- proChronic_df %>%
+#   left_join(symbol_map, by = c("Entrez_ID" = "ENTREZID"))
+
+#reorder columns so Entrez_ID and SYMBOL are together
+# proChronic_df <- proChronic_df %>%
+#   dplyr::select(
+#     Entrez_ID,
+#     SYMBOL,
+#     Cluster,
+#     Response,
+#     everything()
+#   )
+
+#save a final version of this dataframe
+# saveRDS(proChronic_df, "data/Fig6/Chronic_proChron_dataframe_symbolentrez.RDS")
+
+proChronic_df <- readRDS("data/Fig6/Chronic_proChron_dataframe_symbolentrez.RDS")
+
+#ensure numeric values
+proChronic_df_all <- proChronic_df %>%
+  mutate(
+    absFC_t0   = as.numeric(absFC_t0),
+    absFC_t24  = as.numeric(absFC_t24),
+    absFC_t144 = as.numeric(absFC_t144)
+  )
+
+proChronic_df_all <- proChronic_df_all %>%
+  mutate(
+    Category_final = case_when(
+      absFC_t0 < absFC_t24 & absFC_t24 < absFC_t144 ~ "ProChronic",
+      !is.na(absFC_t0) & !is.na(absFC_t24) & !is.na(absFC_t144) ~ "non-ProChronic",
+      TRUE ~ NA_character_  #keep genes missing any FC as NA
+    )
+  )
+
+table(proChronic_df_all$Category_final, useNA = "ifany")
+
+#make my final proChronic gene list
+proChronic_gene_list <- proChronic_df_all %>%
+  filter(Category_final == "ProChronic") %>%
+  pull(Entrez_ID) %>%
+  unique()
+
+#make my final non-ProChronic gene list
+nonproChronic_gene_list <- proChronic_df_all %>% 
+  filter(Category_final == "non-ProChronic") %>% 
+  pull(Entrez_ID) %>% 
+  unique()
+
+length(proChronic_gene_list)
+length(nonproChronic_gene_list)
+
+# saveRDS(proChronic_gene_list, "data/Fig6/proChronic_gene_list.RDS")
+# saveRDS(nonproChronic_gene_list, "data/Fig6/non-proChronic_gene_list.RDS")
+
+
+```
+
+
+# Figure 6A - Progressively Chronic genes line plot
+
+```{r Fig 6A line plot, warning=FALSE, message=FALSE, fig.height=3, fig.width=4}
+
+proChronic_gene_list
+nonproChronic_gene_list
+
+#simplify the line plot
+proChronic_df_all
+
+#read in my combined toptables
+combined_toptables_dxr_RUV_df <- readRDS("data/DE/combined_toptables_dxr_RUV_df.RDS")
+
+#create a toptable with all of the genes for proChronic
+filt_toptable_proChronic_RUV <- combined_toptables_dxr_RUV_df %>% 
+  mutate(ProChronic = case_when(
+    Entrez_ID %in% proChronic_gene_list ~ "ProChronic",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(ProChronic)) %>% 
+  mutate(Time = factor(Time, 
+                       levels = c("t0",
+                                  "t24",
+                                  "t144"))) %>% 
+  mutate(absFC = abs(logFC))
+#this should contain 163 unique genes across timepoints
+
+#calculate medians for ALL proSus genes across timepoints
+medians_proChronic_RUV <- filt_toptable_proChronic_RUV %>%
+  group_by(Time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_proChronic <- paste0(
+  "ProChronic\nmedian logFC =\n",
+  paste0(medians_proChronic_RUV$Time, "=", 
+         round(medians_proChronic_RUV$median_logFC, 2), 
+         collapse = "\n")
+)
+
+labs_absFC_proChronic <- paste0(
+  "ProChronic\nmedian abslogFC =\n",
+  paste0(medians_proChronic_RUV$Time, "=",
+         round(medians_proChronic_RUV$median_abslogFC, 2), 
+         collapse = "\n")
+)
+
+
+#add a column that labels positive/negative direction
+filt_toptable_proChronic_RUV <- filt_toptable_proChronic_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_proChronic_RUV <- medians_proChronic_RUV %>%
+  mutate(direction = "median")
+
+
+#make a logFC version
+plot_proChronic_logFC <- ggplot() +
+  geom_line(data = filt_toptable_proChronic_RUV,
+            aes(x = Time, 
+                y = logFC, 
+                group = Entrez_ID),
+            color = "#A06FA8",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_proChronic_RUV,
+            aes(x = Time, 
+                y = median_logFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#7B4F82"),
+    labels = c(
+      median = labs_logFC_proChronic),
+    name = NULL
+    ) +
+  labs(title = "Progressive Chronic response genes",
+       y = "log2FC (DOX vs. VEH)", x = "Timepoint") +
+  scale_y_continuous(breaks = c(-10, -5, 0, 5, 10), 
+                     limits = c(-10, 10),
+                     expand = c(0,0)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
+  theme_custom() +
+  theme(legend.position = "right")
+
+#now an absFC version
+plot_proChronic_absFC <- ggplot() +
+  geom_line(data = filt_toptable_proChronic_RUV,
+            aes(x = Time, 
+                y = absFC, 
+                group = Entrez_ID),
+            color = "orchid",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_proChronic_RUV,
+            aes(x = Time, 
+                y = median_abslogFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#3D6680"),
+    labels = c(
+      median = labs_absFC_proChronic),
+    name = NULL
+    ) +
+  labs(title = "abs logFC — ProChronic Genes (n = 163)",
+       y = "absFC", x = "Timepoint") +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0, 10)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
+  theme_custom() +
+  theme(legend.position = "right")
+
+print(plot_proChronic_logFC)
+print(plot_proChronic_absFC)
+
+#find how many genes are up and how many are down
+proChronic_directionality <- filt_toptable_proChronic_RUV %>%
+  group_by(Time, direction) %>%
+  summarise(n = n(), .groups = "drop")
+
+
+
+# save_plot(
+#   plot = plot_proChronic_logFC,
+#   filename = "Lineplot_proChronic_logFC_EMP_251211",
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
+# )
+# save_plot(
+#   plot = plot_proChronic_absFC,
+#   filename = "Lineplot_proChronic_absFC_EMP_251112",
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
+# )
+
+
+
+
+```
+
+
+# Figure 6B - Enriched Pathways: ProChronic
+
+```{r Fig6B GO KEGG, warning=FALSE, message=FALSE}
+
+#now I would like to look at enriched pathways using GO:BP and KEGG for these progressively Chronic genes
+
+proChronic_gene_list
+
+#background of all genes
+all_genes <- readRDS("data/DE/all_genes.RDS")
+
+length(proChronic_gene_list)
+#163 - don't filter for DEGs
+
+proChronic_GOKEGG_RUV <- gost(query = proChronic_gene_list,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = TRUE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+proChronic_GOKEGG_genes_RUV <- gostplot(proChronic_GOKEGG_RUV, capped = FALSE, interactive = TRUE)
+proChronic_GOKEGG_genes_RUV
+
+table_proChronic_GOKEGG_genes_RUV <- proChronic_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_proChronic_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_proChronic_genes_GOBP_RUV <- table_proChronic_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proChronic_table_genes_GOBP_plot <- ggplot(table_proChronic_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point() +
+  ggtitle("Progressively Chronic Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"adj. p-value"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom() +
+  theme(legend.position = "none")
+
+print(proChronic_table_genes_GOBP_plot)
+
+# save_plot(
+#   plot = proChronic_table_genes_GOBP_plot,
+#   filename = "Chronic_proChronic_GOBP_logval_all_EMP",
+#   folder = output_folder
+# )
+
+#KEGG
+table_proChronic_genes_KEGG_RUV <- table_proChronic_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+proChronic_table_genes_KEGG_plot <- ggplot(table_proChronic_genes_KEGG_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point(aes(size = intersection_size)) +
+  ggtitle("Enriched Pathways: ProChronic")+
+  xlab(expression("-log"[10]~"adj. p-value"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom() +
+  theme(legend.position = "none")
+
+print(proChronic_table_genes_KEGG_plot)
+
+# save_plot(
+#   plot = proChronic_table_genes_KEGG_plot,
+#   filename = "Chronic_proChronic_KEGG_logval_all_EMP",
+#   folder = output_folder
+# )
+
+
+```
+
+
+
+# Figure 6C - Non-progressive Chronic response genes line plot
+
+```{r Fig6C line plot, warning=FALSE, message=FALSE, fig.height=3, fig.width=4}
+
+filt_toptable_nonproChronic_RUV <- combined_toptables_dxr_RUV_df %>% 
+  mutate(nonproChronic = case_when(
+    Entrez_ID %in% nonproChronic_gene_list ~ "non-ProChronic",
+    TRUE ~ NA_character_
+  )) %>% 
+  dplyr::filter(!is.na(SYMBOL)) %>% 
+  dplyr::filter(!is.na(nonproChronic)) %>% 
+  mutate(Time = factor(Time, 
+                       levels = c("t0",
+                                  "t24",
+                                  "t144"))) %>% 
+  mutate(absFC = abs(logFC))
+
+#calculate medians for ALL nonproChronic genes across timepoints
+medians_nonproChronic_RUV <- filt_toptable_nonproChronic_RUV %>%
+  group_by(Time) %>%
+  summarise(
+    median_logFC = median(logFC),
+    median_abslogFC = median(absFC),
+    .groups = "drop"
+  )
+
+#label with median values
+labs_logFC_nonproChronic <- paste0(
+  "non-ProChronic\nmedian logFC =\n",
+  paste0(medians_nonproChronic_RUV$Time, "=", 
+         round(medians_nonproChronic_RUV$median_logFC, 2), 
+         collapse = "\n")
+)
+
+labs_absFC_nonproChronic <- paste0(
+  "non-ProChronic\nmedian absFC =\n",
+  paste0(medians_nonproChronic_RUV$Time, "=", 
+         round(medians_nonproChronic_RUV$median_abslogFC, 2), 
+         collapse = "\n")
+)
+
+#add a column that labels positive/negative direction
+filt_toptable_nonproChronic_RUV <- filt_toptable_nonproChronic_RUV %>%
+  mutate(direction = ifelse(logFC >= 0, "up", "down"))
+
+#label direction
+medians_nonproChronic_RUV <- medians_nonproChronic_RUV %>%
+  mutate(direction = "median")
+
+
+#logFC version
+plot_nonproChronic_logFC <- ggplot() +
+  geom_line(data = filt_toptable_nonproChronic_RUV,
+            aes(x = Time, 
+                y = logFC, 
+                group = Entrez_ID),
+            color = "#E1B9E3",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_nonproChronic_RUV,
+            aes(x = Time, 
+                y = median_logFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#A06FA8"),
+    labels = c(
+      median = labs_logFC_nonproChronic),
+    name = NULL
+    ) +
+  labs(title = "Non-progressive Chronic response genes",
+       y = "logFC", x = "Timepoint") +
+  scale_y_continuous(breaks = c(-10, -5, 0, 5, 10), 
+                     limits = c(-10, 10),
+                     expand = c(0,0)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
+  theme_custom() +
+  theme(legend.position = "right")
+
+
+#absFC version
+plot_nonproChronic_absFC <- ggplot() +
+  geom_line(data = filt_toptable_nonproChronic_RUV,
+            aes(x = Time, 
+                y = absFC, 
+                group = Entrez_ID),
+            color = "orchid",
+            alpha = 0.4, 
+            linewidth = 0.9) +
+  geom_line(data = medians_nonproChronic_RUV,
+            aes(x = Time, 
+                y = median_abslogFC, 
+                group = 1,
+                color = direction),
+            linewidth = 3
+            ) +
+  scale_color_manual(
+    breaks = c("median"), 
+    values = c("median" = "#3D6680"),
+    labels = c(
+      median = labs_absFC_nonproChronic),
+    name = NULL
+    ) +
+  labs(title = "abslogFC — non-ProChronic Genes (n = 338)",
+       y = "absFC", x = "Timepoint") +
+  scale_y_continuous(limits = c(0, 10),
+                     expand = c(0, 0)) +
+  scale_x_discrete(breaks = c("t0", "t24", "t144"),
+                     expand = c(0, 0)) +
+  theme_custom() +
+  theme(legend.position = "right")
+
+
+print(plot_nonproChronic_logFC)
+print(plot_nonproChronic_absFC)
+
+# save_plot(
+#   plot = plot_nonproChronic_logFC,
+#   filename = "Lineplot_nonproChronic_logFC_EMP_251112",
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
+# )
+# save_plot(
+#   plot = plot_nonproChronic_absFC,
+#   filename = "Lineplot_nonproChronic_absFC_EMP_251112",
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
+# )
+
+```
+
+# Figure 6D - Enriched Pathways: non-ProChronic
+
+```{r Fig6D GO KEGG, message=FALSE, warning=FALSE}
+
+#read in my non-ProChronic gene list
+# nonproChronic_gene_list
+
+nonproChronic_GOKEGG_RUV <- gost(query = nonproChronic_gene_list,
+                          organism = "hsapiens",
+                          ordered_query = FALSE,
+                          measure_underrepresentation = FALSE,
+                          evcodes = TRUE,
+                          user_threshold = 0.05,
+                          significant = TRUE,
+                          custom_bg = all_genes,
+                          correction_method = c("fdr"),
+                          sources = c("GO:BP", "KEGG"))
+
+nonproChronic_GOKEGG_genes_RUV <- gostplot(nonproChronic_GOKEGG_RUV, 
+                                           capped = FALSE, interactive = TRUE)
+nonproChronic_GOKEGG_genes_RUV
+
+table_nonproChronic_GOKEGG_genes_RUV <- nonproChronic_GOKEGG_RUV$result %>% 
+  dplyr::select(c(source, term_id, term_name, intersection_size, term_size, p_value))
+
+table_nonproChronic_GOKEGG_genes_RUV %>% 
+  mutate_at(.vars = 6, .funs = scales::label_scientific(digits=4)) %>% 
+  kableExtra::kable(.,) %>% 
+  kableExtra::kable_paper("striped", full_width = FALSE) %>% 
+  kableExtra::kable_styling(full_width = FALSE, position = "left", bootstrap_options = c("striped", "hover")) %>% 
+  kableExtra::scroll_box(width = "100%", height = "400px")
+
+#GO:BP
+table_nonproChronic_genes_GOBP_RUV <- table_nonproChronic_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="GO:BP") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+
+nonproChronic_table_genes_GOBP_plot <- ggplot(table_nonproChronic_genes_GOBP_RUV, aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point() +
+  ggtitle("non-ProChronic Enriched GO:BP Terms")+
+  xlab(expression("-log"[10]~"adj. p-value"))+
+  ylab("GO:BP term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom() +
+  theme(legend.position = "none")
+
+print(nonproChronic_table_genes_GOBP_plot)
+
+# save_plot(
+#   plot = nonproChronic_table_genes_GOBP_plot,
+#   filename = "Chronic_nonproChronic_GOBP_logval_all_EMP",
+#   folder = output_folder
+# )
+
+#KEGG
+table_nonproChronic_genes_KEGG_RUV <- table_nonproChronic_GOKEGG_genes_RUV %>% 
+  dplyr::filter(source=="KEGG") %>% 
+  dplyr::select(p_value, term_name, intersection_size) %>% 
+  dplyr::slice_min(., n=10, order_by=p_value) %>% 
+  mutate(log_val = -log10(p_value))
+
+nonproChronic_table_genes_KEGG_plot <- ggplot(table_nonproChronic_genes_KEGG_RUV, 
+                                              aes(x = log_val, y = reorder(term_name, p_value))) +
+  geom_point() +
+  ggtitle("Enriched Pathways: non-ProChronic")+
+  xlab(expression("-log"[10]~"adj. p-value"))+
+  ylab("KEGG term")+
+  scale_y_discrete(labels = scales::label_wrap(30))+
+  theme_custom() +
+  theme(legend.position = "none")
+
+print(nonproChronic_table_genes_KEGG_plot)
+
+# save_plot(
+#   plot = nonproChronic_table_genes_KEGG_plot,
+#   filename = "Chronic_nonproChronic_KEGG_logval_all_EMP",
+#   folder = output_folder
+# )
+
+
+```
+
+
+# Figure 6E - Proportion of ProChronic vs non-ProChronic
+
+```{r 6E Barplot, warning=FALSE, message=FALSE}
+
+proChronic_fin_summary <- proChronic_df %>%
+  group_by(Cluster, Response) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(Proportion = Count / sum(Count),
+         Percent = round(Proportion * 100, 1))
+
+category_colors <- c(
+  "ProChronic" = "#A06FA8",  
+  "non-ProChronic" = "#E1B9E3"  
+)
+
+plot_proChronic_fin_summary <- ggplot(proChronic_fin_summary, aes(x = Cluster, y = Percent, fill = Response)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(Percent, 1), "\n(n = ", Count, ")")),
+            position = position_stack(vjust = 0.5),
+            size = 4, color = "black") +
+  scale_y_continuous(limits = c(0, 102),
+                     expand = c(0, 0)) +
+  scale_x_discrete(expand = c(0, 0)) +
+  scale_fill_manual(values = category_colors) +
+  theme_custom() +
+  labs(
+    y = "Percentage of Chronic Genes (%)",
+    x = "(n=501)",
+    fill = "Response Direction"
+  )
+
+print(plot_proChronic_fin_summary)
+#163 genes total
+
+# save_plot(
+#   plot = plot_proChronic_fin_summary,
+#   filename = "Sustained_Proportion_Barplot_proChronic_finalset_DEGs_EMP",
+#   folder = output_folder,
+#   height = 4,
+#   width = 5
+# )
+```
+
+
+## Assess proChronic Genes Directionality
+
+```{r Assess Directionality of proChronic, message=FALSE, warning=FALSE}
+#I want to take my set of proSus genes and stratify by response direction
+
+#pull the proSus genes from the df
+proChronic_only_df <- proChronic_df %>% 
+  filter(
+    Response == "ProChronic"
+  )
+
+
+#now find direction
+proChronic_only_df <- proChronic_only_df %>%
+  mutate(Direction = case_when(
+    !is.na(logFC_t0) & !is.na(logFC_t24) & !is.na(logFC_t144) &
+      logFC_t0 < logFC_t24 & logFC_t24 < logFC_t144 ~ "Upregulated",
+
+    !is.na(logFC_t0) & !is.na(logFC_t24) & !is.na(logFC_t144) &
+      logFC_t0 > logFC_t24 & logFC_t24 > logFC_t144 ~ "Downregulated",
+
+    TRUE ~ "Mixed"
+  ))
+
+table(proChronic_only_df$Direction)
+
+
+proChronic_up_genes <- proChronic_only_df %>%
+  dplyr::filter(Direction == "Upregulated") %>%
+  dplyr::pull(Entrez_ID, SYMBOL)
+print(proChronic_up_genes)
+#9 upregulated genes by logFC
+#2 of these are DEGs in all timepoints - ACHE & CPE
+#CACNA2D3 is a gene of interest
+
+proChronic_down_genes <- proChronic_only_df %>%
+  dplyr::filter(Direction == "Downregulated") %>%
+  dplyr::pull(Entrez_ID, SYMBOL)
+length(proChronic_down_genes)
+#154 genes downregulated by logFC
+
+#pull out the log2cpm genes that are upregulated
+
+```
+
+
+# Figure 6F - CACNA2D3 Expression
+
+
+```{r Fig 6F example gene, warning=FALSE, message=FALSE}
+
+#there are 9 total genes to investigate that are upregulated in ProChronic
+
+proChronic_up_genes
+
+dir_cats <- list( 
+  "Upregulated" = proChronic_up_genes
+)
+
+proChronic_up_cats <- list( 
+  "Upregulated" = unique(na.omit(proChronic_up_genes))
+)
+
+#pull the gene symbol so I can plot log2cpm data
+proChronic_up_genes_df <- map_dfr(names(proChronic_up_cats), function(cat) {
+  tibble(
+    Entrez_ID = intersect(proChronic_up_genes, proChronic_up_cats[[cat]]),
+    Category = cat
+  )
+})
+
+dim(proChronic_up_genes_df)
+
+
+#filter overlaps for non-ProChronic
+proChronic_upreg <- proChronic_up_genes_df %>%
+  filter(Entrez_ID %in% proChronic_gene_list)
+#9 genes
+
+#read in my dataframe for plotting log2cpm genes
+deg_wide <- readRDS("data/DE/DEGs_overlap_wide_dataframe.RDS")
+
+proChronic_up_degs <- deg_wide %>% 
+  dplyr::filter(Entrez_ID %in% proChronic_upreg$Entrez_ID)
+
+proChronic_upreg <- proChronic_upreg %>%
+  mutate(
+    SYMBOL = mapIds(
+      org.Hs.eg.db,
+      keys = Entrez_ID,
+      column = "SYMBOL",
+      keytype = "ENTREZID",
+      multiVals = "first"
+    )
+  )
+
+#now plot these example genes for each
+boxplot_new <- readRDS("data/DE/boxplot_updated.RDS")
+
+#add in colors and factors
+txtime_col <- list(
+  "DOX_t0" = "#263CA5",
+  "VEH_t0" = "#444343",
+  "DOX_t24" = "#5B8FD1",
+  "VEH_t24" = "#757575",
+  "DOX_t144" = "#89C5E5",
+  "VEH_t144" = "#AAAAAA"
+)
+
+ind_col <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90",
+  "6R" = "#C61E4E"
+)
+
+time_col <- list(
+  "t0" = "#005A4C",
+  "t24" = "#328477",
+  "t144" = "#8FB9B1")
+
+tx_col <- list(
+  "DOX" = "#499FBD", 
+  "VEH" = "#BBBBBC")
+
+
+#process the cpm data
+process_cpm_data_cormotif <- function(gene_id, expr_df) {
+  gene_data <- expr_df %>% filter(Entrez_ID == gene_id)
+  
+  long_data <- gene_data %>%
+    pivot_longer(
+      cols = -c(Entrez_ID, SYMBOL),
+      names_to = "Sample",
+      values_to = "log2CPM"
+    ) %>%
+    mutate(
+      Treatment = case_when(
+        grepl("DOX", Sample) ~ "DOX",
+        grepl("VEH", Sample) ~ "VEH",
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl("t0", Sample) ~ "t0",
+        grepl("t24", Sample) ~ "t24",
+        grepl("t144", Sample) ~ "t144",
+        TRUE ~ NA_character_
+      ),
+      Individual = case_when(
+        grepl("1$", Sample) ~ "1",
+        grepl("2$", Sample) ~ "2",
+        grepl("3$", Sample) ~ "3",
+        grepl("4$", Sample) ~ "4",
+        grepl("5$", Sample) ~ "5",
+        grepl("6$", Sample) ~ "6",
+        grepl("6R$", Sample) ~ "6R",
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Treatment, Timepoint, sep = "_")
+    )
+  
+  #set factor levels for plotting order
+  long_data$Condition <- factor(
+    long_data$Condition,
+    levels = c("DOX_t0", "VEH_t0", 
+               "DOX_t24", "VEH_t24", 
+               "DOX_t144", "VEH_t144")
+  )
+  
+  return(long_data)
+}
+
+#function to generate plots for a set of genes
+generate_overlap_plots_cormotif <- function(overlap_df, expr_df, comparison_label) {
+  plots <- list()
+  
+  for (gene_id in overlap_df$Entrez_ID) {
+    gene_data <- process_cpm_data_cormotif(gene_id, expr_df)
+    
+    # Get SYMBOL and all categories
+    gene_symbol <- unique(gene_data$SYMBOL)
+    gene_categories <- overlap_df$Category[overlap_df$Entrez_ID == gene_id]
+    gene_categories <- paste(unique(gene_categories), collapse = ", ")
+    
+    p <- ggplot(gene_data, aes(x = Condition, 
+                               y = log2CPM,
+                               fill = Condition)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_point(aes(color = Individual), size = 2, 
+                 alpha = 0.9,
+                 position = position_identity()) +
+      scale_fill_manual(values = txtime_col) +
+      scale_color_manual(values = ind_col) +
+      ggtitle(paste0(gene_symbol,
+                     " (", comparison_label, " - ", gene_categories, ") ")) +
+      labs(x = "Condition", y = "log2cpm") +
+      theme_custom()
+    
+    #use Entrez_ID + SYMBOL + comparison label for the list name to guarantee uniqueness
+    plot_name <- paste0(gene_symbol, "_", gene_id, "_", comparison_label)
+    plots[[plot_name]] <- p
+  }
+  
+  return(plots)
+}
+
+#generate plots for notproSus overlap genes
+proChronic_up_plots <- generate_overlap_plots_cormotif(proChronic_upreg, boxplot_new, "ProChronic")
+
+#preview all plots
+for (p in c(proChronic_up_plots)) print(p)
+
+#I used CACNA2D3 as my example gene for ProChronic in Figure 6F
+
+#save all of these plots with unique names
+# for (plot_name in names(proChronic_up_plots)) {
+#   save_plot(proChronic_up_plots[[plot_name]],
+#             filename = paste0("ExGene_proChronic_Upreg_", plot_name, "_EMP"),
+#             folder = output_folder)
+# }
+
+```
+

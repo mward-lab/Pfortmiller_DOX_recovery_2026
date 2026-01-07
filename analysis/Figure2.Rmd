@@ -1,0 +1,936 @@
+---
+title: "Figure 2 Analysis"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: flatly
+    highlight: textmate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+```
+
+
+# Libraries
+
+Load necessary libraries for analysis.
+
+```{r Necessary Libraries, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readxl)
+library(readr)
+library(ggrepel)
+library(ggfortify)
+library(RUVSeq)
+library(patchwork)
+library(eulerr)
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+library(ggVennDiagram)
+library(ggrastr)
+```
+
+Define my custom plot theme
+
+```{r Custom plot theme, echo=TRUE, message=FALSE, warning=FALSE}
+
+# Define the custom theme
+# plot_theme_custom <- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = "black"),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = "black",
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, "in"),
+# 
+#       #text and font
+#       axis.text = element_text(color = "black",
+#                                family = "Arial",
+#                                size = 7),
+#       axis.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 9),
+#       legend.text = element_text(color = "black",
+#                                  family = "Arial",
+#                                  size = 7),
+#       legend.title = element_text(color = "black",
+#                                   family = "Arial",
+#                                   size = 9),
+#       plot.title = element_text(color = "black",
+#                                 family = "Arial",
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = "grey80", linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = "grey90", linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, "data/plot_theme_custom.RDS")
+
+theme_custom <- readRDS("data/plot_theme_custom.RDS")
+
+```
+
+
+```{r Colors + Factors, message=FALSE, warning=FALSE}
+
+####Colors####
+
+# txtime_col_old <- list(
+#   "DOX_24T" = "#263CA5",
+#   "VEH_24T" = "#444343",
+#   "DOX_24R" = "#5B8FD1",
+#   "VEH_24R" = "#757575",
+#   "DOX_144R" = "#89C5E5",
+#   "VEH_144R" = "#AAAAAA"
+# )
+
+#updated colors and factors:
+ind_col <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90",
+  "6R" = "#C61E4E"
+)
+
+ind_col_nr <- list(
+  "1" = "#FF9F64",
+  "2" = "#78EBDA",
+  "3" = "#ADCD77",
+  "4" = "#E6CC50",
+  "5" = "#A68AC0",
+  "6" = "#F16F90"
+)
+
+time_col <- list(
+  "t0" = "#005A4C",
+  "t24" = "#328477",
+  "t144" = "#8FB9B1")
+
+tx_col <- list(
+  "DOX" = "#499FBD", 
+  "VEH" = "#BBBBBC")
+
+txtime_col <- list(
+  "DOX_t0" = "#263CA5",
+  "VEH_t0" = "#444343",
+  "DOX_t24" = "#5B8FD1",
+  "VEH_t24" = "#757575",
+  "DOX_t144" = "#89C5E5",
+  "VEH_t144" = "#AAAAAA"
+)
+
+
+  
+```
+
+
+Define a function to save plots as .pdf and .png
+
+```{r pdf png saving function, echo=TRUE, message=FALSE, warning=FALSE}
+
+save_plot <- function(plot, filename, 
+                      folder = ".", 
+                      width = 8, 
+                      height = 6, 
+                      units = "in", 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop("Please provide a filename (without extension) for the plot.")
+
+  date_str <- if (add_date) paste0("_", format(Sys.Date(), "%y%m%d")) else ""
+  pdf_file <- file.path(folder, paste0(filename, date_str, ".pdf"))
+  png_file <- file.path(folder, paste0(filename, date_str, ".png"))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = "transparent")
+  ggsave(filename = png_file, plot = plot, device = "png", width = width, height = height, units = units, dpi = dpi, bg = "transparent")
+  message("Saved plot as Cairo PDF: ", pdf_file)
+  message("Saved plot as PNG: ", png_file)
+}
+
+output_folder <- "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs"
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height
+```
+
+# Figure 2A - PCA following RUVs Correction
+
+Principal component analysis of RNAseq data following RUVs correction.
+
+```{r Figure 2A PCA Plot, warning=FALSE, fig.height=8, fig.width=8, message=FALSE}
+
+#read in dataframe after cpm transformation and k=1 RUVs correction
+#add in the annotation files
+ind_num <- readRDS("data/QC/ind_num.RDS")
+annot <- read.csv("data/QC/Metadata_update.csv")
+
+RUV_df_rm1_cpm <- readRDS("data/Fig2/RUV_df_rm1_cpm.RDS")
+
+prcomp_res_1_cpm <- prcomp(t(RUV_df_rm1_cpm), scale. = FALSE, center = TRUE)
+annot_prcomp_res_1_cpm <- readRDS("data/Fig2/annot_pca_cpm_fig2a.RDS")
+
+fig2a <- autoplot(prcomp_res_1_cpm,
+         data = annot,
+         colour = "Cond",
+         shape = "Time",
+         size = 5,
+         x = 1,
+         y = 2) +
+  theme_custom() +
+  scale_color_manual(values = txtime_col) +
+  geom_text_repel(aes(label = ind_num),       
+                  nudge_y = 0.05,            
+                  max.overlaps = 100,                   
+                  segment.color = "grey40") + 
+  ggtitle("RUVs Correction k=1 log2cpm")
+
+print(fig2a)
+
+#save for figure generation
+
+# save_plot(plot = fig2a,
+#           filename = "Fig2A_PCA_6x8_EMP",
+#           folder = output_folder,
+#           width = 6,
+#           height = 8)
+
+
+
+```
+
+# Differential Expression Analysis - RUVs Corrected
+
+#Perform Differential Expression Analysis with k = 1 RUVs Correction
+```{r DE RUVs k1, warning=FALSE, message=FALSE}
+#same DGEList object as before
+dge <- readRDS("data/DE/dge_matrix.RDS")
+Metadata_2 <- readRDS("data/QC/Metadata_2_norep_update.RDS")
+x_norep <- readRDS("data/DE/x_norep.RDS")
+
+#check normalization factors from TMM normalization of LIBRARIES
+dge$samples
+
+#read in my covariate information RUV_1 dataframe + remove 6R
+RUV_df_rm1 <- readRDS("data/DE/RUV_df_rm1.RDS")
+
+#filter out 6R for DE analysis
+RUV_1_df_filt <- RUV_df_rm1[!grepl("6R$", rownames(RUV_df_rm1)), , drop = FALSE]
+
+Metadata_2$W_1 <- RUV_1_df_filt$W_1
+
+#now ensure that RUV_1 has the right number of cols after removing rep
+length(RUV_1_df_filt$W_1)
+#36 
+
+#now make this into a list
+RUV_1_DE <-  RUV_1_df_filt$W_1
+
+# saveRDS(RUV_1_DE, "data/DE/RUV_1_DE.RDS")
+
+#create my design matrix for DE + RUVs covariate k=1
+design1 <- model.matrix(~0 + RUV_1_DE + Metadata_2$Condition)
+colnames(design1) <- gsub("Metadata_2\\$Condition", "", colnames(design1))
+
+#take care that the matrix automatically sorts cols alphabetically
+
+#run duplicate correlation for individual effect
+corfit1 <- duplicateCorrelation(object = dge$counts, design = design1, block = Metadata_2$Ind)
+
+#voom transformation and plot
+v1 <- voom(dge, design1, block = Metadata_2$Ind, correlation = corfit1$consensus.correlation, plot = TRUE)
+
+#fit my linear model
+fit1 <- lmFit(v1, design1, block = Metadata_2$Ind, correlation = corfit1$consensus.correlation)
+
+#make my contrast matrix to compare across tx and veh
+contrast_matrix_RUV <- makeContrasts(
+  V.D24T = DOX_t0 - VEH_t0,
+  V.D24R = DOX_t24 - VEH_t24, 
+  V.D144R = DOX_t144 - VEH_t144,
+  RUV_1_24T = RUV_1_DE - VEH_t0,
+  RUV_1_24R = RUV_1_DE - VEH_t24,
+  RUV_1_144R = RUV_1_DE - VEH_t144,  
+  levels = design1
+)
+
+#apply these contrasts to compare DOX to DMSO VEH
+fit_RUV <- contrasts.fit(fit1, contrast_matrix_RUV)
+fit_RUV <- eBayes(fit_RUV)
+
+#plot the mean-variance trend
+plotSA(fit_RUV, main = "Mean-Variance Trend, RUVs k=1")
+
+#look at the summary of your results
+##this tells you the number of DEGs in each condition
+results_summary1 <- decideTests(fit_RUV, adjust.method = "BH", p.value = 0.05)
+
+summary(results_summary1)
+#        V.D24T V.D24R V.D144R
+# Down     4866   3727     466  
+# NotSig   4899   7107   13659    
+# Up       4554   3485     194
+
+#compare this to my previous DEGs I found
+# summary(results_summary)
+#        V.D24T V.D24R V.D144R
+# Down     4723   3593     359
+# NotSig   5076   7151   13810
+# Up       4520   3575     150
+
+
+#overall, there are more DEGs found after RUVs k=1 correction 
+#this was an expected result as it increases tx effect w/ correction
+
+```
+
+
+## Toptables
+
+##Generate Toptables RUVs
+```{r TopTables DE RUV, warning=FALSE, message=FALSE}
+# Generate Top Table for Specific Comparisons
+x <- readRDS("data/DE/x_dge_counts_allind_updated.RDS")
+
+Toptable_V.D24T_k1 <- topTable(fit = fit_RUV, coef = "V.D24T", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
+# write.csv(Toptable_V.D24T_k1, "data/DE/Toptable_V.D24T_k1.csv")
+
+Toptable_V.D24R_k1 <- topTable(fit = fit_RUV, coef = "V.D24R", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
+# write.csv(Toptable_V.D24R_k1, "data/DE/Toptable_V.D24R_k1.csv")
+
+Toptable_V.D144R_k1 <- topTable(fit = fit_RUV, coef = "V.D144R", number = nrow(x), adjust.method = "BH", p.value = 1, sort.by = "none")
+# write.csv(Toptable_V.D144R_k1, "data/DE/Toptable_V.D144R_k1.csv")
+
+# save all of these toptables as R objects
+# saveRDS(list(
+#   V.D24T_k1 = Toptable_V.D24T_k1,
+#   V.D24R_k1 = Toptable_V.D24R_k1,
+#   V.D144R_k1 = Toptable_V.D144R_k1
+# ), file = "data/DE/Toptable_list_RUVk1.RDS")
+
+# Toptable_list_RUVk1 <- readRDS("data/DE/Toptable_list_RUVk1.RDS")
+
+#################################################################
+#this section is commented out since it only needs to run once
+#kept the code for posterity
+
+# #I want to add the hgnc symbols to my toptables as well
+# ####D24T####
+# #load in data
+# sample_toptab_24T <- read_csv("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/DEGs/Toptable_V.D24T_k1.csv", show_col_types = FALSE)
+# # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
+# # Check column names
+# print(colnames(sample_toptab_24T))
+# # Rename if needed (adjust if the column name is not exactly 'Entrez_ID')
+# colnames(sample_toptab_24T)[1] <- "Entrez_ID"
+# # Convert Entrez_ID to character
+# sample_toptab_24T <- sample_toptab_24T %>%
+#   mutate(Entrez_ID = as.character(Entrez_ID))
+# # ----------------- Map Entrez_ID to Gene Symbol -----------------
+# gene_symbols1 <- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = sample_toptab_24T$Entrez_ID,
+#   columns = c("SYMBOL"),
+#   keytype = "ENTREZID"
+# )
+# # ----------------- Join Back to Main Data -----------------
+# Toptable_RUV_24T <- left_join(sample_toptab_24T, gene_symbols1, by = c("Entrez_ID" = "ENTREZID"))
+# Toptable_RUV_24T %>% column_to_rownames(., var = "Entrez_ID")
+# # ----------------- Save Annotated Output -----------------
+# write_csv(Toptable_RUV_24T, "data/DE/Toptable_RUV_24T.csv")
+# 
+# Toptable_RUV_24T <- read.csv("data/DE/Toptable_RUV_24T.csv")
+# #now do this again for my other two toptables
+# 
+# ####24R####
+# #load in data
+# sample_toptab_24R <- read_csv("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/DEGs/Toptable_V.D24R_k1.csv", show_col_types = FALSE)
+# # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
+# # Check column names
+# print(colnames(sample_toptab_24R))
+# # Rename if needed (adjust if the column name is not exactly 'Entrez_ID')
+# colnames(sample_toptab_24R)[1] <- "Entrez_ID"
+# # Convert Entrez_ID to character
+# sample_toptab_24R <- sample_toptab_24R %>%
+# mutate(Entrez_ID = as.character(Entrez_ID))
+# ----------------- Map Entrez_ID to Gene Symbol -----------------
+# gene_symbols2 <- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = sample_toptab_24R$Entrez_ID,
+#   columns = c("SYMBOL"),
+#   keytype = "ENTREZID"
+# )
+# # ----------------- Join Back to Main Data -----------------
+# Toptable_RUV_24R <- left_join(sample_toptab_24R, gene_symbols2, by = c("Entrez_ID" = "ENTREZID"))
+# Toptable_RUV_24R %>% column_to_rownames(., var = "Entrez_ID")
+# # ----------------- Save Annotated Output -----------------
+# #I'll make these symbols into rownames later for my volcano plots
+# write_csv(Toptable_RUV_24R, "data/DE/Toptable_RUV_24R.csv")
+# 
+
+# Toptable_RUV_24R <- read.csv("data/DE/Toptable_RUV_24R.csv")
+# 
+# ####D144R####
+# #load in data
+# sample_toptab_144R <- read_csv("C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/DEGs/Toptable_V.D144R_k1.csv", show_col_types = FALSE)
+# # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
+# # Check column names
+# print(colnames(sample_toptab_144R))
+# # Rename if needed (adjust if the column name is not exactly 'Entrez_ID')
+# colnames(sample_toptab_144R)[1] <- "Entrez_ID"
+# # Convert Entrez_ID to character
+# sample_toptab_144R <- sample_toptab_144R %>%
+#   mutate(Entrez_ID = as.character(Entrez_ID))
+# # ----------------- Map Entrez_ID to Gene Symbol -----------------
+# gene_symbols3 <- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = sample_toptab_144R$Entrez_ID,
+#   columns = c("SYMBOL"),
+#   keytype = "ENTREZID"
+# )
+# # ----------------- Join Back to Main Data -----------------
+# Toptable_RUV_144R <- left_join(sample_toptab_144R, gene_symbols3, by = c("Entrez_ID" = "ENTREZID"))
+# Toptable_RUV_144R %>% column_to_rownames(., var = "Entrez_ID")
+# # ----------------- Save Annotated Output -----------------
+# #I'll make these symbols into rownames later for my volcano plots
+# write_csv(Toptable_RUV_144R, "data/DE/Toptable_RUV_144R.csv")
+# 
+# write.csv(Toptable_RUV_24T, "data/DE/Toptable_RUV_24T_final.csv")
+# write.csv(Toptable_RUV_24R, "data/DE/Toptable_RUV_24R_final.csv")
+# write.csv(Toptable_RUV_144R, "data/DE/Toptable_RUV_144R_final.csv")
+
+Toptable_RUV_24T <- read_csv("data/DE/Toptable_RUV_24T_final.csv",
+                             col_select = -1)
+Toptable_RUV_24R <- read_csv("data/DE/Toptable_RUV_24R_final.csv",
+                             col_select = -1)
+Toptable_RUV_144R <- read_csv("data/DE/Toptable_RUV_144R_final.csv",
+                              col_select = -1)
+
+# save all of these toptables as R objects
+# saveRDS(list(
+#   V.D24T_RUV = Toptable_RUV_24T,
+#   V.D24R_RUV = Toptable_RUV_24R,
+#   V.D144R_RUV = Toptable_RUV_144R
+# ), file = "data/DE/Toptable_list_RUVk1_Symbols.RDS")
+
+Toptable_list_RUVk1_symbols <- readRDS("data/DE/Toptable_list_RUVk1_Symbols.RDS")
+
+```
+
+
+#Figure 2B - Barplot of DEG Percentages
+
+
+###Proportion of DEGs in Gene Set RUVs corrected
+```{r Proportion of DEGs, warning=FALSE, message=FALSE}
+#check the proportion of my genes in my gene set that are DEGs by timepoint
+
+#make this into a pie chart or a bar graph
+#read in my full gene set
+filcpm_matrix <- readRDS("data/QC/filcpm_final_matrix_newind.RDS")
+all_genes <- rownames(filcpm_matrix)
+
+#convert Entrez_ID to Gene Symbols
+all_genes_set <- mapIds(org.Hs.eg.db, 
+                        keys = all_genes,
+                        column = "SYMBOL",
+                        keytype = "ENTREZID",
+                        multiVals = "first")
+
+# Load DEGs Data (replaced with new set)
+DOX_t0 <- read_csv("data/DE/Toptable_RUV_24T_final.csv",
+                   col_select = -1)
+DOX_t24 <- read_csv("data/DE/Toptable_RUV_24R_final.csv", 
+                    col_select = -1)
+DOX_t144 <- read_csv("data/DE/Toptable_RUV_144R_final.csv", 
+                     col_select = -1)
+
+# Extract Significant DEGs (change names to timepoint)
+DEG_t0_RUV <- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val < 0.05]
+DEG_t24_RUV <- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val < 0.05]
+DEG_t144_RUV <- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val < 0.05]
+
+# saveRDS(DEG_t0_RUV, "data/DE/DEGs_sig_list_24T_RUVs_set.RDS")
+# saveRDS(DEG_t24_RUV, "data/DE/DEGs_sig_list_24R_RUVs_set.RDS")
+# saveRDS(DEG_t144_RUV, "data/DE/DEGs_sig_list_144R_RUVs_set.RDS")
+
+#make a list of all of my significant DEGs
+timepoint_DEGs_RUV <- list(
+  "24T" = DEG_t0_RUV,
+  "24R" = DEG_t24_RUV,
+  "144R" = DEG_t144_RUV
+)
+
+# Function to compute proportions
+get_proportions_degs <- function(degs, total_genes) {
+  deg_count <- length(degs)
+  non_deg_count <- total_genes - deg_count
+  data.frame(
+    Category = c("DEGs", "Non-DEGs"),
+    Count = c(deg_count, non_deg_count),
+    Proportion = c(deg_count / total_genes, non_deg_count / total_genes)
+  )
+}
+
+# Compute proportions for each timepoint
+prop_t0 <- get_proportions_degs(DEG_t0_RUV, length(all_genes_set))
+prop_t24 <- get_proportions_degs(DEG_t24_RUV, length(all_genes_set))
+prop_t144 <- get_proportions_degs(DEG_t144_RUV, length(all_genes_set))
+
+# Combine for bar plot
+prop_bar <- rbind(
+  cbind(Timepoint = "t0", prop_t0),
+  cbind(Timepoint = "t24", prop_t24),
+  cbind(Timepoint = "t144", prop_t144)
+)
+
+#pie chart for t0
+ggplot(prop_t0, aes(x = "", y = Count, fill = Category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  labs(title = "DEGs vs Non-DEGs (t0)") +
+  theme_void()
+
+#pie chart for t24
+ggplot(prop_t24, aes(x = "", y = Count, fill = Category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  labs(title = "DEGs vs Non-DEGs (t24)") +
+  theme_void()
+
+#pie chart for t144
+ggplot(prop_t144, aes(x = "", y = Count, fill = Category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  labs(title = "DEGs vs Non-DEGs (t144)") +
+  theme_void()
+
+
+
+#put the desired colors here for your pie charts
+degs_prop_colors <- c("DEGs" = "red", "Non-DEGs" = "blue")
+
+#labels for percentage based on proportion
+prop_t0$Label <- paste0(round(prop_t0$Proportion * 100, 1), "")
+prop_t24$Label <- paste0(round(prop_t24$Proportion * 100, 1), "")
+prop_t144$Label <- paste0(round(prop_t144$Proportion * 100, 1), "")
+
+#create each plot and assign to variables
+plot_t0 <- ggplot(prop_t0, aes(x = "", y = Count, fill = Category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = Label), 
+            position = position_stack(vjust = 0.6), 
+            color = "white", 
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = "t0") +
+  theme_void()
+
+plot_t24 <- ggplot(prop_t24, aes(x = "", y = Count, fill = Category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = Label), 
+            position = position_stack(vjust = 0.6), 
+            color = "white", 
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = "t24") +
+  theme_void()
+
+plot_t144 <- ggplot(prop_t144, aes(x = "", y = Count, fill = Category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y") +
+  geom_text(aes(label = Label), 
+            position = position_stack(vjust = 0.6), 
+            color = "white", 
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = "t144") +
+  theme_void()
+
+#combine all three pie charts in a row
+combined_prop_degs_plots <- 
+  plot_t0 + 
+  plot_t24 + 
+  plot_t144 +
+  plot_layout(ncol = 3, nrow = 1, guides = "collect") + 
+  plot_annotation(title = "Proportion of DEGs vs Non-DEGs")
+
+#show the combined pie chart plot
+combined_prop_degs_plots
+
+#combine all three pie charts in a column
+combined_prop_degs_plots_col <- 
+  plot_t0 + 
+  plot_t24 + 
+  plot_t144 +
+  plot_layout(ncol = 1, nrow = 3, guides = "collect") + 
+  plot_annotation(title = "Proportion of DEGs vs Non-DEGs")
+
+#show the combined pie chart plot in 1 column
+combined_prop_degs_plots_col
+
+####proportion bar plots####
+#first factor the timepoints so that they are in the right order
+prop_bar$Timepoint <- factor(prop_bar$Timepoint, 
+                             levels = c("t0", "t24", "t144"))
+
+#percentage labels
+prop_bar$Label <- paste0(round(prop_bar$Proportion * 100, 1), "")
+
+#plot the bar plot
+barplot_deg_perc <- ggplot(prop_bar, aes(x = Timepoint, 
+                     y = Proportion, 
+                     fill = Category)) +
+  geom_bar(stat = "identity", 
+           position = "fill") +
+  geom_text(aes(label = Label),
+            position = position_fill(vjust = 0.5),
+            color = "white",
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = "Percentage of DEGs vs nonDEGs by Timepoint",
+       y = "Percentage of DEGs (%)", 
+       x = "") +
+  scale_y_continuous(labels = c(0, 25, 50, 75, 100)) +
+  theme_custom()
+
+print(barplot_deg_perc)
+
+#save this barplot
+
+# save_plot(
+#   plot = barplot_deg_perc,
+#   filename = "DEGvsnonDEG_Barplot_update_EMP",
+#   folder = output_folder
+# )
+
+```
+
+# Figure 2C - Venn Diagram of DEG Overlap
+
+##Venn Diagrams of DEG Overlap after RUVs Correction k=1
+```{r RUVs Overlap of DEGs, warning=FALSE, message=FALSE}
+#plot a venn diagram with all of your conditions from your toptables
+
+# Load DEGs Data (already read in above)
+# DOX_t0 <- read_csv("data/DE/Toptable_RUV_24T_final.csv",
+#                    col_select = -1)
+# DOX_t24 <- read_csv("data/DE/Toptable_RUV_24R_final.csv", 
+#                     col_select = -1)
+# DOX_t144 <- read_csv("data/DE/Toptable_RUV_144R_final.csv", 
+#                      col_select = -1)
+
+# Extract Significant DEGs (change names to timepoint)
+# DEG_t0_RUV <- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val < 0.05]
+# DEG_t24_RUV <- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val < 0.05]
+# DEG_t144_RUV <- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val < 0.05]
+
+venn_test_RUV <- list(DEG_t0_RUV, DEG_t24_RUV, DEG_t144_RUV)
+
+ggVennDiagram(
+  venn_test_RUV,
+  category.names = c("DOX_t0", "DOX_t24", "DOX_t144")
+) + ggtitle("DXR Specific and Shared DEGs RUVs")+
+  theme_custom() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold"),  # Increase title size
+    text = element_text(size = 16)  # Increase text size globally
+  )
+
+####I want to make this proportional
+#use the eulerr package to do so
+
+venn_prop_RUV <- euler(list(
+  "t0" = DEG_t0_RUV,
+  "t24" = DEG_t24_RUV,
+  "t144" = DEG_t144_RUV
+))
+
+plot(venn_prop_RUV,
+     fills = list(fill = c("#263CA5", "#5B8FD1", "#89C5E5"), 
+                  alpha = 1),
+     labels = list(font = 4),
+     quantities = list(cex = 0.75),
+     main = "")
+
+
+
+```
+
+## Load in DEGs
+
+```{r Load in DEGs RUVs, warning=FALSE, message=FALSE}
+#Load DEGs Data
+#make a list of all of the genes in this set so I can plot the logFC in other sets
+
+# Load DEGs Data (already read in above)
+# DOX_t0 <- read_csv("data/DE/Toptable_RUV_24T_final.csv",
+#                    col_select = -1)
+# DOX_t24 <- read_csv("data/DE/Toptable_RUV_24R_final.csv", 
+#                     col_select = -1)
+# DOX_t144 <- read_csv("data/DE/Toptable_RUV_144R_final.csv", 
+#                      col_select = -1)
+
+DOX_24T_R <- read_csv("data/DE/Toptable_RUV_24T.csv")
+DOX_24R_R <- read_csv("data/DE/Toptable_RUV_24R_final.csv")
+DOX_144R_R <- read_csv("data/DE/Toptable_RUV_144R_final.csv")
+
+#plot those full gene sets in logFC
+D24T_DEGs_R <- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val < 0.05]
+length(D24T_DEGs_R)
+#9420 DEGs
+
+D24R_DEGs_R <- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val < 0.05]
+length(D24R_DEGs_R)
+#7168 DEGs
+
+D144R_DEGs_R <- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val < 0.05]
+length(D144R_DEGs_R)
+#660 DEGs
+#now that I have the full list of genes, I want to plot the logFC across conditions
+
+
+#Combine the toptables I have from pairwise analysis into a single dataframe
+d24_toptable_dxr_1 <- Toptable_RUV_24T %>% 
+  mutate(Time = "t0")
+
+d24r_toptable_dxr_1 <- Toptable_RUV_24R %>% 
+  mutate(Time = "t24")
+
+d144r_toptable_dxr_1 <- Toptable_RUV_144R %>% 
+  mutate(Time = "t144")
+
+combined_toptables_dxr_RUV <- bind_rows(
+  d24_toptable_dxr_1,
+  d24r_toptable_dxr_1,
+  d144r_toptable_dxr_1)
+
+# saveRDS(combined_toptables_dxr_RUV, "data/DE/combined_toptables_dxr_RUV.RDS")
+
+```
+
+
+
+# Figure 2D - Scatterplots logFC Timepoint Comparisons
+
+```{r Scatterplots Timepoint Comparisons, warning=FALSE, message=FALSE}
+
+# Define the timepoints from your data
+timepoints <- c("t0", "t24", "t144")
+
+comparison_order <- c("t0 vs t24", "t24 vs t144", "t0 vs t144")
+
+# Make all pairwise combinations
+pairs_df <- t(combn(timepoints, 2)) %>%
+  as.data.frame(stringsAsFactors = FALSE) %>%
+  setNames(c("time_x", "time_y"))
+
+logFC_wide_RUV <- combined_toptables_dxr_RUV %>%
+  mutate(absFC = abs(logFC)) %>% 
+  dplyr::select(Entrez_ID, Time, logFC) %>%
+  pivot_wider(names_from = Time, values_from = logFC) %>%
+  drop_na() %>% 
+  column_to_rownames("Entrez_ID") 
+
+# Function to prepare scatter data for each pair
+prepare_pair_data <- function(time_x, time_y, df) {
+  rho <- cor(df[[time_x]], df[[time_y]], method = "spearman")
+  df %>%
+    mutate(
+      x_val = .data[[time_x]],
+      y_val = .data[[time_y]],
+      comparison = paste0(time_x, " vs ", time_y),
+      rho_label = paste0("rho = ", round(rho, 2)),
+      x_lab = paste0("log2FC", time_x),
+      y_lab = paste0("log2FC", time_y)
+    )
+}
+
+comparison_colors <- c(
+  "t0 vs t24"  = "#4167BD",
+  "t24 vs t144" = "#72AEE0",
+  "t0 vs t144" = "#5780C5"
+)
+
+# Build combined plotting dataset
+scatter_df <- map2_df(pairs_df$time_x, pairs_df$time_y,
+                      ~prepare_pair_data(.x, .y, logFC_wide_RUV)) %>%
+  mutate(comparison = factor(comparison, levels = comparison_order))
+
+facet_labels <- scatter_df %>%
+  distinct(comparison, x_lab, y_lab) %>%
+  mutate(label = paste0(comparison, "\n", x_lab, " | ", y_lab)) %>%
+  dplyr::select(comparison, label) %>%
+  deframe()
+
+#split data by comparison
+split_data <- split(scatter_df, scatter_df$comparison)
+
+make_scatter <- function(df_sub) {
+  comp <- df_sub$comparison[1] 
+  ggplot(df_sub, aes(x = x_val, y = y_val)) +
+    geom_point_rast(alpha = 0.5, raster.dpi = 300, color = comparison_colors[comp]) +
+    geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "black") +
+    geom_text(
+      data = df_sub %>% distinct(comparison, rho_label),
+      aes(x = -Inf, y = Inf, label = rho_label),
+    inherit.aes = FALSE,
+    hjust = -0.1, vjust = 1.5,
+    size = 4
+  ) +
+    coord_fixed(xlim = c(-9,9), ylim = c(-9,9), ratio = 1) +
+    labs(
+      x = unique(df_sub$x_lab),
+      y = unique(df_sub$y_lab)
+    ) +
+    theme_custom() +
+    theme(
+      axis.line = element_line(linewidth = 1, 
+                               color = "black"),
+      axis.ticks.length = unit(0.05, "in"),
+      axis.text = element_text(color = "black"),
+      panel.background = element_blank(),
+      panel.border = element_blank(),
+      legend.position = "none"
+    )
+}
+
+#make plot
+plot_list <- lapply(split_data, make_scatter)
+
+#wrap all three together to get the final plot
+scatterplot_fig2d_wide <- wrap_plots(plot_list, ncol  = length(plot_list))
+scatterplot_fig2d_tall <- wrap_plots(plot_list, nrow = length(plot_list))
+scatterplot_fig2d_wide
+scatterplot_fig2d_tall
+
+#save plot to a pdf and to a png
+# ggsave("Fig2D_Scatterplot_fixedlims_EMP_251121.pdf", scatterplot_fig2d_wide, width = 8, height = 6, device = cairo_pdf, path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
+
+# ggsave("Fig2D_Scatterplot_fixedlims_EMP_251121.png", scatterplot_fig2d_wide, width = 12, height = 4, dpi = 300, type = "cairo", path = "C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs")
+
+
+```
+
+
+# Supplementary Figure 4 - Volcano Plots of RUVs DEGs
+
+```{r Volcano Plots RUVs Corrected k1, warning=FALSE, message=FALSE}
+#make a function to generate volcano plots + add gene numbers
+#ensure the gene symbols are in a col so I can plot names of top 15
+generate_volcano_plot_RUV <- function(toptable, title) {
+  
+  #make significance labels
+  toptable$Significance <- "Not Significant"
+  toptable$Significance[toptable$logFC > 0 & toptable$adj.P.Val < 0.05] <- "Upregulated"
+  toptable$Significance[toptable$logFC < 0 & toptable$adj.P.Val < 0.05] <- "Downregulated"
+  
+  #enforce correct factor order
+  toptable$Significance <- factor(
+    toptable$Significance,
+    levels = c("Downregulated", "Not Significant", "Upregulated")
+  )
+  
+  #add number of genes for each significance label
+  upgenes <- toptable %>% 
+    filter(Significance == "Upregulated") %>%
+    nrow()
+  nsgenes <- toptable %>% 
+    filter(Significance == "Not Significant") %>% 
+    nrow()
+  downgenes <- toptable %>% 
+    filter(Significance == "Downregulated") %>% 
+    nrow()
+
+  #FIX: correct legend labels
+  legend_lab <- c(
+    "Upregulated" = paste0("up = ", upgenes),
+    "Not Significant" = paste0("ns = ", nsgenes),
+    "Downregulated" = paste0("down = ", downgenes)
+  )
+  
+  #FIX: correct legend colors
+  legend_col <- c(
+    "Upregulated" = "blue",
+    "Not Significant" = "gray",
+    "Downregulated" = "red"
+  )
+  
+  #generate volcano plot w/ legend
+  p <- ggplot(toptable, aes(x = logFC, 
+                            y = -log10(P.Value), 
+                            color = Significance)) +
+    geom_point_rast(alpha = 0.6, size = 2) +  #rasterize
+    scale_color_manual(values = legend_col,
+                       labels = legend_lab) +
+    xlim(-10, 10) +
+    ylim(0, 25) +
+    labs(title = title, 
+         x = expression("log"[2]*"FC"), 
+         y = expression("-log"[10]*"P-value")) +
+    theme_custom() +
+    theme(legend.position = "bottom")
+  
+  return(p)
+}
+
+
+#generate volcano plots across each comparison
+volcano_plots_RUV <- list(
+  "Volcano_Supp4_1_EMP" = generate_volcano_plot_RUV(Toptable_RUV_24T, "t0"),
+  "Volcano_Supp4_2_EMP" = generate_volcano_plot_RUV(Toptable_RUV_24R, "t24"),
+  "Volcano_Supp4_3_EMP" = generate_volcano_plot_RUV(Toptable_RUV_144R, "t144")
+)
+
+# Display each volcano plot
+for (plot_name in names(volcano_plots_RUV)) {
+  print(volcano_plots_RUV[[plot_name]])
+}
+
+#save all volcano plots
+for (plot_name in names(volcano_plots_RUV)) {
+  save_plot(
+    filename = paste0(plot_name, "_EMP.pdf"),
+    plot = volcano_plots_RUV[[plot_name]],
+    height = 4,
+    width = 4,
+    folder = output_folder
+  )
+}
+
+
+
+```
