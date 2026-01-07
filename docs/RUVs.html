@@ -1,0 +1,5166 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>RUVs</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DXR Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="index.html">Analysis</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/emmapfort/DXR_Project">
+    <span class="fab fa-github"></span>
+     
+    Source Code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">RUVs</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-01-06
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>DXR_website/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251201code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251201)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251201code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251201)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee4705f606209af89e867d897eb8b5b1ea619e0fftargetblanke4705f6a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/emmapfort/DXR_Project/tree/e4705f606209af89e867d897eb8b5b1ea619e0ff" target="_blank">e4705f6</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee4705f606209af89e867d897eb8b5b1ea619e0fftargetblanke4705f6a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/emmapfort/DXR_Project/tree/e4705f606209af89e867d897eb8b5b1ea619e0ff" target="_blank">e4705f6</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    DXR_website/data/
+    Ignored:    code/Flow_Purity_Stressor_Boxplots_EMP_250226.R
+    Ignored:    data/CDKN1A_geneplot_Dox.RDS
+    Ignored:    data/Cormotif_dox.RDS
+    Ignored:    data/Cormotif_prob_gene_list.RDS
+    Ignored:    data/Cormotif_prob_gene_list_doxonly.RDS
+    Ignored:    data/Counts_RNA_EMPfortmiller.txt
+    Ignored:    data/DMSO_TNN13_plot.RDS
+    Ignored:    data/DOX_TNN13_plot.RDS
+    Ignored:    data/DOXgeneplots.RDS
+    Ignored:    data/ExpressionMatrix_EMP.csv
+    Ignored:    data/Ind1_DOX_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_list.csv
+    Ignored:    data/Ind6REP_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_set.csv
+    Ignored:    data/Ind6_Spearman_plot.RDS
+    Ignored:    data/MDM2_geneplot_Dox.RDS
+    Ignored:    data/Master_summary_75-1_EMP_250811_final.csv
+    Ignored:    data/Master_summary_87-1_EMP_250811_final.csv
+    Ignored:    data/Metadata.csv
+    Ignored:    data/Metadata_2_norep_update.RDS
+    Ignored:    data/Metadata_update.csv
+    Ignored:    data/QC/
+    Ignored:    data/Recovery_flow_purity.csv
+    Ignored:    data/SIRT1_geneplot_Dox.RDS
+    Ignored:    data/Sample_annotated.csv
+    Ignored:    data/SpearmanHeatmapMatrix_EMP
+    Ignored:    data/VolcanoPlot_D144R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24T_original_EMP_250623.png
+    Ignored:    data/annot_dox.RDS
+    Ignored:    data/annot_list_hm.csv
+    Ignored:    data/cormotif_dxr_1.RDS
+    Ignored:    data/cormotif_dxr_2.RDS
+    Ignored:    data/counts/
+    Ignored:    data/counts_DE_df_dox.RDS
+    Ignored:    data/counts_DE_raw_data.RDS
+    Ignored:    data/counts_raw_filt.RDS
+    Ignored:    data/counts_raw_matrix.RDS
+    Ignored:    data/counts_raw_matrix_EMP_250514.csv
+    Ignored:    data/d24_Spearman_plot.RDS
+    Ignored:    data/dge_calc_dxr.RDS
+    Ignored:    data/dge_calc_matrix.RDS
+    Ignored:    data/ensembl_backup_dox.RDS
+    Ignored:    data/fC_AllCounts.RDS
+    Ignored:    data/fC_DOXCounts.RDS
+    Ignored:    data/featureCounts_Concat_Matrix_DOXSamples_EMP_250430.csv
+    Ignored:    data/featureCounts_DOXdata_updatedind.RDS
+    Ignored:    data/filcpm_colnames_matrix.csv
+    Ignored:    data/filcpm_matrix.csv
+    Ignored:    data/filt_gene_list_dox.RDS
+    Ignored:    data/filter_gene_list_final.RDS
+    Ignored:    data/final_data/
+    Ignored:    data/gene_clustlike_motif.RDS
+    Ignored:    data/gene_postprob_motif.RDS
+    Ignored:    data/genedf_dxr.RDS
+    Ignored:    data/genematrix_dox.RDS
+    Ignored:    data/genematrix_dxr.RDS
+    Ignored:    data/heartgenes.csv
+    Ignored:    data/heartgenes_dox.csv
+    Ignored:    data/image_intensity_stats_all_conditions.csv
+    Ignored:    data/image_level_stats_all_conditions.csv
+    Ignored:    data/image_level_summary_yH2AX_quant.csv
+    Ignored:    data/ind_num_dox.RDS
+    Ignored:    data/ind_num_dxr.RDS
+    Ignored:    data/initial_cormotif.RDS
+    Ignored:    data/initial_cormotif_dox.RDS
+    Ignored:    data/low_nuclei_samples.csv
+    Ignored:    data/low_veh_samples.csv
+    Ignored:    data/new/
+    Ignored:    data/new_cormotif_dox.RDS
+    Ignored:    data/perc_mean_all_10X.png
+    Ignored:    data/perc_mean_all_20X.png
+    Ignored:    data/perc_mean_all_40X.png
+    Ignored:    data/perc_mean_consistent_10X.png
+    Ignored:    data/perc_mean_consistent_20X.png
+    Ignored:    data/perc_mean_consistent_40X.png
+    Ignored:    data/perc_median_all_10X.png
+    Ignored:    data/perc_median_all_20X.png
+    Ignored:    data/perc_median_all_40X.png
+    Ignored:    data/perc_median_consistent_10X.png
+    Ignored:    data/perc_median_consistent_20X.png
+    Ignored:    data/perc_median_consistent_40X.png
+    Ignored:    data/plot_leg_d.RDS
+    Ignored:    data/plot_leg_d_horizontal.RDS
+    Ignored:    data/plot_leg_d_vertical.RDS
+    Ignored:    data/plot_theme_custom.RDS
+    Ignored:    data/process_gene_data_funct.RDS
+    Ignored:    data/raw_mean_all_10X.png
+    Ignored:    data/raw_mean_all_20X.png
+    Ignored:    data/raw_mean_all_40X.png
+    Ignored:    data/raw_mean_consistent_10X.png
+    Ignored:    data/raw_mean_consistent_20X.png
+    Ignored:    data/raw_mean_consistent_40X.png
+    Ignored:    data/raw_median_all_10X.png
+    Ignored:    data/raw_median_all_20X.png
+    Ignored:    data/raw_median_all_40X.png
+    Ignored:    data/raw_median_consistent_10X.png
+    Ignored:    data/raw_median_consistent_20X.png
+    Ignored:    data/raw_median_consistent_40X.png
+    Ignored:    data/ruv/
+    Ignored:    data/summary_all_IF_ROI.RDS
+    Ignored:    data/tableED_GOBP.RDS
+    Ignored:    data/tableESR_GOBP_postprob.RDS
+    Ignored:    data/tableLD_GOBP.RDS
+    Ignored:    data/tableLR_GOBP_postprob.RDS
+    Ignored:    data/tableNR_GOBP.RDS
+    Ignored:    data/tableNR_GOBP_postprob.RDS
+    Ignored:    data/table_incsus_genes_GOBP_RUV.RDS
+    Ignored:    data/table_motif1_GOBP_d.RDS
+    Ignored:    data/table_motif1_genes_GOBP.RDS
+    Ignored:    data/table_motif2_GOBP_d.RDS
+    Ignored:    data/table_motif3_genes_GOBP.RDS
+    Ignored:    data/thing.R
+    Ignored:    data/top.table_V.D144r_dox.RDS
+    Ignored:    data/top.table_V.D24_dox.RDS
+    Ignored:    data/top.table_V.D24r_dox.RDS
+    Ignored:    data/yH2AX_75-1_EMP_250811.csv
+    Ignored:    data/yH2AX_87-1_EMP_250811.csv
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_Quant_10X_EMP_250817.png
+    Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
+    Ignored:    data/yh2ax_all_df_EMP_250812.csv
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>DXR_website/analysis/RUVs.Rmd</code>) and
+HTML (<code>DXR_website/docs/RUVs.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/c382b38e927082204de1ba8a9fda4c2e047aac62/DXR_website/docs/RUVs.html" target="_blank">c382b38</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/cd535e91c1466858501e22b6a24f6a6326256e21/DXR_website/analysis/RUVs.Rmd" target="_blank">cd535e9</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-06
+</td>
+<td>
+Final Website Touches 01/06/25 EMP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/RUVs.html" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314/DXR_website/analysis/RUVs.Rmd" target="_blank">49fa865</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+<td>
+Final Updates to Website EMP 01/05/26
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/RUVs.html" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/analysis/RUVs.Rmd" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/RUVs.html" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+</style>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<p>Load necessary libraries for analysis.</p>
+<pre class="r"><code>library(RUVSeq)
+library(tidyverse)
+library(readr)
+library(readxl)
+library(edgeR)
+library(ggfortify)
+library(ComplexHeatmap)
+library(ggrepel)</code></pre>
+<p>Define my custom plot theme</p>
+<pre class="r"><code># Define the custom theme
+# plot_theme_custom &lt;- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = &quot;black&quot;),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, &quot;in&quot;),
+# 
+#       #text and font
+#       axis.text = element_text(color = &quot;black&quot;,
+#                                family = &quot;Arial&quot;,
+#                                size = 7),
+#       axis.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 9),
+#       legend.text = element_text(color = &quot;black&quot;,
+#                                  family = &quot;Arial&quot;,
+#                                  size = 7),
+#       legend.title = element_text(color = &quot;black&quot;,
+#                                   family = &quot;Arial&quot;,
+#                                   size = 9),
+#       plot.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = &quot;grey80&quot;, linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = &quot;grey90&quot;, linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
+
+theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
+<div id="factors-and-colors" class="section level2">
+<h2>Factors and Colors</h2>
+<p>Include each of the factors for these experiments as well as their
+color schemes.</p>
+<pre class="r"><code>####Colors####
+
+# txtime_col_old &lt;- list(
+#   &quot;DOX_24T&quot; = &quot;#263CA5&quot;,
+#   &quot;VEH_24T&quot; = &quot;#444343&quot;,
+#   &quot;DOX_24R&quot; = &quot;#5B8FD1&quot;,
+#   &quot;VEH_24R&quot; = &quot;#757575&quot;,
+#   &quot;DOX_144R&quot; = &quot;#89C5E5&quot;,
+#   &quot;VEH_144R&quot; = &quot;#AAAAAA&quot;
+# )
+
+#updated colors and factors:
+ind_col &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;,
+  &quot;6R&quot; = &quot;#C61E4E&quot;
+)
+
+ind_col_nr &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;
+)
+
+time_col &lt;- list(
+  &quot;t0&quot; = &quot;#005A4C&quot;,
+  &quot;t24&quot; = &quot;#328477&quot;,
+  &quot;t144&quot; = &quot;#8FB9B1&quot;)
+
+tx_col &lt;- list(
+  &quot;DOX&quot; = &quot;#499FBD&quot;, 
+  &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+
+txtime_col &lt;- list(
+  &quot;DOX_t0&quot; = &quot;#263CA5&quot;,
+  &quot;VEH_t0&quot; = &quot;#444343&quot;,
+  &quot;DOX_t24&quot; = &quot;#5B8FD1&quot;,
+  &quot;VEH_t24&quot; = &quot;#757575&quot;,
+  &quot;DOX_t144&quot; = &quot;#89C5E5&quot;,
+  &quot;VEH_t144&quot; = &quot;#AAAAAA&quot;
+)</code></pre>
+</div>
+</div>
+<div id="saving-plots-function" class="section level1">
+<h1>Saving plots function</h1>
+<p>Define a function to save plots as .pdf and .png</p>
+<pre class="r"><code>save_plot &lt;- function(plot, filename, 
+                      folder = &quot;.&quot;, 
+                      width = 8, 
+                      height = 6, 
+                      units = &quot;in&quot;, 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop(&quot;Please provide a filename (without extension) for the plot.&quot;)
+
+  date_str &lt;- if (add_date) paste0(&quot;_&quot;, format(Sys.Date(), &quot;%y%m%d&quot;)) else &quot;&quot;
+  pdf_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.pdf&quot;))
+  png_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.png&quot;))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = &quot;transparent&quot;)
+  ggsave(filename = png_file, plot = plot, device = &quot;png&quot;, width = width, height = height, units = units, dpi = dpi, bg = &quot;transparent&quot;)
+  message(&quot;Saved plot as Cairo PDF: &quot;, pdf_file)
+  message(&quot;Saved plot as PNG: &quot;, png_file)
+}
+
+output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height</code></pre>
+</div>
+<div id="principal-component-analysis" class="section level1">
+<h1>Principal Component Analysis</h1>
+<p>Identify principal components contributing to variation in the
+data.</p>
+<pre class="r"><code>#Now I want to check if my data is as expected on a PCA plot
+counts_cpm_unfilt &lt;- readRDS(&quot;data/QC/counts_cpm_unfilt.RDS&quot;)
+filcpm_matrix &lt;- readRDS(&quot;data/QC/filcpm_final_matrix_newind.RDS&quot;)
+
+#perform PCA calculations
+prcomp_res_unfilt &lt;- prcomp(t(counts_cpm_unfilt %&gt;% as.matrix()), center =  TRUE)
+
+prcomp_res_filt &lt;- prcomp(t(filcpm_matrix %&gt;% as.matrix()), center =  TRUE)
+
+#read in my metadata annotations
+#this has already had the individual number changed to move 84-1
+
+Metadata &lt;- read.csv(&quot;data/QC/Metadata_update.csv&quot;) %&gt;% 
+  dplyr::select(-X)
+#84-1 is now Ind4
+
+
+#add in labels for individual numbers
+ind_num &lt;- c(&quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, 
+             &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, 
+             &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, 
+             &quot;4&quot;, &quot;4&quot;, &quot;4&quot;, &quot;4&quot;, &quot;4&quot;, &quot;4&quot;, 
+             &quot;5&quot;, &quot;5&quot;, &quot;5&quot;, &quot;5&quot;, &quot;5&quot;, &quot;5&quot;, 
+             &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, &quot;6&quot;, 
+             &quot;6R&quot;, &quot;6R&quot;, &quot;6R&quot;, &quot;6R&quot;, &quot;6R&quot;, &quot;6R&quot;)
+
+# saveRDS(ind_num, &quot;data/QC/ind_num.RDS&quot;)
+
+
+#now plot my PCA for unfiltered log2cpm
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Unfiltered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-1">
+Past versions of "PCA Analysis S2-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####PC2/PC3####
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = &quot;Cond&quot;
+                  , shape = &quot;Time&quot;, size =4, x=2, y=3) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Unfiltered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-2">
+Past versions of "PCA Analysis S2-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####PC3/PC4####
+ggplot2::autoplot(prcomp_res_unfilt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=3, y=4) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Unfiltered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-3">
+Past versions of "PCA Analysis S2-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-3.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#Now plot my PCA for filtered log2cpm
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Filtered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-4">
+Past versions of "PCA Analysis S2-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-4.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Filtered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-5">
+Past versions of "PCA Analysis S2-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-5.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-5.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-5.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####PC2/PC3####
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=2, y=3) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Filtered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-6">
+Past versions of "PCA Analysis S2-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-6.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-6.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-6.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####PC3/PC4####
+ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=3, y=4) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Filtered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-7">
+Past versions of "PCA Analysis S2-7.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-7.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-7.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-7.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot2::autoplot(prcomp_res_filt, data = Metadata, colour = &quot;Cond&quot;, shape = &quot;Time&quot;, size =4, x=1, y=2) +
+  ggrepel::geom_text_repel(label=ind_num, vjust = -.5, max.overlaps = 30) +
+  scale_color_manual(values=txtime_col) +
+  ggtitle(expression(&quot;PCA of Filtered log&quot;[2]*&quot;cpm&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-8">
+Past versions of "PCA Analysis S2-8.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-8.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-8.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-8.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#now make a version for supplementary figure 2
+autoplot(prcomp_res_filt,
+         data = Metadata,
+         colour = &quot;Cond&quot;,
+         shape = &quot;Time&quot;,
+         size = 5,
+         x = 1,
+         y = 2) +
+  theme_custom() +
+  scale_color_manual(values = txtime_col) +
+  geom_text_repel(aes(label = ind_num),       
+                  nudge_y = 0.05,            
+                  max.overlaps = 50,
+                  size = 5,                   
+                  segment.color = &quot;grey50&quot;) + 
+  ggtitle(&quot;PCA of global gene expression (pre-RUV)&quot;)</code></pre>
+<p><img src="figure/RUVs.Rmd/PCA%20Analysis%20S2-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-PCA-Analysis-S2-9">
+Past versions of "PCA Analysis S2-9.png"
+</button>
+</p>
+<div id="fig-no-spaces-PCA-Analysis-S2-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-9.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-9.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-9.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/PCA Analysis S2-9.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#save for figure generation
+
+# ggsave(&quot;SuppFig2_pca_6x8_EMP.pdf&quot;, width = 8, height = 6, device = cairo_pdf,dpi = 300, path = output_folder)</code></pre>
+</div>
+<div id="correlation-heatmaps" class="section level1">
+<h1>Correlation Heatmaps</h1>
+<pre class="r"><code>#check to make sure that the column names are correct
+lcpm_2 &lt;- filcpm_matrix
+colnames(lcpm_2) &lt;- Metadata$Final_sample_name
+
+#compute the correlation matrices, one pearson and one spearman
+cor_matrix_pearson &lt;- cor(lcpm_2, 
+                          y = NULL, 
+                          use = &quot;everything&quot;,  
+                          method = &quot;pearson&quot;)
+cor_matrix_spearman &lt;- cor(lcpm_2,
+                           y = NULL,
+                           use = &quot;everything&quot;,
+                           method = &quot;spearman&quot;)
+
+# Extract metadata columns
+Individual &lt;- as.character(Metadata$Ind)
+Time &lt;- as.character(Metadata$Time)
+Treatment &lt;- as.character(Metadata$Treatment)
+
+# Define color palettes for annotations
+annot_col_cor = list(drugs = c(&quot;DOX&quot; = &quot;#499FBD&quot;, 
+                               &quot;VEH&quot; = &quot;#BBBBBC&quot;),
+                     individuals = c(&quot;1&quot; = &quot;#FFA364&quot;, 
+                                     &quot;2&quot; = &quot;#78EFDE&quot;, 
+                                     &quot;3&quot; = &quot;#A4D177&quot;, 
+                                     &quot;4&quot; = &quot;#EAD050&quot;, 
+                                     &quot;5&quot; = &quot;#A68AC0&quot;, 
+                                     &quot;6&quot; = &quot;#F16F90&quot;, 
+                                     &quot;6R&quot; = &quot;#C61E4E&quot;),
+                     timepoints = c(&quot;t0&quot; = &quot;#005A4C&quot;,
+                                    &quot;t24&quot; = &quot;#328477&quot;, 
+                                    &quot;t144&quot; = &quot;#8FB9B1&quot;))
+
+drug_colors &lt;- c(&quot;DOX&quot; = &quot;#499FBD&quot;,
+                 &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+ind_colors &lt;- c(&quot;1&quot; = &quot;#FFA364&quot;,
+                &quot;2&quot; = &quot;#78EFDE&quot;,
+                &quot;3&quot; = &quot;#A4D177&quot;,
+                &quot;4&quot; = &quot;#EAD050&quot;,
+                &quot;5&quot; = &quot;#A68AC0&quot;,
+                &quot;6&quot; = &quot;#F16F90&quot;,
+                &quot;6R&quot; = &quot;#C61E4E&quot;)
+time_colors &lt;- c(&quot;t0&quot; = &quot;#005A4C&quot;,
+                 &quot;t24&quot; = &quot;#328477&quot;,
+                 &quot;t144&quot; = &quot;#8FB9B1&quot;)
+
+# Create annotations
+top_annotation &lt;- HeatmapAnnotation(
+  Individual = Individual, 
+  Time = Time,
+  Treatment = Treatment,
+  col = list(
+    Individual = ind_colors, 
+    Time = time_colors,
+    Treatment = drug_colors
+  )
+)
+
+####Pearson Heatmap####
+heatmap_pearson &lt;- Heatmap(cor_matrix_pearson,
+                           name = &quot;Pearson&quot;,
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE)
+
+# Draw the heatmap
+draw(heatmap_pearson)</code></pre>
+<p><img src="figure/RUVs.Rmd/Correlation%20Heatmaps-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Correlation-Heatmaps-1">
+Past versions of "Correlation Heatmaps-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Correlation-Heatmaps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####Spearman Heatmap####
+heatmap_spearman &lt;- Heatmap(cor_matrix_spearman,
+                           name = &quot;Spearman&quot;,
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE)
+
+# Draw the heatmap
+draw(heatmap_spearman)</code></pre>
+<p><img src="figure/RUVs.Rmd/Correlation%20Heatmaps-2.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Correlation-Heatmaps-2">
+Past versions of "Correlation Heatmaps-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Correlation-Heatmaps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Correlation Heatmaps-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="filtered-gene-list" class="section level1">
+<h1>Filtered Gene List</h1>
+<pre class="r"><code>#Now I want to make a filtered gene list (my rownames)
+##I will use this to filter my counts for limma (+ Cormotif later on)
+
+# filt_gene_list &lt;- rownames(filcpm_matrix)
+#save this filtered gene list as I&#39;ll use it to filter my counts
+# saveRDS(filt_gene_list, &quot;data/QC/filt_gene_list.RDS&quot;)
+
+filt_gene_list &lt;- readRDS(&quot;data/QC/filt_gene_list.RDS&quot;)</code></pre>
+</div>
+<div id="filter-genes-for-differential-expression-analysis"
+class="section level1">
+<h1>Filter Genes for Differential Expression Analysis</h1>
+<p>Perform preliminary DE analysis on non-corrected data to get a
+baseline for RUVs correction.</p>
+<pre class="r"><code># counts_raw_matrix &lt;- readRDS(&quot;data/QC/counts_raw_matrix.RDS&quot;)
+#change column names to match samples for my raw counts matrix
+#update them to the new nomenclature so I can have everything match up with Metadata new
+# colnames(counts_raw_matrix) &lt;- c(&quot;DOX_t0_1&quot;,
+#                                 &quot;VEH_t0_1&quot;,
+#                                 &quot;DOX_t24_1&quot;,
+#                                 &quot;VEH_t24_1&quot;,
+#                                 &quot;DOX_t144_1&quot;,
+#                                 &quot;VEH_t144_1&quot;,
+#                                 &quot;DOX_t0_2&quot;,
+#                                 &quot;VEH_t0_2&quot;,
+#                                 &quot;DOX_t24_2&quot;,
+#                                 &quot;VEH_t24_2&quot;,
+#                                 &quot;DOX_t144_2&quot;,
+#                                 &quot;VEH_t144_2&quot;,
+#                                 &quot;DOX_t0_3&quot;,
+#                                 &quot;VEH_t0_3&quot;,
+#                                 &quot;DOX_t24_3&quot;,
+#                                 &quot;VEH_t24_3&quot;,
+#                                 &quot;DOX_t144_3&quot;,
+#                                 &quot;VEH_t144_3&quot;,
+#                                 &quot;DOX_t0_4&quot;,
+#                                 &quot;VEH_t0_4&quot;,
+#                                 &quot;DOX_t24_4&quot;,
+#                                 &quot;VEH_t24_4&quot;,
+#                                 &quot;DOX_t144_4&quot;,
+#                                 &quot;VEH_t144_4&quot;,
+#                                 &quot;DOX_t0_5&quot;,
+#                                 &quot;VEH_t0_5&quot;,
+#                                 &quot;DOX_t24_5&quot;,
+#                                 &quot;VEH_t24_5&quot;,
+#                                 &quot;DOX_t144_5&quot;,
+#                                 &quot;VEH_t144_5&quot;,
+#                                 &quot;DOX_t0_6&quot;,
+#                                 &quot;VEH_t0_6&quot;,
+#                                 &quot;DOX_t24_6&quot;,
+#                                 &quot;VEH_t24_6&quot;,
+#                                 &quot;DOX_t144_6&quot;,
+#                                 &quot;VEH_t144_6&quot;,
+#                                 &quot;DOX_t0_6R&quot;,
+#                                 &quot;VEH_t0_6R&quot;,
+#                                 &quot;DOX_t24_6R&quot;,
+#                                 &quot;VEH_t24_6R&quot;,
+#                                 &quot;DOX_t144_6R&quot;,
+#                                 &quot;VEH_t144_6R&quot;)
+
+# saveRDS(counts_raw_matrix, &quot;data/QC/counts_raw_matrix.RDS&quot;)
+
+counts_raw_matrix &lt;- readRDS(&quot;data/QC/counts_raw_matrix.RDS&quot;)
+
+#subset my count matrix based on filtered CPM matrix
+x &lt;- counts_raw_matrix[row.names(filcpm_matrix),]
+dim(x)</code></pre>
+<pre><code>[1] 14319    42</code></pre>
+<pre class="r"><code># saveRDS(x, &quot;data/DE/x_dge_counts_allind_updated.RDS&quot;)
+#14319 genes as expected!
+#this is still in counts form
+
+#remove my replicate individual at this time
+x_norep &lt;- x[,1:36]
+
+# saveRDS(x_norep, &quot;data/DE/x_norep.RDS&quot;)
+
+# Metadata &lt;- read.csv(&quot;data/QC/Metadata_update.csv&quot;)
+# 
+#modify my metadata to match
+# Metadata_2 &lt;- Metadata[1:36,]
+# rownames(Metadata_2) &lt;- Metadata_2$Sample_bam
+# colnames(x_norep) &lt;- Metadata_2$Sample_ID
+# rownames(Metadata_2) &lt;- Metadata_2$Sample_ID
+
+# Metadata_2$Condition &lt;- make.names(Metadata_2$Cond)
+# Metadata_2$Ind &lt;- as.character(Metadata_2$Ind)
+
+# saveRDS(Metadata_2, &quot;data/QC/Metadata_2_norep_update.RDS&quot;)
+
+Metadata_2 &lt;- readRDS(&quot;data/QC/Metadata_2_norep_update.RDS&quot;)</code></pre>
+</div>
+<div id="perform-de-analysis" class="section level1">
+<h1>Perform DE Analysis</h1>
+<pre class="r"><code>#create DGEList object
+dge &lt;- DGEList(counts = x_norep)
+dge$samples$group &lt;- factor(Metadata_2$Condition)
+dge &lt;- calcNormFactors(dge, method = &quot;TMM&quot;)
+
+# saveRDS(dge, &quot;data/DE/dge_matrix.RDS&quot;)
+
+# check normalization factors from TMM normalization of LIBRARIES
+dge$samples</code></pre>
+<pre><code>              group lib.size norm.factors
+DOX_t0_1     DOX_t0 19935097    1.0526605
+VEH_t0_1     VEH_t0 21302879    0.9773889
+DOX_t24_1   DOX_t24 25636959    1.0751043
+VEH_t24_1   VEH_t24 26319662    0.9940323
+DOX_t144_1 DOX_t144 23463426    0.9003102
+VEH_t144_1 VEH_t144 25840938    0.9888449
+DOX_t0_2     DOX_t0 23085807    0.7676077
+VEH_t0_2     VEH_t0 25610495    1.0077383
+DOX_t24_2   DOX_t24 18083930    1.1682704
+VEH_t24_2   VEH_t24 24331177    0.9906872
+DOX_t144_2 DOX_t144 19754391    0.9941834
+VEH_t144_2 VEH_t144 22641509    1.0010734
+DOX_t0_3     DOX_t0 20583626    1.0676786
+VEH_t0_3     VEH_t0 28166198    1.0031906
+DOX_t24_3   DOX_t24 25831427    1.1530208
+VEH_t24_3   VEH_t24 26081158    1.0058953
+DOX_t144_3 DOX_t144 24659898    0.9261599
+VEH_t144_3 VEH_t144 25412931    0.9703454
+DOX_t0_4     DOX_t0 23393931    0.9745263
+VEH_t0_4     VEH_t0 22853195    0.9565797
+DOX_t24_4   DOX_t24 23846995    1.1659432
+VEH_t24_4   VEH_t24 21299355    0.9649641
+DOX_t144_4 DOX_t144 18222568    0.9913625
+VEH_t144_4 VEH_t144 28115884    0.9653464
+DOX_t0_5     DOX_t0 22518848    0.9766893
+VEH_t0_5     VEH_t0 24589534    0.9612345
+DOX_t24_5   DOX_t24 24797547    1.1703079
+VEH_t24_5   VEH_t24 25977536    0.9509690
+DOX_t144_5 DOX_t144 27447106    0.9422729
+VEH_t144_5 VEH_t144 24893583    0.9356377
+DOX_t0_6     DOX_t0 25187428    1.0311957
+VEH_t0_6     VEH_t0 25630519    1.0283437
+DOX_t24_6   DOX_t24 26138399    1.1183471
+VEH_t24_6   VEH_t24 24430396    0.9988688
+DOX_t144_6 DOX_t144 23323463    0.9496884
+VEH_t144_6 VEH_t144 25424152    0.9872926</code></pre>
+<pre class="r"><code>#create my design matrix for DE
+design &lt;- model.matrix(~ 0 + Metadata_2$Condition)
+colnames(design) &lt;- gsub(&quot;Metadata_2\\$Condition&quot;, &quot;&quot;, colnames(design))
+
+#take care that the matrix automatically sorts cols alphabetically
+##currently DOX_t0, DOX_t144, DOX_t24, VEH_t0, VEH_t144, VEH_t24
+
+#run duplicate correlation for individual effect
+corfit &lt;- duplicateCorrelation(object = dge$counts, design = design, block = Metadata_2$Ind)
+
+#voom transformation and plot
+v &lt;- voom(dge, design, block = Metadata_2$Ind, correlation = corfit$consensus.correlation, plot = TRUE)</code></pre>
+<p><img src="figure/RUVs.Rmd/Differential%20Expression%20Analysis-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Analysis-1">
+Past versions of "Differential Expression Analysis-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Differential-Expression-Analysis-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#fit my linear model
+fit &lt;- lmFit(v, design, block = Metadata_2$Ind, correlation = corfit$consensus.correlation)
+
+#make my contrast matrix to compare across tx and veh
+contrast_matrix &lt;- makeContrasts(
+  V.D24T = DOX_t0 - VEH_t0,
+  V.D24R = DOX_t24 - VEH_t24, 
+  V.D144R = DOX_t144 - VEH_t144,
+  levels = design
+)
+
+#apply these contrasts to compare DOX to DMSO VEH
+fit2 &lt;- contrasts.fit(fit, contrast_matrix)
+fit2 &lt;- eBayes(fit2)
+
+#plot the mean-variance trend
+plotSA(fit2, main = &quot;Final model: Mean-Variance trend&quot;)</code></pre>
+<p><img src="figure/RUVs.Rmd/Differential%20Expression%20Analysis-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Differential-Expression-Analysis-2">
+Past versions of "Differential Expression Analysis-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Differential-Expression-Analysis-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/Differential Expression Analysis-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#look at the summary of your results
+##this tells you the number of DEGs in each condition
+results_summary &lt;- decideTests(fit2, adjust.method = &quot;BH&quot;, p.value = 0.05)
+summary(results_summary)</code></pre>
+<pre><code>       V.D24T V.D24R V.D144R
+Down     4723   3593     359
+NotSig   5076   7151   13810
+Up       4520   3575     150</code></pre>
+<pre class="r"><code>#        V.D24 V.D24r V.D144r
+# Down    4723   3593     359
+# NotSig  5076   7151   13810
+# Up      4520   3575     150</code></pre>
+<div id="create-prelim-toptables" class="section level2">
+<h2>Create Prelim Toptables</h2>
+<p>These toptables will not be used later as they need to be corrected,
+but let’s look at what the data looks like before RUVs correction.</p>
+<pre class="r"><code># Generate Top Table for Specific Comparisons
+
+Toptable_V.D24T &lt;- topTable(fit = fit2, coef = &quot;V.D24T&quot;, number = nrow(x), adjust.method = &quot;BH&quot;, p.value = 1, sort.by = &quot;none&quot;)
+# write.csv(Toptable_V.D24T, &quot;data/DE/Toptable_V.D24T_noRUV.csv&quot;)
+
+Toptable_V.D24R &lt;- topTable(fit = fit2, coef = &quot;V.D24R&quot;, number = nrow(x), adjust.method = &quot;BH&quot;, p.value = 1, sort.by = &quot;none&quot;)
+# write.csv(Toptable_V.D24R, &quot;data/DE/Toptable_V.D24R_noRUV.csv&quot;)
+
+Toptable_V.D144R &lt;- topTable(fit = fit2, coef = &quot;V.D144R&quot;, number = nrow(x), adjust.method = &quot;BH&quot;, p.value = 1, sort.by = &quot;none&quot;)
+# write.csv(Toptable_V.D144R, &quot;data/DE/Toptable_V.D144R_noRUV.csv&quot;)
+
+#save all of these toptables as R objects
+# saveRDS(list(
+#   V.D24T = Toptable_V.D24T,
+#   V.D24R = Toptable_V.D24R,
+#   V.D144R = Toptable_V.D144R
+# ), file = &quot;data/DE/Toptable_list_noRUV.RDS&quot;)
+
+Toptable_list_noRUV &lt;- readRDS(&quot;data/DE/Toptable_list_noRUV.RDS&quot;)</code></pre>
+</div>
+<div id="logfc-boxplots-of-de-by-timepoint" class="section level2">
+<h2>logFC Boxplots of DE by Timepoint</h2>
+<pre class="r"><code># Load DEGs Data
+DOX_24T &lt;- read.csv(&quot;data/DE/Toptable_V.D24T_noRUV.csv&quot;, row.names = 1)
+DOX_24R &lt;- read.csv(&quot;data/DE/Toptable_V.D24R_noRUV.csv&quot;, row.names = 1)
+DOX_144R &lt;- read.csv(&quot;data/DE/Toptable_V.D144R_noRUV.csv&quot;, row.names = 1)
+
+#make a list of all of the genes in this set so I can plot the logFC in other sets
+D24T_DEGs &lt;- rownames(DOX_24T)[DOX_24T$adj.P.Val &lt; 0.05]
+length(D24T_DEGs)</code></pre>
+<pre><code>[1] 9243</code></pre>
+<pre class="r"><code>#9243 genes in length after adj. p value cutoff
+
+#now that I have a list of my DEGs from D24T - pull these genes out from the other DEG lists
+D24R_DEGs &lt;- rownames(DOX_24R)[DOX_24R$adj.P.Val &lt; 0.05]
+length(D24R_DEGs)</code></pre>
+<pre><code>[1] 7168</code></pre>
+<pre class="r"><code>#7168 genes here 
+
+
+D144R_DEGs &lt;- rownames(DOX_144R)[DOX_144R$adj.P.Val &lt; 0.05]
+length(D144R_DEGs)</code></pre>
+<pre><code>[1] 509</code></pre>
+<pre class="r"><code>#509 genes in 144R
+
+
+#Combine the toptables I have from pairwise analysis into a single dataframe
+d0_toptable_dxr &lt;- Toptable_V.D24T %&gt;% 
+  rownames_to_column(var = &quot;Entrez_ID&quot;) %&gt;% 
+  mutate(Time = &quot;t0&quot;)
+
+d24_toptable_dxr &lt;- Toptable_V.D24R %&gt;% 
+  rownames_to_column(var = &quot;Entrez_ID&quot;) %&gt;% 
+  mutate(Time = &quot;t24&quot;)
+
+d144_toptable_dxr &lt;- Toptable_V.D144R %&gt;% 
+  rownames_to_column(var = &quot;Entrez_ID&quot;) %&gt;% 
+  mutate(Time = &quot;t144&quot;)
+
+combined_toptables_dxr &lt;- bind_rows(
+  d0_toptable_dxr,
+  d24_toptable_dxr,
+  d144_toptable_dxr)
+
+# saveRDS(combined_toptables_dxr, &quot;data/DE/combined_toptables_dxr.RDS&quot;)
+
+#Filter the data based on each timepoint
+filt_toptable_dxr_t0 &lt;- combined_toptables_dxr %&gt;% 
+  dplyr::filter(Entrez_ID  %in% D24T_DEGs) %&gt;% 
+  mutate(absFC = abs(logFC)) %&gt;% 
+  mutate(time = factor(Time, levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;), labels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;))) %&gt;% 
+  ggplot(., aes(x = time, y = logFC)) +
+  geom_boxplot(aes(fill = time)) +
+  scale_fill_manual(values = time_col) +
+  guides(fill = guide_legend(title = &quot;Time&quot;)) +
+  xlab(&quot; &quot;) +
+  ylab(&quot;logFC&quot;) +
+  theme_custom() +
+  ggtitle(&quot;LogFC for t0 DEGs Across Conditions&quot;)
+
+filt_toptable_dxr_t24 &lt;- combined_toptables_dxr %&gt;% 
+  dplyr::filter(Entrez_ID  %in% D24R_DEGs) %&gt;% 
+  mutate(absFC = abs(logFC)) %&gt;% 
+  mutate(time = factor(Time, levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;), labels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;))) %&gt;% 
+  ggplot(., aes(x = time, y = logFC)) +
+  geom_boxplot(aes(fill = time)) +
+  scale_fill_manual(values = time_col) +
+  guides(fill = guide_legend(title = &quot;Time&quot;)) +
+  theme_custom() +
+  xlab(&quot; &quot;) +
+  ylab(&quot;logFC&quot;) +
+  theme_custom() +
+  ggtitle(&quot;LogFC for t24 DEGs Across Conditions&quot;)
+
+#D144R
+
+filt_toptable_dxr_t144 &lt;- combined_toptables_dxr %&gt;% 
+  dplyr::filter(Entrez_ID  %in% D144R_DEGs) %&gt;% 
+  mutate(absFC = abs(logFC)) %&gt;% 
+  mutate(time = factor(Time, levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;), labels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;))) %&gt;% 
+  ggplot(., aes(x = time, y = logFC))+
+  geom_boxplot(aes(fill = time))+
+  scale_fill_manual(values = time_col)+
+  guides(fill = guide_legend(title = &quot;Time&quot;))+
+  theme_custom()+
+  xlab(&quot; &quot;)+
+  ylab(&quot;logFC&quot;)+
+  theme_custom()+
+  ggtitle(&quot;LogFC for t144 DEGs Across Conditions&quot;)
+
+#now put the names of these graphs to print them
+filt_toptable_dxr_t0</code></pre>
+<p><img src="figure/RUVs.Rmd/DOX24T%20DEGs%20logFC%20all%20Conditions-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-1">
+Past versions of "DOX24T DEGs logFC all Conditions-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>filt_toptable_dxr_t24</code></pre>
+<p><img src="figure/RUVs.Rmd/DOX24T%20DEGs%20logFC%20all%20Conditions-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-2">
+Past versions of "DOX24T DEGs logFC all Conditions-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>filt_toptable_dxr_t144</code></pre>
+<p><img src="figure/RUVs.Rmd/DOX24T%20DEGs%20logFC%20all%20Conditions-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-3">
+Past versions of "DOX24T DEGs logFC all Conditions-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-DOX24T-DEGs-logFC-all-Conditions-3"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-3.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/DOX24T DEGs logFC all Conditions-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="ruvs-correction" class="section level1">
+<h1>RUVs Correction</h1>
+<p>Correct for unwanted variation using RUVs, which uses a set of
+replicates to correct for variation.</p>
+<div id="set-up-data-workflow" class="section level2">
+<h2>Set Up Data Workflow</h2>
+<pre class="r"><code>filt_gene_list &lt;- rownames(filcpm_matrix)
+#14319 genes as usual
+
+#in order to make this match with annot later down the line, change the col names for counts_raw_matrix to match final_sample_names in annot
+
+#i&#39;ll also want to make sure I keep the replicate for this set
+
+colnames(counts_raw_matrix) &lt;- Metadata$Final_sample_name
+
+RUV_filt_counts &lt;- counts_raw_matrix %&gt;% 
+  as.data.frame() %&gt;% 
+  dplyr::filter(., row.names(.)%in% filt_gene_list)
+# saveRDS(RUV_filt_counts, &quot;data/DE/RUV_filt_counts.RDS&quot;)
+
+#add in the annotation files
+ind_num &lt;- readRDS(&quot;data/QC/ind_num.RDS&quot;)
+annot &lt;- read.csv(&quot;data/QC/Metadata_update.csv&quot;)
+#same as Metadata
+
+
+#  counts need to be integer values and in a numeric matrix
+# note: the log transformation needs to be accounted for in the isLog argument in RUVs function.
+counts &lt;- as.matrix(RUV_filt_counts)
+  
+# saveRDS(counts, &quot;data/new/RUV/filt_counts_matrix.RDS&quot;)
+
+# Create a DataFrame for the phenoData
+phenoData &lt;- DataFrame(annot)
+
+# Now create the RangedSummarizedExperiment necessary for RUVs input
+# looks like it did need both the phenodata and the counts.
+set &lt;- SummarizedExperiment(assays =  counts, metadata = phenoData)
+
+# Generate a background matrix
+# The column &quot;Cond&quot; holds the comparisons that you actually want to make. DOX_24, DMSO_24,5FU_24, DOX_3,etc.
+scIdx &lt;- RUVSeq::makeGroups(phenoData$Cond)
+scIdx</code></pre>
+<pre><code>     [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+[1,]    1    7   13   19   25   31   37
+[2,]    5   11   17   23   29   35   41
+[3,]    3    9   15   21   27   33   39
+[4,]    2    8   14   20   26   32   38
+[5,]    6   12   18   24   30   36   42
+[6,]    4   10   16   22   28   34   40</code></pre>
+<pre class="r"><code>#now I&#39;ve made all of the data I need for this - they are located in each section for k values
+
+#DO NOT USE THESE COUNTS FOR LINEAR MODELING
+
+#colors for all of the plots
+# txtime_col
+# ind_col
+# time_col
+# tx_col
+
+# before ruv (counts PCA)
+prcomp_res_counts &lt;- prcomp(t(counts), scale. = FALSE, center = TRUE)
+annot_prcomp_res &lt;- prcomp_res_counts$x %&gt;% cbind(., annot)
+
+group_2 &lt;- annot$Cond
+
+#now plot my PCA for filtered counts
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_counts, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size = 4, 
+                  x = 1, 
+                  y = 2) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression(&quot;PCA of Filtered Counts&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-1">
+Past versions of "RUVs Correction Data Setup-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####PC2/PC3####
+ggplot2::autoplot(prcomp_res_counts, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size = 4, 
+                  x = 2, 
+                  y = 3) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression(&quot;PCA of Filtered Counts&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-2">
+Past versions of "RUVs Correction Data Setup-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#go ahead and plot PCA of log2cpm to compare (somewhat) later since the norm counts output isn&#39;t possible with these data since they don&#39;t undergo correction
+
+prcomp_res_cpm &lt;- prcomp(t(filcpm_matrix %&gt;% as.matrix()), center =  TRUE)
+
+####PC1/PC2####
+ggplot2::autoplot(prcomp_res_cpm, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size = 4, 
+                  x = 1, 
+                  y = 2) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression(&quot;PCA of log2cpm no RUVs&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-3.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-3">
+Past versions of "RUVs Correction Data Setup-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-3.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####PC2/PC3####
+ggplot2::autoplot(prcomp_res_cpm, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size = 4, 
+                  x = 2, 
+                  y = 3) +
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30) +
+  scale_color_manual(values = txtime_col) +
+  ggtitle(expression(&quot;PCA of log2cpm no RUVs&quot;)) +
+  theme_custom()</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20Correction%20Data%20Setup-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Correction-Data-Setup-4">
+Past versions of "RUVs Correction Data Setup-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Correction-Data-Setup-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-4.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs Correction Data Setup-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="ruvs-k1-1-factor-of-unwanted-variation" class="section level2">
+<h2>RUVs k=1, 1 factor of unwanted variation</h2>
+<pre class="r"><code>#Apply RUVs function from RUVSeq
+#&quot;k&quot; can be iteratively adjusted over time depending on PCA.
+set1 &lt;- RUVSeq::RUVs(x = counts, k =1, scIdx = scIdx, isLog = FALSE)
+# saveRDS(set1, &quot;data/DE/set1.RDS&quot;)
+#get the ruv weights to put into the linear model. n weights = k.
+#k=1
+RUV_df1 &lt;- set1$W %&gt;% as.data.frame()
+RUV_df1$Names &lt;- rownames(RUV_df1)
+
+#Check that the names match
+#k=1
+RUV_df_rm1 &lt;- RUV_df1[RUV_df1$Names %in% annot$Final_sample_name, ] 
+RUV_1 &lt;-  RUV_df_rm1$W_1
+
+# saveRDS(RUV_df_rm1, &quot;data/DE/RUV_df_rm1.RDS&quot;)
+# saveRDS(RUV_1, &quot;data/DE/RUV_1.RDS&quot;)
+
+#PCA checks
+#k=1
+prcomp_res_1 &lt;- prcomp(t(set1$normalizedCounts), scale. = FALSE, center = TRUE)
+annot_prcomp_res_1 &lt;- prcomp_res_1$x %&gt;% cbind(., annot)
+
+ggplot2::autoplot(prcomp_res_1, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size =4, 
+                  x = 1, 
+                  y = 2)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
+  ggtitle(&quot;RUVs Correction k=1 NormCounts&quot;)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20k1-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-1">
+Past versions of "RUVs k1-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>ggplot2::autoplot(prcomp_res_1, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size = 4, 
+                  x = 2,
+                  y = 3)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
+  ggtitle(&quot;RUVs Correction k=1 NormCounts&quot;)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20k1-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-2">
+Past versions of "RUVs k1-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#also try by converting these values to log2cpm
+
+RUV_df_rm1_cpm &lt;- cpm(set1$normalizedCounts, log = TRUE)
+
+prcomp_res_1_cpm &lt;- prcomp(t(RUV_df_rm1_cpm), scale. = FALSE, center = TRUE)
+annot_prcomp_res_1_cpm &lt;- prcomp_res_1_cpm$x %&gt;% cbind(., annot)
+
+##PC1/2
+ggplot2::autoplot(prcomp_res_1_cpm, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size = 4,
+                  x = 1,
+                  y = 2)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 50)+
+  ggtitle(&quot;RUVs Correction k=1 log2cpm&quot;)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20k1-3.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-3">
+Past versions of "RUVs k1-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-3.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-3.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>###PC2/3
+ggplot2::autoplot(prcomp_res_1_cpm, 
+                  data = annot, 
+                  colour = &quot;Cond&quot;, 
+                  shape = &quot;Time&quot;, 
+                  size = 4, 
+                  x = 2, 
+                  y = 3)+
+  theme_custom()+
+  scale_color_manual(values = txtime_col)+
+  ggrepel::geom_text_repel(label = ind_num, 
+                           vjust = -0.5, 
+                           max.overlaps = 30)+
+  ggtitle(&quot;RUVs Correction k=1 log2cpm&quot;)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20k1-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-k1-4">
+Past versions of "RUVs k1-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-k1-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-4.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs k1-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="spearman-correlation-heatmaps-ruvs" class="section level2">
+<h2>Spearman Correlation Heatmaps RUVs</h2>
+<pre class="r"><code>#Now that I&#39;ve put together the PCA plots for both normalized counts and log2cpm
+#I want to make these into heatmaps
+
+#first change your Metadata to have the new names for my supp figures
+# Metadata &lt;- Metadata %&gt;% 
+#    mutate(
+#     # Map time labels to standard timepoints
+#     Timepoint = case_when(
+#       Time == &quot;24T&quot; ~ &quot;t0&quot;,
+#       Time == &quot;24R&quot; ~ &quot;t24&quot;,
+#       Time == &quot;144R&quot; ~ &quot;t144&quot;,
+#       TRUE ~ NA_character_
+#     ),
+#     
+#     # Map drug labels to treatment shorthand
+#     Treatment = case_when(
+#       Drug == &quot;DOX&quot; ~ &quot;DOX&quot;,
+#       Drug == &quot;DMSO&quot; ~ &quot;VEH&quot;,
+#       TRUE ~ NA_character_
+#     ),
+#     
+#     # Combine them into a unified condition string
+#     Condition = paste(Treatment, Timepoint, Ind, sep = &quot;_&quot;)
+#   ) %&gt;%
+#   mutate(
+#     # Factorize Ind, Timepoint, Treatment, and Condition for plotting consistency
+#     Ind = factor(Ind, 
+#                  levels = c(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;6R&quot;), 
+#                  ordered = TRUE),
+#     Timepoint = factor(Timepoint, levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;),
+#                        ordered = TRUE),
+#     Treatment = factor(Treatment, levels = c(&quot;DOX&quot;, &quot;VEH&quot;),
+#                        ordered = TRUE),
+#     Condition = factor(
+#       Condition,
+#       levels = expand.grid(
+#         Treatment = levels(Treatment),
+#         Timepoint = levels(Timepoint),
+#         Ind = levels(Ind)
+#       ) %&gt;%
+#         transmute(Condition = paste(Treatment, Timepoint, Ind, sep = &quot;_&quot;)) %&gt;%
+#         pull(Condition),
+#       ordered = TRUE
+#     )
+#   )
+#also change Ind 1 to Ind4 to keep all F and all M together
+# line_to_ind &lt;- c(
+#   &quot;87-1&quot;  = &quot;Ind1&quot;,   #originally Ind2
+#   &quot;78-1&quot;  = &quot;Ind2&quot;,   #originally Ind3
+#   &quot;75-1&quot;  = &quot;Ind3&quot;,   #originally Ind4
+#   &quot;84-1&quot;  = &quot;Ind4&quot;,   #renamed from Ind1 to Ind4
+#   &quot;17-3&quot;  = &quot;Ind5&quot;,   #unchanged
+#   &quot;90-1&quot;  = &quot;Ind6&quot;,   #unchanged
+#   &quot;90-1REP&quot; = &quot;Ind6R&quot;   #unchanged
+# )
+
+# Update Ind column in Metadata
+# Metadata$Old_Ind &lt;- Metadata$Ind
+
+# Metadata$Ind &lt;- line_to_ind[Metadata$Line]
+# Metadata$Ind &lt;- gsub(&quot;Ind&quot;, &quot;&quot;, Metadata$Ind)
+
+#update sample names columns in csv
+
+#I am also going to add the final sample names for the plots with an updated Timepoint column
+
+# Metadata &lt;- Metadata %&gt;%
+#   mutate(
+#     # create new timepoint naming
+#     Timepoint = case_when(
+#       Time == &quot;t0&quot;   ~ &quot;tx+0&quot;,
+#       Time == &quot;t24&quot;  ~ &quot;tx+24&quot;,
+#       Time == &quot;t144&quot; ~ &quot;tx+144&quot;,
+#       TRUE ~ as.character(Time)
+#     ),
+#     
+#     #create plot sample names
+#     Sample_name_plots = paste(
+#       Treatment,
+#       Timepoint,
+#       Ind,
+#       sep = &quot;_&quot;
+#     )
+#   )
+
+# saveRDS(Metadata, &quot;data/QC/Metadata_update.RDS&quot;)
+# write.csv(Metadata, &quot;data/QC/Metadata_update.csv&quot;)
+# Metadata &lt;- read.csv(&quot;data/QC/Metadata_update.csv&quot;)
+
+
+Metadata &lt;- read.csv(&quot;data/QC/Metadata_update.csv&quot;)
+set1 &lt;- readRDS(&quot;data/DE/set1.RDS&quot;)
+RUV_filt_counts &lt;- readRDS(&quot;data/DE/RUV_filt_counts.RDS&quot;)
+
+####RUVs k=1
+#check to make sure that the column names are correct
+dim(RUV_filt_counts)</code></pre>
+<pre><code>[1] 14319    42</code></pre>
+<pre class="r"><code>colnames(RUV_filt_counts) &lt;- Metadata$Sample_name_plots
+
+dim(set1$normalizedCounts)</code></pre>
+<pre><code>[1] 14319    42</code></pre>
+<pre class="r"><code>colnames(set1$normalizedCounts) &lt;- Metadata$Sample_name_plots
+
+#take the normalized counts from k=1 and put together a dataframe with the correct columns
+normcounts_k0 &lt;- RUV_filt_counts
+normcounts_k1 &lt;- set1$normalizedCounts %&gt;% as.data.frame()
+
+#do the same with the log2cpm conversion
+cpm_k0 &lt;- cpm(normcounts_k0, log = TRUE) %&gt;% as.data.frame()
+cpm_k1 &lt;- cpm(set1$normalizedCounts, log = TRUE) %&gt;% as.data.frame()
+
+#compute the correlation matrices for RUVs 1-3 with normalized counts
+#k=0
+cor_matrix_spmn_k0 &lt;- cor(normcounts_k0,
+                          y = NULL,
+                          use = &quot;everything&quot;, 
+                          method = &quot;spearman&quot;)
+#k=1
+cor_matrix_spmn_k1 &lt;- cor(normcounts_k1,
+                           y = NULL,
+                           use = &quot;everything&quot;,
+                           method = &quot;spearman&quot;)
+
+
+#Do the same with the log2cpm converted versions
+#k=0
+cor_matrix_spmn_k0_cpm &lt;- cor(cpm_k0,
+                           y = NULL,
+                           use = &quot;everything&quot;,
+                           method = &quot;spearman&quot;)
+
+#k=1
+cor_matrix_spmn_k1_cpm &lt;- cor(cpm_k1,
+                           y = NULL,
+                           use = &quot;everything&quot;,
+                           method = &quot;spearman&quot;)
+
+#extract metadata columns
+Individual &lt;- as.character(Metadata$Ind)
+Timepoint &lt;- as.character(Metadata$Timepoint)
+Treatment &lt;- as.character(Metadata$Treatment)
+
+#Define color palettes for annotations
+annot_col_cor = list(Treatment = c(&quot;DOX&quot; = &quot;#499FBD&quot;, 
+                               &quot;VEH&quot; = &quot;#BBBBBC&quot;),
+                     Individual = c(&quot;1&quot; = &quot;#FFA364&quot;, 
+                                     &quot;2&quot; = &quot;#78EFDE&quot;, 
+                                     &quot;3&quot; = &quot;#A4D177&quot;, 
+                                     &quot;4&quot; = &quot;#EAD050&quot;, 
+                                     &quot;5&quot; = &quot;#A68AC0&quot;, 
+                                     &quot;6&quot; = &quot;#F16F90&quot;, 
+                                     &quot;6R&quot; = &quot;#C61E4E&quot;),
+                     Timepoint = c(&quot;tx+0&quot; = &quot;#005A4C&quot;,
+                                    &quot;tx+24&quot; = &quot;#328477&quot;, 
+                                    &quot;tx+144&quot; = &quot;#8FB9B1&quot;))
+
+tx_colors &lt;- c(&quot;DOX&quot; = &quot;#499FBD&quot;,
+                 &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+ind_colors &lt;- c(&quot;1&quot; = &quot;#FFA364&quot;,
+                &quot;2&quot; = &quot;#78EFDE&quot;,
+                &quot;3&quot; = &quot;#A4D177&quot;,
+                &quot;4&quot; = &quot;#EAD050&quot;,
+                &quot;5&quot; = &quot;#A68AC0&quot;,
+                &quot;6&quot; = &quot;#F16F90&quot;,
+                &quot;6R&quot; = &quot;#C61E4E&quot;)
+time_colors &lt;- c(&quot;tx+0&quot; = &quot;#005A4C&quot;,
+                 &quot;tx+24&quot; = &quot;#328477&quot;,
+                 &quot;tx+144&quot; = &quot;#8FB9B1&quot;)
+
+
+# Create annotations
+top_annotation &lt;- HeatmapAnnotation(
+  Individual = Individual, 
+  Timepoint = Timepoint,
+  Treatment = Treatment,
+  col = list(
+    Individual = ind_colors, 
+    Timepoint = time_colors,
+    Treatment = tx_colors
+  )
+)
+
+####ANNOTATED HEATMAPS####
+###Spearman Heatmap k=0 ####
+heatmap_spmn_k0 &lt;- Heatmap(cor_matrix_spmn_k0,
+                           name = &quot;Spearman&quot;,
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = &quot;Filtered Counts no RUVs&quot;)
+
+# Draw the heatmap k=0
+draw(heatmap_spmn_k0)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-1">
+Past versions of "RUVs HM Spearman-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-1.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####Spearman Heatmap k=1 ####
+heatmap_spmn_k1 &lt;- Heatmap(cor_matrix_spmn_k1,
+                           name = &quot;Spearman&quot;,
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = &quot;Normalized Counts k=1&quot;)
+
+# Draw the heatmap k=1
+draw(heatmap_spmn_k1)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-2.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-2">
+Past versions of "RUVs HM Spearman-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-2.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####Spearman Heatmap k=0 log2cpm####
+heatmap_spmn_k0_cpm &lt;- Heatmap(cor_matrix_spmn_k0_cpm,
+                           name = &quot;Spearman&quot;,
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = &quot;log2cpm of Filtered Counts no RUVs&quot;)
+
+# Draw the heatmap k=0 log2cpm
+draw(heatmap_spmn_k0_cpm)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-3.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-3">
+Past versions of "RUVs HM Spearman-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-3.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-3.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####Spearman Heatmap k=1 log2cpm####
+heatmap_spmn_k1_cpm &lt;- Heatmap(cor_matrix_spmn_k1_cpm,
+                           name = &quot;Spearman&quot;,
+                           top_annotation = top_annotation,
+                           show_row_names = TRUE,
+                           show_column_names = TRUE,
+                           cluster_rows = TRUE,
+                           cluster_columns = TRUE,
+                           border = TRUE, 
+                           column_title = &quot;log2cpm of Normalized Counts k=1&quot;)
+
+#draw the heatmap k=1 log2cpm
+draw(heatmap_spmn_k1_cpm)</code></pre>
+<p><img src="figure/RUVs.Rmd/RUVs%20HM%20Spearman-4.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-HM-Spearman-4">
+Past versions of "RUVs HM Spearman-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-HM-Spearman-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-4.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-4.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUVs HM Spearman-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#find the median for all comparisons and also do a sign test to see significance
+#remove diagonal (self-correlations) and get lower triangle only
+spearman_vals &lt;- cor_matrix_spmn_k1_cpm[lower.tri(cor_matrix_spmn_k1_cpm, diag = FALSE)]
+
+#median of Spearman correlation coefficients
+median_spearman &lt;- median(spearman_vals, na.rm = TRUE)
+
+#sign test: number of positive vs negative correlations
+#H0: median = 0, HA: median &gt; 0 (one-sided test)
+
+#count number of positive and negative values
+n_pos &lt;- sum(spearman_vals &gt; 0, na.rm = TRUE)
+n_neg &lt;- sum(spearman_vals &lt; 0, na.rm = TRUE)
+n_total &lt;- n_pos + n_neg
+
+#perform a binomial test (sign test)
+sign_test &lt;- binom.test(x = n_pos, n = n_total, p = 0.5, alternative = &quot;greater&quot;)
+
+#output results
+cat(&quot;Median Spearman correlation:&quot;, median_spearman, &quot;\n&quot;)</code></pre>
+<pre><code>Median Spearman correlation: 0.9547968 </code></pre>
+<pre class="r"><code>cat(&quot;Sign test p-value (greater than 0):&quot;, sign_test$p.value, &quot;\n&quot;)</code></pre>
+<pre><code>Sign test p-value (greater than 0): 6.503898e-260 </code></pre>
+<pre class="r"><code>#Median Spearman correlation: 0.9547968 
+#Sign test p-value (greater than 0): 6.503898e-260 
+
+#now I want to test correlations by timepoint with DOX vs DMSO
+#list your timepoints
+cor_time_sp &lt;- c(&quot;tx+0&quot;, &quot;tx+24&quot;, &quot;tx+144&quot;)
+
+for (tp in cor_time_sp) {
+  
+  #match DOX and DMSO samples at this timepoint
+  dox_samples &lt;- grep(paste0(&quot;^DOX_&quot;, tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
+  dmso_samples &lt;- grep(paste0(&quot;^VEH_&quot;, tp), colnames(cor_matrix_spmn_k1_cpm), value = TRUE)
+  
+  #extract Spearman correlations between DOX and DMSO at this timepoint
+  cor_vals &lt;- as.vector(cor_matrix_spmn_k1_cpm[dox_samples, dmso_samples])
+  
+  #calculate median
+  median_cor &lt;- median(cor_vals, na.rm = TRUE)
+  
+  #sign test (are most correlations &gt; 0?)
+  n_pos &lt;- sum(cor_vals &gt; 0, na.rm = TRUE)
+  n_neg &lt;- sum(cor_vals &lt; 0, na.rm = TRUE)
+  n_total &lt;- n_pos + n_neg
+  
+  #perform binomial test if valid
+  if (n_total &gt; 0) {
+    sign_test &lt;- binom.test(x = n_pos, n = n_total, p = 0.5,
+                            alternative = &quot;greater&quot;)
+    p_val &lt;- sign_test$p.value
+  } else {
+    p_val &lt;- NA
+  }
+  
+  #output
+  cat(&quot;====&quot;, tp, &quot;====\n&quot;)
+  cat(&quot;Median Spearman correlation (DOX vs VEH):&quot;, round(median_cor, 4), &quot;\n&quot;)
+  cat(&quot;Sign test p-value:&quot;, p_val, &quot;\n\n&quot;)
+}</code></pre>
+<pre><code>==== tx+0 ====
+Median Spearman correlation (DOX vs VEH): NA 
+Sign test p-value: NA 
+
+==== tx+24 ====
+Median Spearman correlation (DOX vs VEH): NA 
+Sign test p-value: NA 
+
+==== tx+144 ====
+Median Spearman correlation (DOX vs VEH): NA 
+Sign test p-value: NA </code></pre>
+<pre class="r"><code># output
+# t0
+# Median Spearman correlation (DOX vs VEH): 0.8899 
+# Sign test p-value: 1.776357e-15 
+# 
+# t24
+# Median Spearman correlation (DOX vs VEH): 0.9347 
+# Sign test p-value: 1.776357e-15 
+# 
+# t144
+# Median Spearman correlation (DOX vs VEH): 0.9767 
+# Sign test p-value: 1.776357e-15 
+
+#this means that my DOX and VEH are highly similar and significant according to P values</code></pre>
+</div>
+</div>
+<div
+id="supplementary-figure-3---spearman-correlation-heatmap-ruvs-log2cpm"
+class="section level1">
+<h1>Supplementary Figure 3 - Spearman Correlation Heatmap RUVs
+log2cpm</h1>
+<pre class="r"><code>#Make your supplement heatmap 
+
+#rename your columns for your matrix cpm_k1 to be correct
+# I RENAMED THESE EARLIER 
+# new_colname &lt;- colnames(cpm_k1) %&gt;%
+#   gsub(&quot;t0&quot;, &quot;tx+0&quot;, .) %&gt;%
+#   gsub(&quot;t24&quot;, &quot;tx+24&quot;, .) %&gt;%
+#   gsub(&quot;t144&quot;, &quot;tx+144&quot;, .) %&gt;%
+#   gsub(&quot;DMSO&quot;, &quot;VEH&quot;, .)
+
+# cpm_k1_rename &lt;- cpm_k1
+
+# colnames(cpm_k1_rename) &lt;- new_colname
+
+# cpm_k1 &lt;- cpm_k1_rename
+
+# saveRDS(cpm_k1, &quot;data/QC/cpm_k1_renamedcols.RDS&quot;)
+
+cor_matrix_spmn_k1_cpm_new &lt;- cor(cpm_k1,
+                           y = NULL,
+                           use = &quot;everything&quot;,
+                           method = &quot;spearman&quot;)
+
+#create ComplexHeatmap
+heatmap_spmn_supp &lt;- Heatmap(
+  cor_matrix_spmn_k1_cpm,
+  name = &quot;Spearman&quot;,
+  top_annotation = top_annotation,
+  show_row_names = TRUE,
+  show_column_names = TRUE,
+  cluster_rows = TRUE,
+  cluster_columns = TRUE, 
+  show_row_dend = FALSE,
+  show_column_dend = TRUE,
+  row_names_gp = gpar(fontsize = 7),
+  column_names_gp = gpar(fontsize = 7),
+  column_names_centered = FALSE,
+  row_names_centered = FALSE,
+  rect_gp = gpar(col = &quot;black&quot;, lwd = 0.5), 
+  border = gpar(col = &quot;black&quot;, lwd = 1),
+  column_title = &quot;log2cpm of normalized counts RUVs corrected&quot;,
+  column_title_gp = gpar(fontsize = 10, fontface = &quot;plain&quot;),
+  heatmap_legend_param = list(
+    title_gp = gpar(fontsize = 9, fontface = &quot;plain&quot;),
+    labels_gp = gpar(fontsize = 8)
+  )
+)
+
+#make a function to save complex heatmaps
+save_complex_heatmap &lt;- function(plot, filename, folder, width = 6, height = 8) {
+  if (!dir.exists(folder)) dir.create(folder, recursive = TRUE)
+    path &lt;- file.path(folder, filename)
+    pdf(path, width = width, height = height)
+    draw(plot, heatmap_legend_side = &quot;right&quot;)
+    dev.off()
+  message(&quot;Saved heatmap to: &quot;, path)
+}
+
+# Save to PDF in your output folder
+save_complex_heatmap(
+  plot = heatmap_spmn_supp,
+  filename = &quot;SuppFig3_SpearmanCorHM_RUV_log2cpm_EMP.pdf&quot;,
+  folder = output_folder,
+  width = 8,
+  height = 7
+)</code></pre>
+<div id="top-5-degs-ruvs" class="section level2">
+<h2>Top 5 DEGs RUVs</h2>
+<pre class="r"><code>#use your three toptables so I can pull out top 5 genes from each based on adj. p val
+
+Toptable_RUV_24T &lt;- read.csv(&quot;data/DE/Toptable_RUV_24T_final.csv&quot;)
+Toptable_RUV_24R &lt;- read.csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;)
+Toptable_RUV_144R &lt;- read.csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;)
+
+top5_D24T_1 &lt;- Toptable_RUV_24T[order(Toptable_RUV_24T$adj.P.Val), ][1:5,] 
+top5_D24R_1 &lt;- Toptable_RUV_24R[order(Toptable_RUV_24R$adj.P.Val), ][1:5,] 
+top5_D144R_1 &lt;- Toptable_RUV_144R[order(Toptable_RUV_144R$adj.P.Val), ][1:5,]
+
+#now that I&#39;ve pulled the top 5 DEGs from each, make a list to pull them from my log2cpm data
+
+boxplot1 &lt;- readRDS(&quot;data/QC/filcpm_matrix_genes.RDS&quot;) %&gt;% 
+  as.data.frame()
+
+#Define gene list
+#these are the top 5 genes pulled from my toptables
+top5_D24T_geneslist_1 &lt;- c(top5_D24T_1$Entrez_ID)
+top5_D24R_geneslist_1 &lt;- c(top5_D24R_1$Entrez_ID)
+top5_D144R_geneslist_1 &lt;- c(top5_D144R_1$Entrez_ID)
+#Add more gene symbols as needed or add more categories
+
+#now pull these from my log2cpm matrix
+top5_D24T_genes_1 &lt;- boxplot1[boxplot1$Entrez_ID %in% top5_D24T_geneslist_1,]
+dim(top5_D24T_genes_1)</code></pre>
+<pre><code>[1]  5 44</code></pre>
+<pre class="r"><code>#5 genes in 44 cols
+top5_D24R_genes_1 &lt;- boxplot1[boxplot1$Entrez_ID %in% top5_D24R_geneslist_1,]
+dim(top5_D24R_genes_1)</code></pre>
+<pre><code>[1]  5 44</code></pre>
+<pre class="r"><code>#5 genes in 44 cols
+top5_D144R_genes_1 &lt;- boxplot1[boxplot1$Entrez_ID %in% top5_D144R_geneslist_1,]
+dim(top5_D144R_genes_1)</code></pre>
+<pre><code>[1]  5 44</code></pre>
+<pre class="r"><code>#5 genes in 44 cols
+
+#Now put in the function I want to use to generate boxplots of genes
+#####D24T#####
+process_top5_D24T_1 &lt;- function(gene) {
+  gene_data &lt;- top5_D24T_genes_1 %&gt;% filter(Entrez_ID == gene)
+  long_data &lt;- gene_data %&gt;%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = &quot;Sample&quot;, values_to = &quot;log2cpm&quot;) %&gt;%
+    mutate(
+      Drug = case_when(
+        grepl(&quot;DOX&quot;, Sample) ~ &quot;DOX&quot;,
+        grepl(&quot;DMSO&quot;, Sample) ~ &quot;DMSO&quot;,
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl(&quot;_24T_&quot;, Sample) ~ &quot;24T&quot;,
+        grepl(&quot;_24R_&quot;, Sample) ~ &quot;24R&quot;,
+        grepl(&quot;_144R_&quot;, Sample) ~ &quot;144R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl(&quot;Ind1$&quot;, Sample) ~ &quot;1&quot;,
+        grepl(&quot;Ind2$&quot;, Sample) ~ &quot;2&quot;,
+        grepl(&quot;Ind3$&quot;, Sample) ~ &quot;3&quot;,
+        grepl(&quot;Ind4$&quot;, Sample) ~ &quot;4&quot;,
+        grepl(&quot;Ind5$&quot;, Sample) ~ &quot;5&quot;,
+        grepl(&quot;Ind6$&quot;, Sample) ~ &quot;6&quot;,
+        grepl(&quot;Ind6R$&quot;, Sample) ~ &quot;6R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = &quot;_&quot;)
+    )
+  long_data$Condition &lt;- factor(
+    long_data$Condition,
+    levels = c(
+      &quot;DOX_24T&quot;, 
+      &quot;DMSO_24T&quot;, 
+      &quot;DOX_24R&quot;, 
+      &quot;DMSO_24R&quot;, 
+      &quot;DOX_144R&quot;, 
+      &quot;DMSO_144R&quot;
+    )
+  )
+  return(long_data)
+}
+
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in top5_D24T_geneslist_1) {
+  gene_data &lt;- process_top5_D24T_1(gene)
+  p &lt;- ggplot(gene_data, aes(x = Condition, y = log2cpm, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c(&quot;DOX&quot; = &quot;#499FBD&quot;, &quot;DMSO&quot; = &quot;#BBBBBC&quot;)) +
+    ggtitle(paste(&quot;Log2cpm&quot;, gene, &quot;top5DEGs D24T RUVs&quot;)) +
+    labs(x = &quot;Treatment&quot;, y = &quot;log2cpm&quot;) +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = &quot;black&quot;),
+      axis.text.x = element_text(size = 10, color = &quot;black&quot;, angle = 90, hjust = 1)
+    )
+  print(p)
+}</code></pre>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-1">
+Past versions of "RUV Top5 DEGs-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-1.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-1.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-2">
+Past versions of "RUV Top5 DEGs-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-2.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-2.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-3">
+Past versions of "RUV Top5 DEGs-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-3.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-3.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-4">
+Past versions of "RUV Top5 DEGs-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-4.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-4.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-5">
+Past versions of "RUV Top5 DEGs-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-5.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-5.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-5.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#####D24R#####
+process_top5_D24R_1 &lt;- function(gene) {
+  gene_data &lt;- top5_D24R_genes_1 %&gt;% filter(Entrez_ID == gene)
+  long_data &lt;- gene_data %&gt;%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = &quot;Sample&quot;, values_to = &quot;log2cpm&quot;) %&gt;%
+    mutate(
+      Drug = case_when(
+        grepl(&quot;DOX&quot;, Sample) ~ &quot;DOX&quot;,
+        grepl(&quot;DMSO&quot;, Sample) ~ &quot;DMSO&quot;,
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl(&quot;_24T_&quot;, Sample) ~ &quot;24T&quot;,
+        grepl(&quot;_24R_&quot;, Sample) ~ &quot;24R&quot;,
+        grepl(&quot;_144R_&quot;, Sample) ~ &quot;144R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl(&quot;Ind1$&quot;, Sample) ~ &quot;1&quot;,
+        grepl(&quot;Ind2$&quot;, Sample) ~ &quot;2&quot;,
+        grepl(&quot;Ind3$&quot;, Sample) ~ &quot;3&quot;,
+        grepl(&quot;Ind4$&quot;, Sample) ~ &quot;4&quot;,
+        grepl(&quot;Ind5$&quot;, Sample) ~ &quot;5&quot;,
+        grepl(&quot;Ind6$&quot;, Sample) ~ &quot;6&quot;,
+        grepl(&quot;Ind6R$&quot;, Sample) ~ &quot;6R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = &quot;_&quot;)
+    )
+  long_data$Condition &lt;- factor(
+    long_data$Condition,
+    levels = c(
+      &quot;DOX_24T&quot;, 
+      &quot;DMSO_24T&quot;, 
+      &quot;DOX_24R&quot;, 
+      &quot;DMSO_24R&quot;, 
+      &quot;DOX_144R&quot;, 
+      &quot;DMSO_144R&quot;
+    )
+  )
+  return(long_data)
+}
+
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in top5_D24R_geneslist_1) {
+  gene_data &lt;- process_top5_D24R_1(gene)
+  p &lt;- ggplot(gene_data, aes(x = Condition, y = log2cpm, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c(&quot;DOX&quot; = &quot;#499FBD&quot;, &quot;DMSO&quot; = &quot;#BBBBBC&quot;)) +
+    ggtitle(paste(&quot;Log2cpm&quot;, gene, &quot;top5DEGs D24R RUVs&quot;)) +
+    labs(x = &quot;Treatment&quot;, y = &quot;log2cpm&quot;) +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = &quot;black&quot;),
+      axis.text.x = element_text(size = 10, color = &quot;black&quot;, angle = 90, hjust = 1)
+    )
+  print(p)
+}</code></pre>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-6">
+Past versions of "RUV Top5 DEGs-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-6.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-6.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-6.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-7">
+Past versions of "RUV Top5 DEGs-7.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-7.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-7.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-7.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-8">
+Past versions of "RUV Top5 DEGs-8.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-8.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-8.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-8.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-9">
+Past versions of "RUV Top5 DEGs-9.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-9.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-9.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-9.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-10">
+Past versions of "RUV Top5 DEGs-10.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-10.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-10.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-10.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#####D144R#####
+process_top5_D144R_1 &lt;- function(gene) {
+  gene_data &lt;- top5_D144R_genes_1 %&gt;% filter(Entrez_ID == gene)
+  long_data &lt;- gene_data %&gt;%
+    pivot_longer(cols = -c(Entrez_ID, SYMBOL), names_to = &quot;Sample&quot;, values_to = &quot;log2cpm&quot;) %&gt;%
+    mutate(
+      Drug = case_when(
+        grepl(&quot;DOX&quot;, Sample) ~ &quot;DOX&quot;,
+        grepl(&quot;DMSO&quot;, Sample) ~ &quot;DMSO&quot;,
+        TRUE ~ NA_character_
+      ),
+      Timepoint = case_when(
+        grepl(&quot;_24T_&quot;, Sample) ~ &quot;24T&quot;,
+        grepl(&quot;_24R_&quot;, Sample) ~ &quot;24R&quot;,
+        grepl(&quot;_144R_&quot;, Sample) ~ &quot;144R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Indv = case_when(
+        grepl(&quot;Ind1$&quot;, Sample) ~ &quot;1&quot;,
+        grepl(&quot;Ind2$&quot;, Sample) ~ &quot;2&quot;,
+        grepl(&quot;Ind3$&quot;, Sample) ~ &quot;3&quot;,
+        grepl(&quot;Ind4$&quot;, Sample) ~ &quot;4&quot;,
+        grepl(&quot;Ind5$&quot;, Sample) ~ &quot;5&quot;,
+        grepl(&quot;Ind6$&quot;, Sample) ~ &quot;6&quot;,
+        grepl(&quot;Ind6R$&quot;, Sample) ~ &quot;6R&quot;,
+        TRUE ~ NA_character_
+      ),
+      Condition = paste(Drug, Timepoint, sep = &quot;_&quot;)
+    )
+  long_data$Condition &lt;- factor(
+    long_data$Condition,
+    levels = c(
+      &quot;DOX_24T&quot;, 
+      &quot;DMSO_24T&quot;, 
+      &quot;DOX_24R&quot;, 
+      &quot;DMSO_24R&quot;, 
+      &quot;DOX_144R&quot;, 
+      &quot;DMSO_144R&quot;
+    )
+  )
+  return(long_data)
+}
+
+
+#Generate Boxplots from the above function using our gene list above
+for (gene in top5_D144R_geneslist_1) {
+  gene_data &lt;- process_top5_D144R_1(gene)
+  p &lt;- ggplot(gene_data, aes(x = Condition, y = log2cpm, fill = Drug)) +
+    geom_boxplot(outlier.shape = NA) +
+    geom_point(aes(color = Indv), size = 2, alpha = 0.5, position = position_jitter(width = -1, height = 0)) +
+    scale_fill_manual(values = c(&quot;DOX&quot; = &quot;#499FBD&quot;, &quot;DMSO&quot; = &quot;#BBBBBC&quot;)) +
+    ggtitle(paste(&quot;Log2cpm&quot;, gene, &quot;top5DEGs D144R RUVs&quot;)) +
+    labs(x = &quot;Treatment&quot;, y = &quot;log2cpm&quot;) +
+    theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(2), hjust = 0.5),
+      axis.title = element_text(size = 15, color = &quot;black&quot;),
+      axis.text.x = element_text(size = 10, color = &quot;black&quot;, angle = 90, hjust = 1)
+    )
+  print(p)
+}</code></pre>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-11">
+Past versions of "RUV Top5 DEGs-11.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-11.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-11.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-11.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-12">
+Past versions of "RUV Top5 DEGs-12.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-12.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-12.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-12.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-13">
+Past versions of "RUV Top5 DEGs-13.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-13" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-13.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-13.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-13.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-14">
+Past versions of "RUV Top5 DEGs-14.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-14" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-14.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-14.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-14.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/RUVs.Rmd/RUV%20Top5%20DEGs-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUV-Top5-DEGs-15">
+Past versions of "RUV Top5 DEGs-15.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUV-Top5-DEGs-15" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/11008142a2f8ffdd8553f76ed11503d2347deaa3/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-15.png" target="_blank">1100814</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-15.png" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/RUVs.Rmd/RUV Top5 DEGs-15.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22000)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] ggrepel_0.9.6               ComplexHeatmap_2.22.0      
+ [3] ggfortify_0.4.17            readxl_1.4.5               
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.0.4                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.2.1               
+[13] ggplot2_3.5.2               tidyverse_2.0.0            
+[15] RUVSeq_1.40.0               edgeR_4.4.0                
+[17] limma_3.62.1                EDASeq_2.40.0              
+[19] ShortRead_1.64.0            GenomicAlignments_1.42.0   
+[21] SummarizedExperiment_1.36.0 MatrixGenerics_1.18.1      
+[23] matrixStats_1.5.0           Rsamtools_2.22.0           
+[25] GenomicRanges_1.58.0        Biostrings_2.74.0          
+[27] GenomeInfoDb_1.42.3         XVector_0.46.0             
+[29] IRanges_2.40.0              S4Vectors_0.44.0           
+[31] BiocParallel_1.40.0         Biobase_2.66.0             
+[33] BiocGenerics_0.52.0         workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RColorBrewer_1.1-3      shape_1.4.6.1           rstudioapi_0.17.1      
+  [4] jsonlite_2.0.0          magrittr_2.0.3          magick_2.9.0           
+  [7] GenomicFeatures_1.58.0  farver_2.1.2            rmarkdown_2.29         
+ [10] GlobalOptions_0.1.2     fs_1.6.6                BiocIO_1.16.0          
+ [13] zlibbioc_1.52.0         vctrs_0.6.5             Cairo_1.6-5            
+ [16] memoise_2.0.1           RCurl_1.98-1.17         htmltools_0.5.8.1      
+ [19] S4Arrays_1.6.0          progress_1.2.3          curl_6.0.1             
+ [22] cellranger_1.1.0        SparseArray_1.6.0       sass_0.4.10            
+ [25] bslib_0.9.0             httr2_1.1.2             cachem_1.1.0           
+ [28] whisker_0.4.1           iterators_1.0.14        lifecycle_1.0.4        
+ [31] pkgconfig_2.0.3         Matrix_1.7-1            R6_2.6.1               
+ [34] fastmap_1.2.0           clue_0.3-66             GenomeInfoDbData_1.2.13
+ [37] digest_0.6.37           colorspace_2.1-1        AnnotationDbi_1.68.0   
+ [40] ps_1.9.1                rprojroot_2.0.4         RSQLite_2.3.9          
+ [43] hwriter_1.3.2.1         labeling_0.4.3          filelock_1.0.3         
+ [46] timechange_0.3.0        httr_1.4.7              abind_1.4-8            
+ [49] compiler_4.4.2          doParallel_1.0.17       bit64_4.5.2            
+ [52] withr_3.0.2             DBI_1.2.3               R.utils_2.13.0         
+ [55] biomaRt_2.62.1          MASS_7.3-61             rappdirs_0.3.3         
+ [58] DelayedArray_0.32.0     rjson_0.2.23            tools_4.4.2            
+ [61] httpuv_1.6.16           R.oo_1.27.1             glue_1.8.0             
+ [64] restfulr_0.0.15         callr_3.7.6             promises_1.3.2         
+ [67] getPass_0.2-4           cluster_2.1.6           generics_0.1.4         
+ [70] gtable_0.3.6            tzdb_0.5.0              R.methodsS3_1.8.2      
+ [73] hms_1.1.3               xml2_1.3.8              foreach_1.5.2          
+ [76] pillar_1.10.2           later_1.4.2             circlize_0.4.16        
+ [79] BiocFileCache_2.14.0    lattice_0.22-6          aroma.light_3.36.0     
+ [82] rtracklayer_1.66.0      bit_4.5.0               deldir_2.0-4           
+ [85] tidyselect_1.2.1        locfit_1.5-9.12         knitr_1.50             
+ [88] git2r_0.36.2            gridExtra_2.3           xfun_0.52              
+ [91] statmod_1.5.0           stringi_1.8.7           UCSC.utils_1.2.0       
+ [94] yaml_2.3.10             evaluate_1.0.3          codetools_0.2-20       
+ [97] interp_1.1-6            cli_3.6.3               processx_3.8.6         
+[100] jquerylib_0.1.4         Rcpp_1.0.14             dbplyr_2.5.0           
+[103] png_0.1-8               XML_3.99-0.18           parallel_4.4.2         
+[106] blob_1.2.4              prettyunits_1.2.0       latticeExtra_0.6-30    
+[109] jpeg_0.1-11             bitops_1.0-9            pwalign_1.2.0          
+[112] scales_1.4.0            crayon_1.5.3            GetoptLong_1.0.5       
+[115] rlang_1.1.6             KEGGREST_1.46.0        </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

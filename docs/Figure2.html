@@ -1,0 +1,2616 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Figure 2 Analysis</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">DXR Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="index.html">Analysis</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/emmapfort/DXR_Project">
+    <span class="fab fa-github"></span>
+     
+    Source Code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 2 Analysis</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-01-06
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>DXR_website/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20251201code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20251201)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20251201code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20251201)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee4705f606209af89e867d897eb8b5b1ea619e0fftargetblanke4705f6a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/emmapfort/DXR_Project/tree/e4705f606209af89e867d897eb8b5b1ea619e0ff" target="_blank">e4705f6</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomemmapfortDXRProjecttreee4705f606209af89e867d897eb8b5b1ea619e0fftargetblanke4705f6a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/emmapfort/DXR_Project/tree/e4705f606209af89e867d897eb8b5b1ea619e0ff" target="_blank">e4705f6</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    DXR_website/data/
+    Ignored:    code/Flow_Purity_Stressor_Boxplots_EMP_250226.R
+    Ignored:    data/CDKN1A_geneplot_Dox.RDS
+    Ignored:    data/Cormotif_dox.RDS
+    Ignored:    data/Cormotif_prob_gene_list.RDS
+    Ignored:    data/Cormotif_prob_gene_list_doxonly.RDS
+    Ignored:    data/Counts_RNA_EMPfortmiller.txt
+    Ignored:    data/DMSO_TNN13_plot.RDS
+    Ignored:    data/DOX_TNN13_plot.RDS
+    Ignored:    data/DOXgeneplots.RDS
+    Ignored:    data/ExpressionMatrix_EMP.csv
+    Ignored:    data/Ind1_DOX_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_list.csv
+    Ignored:    data/Ind6REP_Spearman_plot.RDS
+    Ignored:    data/Ind6REP_Spearman_set.csv
+    Ignored:    data/Ind6_Spearman_plot.RDS
+    Ignored:    data/MDM2_geneplot_Dox.RDS
+    Ignored:    data/Master_summary_75-1_EMP_250811_final.csv
+    Ignored:    data/Master_summary_87-1_EMP_250811_final.csv
+    Ignored:    data/Metadata.csv
+    Ignored:    data/Metadata_2_norep_update.RDS
+    Ignored:    data/Metadata_update.csv
+    Ignored:    data/QC/
+    Ignored:    data/Recovery_flow_purity.csv
+    Ignored:    data/SIRT1_geneplot_Dox.RDS
+    Ignored:    data/Sample_annotated.csv
+    Ignored:    data/SpearmanHeatmapMatrix_EMP
+    Ignored:    data/VolcanoPlot_D144R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24R_original_EMP_250623.png
+    Ignored:    data/VolcanoPlot_D24T_original_EMP_250623.png
+    Ignored:    data/annot_dox.RDS
+    Ignored:    data/annot_list_hm.csv
+    Ignored:    data/cormotif_dxr_1.RDS
+    Ignored:    data/cormotif_dxr_2.RDS
+    Ignored:    data/counts/
+    Ignored:    data/counts_DE_df_dox.RDS
+    Ignored:    data/counts_DE_raw_data.RDS
+    Ignored:    data/counts_raw_filt.RDS
+    Ignored:    data/counts_raw_matrix.RDS
+    Ignored:    data/counts_raw_matrix_EMP_250514.csv
+    Ignored:    data/d24_Spearman_plot.RDS
+    Ignored:    data/dge_calc_dxr.RDS
+    Ignored:    data/dge_calc_matrix.RDS
+    Ignored:    data/ensembl_backup_dox.RDS
+    Ignored:    data/fC_AllCounts.RDS
+    Ignored:    data/fC_DOXCounts.RDS
+    Ignored:    data/featureCounts_Concat_Matrix_DOXSamples_EMP_250430.csv
+    Ignored:    data/featureCounts_DOXdata_updatedind.RDS
+    Ignored:    data/filcpm_colnames_matrix.csv
+    Ignored:    data/filcpm_matrix.csv
+    Ignored:    data/filt_gene_list_dox.RDS
+    Ignored:    data/filter_gene_list_final.RDS
+    Ignored:    data/final_data/
+    Ignored:    data/gene_clustlike_motif.RDS
+    Ignored:    data/gene_postprob_motif.RDS
+    Ignored:    data/genedf_dxr.RDS
+    Ignored:    data/genematrix_dox.RDS
+    Ignored:    data/genematrix_dxr.RDS
+    Ignored:    data/heartgenes.csv
+    Ignored:    data/heartgenes_dox.csv
+    Ignored:    data/image_intensity_stats_all_conditions.csv
+    Ignored:    data/image_level_stats_all_conditions.csv
+    Ignored:    data/image_level_summary_yH2AX_quant.csv
+    Ignored:    data/ind_num_dox.RDS
+    Ignored:    data/ind_num_dxr.RDS
+    Ignored:    data/initial_cormotif.RDS
+    Ignored:    data/initial_cormotif_dox.RDS
+    Ignored:    data/low_nuclei_samples.csv
+    Ignored:    data/low_veh_samples.csv
+    Ignored:    data/new/
+    Ignored:    data/new_cormotif_dox.RDS
+    Ignored:    data/perc_mean_all_10X.png
+    Ignored:    data/perc_mean_all_20X.png
+    Ignored:    data/perc_mean_all_40X.png
+    Ignored:    data/perc_mean_consistent_10X.png
+    Ignored:    data/perc_mean_consistent_20X.png
+    Ignored:    data/perc_mean_consistent_40X.png
+    Ignored:    data/perc_median_all_10X.png
+    Ignored:    data/perc_median_all_20X.png
+    Ignored:    data/perc_median_all_40X.png
+    Ignored:    data/perc_median_consistent_10X.png
+    Ignored:    data/perc_median_consistent_20X.png
+    Ignored:    data/perc_median_consistent_40X.png
+    Ignored:    data/plot_leg_d.RDS
+    Ignored:    data/plot_leg_d_horizontal.RDS
+    Ignored:    data/plot_leg_d_vertical.RDS
+    Ignored:    data/plot_theme_custom.RDS
+    Ignored:    data/process_gene_data_funct.RDS
+    Ignored:    data/raw_mean_all_10X.png
+    Ignored:    data/raw_mean_all_20X.png
+    Ignored:    data/raw_mean_all_40X.png
+    Ignored:    data/raw_mean_consistent_10X.png
+    Ignored:    data/raw_mean_consistent_20X.png
+    Ignored:    data/raw_mean_consistent_40X.png
+    Ignored:    data/raw_median_all_10X.png
+    Ignored:    data/raw_median_all_20X.png
+    Ignored:    data/raw_median_all_40X.png
+    Ignored:    data/raw_median_consistent_10X.png
+    Ignored:    data/raw_median_consistent_20X.png
+    Ignored:    data/raw_median_consistent_40X.png
+    Ignored:    data/ruv/
+    Ignored:    data/summary_all_IF_ROI.RDS
+    Ignored:    data/tableED_GOBP.RDS
+    Ignored:    data/tableESR_GOBP_postprob.RDS
+    Ignored:    data/tableLD_GOBP.RDS
+    Ignored:    data/tableLR_GOBP_postprob.RDS
+    Ignored:    data/tableNR_GOBP.RDS
+    Ignored:    data/tableNR_GOBP_postprob.RDS
+    Ignored:    data/table_incsus_genes_GOBP_RUV.RDS
+    Ignored:    data/table_motif1_GOBP_d.RDS
+    Ignored:    data/table_motif1_genes_GOBP.RDS
+    Ignored:    data/table_motif2_GOBP_d.RDS
+    Ignored:    data/table_motif3_genes_GOBP.RDS
+    Ignored:    data/thing.R
+    Ignored:    data/top.table_V.D144r_dox.RDS
+    Ignored:    data/top.table_V.D24_dox.RDS
+    Ignored:    data/top.table_V.D24r_dox.RDS
+    Ignored:    data/yH2AX_75-1_EMP_250811.csv
+    Ignored:    data/yH2AX_87-1_EMP_250811.csv
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MeanIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_10X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_20X_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_MedianIntensity_NormtoMax_EMP_250811.png
+    Ignored:    data/yH2AX_Boxplots_Quant_10X_EMP_250817.png
+    Ignored:    data/yH2AX_Boxplots_Quant_20X_EMP_250817.png
+    Ignored:    data/yh2ax_all_df_EMP_250812.csv
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>DXR_website/analysis/Figure2.Rmd</code>)
+and HTML (<code>DXR_website/docs/Figure2.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/c382b38e927082204de1ba8a9fda4c2e047aac62/DXR_website/docs/Figure2.html" target="_blank">c382b38</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/cd535e91c1466858501e22b6a24f6a6326256e21/DXR_website/analysis/Figure2.Rmd" target="_blank">cd535e9</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-06
+</td>
+<td>
+Final Website Touches 01/06/25 EMP
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/Figure2.html" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/49fa8652e77c5b1ec651d8c3df0ca9d4ff9b6314/DXR_website/analysis/Figure2.Rmd" target="_blank">49fa865</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+<td>
+Final Updates to Website EMP 01/05/26
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/f088a0025414154a35d1855b7ea0bb092d31bc47/DXR_website/docs/Figure2.html" target="_blank">f088a00</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+website updates
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/e05f0cc44784f852eddd06c60dd1e65328242899/DXR_website/analysis/Figure2.Rmd" target="_blank">e05f0cc</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+workflowr::wflow_publish(files = c("analysis/Figure2.Rmd",
+"analysis/about.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/analysis/Figure2.Rmd" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/emmapfort/DXR_Project/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/Figure2.html" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+<td>
+Update website and analysis chunks
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/da1f69c853f759ba93c7ef927d5a4183661e64dd/DXR_website/analysis/Figure2.Rmd" target="_blank">da1f69c</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-02
+</td>
+<td>
+updated analysis 12/02/25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<style type="text/css">
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+  
+}
+</style>
+<div id="libraries" class="section level1">
+<h1>Libraries</h1>
+<p>Load necessary libraries for analysis.</p>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(readr)
+library(ggrepel)
+library(ggfortify)
+library(RUVSeq)
+library(patchwork)
+library(eulerr)
+library(org.Hs.eg.db)
+library(AnnotationDbi)
+library(ggVennDiagram)
+library(ggrastr)</code></pre>
+<p>Define my custom plot theme</p>
+<pre class="r"><code># Define the custom theme
+# plot_theme_custom &lt;- function() {
+#   theme_minimal() +
+#     theme(
+#       #line for x and y axis
+#       axis.line = element_line(linewidth = 1,
+#                                color = &quot;black&quot;),
+# 
+#       #axis ticks only on x and y, length standard
+#       axis.ticks.x = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.y = element_line(color = &quot;black&quot;,
+#                                 linewidth = 1),
+#       axis.ticks.length = unit(0.05, &quot;in&quot;),
+# 
+#       #text and font
+#       axis.text = element_text(color = &quot;black&quot;,
+#                                family = &quot;Arial&quot;,
+#                                size = 7),
+#       axis.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 9),
+#       legend.text = element_text(color = &quot;black&quot;,
+#                                  family = &quot;Arial&quot;,
+#                                  size = 7),
+#       legend.title = element_text(color = &quot;black&quot;,
+#                                   family = &quot;Arial&quot;,
+#                                   size = 9),
+#       plot.title = element_text(color = &quot;black&quot;,
+#                                 family = &quot;Arial&quot;,
+#                                 size = 10),
+# 
+#       #blank background and border
+#       panel.background = element_blank(),
+#       panel.border = element_blank(),
+# 
+#       #gridlines for alignment
+#       panel.grid.major = element_line(color = &quot;grey80&quot;, linewidth = 0.5),  #grey major grid for align in illus
+#       panel.grid.minor = element_line(color = &quot;grey90&quot;, linewidth = 0.5) #grey minor grid for align in illus
+#     )
+# }
+
+# saveRDS(plot_theme_custom, &quot;data/plot_theme_custom.RDS&quot;)
+
+theme_custom &lt;- readRDS(&quot;data/plot_theme_custom.RDS&quot;)</code></pre>
+<pre class="r"><code>####Colors####
+
+# txtime_col_old &lt;- list(
+#   &quot;DOX_24T&quot; = &quot;#263CA5&quot;,
+#   &quot;VEH_24T&quot; = &quot;#444343&quot;,
+#   &quot;DOX_24R&quot; = &quot;#5B8FD1&quot;,
+#   &quot;VEH_24R&quot; = &quot;#757575&quot;,
+#   &quot;DOX_144R&quot; = &quot;#89C5E5&quot;,
+#   &quot;VEH_144R&quot; = &quot;#AAAAAA&quot;
+# )
+
+#updated colors and factors:
+ind_col &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;,
+  &quot;6R&quot; = &quot;#C61E4E&quot;
+)
+
+ind_col_nr &lt;- list(
+  &quot;1&quot; = &quot;#FF9F64&quot;,
+  &quot;2&quot; = &quot;#78EBDA&quot;,
+  &quot;3&quot; = &quot;#ADCD77&quot;,
+  &quot;4&quot; = &quot;#E6CC50&quot;,
+  &quot;5&quot; = &quot;#A68AC0&quot;,
+  &quot;6&quot; = &quot;#F16F90&quot;
+)
+
+time_col &lt;- list(
+  &quot;t0&quot; = &quot;#005A4C&quot;,
+  &quot;t24&quot; = &quot;#328477&quot;,
+  &quot;t144&quot; = &quot;#8FB9B1&quot;)
+
+tx_col &lt;- list(
+  &quot;DOX&quot; = &quot;#499FBD&quot;, 
+  &quot;VEH&quot; = &quot;#BBBBBC&quot;)
+
+txtime_col &lt;- list(
+  &quot;DOX_t0&quot; = &quot;#263CA5&quot;,
+  &quot;VEH_t0&quot; = &quot;#444343&quot;,
+  &quot;DOX_t24&quot; = &quot;#5B8FD1&quot;,
+  &quot;VEH_t24&quot; = &quot;#757575&quot;,
+  &quot;DOX_t144&quot; = &quot;#89C5E5&quot;,
+  &quot;VEH_t144&quot; = &quot;#AAAAAA&quot;
+)</code></pre>
+<p>Define a function to save plots as .pdf and .png</p>
+<pre class="r"><code>save_plot &lt;- function(plot, filename, 
+                      folder = &quot;.&quot;, 
+                      width = 8, 
+                      height = 6, 
+                      units = &quot;in&quot;, 
+                      dpi = 300, 
+                      add_date = TRUE) {
+  if (missing(filename)) stop(&quot;Please provide a filename (without extension) for the plot.&quot;)
+
+  date_str &lt;- if (add_date) paste0(&quot;_&quot;, format(Sys.Date(), &quot;%y%m%d&quot;)) else &quot;&quot;
+  pdf_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.pdf&quot;))
+  png_file &lt;- file.path(folder, paste0(filename, date_str, &quot;.png&quot;))
+  ggsave(filename = pdf_file, plot = plot, device = cairo_pdf, width = width, height = height, units = units, bg = &quot;transparent&quot;)
+  ggsave(filename = png_file, plot = plot, device = &quot;png&quot;, width = width, height = height, units = units, dpi = dpi, bg = &quot;transparent&quot;)
+  message(&quot;Saved plot as Cairo PDF: &quot;, pdf_file)
+  message(&quot;Saved plot as PNG: &quot;, png_file)
+}
+
+output_folder &lt;- &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;
+
+
+#save plot function created
+#to use: just define the plot name, filename_base, width, height</code></pre>
+</div>
+<div id="figure-2a---pca-following-ruvs-correction"
+class="section level1">
+<h1>Figure 2A - PCA following RUVs Correction</h1>
+<p>Principal component analysis of RNAseq data following RUVs
+correction.</p>
+<pre class="r"><code>#read in dataframe after cpm transformation and k=1 RUVs correction
+#add in the annotation files
+ind_num &lt;- readRDS(&quot;data/QC/ind_num.RDS&quot;)
+annot &lt;- read.csv(&quot;data/QC/Metadata_update.csv&quot;)
+
+RUV_df_rm1_cpm &lt;- readRDS(&quot;data/Fig2/RUV_df_rm1_cpm.RDS&quot;)
+
+prcomp_res_1_cpm &lt;- prcomp(t(RUV_df_rm1_cpm), scale. = FALSE, center = TRUE)
+annot_prcomp_res_1_cpm &lt;- readRDS(&quot;data/Fig2/annot_pca_cpm_fig2a.RDS&quot;)
+
+fig2a &lt;- autoplot(prcomp_res_1_cpm,
+         data = annot,
+         colour = &quot;Cond&quot;,
+         shape = &quot;Time&quot;,
+         size = 5,
+         x = 1,
+         y = 2) +
+  theme_custom() +
+  scale_color_manual(values = txtime_col) +
+  geom_text_repel(aes(label = ind_num),       
+                  nudge_y = 0.05,            
+                  max.overlaps = 100,                   
+                  segment.color = &quot;grey40&quot;) + 
+  ggtitle(&quot;RUVs Correction k=1 log2cpm&quot;)
+
+print(fig2a)</code></pre>
+<p><img src="figure/Figure2.Rmd/Figure%202A%20PCA%20Plot-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Figure-2A-PCA-Plot-1">
+Past versions of "Figure 2A PCA Plot-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Figure-2A-PCA-Plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Figure 2A PCA Plot-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#save for figure generation
+
+# save_plot(plot = fig2a,
+#           filename = &quot;Fig2A_PCA_6x8_EMP&quot;,
+#           folder = output_folder,
+#           width = 6,
+#           height = 8)</code></pre>
+</div>
+<div id="differential-expression-analysis---ruvs-corrected"
+class="section level1">
+<h1>Differential Expression Analysis - RUVs Corrected</h1>
+<p>#Perform Differential Expression Analysis with k = 1 RUVs
+Correction</p>
+<pre class="r"><code>#same DGEList object as before
+dge &lt;- readRDS(&quot;data/DE/dge_matrix.RDS&quot;)
+Metadata_2 &lt;- readRDS(&quot;data/QC/Metadata_2_norep_update.RDS&quot;)
+x_norep &lt;- readRDS(&quot;data/DE/x_norep.RDS&quot;)
+
+#check normalization factors from TMM normalization of LIBRARIES
+dge$samples</code></pre>
+<pre><code>                    group lib.size norm.factors
+87-1_DOX_24        DOX_t0 19935097    1.0526605
+87-1_DMSO_24       VEH_t0 21302879    0.9773889
+87-1_DOX_24+24    DOX_t24 25636959    1.0751043
+87-1_DMSO_24+24   VEH_t24 26319662    0.9940323
+87-1_DOX_24+144  DOX_t144 23463426    0.9003102
+87-1_DMSO_24+144 VEH_t144 25840938    0.9888449
+78-1_DOX_24        DOX_t0 23085807    0.7676077
+78-1_DMSO_24       VEH_t0 25610495    1.0077383
+78-1_DOX_24+24    DOX_t24 18083930    1.1682704
+78-1_DMSO_24+24   VEH_t24 24331177    0.9906872
+78-1_DOX_24+144  DOX_t144 19754391    0.9941834
+78-1_DMSO_24+144 VEH_t144 22641509    1.0010734
+75-1_DOX_24        DOX_t0 20583626    1.0676786
+75-1_DMSO_24       VEH_t0 28166198    1.0031906
+75-1_DOX_24+24    DOX_t24 25831427    1.1530208
+75-1_DMSO_24+24   VEH_t24 26081158    1.0058953
+75-1_DOX_24+144  DOX_t144 24659898    0.9261599
+75-1_DMSO_24+144 VEH_t144 25412931    0.9703454
+84-1_DOX_24        DOX_t0 23393931    0.9745263
+84-1_DMSO_24       VEH_t0 22853195    0.9565797
+84-1_DOX_24+24    DOX_t24 23846995    1.1659432
+84-1_DMSO_24+24   VEH_t24 21299355    0.9649641
+84-1_DOX_24+144  DOX_t144 18222568    0.9913625
+84-1_DMSO_24+144 VEH_t144 28115884    0.9653464
+17-3_DOX_24        DOX_t0 22518848    0.9766893
+17-3_DMSO_24       VEH_t0 24589534    0.9612345
+17-3_DOX_24+24    DOX_t24 24797547    1.1703079
+17-3_DMSO_24+24   VEH_t24 25977536    0.9509690
+17-3_DOX_24+144  DOX_t144 27447106    0.9422729
+17-3_DMSO_24+144 VEH_t144 24893583    0.9356377
+90-1_DOX_24        DOX_t0 25187428    1.0311957
+90-1_DMSO_24       VEH_t0 25630519    1.0283437
+90-1_DOX_24+24    DOX_t24 26138399    1.1183471
+90-1_DMSO_24+24   VEH_t24 24430396    0.9988688
+90-1_DOX_24+144  DOX_t144 23323463    0.9496884
+90-1_DMSO_24+144 VEH_t144 25424152    0.9872926</code></pre>
+<pre class="r"><code>#read in my covariate information RUV_1 dataframe + remove 6R
+RUV_df_rm1 &lt;- readRDS(&quot;data/DE/RUV_df_rm1.RDS&quot;)
+
+#filter out 6R for DE analysis
+RUV_1_df_filt &lt;- RUV_df_rm1[!grepl(&quot;6R$&quot;, rownames(RUV_df_rm1)), , drop = FALSE]
+
+Metadata_2$W_1 &lt;- RUV_1_df_filt$W_1
+
+#now ensure that RUV_1 has the right number of cols after removing rep
+length(RUV_1_df_filt$W_1)</code></pre>
+<pre><code>[1] 36</code></pre>
+<pre class="r"><code>#36 
+
+#now make this into a list
+RUV_1_DE &lt;-  RUV_1_df_filt$W_1
+
+# saveRDS(RUV_1_DE, &quot;data/DE/RUV_1_DE.RDS&quot;)
+
+#create my design matrix for DE + RUVs covariate k=1
+design1 &lt;- model.matrix(~0 + RUV_1_DE + Metadata_2$Condition)
+colnames(design1) &lt;- gsub(&quot;Metadata_2\\$Condition&quot;, &quot;&quot;, colnames(design1))
+
+#take care that the matrix automatically sorts cols alphabetically
+
+#run duplicate correlation for individual effect
+corfit1 &lt;- duplicateCorrelation(object = dge$counts, design = design1, block = Metadata_2$Ind)
+
+#voom transformation and plot
+v1 &lt;- voom(dge, design1, block = Metadata_2$Ind, correlation = corfit1$consensus.correlation, plot = TRUE)</code></pre>
+<p><img src="figure/Figure2.Rmd/DE%20RUVs%20k1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DE-RUVs-k1-1">
+Past versions of "DE RUVs k1-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-DE-RUVs-k1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/DE RUVs k1-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#fit my linear model
+fit1 &lt;- lmFit(v1, design1, block = Metadata_2$Ind, correlation = corfit1$consensus.correlation)
+
+#make my contrast matrix to compare across tx and veh
+contrast_matrix_RUV &lt;- makeContrasts(
+  V.D24T = DOX_t0 - VEH_t0,
+  V.D24R = DOX_t24 - VEH_t24, 
+  V.D144R = DOX_t144 - VEH_t144,
+  RUV_1_24T = RUV_1_DE - VEH_t0,
+  RUV_1_24R = RUV_1_DE - VEH_t24,
+  RUV_1_144R = RUV_1_DE - VEH_t144,  
+  levels = design1
+)
+
+#apply these contrasts to compare DOX to DMSO VEH
+fit_RUV &lt;- contrasts.fit(fit1, contrast_matrix_RUV)
+fit_RUV &lt;- eBayes(fit_RUV)
+
+#plot the mean-variance trend
+plotSA(fit_RUV, main = &quot;Mean-Variance Trend, RUVs k=1&quot;)</code></pre>
+<p><img src="figure/Figure2.Rmd/DE%20RUVs%20k1-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-DE-RUVs-k1-2">
+Past versions of "DE RUVs k1-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-DE-RUVs-k1-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/DE RUVs k1-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#look at the summary of your results
+##this tells you the number of DEGs in each condition
+results_summary1 &lt;- decideTests(fit_RUV, adjust.method = &quot;BH&quot;, p.value = 0.05)
+
+summary(results_summary1)</code></pre>
+<pre><code>       V.D24T V.D24R V.D144R RUV_1_24T RUV_1_24R RUV_1_144R
+Down     4866   3727     466     10518     10519      10513
+NotSig   4899   7107   13659      2905      2899       2889
+Up       4554   3485     194       896       901        917</code></pre>
+<pre class="r"><code>#        V.D24T V.D24R V.D144R
+# Down     4866   3727     466  
+# NotSig   4899   7107   13659    
+# Up       4554   3485     194
+
+#compare this to my previous DEGs I found
+# summary(results_summary)
+#        V.D24T V.D24R V.D144R
+# Down     4723   3593     359
+# NotSig   5076   7151   13810
+# Up       4520   3575     150
+
+
+#overall, there are more DEGs found after RUVs k=1 correction 
+#this was an expected result as it increases tx effect w/ correction</code></pre>
+<div id="toptables" class="section level2">
+<h2>Toptables</h2>
+<p>##Generate Toptables RUVs</p>
+<pre class="r"><code># Generate Top Table for Specific Comparisons
+x &lt;- readRDS(&quot;data/DE/x_dge_counts_allind_updated.RDS&quot;)
+
+Toptable_V.D24T_k1 &lt;- topTable(fit = fit_RUV, coef = &quot;V.D24T&quot;, number = nrow(x), adjust.method = &quot;BH&quot;, p.value = 1, sort.by = &quot;none&quot;)
+# write.csv(Toptable_V.D24T_k1, &quot;data/DE/Toptable_V.D24T_k1.csv&quot;)
+
+Toptable_V.D24R_k1 &lt;- topTable(fit = fit_RUV, coef = &quot;V.D24R&quot;, number = nrow(x), adjust.method = &quot;BH&quot;, p.value = 1, sort.by = &quot;none&quot;)
+# write.csv(Toptable_V.D24R_k1, &quot;data/DE/Toptable_V.D24R_k1.csv&quot;)
+
+Toptable_V.D144R_k1 &lt;- topTable(fit = fit_RUV, coef = &quot;V.D144R&quot;, number = nrow(x), adjust.method = &quot;BH&quot;, p.value = 1, sort.by = &quot;none&quot;)
+# write.csv(Toptable_V.D144R_k1, &quot;data/DE/Toptable_V.D144R_k1.csv&quot;)
+
+# save all of these toptables as R objects
+# saveRDS(list(
+#   V.D24T_k1 = Toptable_V.D24T_k1,
+#   V.D24R_k1 = Toptable_V.D24R_k1,
+#   V.D144R_k1 = Toptable_V.D144R_k1
+# ), file = &quot;data/DE/Toptable_list_RUVk1.RDS&quot;)
+
+# Toptable_list_RUVk1 &lt;- readRDS(&quot;data/DE/Toptable_list_RUVk1.RDS&quot;)
+
+#################################################################
+#this section is commented out since it only needs to run once
+#kept the code for posterity
+
+# #I want to add the hgnc symbols to my toptables as well
+# ####D24T####
+# #load in data
+# sample_toptab_24T &lt;- read_csv(&quot;C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/DEGs/Toptable_V.D24T_k1.csv&quot;, show_col_types = FALSE)
+# # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
+# # Check column names
+# print(colnames(sample_toptab_24T))
+# # Rename if needed (adjust if the column name is not exactly &#39;Entrez_ID&#39;)
+# colnames(sample_toptab_24T)[1] &lt;- &quot;Entrez_ID&quot;
+# # Convert Entrez_ID to character
+# sample_toptab_24T &lt;- sample_toptab_24T %&gt;%
+#   mutate(Entrez_ID = as.character(Entrez_ID))
+# # ----------------- Map Entrez_ID to Gene Symbol -----------------
+# gene_symbols1 &lt;- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = sample_toptab_24T$Entrez_ID,
+#   columns = c(&quot;SYMBOL&quot;),
+#   keytype = &quot;ENTREZID&quot;
+# )
+# # ----------------- Join Back to Main Data -----------------
+# Toptable_RUV_24T &lt;- left_join(sample_toptab_24T, gene_symbols1, by = c(&quot;Entrez_ID&quot; = &quot;ENTREZID&quot;))
+# Toptable_RUV_24T %&gt;% column_to_rownames(., var = &quot;Entrez_ID&quot;)
+# # ----------------- Save Annotated Output -----------------
+# write_csv(Toptable_RUV_24T, &quot;data/DE/Toptable_RUV_24T.csv&quot;)
+# 
+# Toptable_RUV_24T &lt;- read.csv(&quot;data/DE/Toptable_RUV_24T.csv&quot;)
+# #now do this again for my other two toptables
+# 
+# ####24R####
+# #load in data
+# sample_toptab_24R &lt;- read_csv(&quot;C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/DEGs/Toptable_V.D24R_k1.csv&quot;, show_col_types = FALSE)
+# # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
+# # Check column names
+# print(colnames(sample_toptab_24R))
+# # Rename if needed (adjust if the column name is not exactly &#39;Entrez_ID&#39;)
+# colnames(sample_toptab_24R)[1] &lt;- &quot;Entrez_ID&quot;
+# # Convert Entrez_ID to character
+# sample_toptab_24R &lt;- sample_toptab_24R %&gt;%
+# mutate(Entrez_ID = as.character(Entrez_ID))
+# ----------------- Map Entrez_ID to Gene Symbol -----------------
+# gene_symbols2 &lt;- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = sample_toptab_24R$Entrez_ID,
+#   columns = c(&quot;SYMBOL&quot;),
+#   keytype = &quot;ENTREZID&quot;
+# )
+# # ----------------- Join Back to Main Data -----------------
+# Toptable_RUV_24R &lt;- left_join(sample_toptab_24R, gene_symbols2, by = c(&quot;Entrez_ID&quot; = &quot;ENTREZID&quot;))
+# Toptable_RUV_24R %&gt;% column_to_rownames(., var = &quot;Entrez_ID&quot;)
+# # ----------------- Save Annotated Output -----------------
+# #I&#39;ll make these symbols into rownames later for my volcano plots
+# write_csv(Toptable_RUV_24R, &quot;data/DE/Toptable_RUV_24R.csv&quot;)
+# 
+
+# Toptable_RUV_24R &lt;- read.csv(&quot;data/DE/Toptable_RUV_24R.csv&quot;)
+# 
+# ####D144R####
+# #load in data
+# sample_toptab_144R &lt;- read_csv(&quot;C:/Users/emmap/RDirectory/Recovery_RNAseq/Recovery_5FU/data/new/DEGs/Toptable_V.D144R_k1.csv&quot;, show_col_types = FALSE)
+# # ----------------- Ensure Entrez_ID is Present and in Character Format -----------------
+# # Check column names
+# print(colnames(sample_toptab_144R))
+# # Rename if needed (adjust if the column name is not exactly &#39;Entrez_ID&#39;)
+# colnames(sample_toptab_144R)[1] &lt;- &quot;Entrez_ID&quot;
+# # Convert Entrez_ID to character
+# sample_toptab_144R &lt;- sample_toptab_144R %&gt;%
+#   mutate(Entrez_ID = as.character(Entrez_ID))
+# # ----------------- Map Entrez_ID to Gene Symbol -----------------
+# gene_symbols3 &lt;- AnnotationDbi::select(
+#   org.Hs.eg.db,
+#   keys = sample_toptab_144R$Entrez_ID,
+#   columns = c(&quot;SYMBOL&quot;),
+#   keytype = &quot;ENTREZID&quot;
+# )
+# # ----------------- Join Back to Main Data -----------------
+# Toptable_RUV_144R &lt;- left_join(sample_toptab_144R, gene_symbols3, by = c(&quot;Entrez_ID&quot; = &quot;ENTREZID&quot;))
+# Toptable_RUV_144R %&gt;% column_to_rownames(., var = &quot;Entrez_ID&quot;)
+# # ----------------- Save Annotated Output -----------------
+# #I&#39;ll make these symbols into rownames later for my volcano plots
+# write_csv(Toptable_RUV_144R, &quot;data/DE/Toptable_RUV_144R.csv&quot;)
+# 
+# write.csv(Toptable_RUV_24T, &quot;data/DE/Toptable_RUV_24T_final.csv&quot;)
+# write.csv(Toptable_RUV_24R, &quot;data/DE/Toptable_RUV_24R_final.csv&quot;)
+# write.csv(Toptable_RUV_144R, &quot;data/DE/Toptable_RUV_144R_final.csv&quot;)
+
+Toptable_RUV_24T &lt;- read_csv(&quot;data/DE/Toptable_RUV_24T_final.csv&quot;,
+                             col_select = -1)
+Toptable_RUV_24R &lt;- read_csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;,
+                             col_select = -1)
+Toptable_RUV_144R &lt;- read_csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;,
+                              col_select = -1)
+
+# save all of these toptables as R objects
+# saveRDS(list(
+#   V.D24T_RUV = Toptable_RUV_24T,
+#   V.D24R_RUV = Toptable_RUV_24R,
+#   V.D144R_RUV = Toptable_RUV_144R
+# ), file = &quot;data/DE/Toptable_list_RUVk1_Symbols.RDS&quot;)
+
+Toptable_list_RUVk1_symbols &lt;- readRDS(&quot;data/DE/Toptable_list_RUVk1_Symbols.RDS&quot;)</code></pre>
+<p>#Figure 2B - Barplot of DEG Percentages</p>
+<p>###Proportion of DEGs in Gene Set RUVs corrected</p>
+<pre class="r"><code>#check the proportion of my genes in my gene set that are DEGs by timepoint
+
+#make this into a pie chart or a bar graph
+#read in my full gene set
+filcpm_matrix &lt;- readRDS(&quot;data/QC/filcpm_final_matrix_newind.RDS&quot;)
+all_genes &lt;- rownames(filcpm_matrix)
+
+#convert Entrez_ID to Gene Symbols
+all_genes_set &lt;- mapIds(org.Hs.eg.db, 
+                        keys = all_genes,
+                        column = &quot;SYMBOL&quot;,
+                        keytype = &quot;ENTREZID&quot;,
+                        multiVals = &quot;first&quot;)
+
+# Load DEGs Data (replaced with new set)
+DOX_t0 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24T_final.csv&quot;,
+                   col_select = -1)
+DOX_t24 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;, 
+                    col_select = -1)
+DOX_t144 &lt;- read_csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;, 
+                     col_select = -1)
+
+# Extract Significant DEGs (change names to timepoint)
+DEG_t0_RUV &lt;- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val &lt; 0.05]
+DEG_t24_RUV &lt;- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val &lt; 0.05]
+DEG_t144_RUV &lt;- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val &lt; 0.05]
+
+# saveRDS(DEG_t0_RUV, &quot;data/DE/DEGs_sig_list_24T_RUVs_set.RDS&quot;)
+# saveRDS(DEG_t24_RUV, &quot;data/DE/DEGs_sig_list_24R_RUVs_set.RDS&quot;)
+# saveRDS(DEG_t144_RUV, &quot;data/DE/DEGs_sig_list_144R_RUVs_set.RDS&quot;)
+
+#make a list of all of my significant DEGs
+timepoint_DEGs_RUV &lt;- list(
+  &quot;24T&quot; = DEG_t0_RUV,
+  &quot;24R&quot; = DEG_t24_RUV,
+  &quot;144R&quot; = DEG_t144_RUV
+)
+
+# Function to compute proportions
+get_proportions_degs &lt;- function(degs, total_genes) {
+  deg_count &lt;- length(degs)
+  non_deg_count &lt;- total_genes - deg_count
+  data.frame(
+    Category = c(&quot;DEGs&quot;, &quot;Non-DEGs&quot;),
+    Count = c(deg_count, non_deg_count),
+    Proportion = c(deg_count / total_genes, non_deg_count / total_genes)
+  )
+}
+
+# Compute proportions for each timepoint
+prop_t0 &lt;- get_proportions_degs(DEG_t0_RUV, length(all_genes_set))
+prop_t24 &lt;- get_proportions_degs(DEG_t24_RUV, length(all_genes_set))
+prop_t144 &lt;- get_proportions_degs(DEG_t144_RUV, length(all_genes_set))
+
+# Combine for bar plot
+prop_bar &lt;- rbind(
+  cbind(Timepoint = &quot;t0&quot;, prop_t0),
+  cbind(Timepoint = &quot;t24&quot;, prop_t24),
+  cbind(Timepoint = &quot;t144&quot;, prop_t144)
+)
+
+#pie chart for t0
+ggplot(prop_t0, aes(x = &quot;&quot;, y = Count, fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;) +
+  labs(title = &quot;DEGs vs Non-DEGs (t0)&quot;) +
+  theme_void()</code></pre>
+<p><img src="figure/Figure2.Rmd/Proportion%20of%20DEGs-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Proportion-of-DEGs-1">
+Past versions of "Proportion of DEGs-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Proportion-of-DEGs-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Proportion of DEGs-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#pie chart for t24
+ggplot(prop_t24, aes(x = &quot;&quot;, y = Count, fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;) +
+  labs(title = &quot;DEGs vs Non-DEGs (t24)&quot;) +
+  theme_void()</code></pre>
+<p><img src="figure/Figure2.Rmd/Proportion%20of%20DEGs-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Proportion-of-DEGs-2">
+Past versions of "Proportion of DEGs-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Proportion-of-DEGs-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Proportion of DEGs-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#pie chart for t144
+ggplot(prop_t144, aes(x = &quot;&quot;, y = Count, fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;) +
+  labs(title = &quot;DEGs vs Non-DEGs (t144)&quot;) +
+  theme_void()</code></pre>
+<p><img src="figure/Figure2.Rmd/Proportion%20of%20DEGs-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Proportion-of-DEGs-3">
+Past versions of "Proportion of DEGs-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-Proportion-of-DEGs-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Proportion of DEGs-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#put the desired colors here for your pie charts
+degs_prop_colors &lt;- c(&quot;DEGs&quot; = &quot;red&quot;, &quot;Non-DEGs&quot; = &quot;blue&quot;)
+
+#labels for percentage based on proportion
+prop_t0$Label &lt;- paste0(round(prop_t0$Proportion * 100, 1), &quot;&quot;)
+prop_t24$Label &lt;- paste0(round(prop_t24$Proportion * 100, 1), &quot;&quot;)
+prop_t144$Label &lt;- paste0(round(prop_t144$Proportion * 100, 1), &quot;&quot;)
+
+#create each plot and assign to variables
+plot_t0 &lt;- ggplot(prop_t0, aes(x = &quot;&quot;, y = Count, fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;) +
+  geom_text(aes(label = Label), 
+            position = position_stack(vjust = 0.6), 
+            color = &quot;white&quot;, 
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = &quot;t0&quot;) +
+  theme_void()
+
+plot_t24 &lt;- ggplot(prop_t24, aes(x = &quot;&quot;, y = Count, fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;) +
+  geom_text(aes(label = Label), 
+            position = position_stack(vjust = 0.6), 
+            color = &quot;white&quot;, 
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = &quot;t24&quot;) +
+  theme_void()
+
+plot_t144 &lt;- ggplot(prop_t144, aes(x = &quot;&quot;, y = Count, fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;) +
+  geom_text(aes(label = Label), 
+            position = position_stack(vjust = 0.6), 
+            color = &quot;white&quot;, 
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = &quot;t144&quot;) +
+  theme_void()
+
+#combine all three pie charts in a row
+combined_prop_degs_plots &lt;- 
+  plot_t0 + 
+  plot_t24 + 
+  plot_t144 +
+  plot_layout(ncol = 3, nrow = 1, guides = &quot;collect&quot;) + 
+  plot_annotation(title = &quot;Proportion of DEGs vs Non-DEGs&quot;)
+
+#show the combined pie chart plot
+combined_prop_degs_plots</code></pre>
+<p><img src="figure/Figure2.Rmd/Proportion%20of%20DEGs-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Proportion-of-DEGs-4">
+Past versions of "Proportion of DEGs-4.png"
+</button>
+</p>
+<div id="fig-no-spaces-Proportion-of-DEGs-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Proportion of DEGs-4.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#combine all three pie charts in a column
+combined_prop_degs_plots_col &lt;- 
+  plot_t0 + 
+  plot_t24 + 
+  plot_t144 +
+  plot_layout(ncol = 1, nrow = 3, guides = &quot;collect&quot;) + 
+  plot_annotation(title = &quot;Proportion of DEGs vs Non-DEGs&quot;)
+
+#show the combined pie chart plot in 1 column
+combined_prop_degs_plots_col</code></pre>
+<p><img src="figure/Figure2.Rmd/Proportion%20of%20DEGs-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Proportion-of-DEGs-5">
+Past versions of "Proportion of DEGs-5.png"
+</button>
+</p>
+<div id="fig-no-spaces-Proportion-of-DEGs-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Proportion of DEGs-5.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####proportion bar plots####
+#first factor the timepoints so that they are in the right order
+prop_bar$Timepoint &lt;- factor(prop_bar$Timepoint, 
+                             levels = c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;))
+
+#percentage labels
+prop_bar$Label &lt;- paste0(round(prop_bar$Proportion * 100, 1), &quot;&quot;)
+
+#plot the bar plot
+barplot_deg_perc &lt;- ggplot(prop_bar, aes(x = Timepoint, 
+                     y = Proportion, 
+                     fill = Category)) +
+  geom_bar(stat = &quot;identity&quot;, 
+           position = &quot;fill&quot;) +
+  geom_text(aes(label = Label),
+            position = position_fill(vjust = 0.5),
+            color = &quot;white&quot;,
+            size = 4) +
+  scale_fill_manual(values = degs_prop_colors) +
+  labs(title = &quot;Percentage of DEGs vs nonDEGs by Timepoint&quot;,
+       y = &quot;Percentage of DEGs (%)&quot;, 
+       x = &quot;&quot;) +
+  scale_y_continuous(labels = c(0, 25, 50, 75, 100)) +
+  theme_custom()
+
+print(barplot_deg_perc)</code></pre>
+<p><img src="figure/Figure2.Rmd/Proportion%20of%20DEGs-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Proportion-of-DEGs-6">
+Past versions of "Proportion of DEGs-6.png"
+</button>
+</p>
+<div id="fig-no-spaces-Proportion-of-DEGs-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Proportion of DEGs-6.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#save this barplot
+
+# save_plot(
+#   plot = barplot_deg_perc,
+#   filename = &quot;DEGvsnonDEG_Barplot_update_EMP&quot;,
+#   folder = output_folder
+# )</code></pre>
+</div>
+</div>
+<div id="figure-2c---venn-diagram-of-deg-overlap"
+class="section level1">
+<h1>Figure 2C - Venn Diagram of DEG Overlap</h1>
+<p>##Venn Diagrams of DEG Overlap after RUVs Correction k=1</p>
+<pre class="r"><code>#plot a venn diagram with all of your conditions from your toptables
+
+# Load DEGs Data (already read in above)
+# DOX_t0 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24T_final.csv&quot;,
+#                    col_select = -1)
+# DOX_t24 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;, 
+#                     col_select = -1)
+# DOX_t144 &lt;- read_csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;, 
+#                      col_select = -1)
+
+# Extract Significant DEGs (change names to timepoint)
+# DEG_t0_RUV &lt;- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val &lt; 0.05]
+# DEG_t24_RUV &lt;- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val &lt; 0.05]
+# DEG_t144_RUV &lt;- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val &lt; 0.05]
+
+venn_test_RUV &lt;- list(DEG_t0_RUV, DEG_t24_RUV, DEG_t144_RUV)
+
+ggVennDiagram(
+  venn_test_RUV,
+  category.names = c(&quot;DOX_t0&quot;, &quot;DOX_t24&quot;, &quot;DOX_t144&quot;)
+) + ggtitle(&quot;DXR Specific and Shared DEGs RUVs&quot;)+
+  theme_custom() +
+  theme(
+    plot.title = element_text(size = 16, face = &quot;bold&quot;),  # Increase title size
+    text = element_text(size = 16)  # Increase text size globally
+  )</code></pre>
+<p><img src="figure/Figure2.Rmd/RUVs%20Overlap%20of%20DEGs-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Overlap-of-DEGs-1">
+Past versions of "RUVs Overlap of DEGs-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Overlap-of-DEGs-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/RUVs Overlap of DEGs-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>####I want to make this proportional
+#use the eulerr package to do so
+
+venn_prop_RUV &lt;- euler(list(
+  &quot;t0&quot; = DEG_t0_RUV,
+  &quot;t24&quot; = DEG_t24_RUV,
+  &quot;t144&quot; = DEG_t144_RUV
+))
+
+plot(venn_prop_RUV,
+     fills = list(fill = c(&quot;#263CA5&quot;, &quot;#5B8FD1&quot;, &quot;#89C5E5&quot;), 
+                  alpha = 1),
+     labels = list(font = 4),
+     quantities = list(cex = 0.75),
+     main = &quot;&quot;)</code></pre>
+<p><img src="figure/Figure2.Rmd/RUVs%20Overlap%20of%20DEGs-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-RUVs-Overlap-of-DEGs-2">
+Past versions of "RUVs Overlap of DEGs-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-RUVs-Overlap-of-DEGs-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/RUVs Overlap of DEGs-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="load-in-degs" class="section level2">
+<h2>Load in DEGs</h2>
+<pre class="r"><code>#Load DEGs Data
+#make a list of all of the genes in this set so I can plot the logFC in other sets
+
+# Load DEGs Data (already read in above)
+# DOX_t0 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24T_final.csv&quot;,
+#                    col_select = -1)
+# DOX_t24 &lt;- read_csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;, 
+#                     col_select = -1)
+# DOX_t144 &lt;- read_csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;, 
+#                      col_select = -1)
+
+DOX_24T_R &lt;- read_csv(&quot;data/DE/Toptable_RUV_24T.csv&quot;)
+DOX_24R_R &lt;- read_csv(&quot;data/DE/Toptable_RUV_24R_final.csv&quot;)
+DOX_144R_R &lt;- read_csv(&quot;data/DE/Toptable_RUV_144R_final.csv&quot;)
+
+#plot those full gene sets in logFC
+D24T_DEGs_R &lt;- DOX_t0$Entrez_ID[DOX_t0$adj.P.Val &lt; 0.05]
+length(D24T_DEGs_R)</code></pre>
+<pre><code>[1] 9420</code></pre>
+<pre class="r"><code>#9420 DEGs
+
+D24R_DEGs_R &lt;- DOX_t24$Entrez_ID[DOX_t24$adj.P.Val &lt; 0.05]
+length(D24R_DEGs_R)</code></pre>
+<pre><code>[1] 7212</code></pre>
+<pre class="r"><code>#7168 DEGs
+
+D144R_DEGs_R &lt;- DOX_t144$Entrez_ID[DOX_t144$adj.P.Val &lt; 0.05]
+length(D144R_DEGs_R)</code></pre>
+<pre><code>[1] 660</code></pre>
+<pre class="r"><code>#660 DEGs
+#now that I have the full list of genes, I want to plot the logFC across conditions
+
+
+#Combine the toptables I have from pairwise analysis into a single dataframe
+d24_toptable_dxr_1 &lt;- Toptable_RUV_24T %&gt;% 
+  mutate(Time = &quot;t0&quot;)
+
+d24r_toptable_dxr_1 &lt;- Toptable_RUV_24R %&gt;% 
+  mutate(Time = &quot;t24&quot;)
+
+d144r_toptable_dxr_1 &lt;- Toptable_RUV_144R %&gt;% 
+  mutate(Time = &quot;t144&quot;)
+
+combined_toptables_dxr_RUV &lt;- bind_rows(
+  d24_toptable_dxr_1,
+  d24r_toptable_dxr_1,
+  d144r_toptable_dxr_1)
+
+# saveRDS(combined_toptables_dxr_RUV, &quot;data/DE/combined_toptables_dxr_RUV.RDS&quot;)</code></pre>
+</div>
+</div>
+<div id="figure-2d---scatterplots-logfc-timepoint-comparisons"
+class="section level1">
+<h1>Figure 2D - Scatterplots logFC Timepoint Comparisons</h1>
+<pre class="r"><code># Define the timepoints from your data
+timepoints &lt;- c(&quot;t0&quot;, &quot;t24&quot;, &quot;t144&quot;)
+
+comparison_order &lt;- c(&quot;t0 vs t24&quot;, &quot;t24 vs t144&quot;, &quot;t0 vs t144&quot;)
+
+# Make all pairwise combinations
+pairs_df &lt;- t(combn(timepoints, 2)) %&gt;%
+  as.data.frame(stringsAsFactors = FALSE) %&gt;%
+  setNames(c(&quot;time_x&quot;, &quot;time_y&quot;))
+
+logFC_wide_RUV &lt;- combined_toptables_dxr_RUV %&gt;%
+  mutate(absFC = abs(logFC)) %&gt;% 
+  dplyr::select(Entrez_ID, Time, logFC) %&gt;%
+  pivot_wider(names_from = Time, values_from = logFC) %&gt;%
+  drop_na() %&gt;% 
+  column_to_rownames(&quot;Entrez_ID&quot;) 
+
+# Function to prepare scatter data for each pair
+prepare_pair_data &lt;- function(time_x, time_y, df) {
+  rho &lt;- cor(df[[time_x]], df[[time_y]], method = &quot;spearman&quot;)
+  df %&gt;%
+    mutate(
+      x_val = .data[[time_x]],
+      y_val = .data[[time_y]],
+      comparison = paste0(time_x, &quot; vs &quot;, time_y),
+      rho_label = paste0(&quot;rho = &quot;, round(rho, 2)),
+      x_lab = paste0(&quot;log2FC&quot;, time_x),
+      y_lab = paste0(&quot;log2FC&quot;, time_y)
+    )
+}
+
+comparison_colors &lt;- c(
+  &quot;t0 vs t24&quot;  = &quot;#4167BD&quot;,
+  &quot;t24 vs t144&quot; = &quot;#72AEE0&quot;,
+  &quot;t0 vs t144&quot; = &quot;#5780C5&quot;
+)
+
+# Build combined plotting dataset
+scatter_df &lt;- map2_df(pairs_df$time_x, pairs_df$time_y,
+                      ~prepare_pair_data(.x, .y, logFC_wide_RUV)) %&gt;%
+  mutate(comparison = factor(comparison, levels = comparison_order))
+
+facet_labels &lt;- scatter_df %&gt;%
+  distinct(comparison, x_lab, y_lab) %&gt;%
+  mutate(label = paste0(comparison, &quot;\n&quot;, x_lab, &quot; | &quot;, y_lab)) %&gt;%
+  dplyr::select(comparison, label) %&gt;%
+  deframe()
+
+#split data by comparison
+split_data &lt;- split(scatter_df, scatter_df$comparison)
+
+make_scatter &lt;- function(df_sub) {
+  comp &lt;- df_sub$comparison[1] 
+  ggplot(df_sub, aes(x = x_val, y = y_val)) +
+    geom_point_rast(alpha = 0.5, raster.dpi = 300, color = comparison_colors[comp]) +
+    geom_smooth(method = &quot;lm&quot;, se = FALSE, linetype = &quot;dashed&quot;, color = &quot;black&quot;) +
+    geom_text(
+      data = df_sub %&gt;% distinct(comparison, rho_label),
+      aes(x = -Inf, y = Inf, label = rho_label),
+    inherit.aes = FALSE,
+    hjust = -0.1, vjust = 1.5,
+    size = 4
+  ) +
+    coord_fixed(xlim = c(-9,9), ylim = c(-9,9), ratio = 1) +
+    labs(
+      x = unique(df_sub$x_lab),
+      y = unique(df_sub$y_lab)
+    ) +
+    theme_custom() +
+    theme(
+      axis.line = element_line(linewidth = 1, 
+                               color = &quot;black&quot;),
+      axis.ticks.length = unit(0.05, &quot;in&quot;),
+      axis.text = element_text(color = &quot;black&quot;),
+      panel.background = element_blank(),
+      panel.border = element_blank(),
+      legend.position = &quot;none&quot;
+    )
+}
+
+#make plot
+plot_list &lt;- lapply(split_data, make_scatter)
+
+#wrap all three together to get the final plot
+scatterplot_fig2d_wide &lt;- wrap_plots(plot_list, ncol  = length(plot_list))
+scatterplot_fig2d_tall &lt;- wrap_plots(plot_list, nrow = length(plot_list))
+scatterplot_fig2d_wide</code></pre>
+<p><img src="figure/Figure2.Rmd/Scatterplots%20Timepoint%20Comparisons-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Scatterplots-Timepoint-Comparisons-1">
+Past versions of "Scatterplots Timepoint Comparisons-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Scatterplots-Timepoint-Comparisons-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Scatterplots Timepoint Comparisons-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>scatterplot_fig2d_tall</code></pre>
+<p><img src="figure/Figure2.Rmd/Scatterplots%20Timepoint%20Comparisons-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Scatterplots-Timepoint-Comparisons-2">
+Past versions of "Scatterplots Timepoint Comparisons-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Scatterplots-Timepoint-Comparisons-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Scatterplots Timepoint Comparisons-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#save plot to a pdf and to a png
+# ggsave(&quot;Fig2D_Scatterplot_fixedlims_EMP_251121.pdf&quot;, scatterplot_fig2d_wide, width = 8, height = 6, device = cairo_pdf, path = &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;)
+
+# ggsave(&quot;Fig2D_Scatterplot_fixedlims_EMP_251121.png&quot;, scatterplot_fig2d_wide, width = 12, height = 4, dpi = 300, type = &quot;cairo&quot;, path = &quot;C:/Users/emmap/OneDrive/Desktop/DXR Manuscript Materials/Fig pdfs&quot;)</code></pre>
+</div>
+<div id="supplementary-figure-4---volcano-plots-of-ruvs-degs"
+class="section level1">
+<h1>Supplementary Figure 4 - Volcano Plots of RUVs DEGs</h1>
+<pre class="r"><code>#make a function to generate volcano plots + add gene numbers
+#ensure the gene symbols are in a col so I can plot names of top 15
+generate_volcano_plot_RUV &lt;- function(toptable, title) {
+  
+  #make significance labels
+  toptable$Significance &lt;- &quot;Not Significant&quot;
+  toptable$Significance[toptable$logFC &gt; 0 &amp; toptable$adj.P.Val &lt; 0.05] &lt;- &quot;Upregulated&quot;
+  toptable$Significance[toptable$logFC &lt; 0 &amp; toptable$adj.P.Val &lt; 0.05] &lt;- &quot;Downregulated&quot;
+  
+  #enforce correct factor order
+  toptable$Significance &lt;- factor(
+    toptable$Significance,
+    levels = c(&quot;Downregulated&quot;, &quot;Not Significant&quot;, &quot;Upregulated&quot;)
+  )
+  
+  #add number of genes for each significance label
+  upgenes &lt;- toptable %&gt;% 
+    filter(Significance == &quot;Upregulated&quot;) %&gt;%
+    nrow()
+  nsgenes &lt;- toptable %&gt;% 
+    filter(Significance == &quot;Not Significant&quot;) %&gt;% 
+    nrow()
+  downgenes &lt;- toptable %&gt;% 
+    filter(Significance == &quot;Downregulated&quot;) %&gt;% 
+    nrow()
+
+  #FIX: correct legend labels
+  legend_lab &lt;- c(
+    &quot;Upregulated&quot; = paste0(&quot;up = &quot;, upgenes),
+    &quot;Not Significant&quot; = paste0(&quot;ns = &quot;, nsgenes),
+    &quot;Downregulated&quot; = paste0(&quot;down = &quot;, downgenes)
+  )
+  
+  #FIX: correct legend colors
+  legend_col &lt;- c(
+    &quot;Upregulated&quot; = &quot;blue&quot;,
+    &quot;Not Significant&quot; = &quot;gray&quot;,
+    &quot;Downregulated&quot; = &quot;red&quot;
+  )
+  
+  #generate volcano plot w/ legend
+  p &lt;- ggplot(toptable, aes(x = logFC, 
+                            y = -log10(P.Value), 
+                            color = Significance)) +
+    geom_point_rast(alpha = 0.6, size = 2) +  #rasterize
+    scale_color_manual(values = legend_col,
+                       labels = legend_lab) +
+    xlim(-10, 10) +
+    ylim(0, 25) +
+    labs(title = title, 
+         x = expression(&quot;log&quot;[2]*&quot;FC&quot;), 
+         y = expression(&quot;-log&quot;[10]*&quot;P-value&quot;)) +
+    theme_custom() +
+    theme(legend.position = &quot;bottom&quot;)
+  
+  return(p)
+}
+
+
+#generate volcano plots across each comparison
+volcano_plots_RUV &lt;- list(
+  &quot;Volcano_Supp4_1_EMP&quot; = generate_volcano_plot_RUV(Toptable_RUV_24T, &quot;t0&quot;),
+  &quot;Volcano_Supp4_2_EMP&quot; = generate_volcano_plot_RUV(Toptable_RUV_24R, &quot;t24&quot;),
+  &quot;Volcano_Supp4_3_EMP&quot; = generate_volcano_plot_RUV(Toptable_RUV_144R, &quot;t144&quot;)
+)
+
+# Display each volcano plot
+for (plot_name in names(volcano_plots_RUV)) {
+  print(volcano_plots_RUV[[plot_name]])
+}</code></pre>
+<p><img src="figure/Figure2.Rmd/Volcano%20Plots%20RUVs%20Corrected%20k1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Volcano-Plots-RUVs-Corrected-k1-1">
+Past versions of "Volcano Plots RUVs Corrected k1-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Volcano-Plots-RUVs-Corrected-k1-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/Figure2.Rmd/Volcano Plots RUVs Corrected k1-1.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Volcano Plots RUVs Corrected k1-1.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/Figure2.Rmd/Volcano%20Plots%20RUVs%20Corrected%20k1-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Volcano-Plots-RUVs-Corrected-k1-2">
+Past versions of "Volcano Plots RUVs Corrected k1-2.png"
+</button>
+</p>
+<div id="fig-no-spaces-Volcano-Plots-RUVs-Corrected-k1-2"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/Figure2.Rmd/Volcano Plots RUVs Corrected k1-2.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Volcano Plots RUVs Corrected k1-2.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/Figure2.Rmd/Volcano%20Plots%20RUVs%20Corrected%20k1-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Volcano-Plots-RUVs-Corrected-k1-3">
+Past versions of "Volcano Plots RUVs Corrected k1-3.png"
+</button>
+</p>
+<div id="fig-no-spaces-Volcano-Plots-RUVs-Corrected-k1-3"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/7f22593a924c91db265b802d29b8fee802c4d36b/DXR_website/docs/figure/Figure2.Rmd/Volcano Plots RUVs Corrected k1-3.png" target="_blank">7f22593</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2026-01-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/emmapfort/DXR_Project/blob/a967d53371f438ab56075182aba23158c81b7c1b/DXR_website/docs/figure/Figure2.Rmd/Volcano Plots RUVs Corrected k1-3.png" target="_blank">a967d53</a>
+</td>
+<td>
+emmapfort
+</td>
+<td>
+2025-12-09
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>#save all volcano plots
+for (plot_name in names(volcano_plots_RUV)) {
+  save_plot(
+    filename = paste0(plot_name, &quot;_EMP.pdf&quot;),
+    plot = volcano_plots_RUV[[plot_name]],
+    height = 4,
+    width = 4,
+    folder = output_folder
+  )
+}</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.2 (2024-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 22000)
+
+Matrix products: default
+
+
+locale:
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
+
+time zone: America/Chicago
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] ggrastr_1.0.2               ggVennDiagram_1.5.2        
+ [3] org.Hs.eg.db_3.20.0         AnnotationDbi_1.68.0       
+ [5] eulerr_7.0.2                patchwork_1.3.0            
+ [7] RUVSeq_1.40.0               edgeR_4.4.0                
+ [9] limma_3.62.1                EDASeq_2.40.0              
+[11] ShortRead_1.64.0            GenomicAlignments_1.42.0   
+[13] SummarizedExperiment_1.36.0 MatrixGenerics_1.18.1      
+[15] matrixStats_1.5.0           Rsamtools_2.22.0           
+[17] GenomicRanges_1.58.0        Biostrings_2.74.0          
+[19] GenomeInfoDb_1.42.3         XVector_0.46.0             
+[21] IRanges_2.40.0              S4Vectors_0.44.0           
+[23] BiocParallel_1.40.0         Biobase_2.66.0             
+[25] BiocGenerics_0.52.0         ggfortify_0.4.17           
+[27] ggrepel_0.9.6               readxl_1.4.5               
+[29] lubridate_1.9.4             forcats_1.0.0              
+[31] stringr_1.5.1               dplyr_1.1.4                
+[33] purrr_1.0.4                 readr_2.1.5                
+[35] tidyr_1.3.1                 tibble_3.2.1               
+[37] ggplot2_3.5.2               tidyverse_2.0.0            
+[39] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] splines_4.4.2           later_1.4.2             BiocIO_1.16.0          
+  [4] bitops_1.0-9            filelock_1.0.3          R.oo_1.27.1            
+  [7] cellranger_1.1.0        polyclip_1.10-7         XML_3.99-0.18          
+ [10] lifecycle_1.0.4         httr2_1.1.2             pwalign_1.2.0          
+ [13] rprojroot_2.0.4         processx_3.8.6          lattice_0.22-6         
+ [16] vroom_1.6.5             MASS_7.3-61             magrittr_2.0.3         
+ [19] sass_0.4.10             rmarkdown_2.29          jquerylib_0.1.4        
+ [22] yaml_2.3.10             httpuv_1.6.16           DBI_1.2.3              
+ [25] RColorBrewer_1.1-3      abind_1.4-8             zlibbioc_1.52.0        
+ [28] R.utils_2.13.0          RCurl_1.98-1.17         rappdirs_0.3.3         
+ [31] git2r_0.36.2            GenomeInfoDbData_1.2.13 codetools_0.2-20       
+ [34] DelayedArray_0.32.0     xml2_1.3.8              tidyselect_1.2.1       
+ [37] UCSC.utils_1.2.0        farver_2.1.2            BiocFileCache_2.14.0   
+ [40] jsonlite_2.0.0          systemfonts_1.2.2       polylabelr_0.3.0       
+ [43] tools_4.4.2             progress_1.2.3          ragg_1.4.0             
+ [46] Rcpp_1.0.14             glue_1.8.0              gridExtra_2.3          
+ [49] SparseArray_1.6.0       xfun_0.52               mgcv_1.9-1             
+ [52] withr_3.0.2             fastmap_1.2.0           latticeExtra_0.6-30    
+ [55] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [58] R6_2.6.1                textshaping_1.0.1       colorspace_2.1-1       
+ [61] Cairo_1.6-5             jpeg_0.1-11             biomaRt_2.62.1         
+ [64] RSQLite_2.3.9           R.methodsS3_1.8.2       generics_0.1.4         
+ [67] rtracklayer_1.66.0      prettyunits_1.2.0       httr_1.4.7             
+ [70] S4Arrays_1.6.0          whisker_0.4.1           pkgconfig_2.0.3        
+ [73] gtable_0.3.6            blob_1.2.4              hwriter_1.3.2.1        
+ [76] htmltools_0.5.8.1       scales_1.4.0            png_0.1-8              
+ [79] knitr_1.50              rstudioapi_0.17.1       tzdb_0.5.0             
+ [82] rjson_0.2.23            nlme_3.1-166            curl_6.0.1             
+ [85] cachem_1.1.0            parallel_4.4.2          vipor_0.4.7            
+ [88] restfulr_0.0.15         pillar_1.10.2           grid_4.4.2             
+ [91] vctrs_0.6.5             promises_1.3.2          dbplyr_2.5.0           
+ [94] beeswarm_0.4.0          evaluate_1.0.3          GenomicFeatures_1.58.0 
+ [97] cli_3.6.3               locfit_1.5-9.12         compiler_4.4.2         
+[100] rlang_1.1.6             crayon_1.5.3            labeling_0.4.3         
+[103] interp_1.1-6            aroma.light_3.36.0      ps_1.9.1               
+[106] getPass_0.2-4           fs_1.6.6                ggbeeswarm_0.7.2       
+[109] stringi_1.8.7           deldir_2.0-4            Matrix_1.7-1           
+[112] hms_1.1.3               bit64_4.5.2             KEGGREST_1.46.0        
+[115] statmod_1.5.0           memoise_2.0.1           bslib_0.9.0            
+[118] bit_4.5.0              </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
